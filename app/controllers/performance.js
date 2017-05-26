@@ -84,13 +84,9 @@ function search(req, res) {
         const performancesCount = yield chevre_domain_1.Models.Performance.count(conditions).exec();
         // 必要な項目だけ指定すること(レスポンスタイムに大きく影響するので)
         debug('locale:', req.getLocale());
-        let fields = '';
-        if (req.getLocale() === 'ja') {
-            fields = 'day open_time start_time film screen screen_name.ja theater theater_name.ja';
-        }
-        else {
-            fields = 'day open_time start_time film screen screen_name.en theater theater_name.en';
-        }
+        const fields = (req.getLocale() === 'ja')
+            ? 'day open_time start_time film screen screen_name.ja theater theater_name.ja'
+            : 'day open_time start_time film screen screen_name.en theater theater_name.en';
         const query = chevre_domain_1.Models.Performance.find(conditions, fields);
         if (limit !== null) {
             query.skip(limit * (page - 1)).limit(limit);
