@@ -85,17 +85,17 @@ function search(req, res) {
         // 必要な項目だけ指定すること(レスポンスタイムに大きく影響するので)
         debug('locale:', req.getLocale());
         const fields = (req.getLocale() === 'ja')
-            ? 'day open_time start_time film screen screen_name.ja theater theater_name.ja'
-            : 'day open_time start_time film screen screen_name.en theater theater_name.en';
+            ? 'day open_time start_time end_time film screen screen_name.ja theater theater_name.ja'
+            : 'day open_time start_time end_time film screen screen_name.en theater theater_name.en';
         const query = chevre_domain_1.Models.Performance.find(conditions, fields);
         if (limit !== null) {
             query.skip(limit * (page - 1)).limit(limit);
         }
         if (req.getLocale() === 'ja') {
-            query.populate('film', 'name.ja sections.name.ja minutes copyright');
+            query.populate('film', 'name.ja sections.name.ja minutes copyright rating');
         }
         else {
-            query.populate('film', 'name.en sections.name.en minutes copyright');
+            query.populate('film', 'name.en sections.name.en minutes copyright rating');
         }
         // 上映日、開始時刻
         query.setOptions({
@@ -115,6 +115,7 @@ function search(req, res) {
                     day: performance.day,
                     open_time: performance.open_time,
                     start_time: performance.start_time,
+                    end_time: performance.end_time,
                     seat_status: (performanceStatuses !== undefined) ? performanceStatuses.getStatus(performance._id.toString()) : null,
                     theater_name: performance.theater_name[req.getLocale()],
                     screen_name: performance.screen_name[req.getLocale()],
@@ -123,7 +124,8 @@ function search(req, res) {
                     film_sections: performance.film.sections.map((filmSection) => filmSection.name[req.getLocale()]),
                     film_minutes: performance.film.minutes,
                     film_copyright: performance.film.copyright,
-                    film_image: `${process.env.FRONTEND_ENDPOINT}/images/film/${performance.film._id}.jpg`
+                    film_image: `${process.env.FRONTEND_ENDPOINT}/images/film/${performance.film._id}.jpg`,
+                    film_rating: performance.film.rating
                 }
             };
         });
