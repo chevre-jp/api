@@ -2,6 +2,7 @@
 /**
  * not foundハンドラーミドルウェアテスト
  */
+import * as chevre from '@chevre/domain';
 import * as assert from 'assert';
 import * as nock from 'nock';
 import * as sinon from 'sinon';
@@ -23,18 +24,16 @@ describe('notFoundHandler.default()', () => {
         sandbox.restore();
     });
 
-    it('NOT_FOUNDとなるはず', async () => {
+    it('ChevreErrorと共にnextが呼ばれるはず', async () => {
         const params = {
             req: {},
-            res: { status: () => params.res, json: () => params.res },
+            res: {},
             next: () => undefined
         };
 
-        // tslint:disable-next-line:no-magic-numbers
-        sandbox.mock(params.res).expects('status').once().withExactArgs(404);
-        sandbox.mock(params.res).expects('json').once();
+        sandbox.mock(params).expects('next').once().withExactArgs(sinon.match.instanceOf(chevre.factory.errors.NotFound));
 
-        const result = await notFoundHandler.default(<any>params.req, <any>params.res);
+        const result = await notFoundHandler.default(<any>params.req, <any>params.res, params.next);
         assert.equal(result, undefined);
         sandbox.verify();
     });

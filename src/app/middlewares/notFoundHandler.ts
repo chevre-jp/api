@@ -1,17 +1,9 @@
 /**
  * 404ハンドラーミドルウェア
  */
-import { Request, Response } from 'express';
-import { NOT_FOUND } from 'http-status';
+import * as chevre from '@chevre/domain';
+import { NextFunction, Request, Response } from 'express';
 
-export default (req: Request, res: Response) => {
-    res.status(NOT_FOUND);
-    res.json({
-        errors: [
-            {
-                title: 'not found',
-                detail: `router for [${req.originalUrl}] not found.`
-            }
-        ]
-    });
+export default (req: Request, __: Response, next: NextFunction) => {
+    next(new chevre.factory.errors.NotFound(`router for [${req.originalUrl}]`));
 };

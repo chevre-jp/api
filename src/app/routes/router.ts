@@ -1,67 +1,32 @@
+/**
+ * ルーター
+ */
 import * as express from 'express';
 
+import devRouter from './dev';
+import eventsRouter from './events';
+import placesRouter from './places';
+import reservationsRouter from './reservations';
+import cancelReservationTransactionsRouter from './transactions/cancelReservation';
+import reserveTransactionsRouter from './transactions/reserve';
 const router = express.Router();
 
-// import requireScope from '../middlewares/requireScope';
-import setLocale from '../middlewares/setLocale';
-import validator from '../middlewares/validator';
+// middleware that is specific to this router
+// router.use((req, res, next) => {
+//   debug('Time: ', Date.now())
+//   next()
+// })
 
-import * as PerformanceController from '../controllers/performance';
-import * as ReservationController from '../controllers/reservation';
-import * as ScreenController from '../controllers/screen';
+router.use('/places', placesRouter);
+router.use('/events', eventsRouter);
+router.use('/reservations', reservationsRouter);
+router.use('/transactions/cancelReservation', cancelReservationTransactionsRouter);
+router.use('/transactions/reserve', reserveTransactionsRouter);
 
-/**
- * URLルーティング
- */
-
-// search performances
-router.get(
-    '/:locale/performance/search',
-    // requireScope(['performances.readonly']),
-    setLocale,
-    PerformanceController.search
-);
-
-// 予約メール転送
-router.post(
-    '/:locale/reservation/:id/transfer',
-    setLocale,
-    (req, __, next) => {
-        // メールアドレスの有効性チェック
-        req.checkBody('to', 'invalid to')
-            .isEmail().withMessage(req.__('Message.invalid{{fieldName}}', { fieldName: req.__('Form.FieldName.email') }));
-
-        next();
-    },
-    validator,
-    ReservationController.transfer
-);
-
-// show screen html
-router.get(
-    '/screen/:id/show',
-    (__1, __2, next) => {
-        next();
-    },
-    validator,
-    ScreenController.show
-);
-
-// router.post('/login', setLocale, AuthController.login);
-
-// 要認証サービス
-// router.all('/reservations', passport.authenticate('bearer', { session: false }), setLocale, ReservationController.findByMvtkUser);
-// router.all('/reservation/:id', passport.authenticate('bearer', { session: false }), setLocale, ReservationController.findById);
-
-// 入場
-router.post(
-    '/reservation/:id/checkin',
-    setLocale,
-    (__1, __2, next) => {
-        next();
-    },
-    validator,
-    ReservationController.checkin
-);
+// tslint:disable-next-line:no-single-line-block-comment
+/* istanbul ignore next */
+if (process.env.NODE_ENV !== 'production') {
+    router.use('/dev', devRouter);
+}
 
 export default router;

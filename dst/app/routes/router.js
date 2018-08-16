@@ -1,37 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const express = require("express");
-const router = express.Router();
-// import requireScope from '../middlewares/requireScope';
-const setLocale_1 = require("../middlewares/setLocale");
-const validator_1 = require("../middlewares/validator");
-const PerformanceController = require("../controllers/performance");
-const ReservationController = require("../controllers/reservation");
-const ScreenController = require("../controllers/screen");
 /**
- * URLルーティング
+ * ルーター
  */
-// search performances
-router.get('/:locale/performance/search', 
-// requireScope(['performances.readonly']),
-setLocale_1.default, PerformanceController.search);
-// 予約メール転送
-router.post('/:locale/reservation/:id/transfer', setLocale_1.default, (req, __, next) => {
-    // メールアドレスの有効性チェック
-    req.checkBody('to', 'invalid to')
-        .isEmail().withMessage(req.__('Message.invalid{{fieldName}}', { fieldName: req.__('Form.FieldName.email') }));
-    next();
-}, validator_1.default, ReservationController.transfer);
-// show screen html
-router.get('/screen/:id/show', (__1, __2, next) => {
-    next();
-}, validator_1.default, ScreenController.show);
-// router.post('/login', setLocale, AuthController.login);
-// 要認証サービス
-// router.all('/reservations', passport.authenticate('bearer', { session: false }), setLocale, ReservationController.findByMvtkUser);
-// router.all('/reservation/:id', passport.authenticate('bearer', { session: false }), setLocale, ReservationController.findById);
-// 入場
-router.post('/reservation/:id/checkin', setLocale_1.default, (__1, __2, next) => {
-    next();
-}, validator_1.default, ReservationController.checkin);
+const express = require("express");
+const dev_1 = require("./dev");
+const events_1 = require("./events");
+const places_1 = require("./places");
+const reservations_1 = require("./reservations");
+const cancelReservation_1 = require("./transactions/cancelReservation");
+const reserve_1 = require("./transactions/reserve");
+const router = express.Router();
+// middleware that is specific to this router
+// router.use((req, res, next) => {
+//   debug('Time: ', Date.now())
+//   next()
+// })
+router.use('/places', places_1.default);
+router.use('/events', events_1.default);
+router.use('/reservations', reservations_1.default);
+router.use('/transactions/cancelReservation', cancelReservation_1.default);
+router.use('/transactions/reserve', reserve_1.default);
+// tslint:disable-next-line:no-single-line-block-comment
+/* istanbul ignore next */
+if (process.env.NODE_ENV !== 'production') {
+    router.use('/dev', dev_1.default);
+}
 exports.default = router;
