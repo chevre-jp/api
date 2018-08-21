@@ -62,7 +62,8 @@ eventsRouter.get(
     async (req, res, next) => {
         try {
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            const events = await eventRepo.searchScreeningEvents({
+            const aggregationRepo = new chevre.repository.aggregation.ScreeningEvent(redis.getClient());
+            let events = await eventRepo.searchScreeningEvents({
                 name: req.query.name,
                 startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom).toDate() : undefined,
                 startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough).toDate() : undefined,
@@ -73,6 +74,11 @@ eventsRouter.get(
                     (Array.isArray(req.query.superEventLocationIds)) ? req.query.superEventLocationIds : undefined,
                 workPerformedIds:
                     (Array.isArray(req.query.workPerformedIds)) ? req.query.workPerformedIds : undefined
+            });
+            // 集計情報を追加
+            const aggregations = await aggregationRepo.findAll();
+            events = events.map((e) => {
+                return { ...e, ...aggregations[e.id] };
             });
             res.json(events);
         } catch (error) {
