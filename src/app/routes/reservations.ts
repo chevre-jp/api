@@ -32,4 +32,24 @@ reservationsRouter.get(
     }
 );
 
+reservationsRouter.get(
+    '/eventReservation/screeningEvent/:id',
+    // permitScopes(['aws.cognito.signin.user.admin', 'events', 'events.read-only']),
+    (_, __, next) => {
+        next();
+    },
+    validator,
+    async (req, res, next) => {
+        try {
+            const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
+            const reservation = await reservationRepo.findScreeningEventReservationById({
+                id: req.params.id
+            });
+            res.json(reservation);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 export default reservationsRouter;

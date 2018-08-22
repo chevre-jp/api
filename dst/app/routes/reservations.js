@@ -35,4 +35,20 @@ reservationsRouter.get('/eventReservation/screeningEvent',
         next(error);
     }
 }));
+reservationsRouter.get('/eventReservation/screeningEvent/:id', 
+// permitScopes(['aws.cognito.signin.user.admin', 'events', 'events.read-only']),
+(_, __, next) => {
+    next();
+}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
+        const reservation = yield reservationRepo.findScreeningEventReservationById({
+            id: req.params.id
+        });
+        res.json(reservation);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 exports.default = reservationsRouter;
