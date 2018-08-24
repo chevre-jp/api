@@ -3,6 +3,7 @@
  */
 import * as express from 'express';
 
+import creativeWorksRouter from './creativeWorks';
 import devRouter from './dev';
 import eventsRouter from './events';
 import placesRouter from './places';
@@ -17,6 +18,7 @@ const router = express.Router();
 //   next()
 // })
 
+router.use('/creativeWorks', creativeWorksRouter);
 router.use('/places', placesRouter);
 router.use('/events', eventsRouter);
 router.use('/reservations', reservationsRouter);

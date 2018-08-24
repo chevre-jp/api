@@ -9,7 +9,7 @@
     }
   ],
   "dependencies": {
-    "@chevre/domain": "^10.0.0-alpha.3",
+    "@chevre/domain": "^10.0.0-alpha.5",
     "@motionpicture/express-middleware": "^0.1.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
@@ -43,7 +43,7 @@
     "sinon": "^6.1.5",
     "snyk": "^1.90.2",
     "supertest": "^3.1.0",
-    "ts-node": "^7.0.1",
+    "ts-node": "^6.2.0",
     "tslint": "^5.11.0",
     "tslint-microsoft-contrib": "^5.2.0",
     "typescript": "^3.0.1"
