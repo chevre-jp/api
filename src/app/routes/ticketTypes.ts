@@ -1,0 +1,113 @@
+/**
+ * 券種ルーター
+ */
+import * as chevre from '@chevre/domain';
+import { Router } from 'express';
+import { CREATED, NO_CONTENT } from 'http-status';
+
+import authentication from '../middlewares/authentication';
+import permitScopes from '../middlewares/permitScopes';
+import validator from '../middlewares/validator';
+
+const ticketTypesRouter = Router();
+ticketTypesRouter.use(authentication);
+ticketTypesRouter.post(
+    '',
+    permitScopes(['admin']),
+    (_, __, next) => {
+        next();
+    },
+    validator,
+    async (req, res, next) => {
+        try {
+            const ticketType: chevre.factory.ticketType.ITicketType = {
+                id: req.body.id,
+                name: req.body.name,
+                description: req.body.description,
+                notes: req.body.notes,
+                charge: req.body.charge
+            };
+            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            await ticketTypeRepo.createTicketType(ticketType);
+            res.status(CREATED).json(ticketType);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+ticketTypesRouter.get(
+    '',
+    permitScopes(['admin', 'ticketTypes', 'ticketTypes.read-only']),
+    (_, __, next) => {
+        next();
+    },
+    validator,
+    async (_, res, next) => {
+        try {
+            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketTypes = await ticketTypeRepo.searchTicketTypes({});
+            res.json(ticketTypes);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+ticketTypesRouter.get(
+    '/:id',
+    permitScopes(['admin', 'ticketTypes', 'ticketTypes.read-only']),
+    (_, __, next) => {
+        next();
+    },
+    validator,
+    async (req, res, next) => {
+        try {
+            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketType = await ticketTypeRepo.findTicketTypeById({ id: req.params.id });
+            res.json(ticketType);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+ticketTypesRouter.put(
+    '/:id',
+    permitScopes(['admin']),
+    (_, __, next) => {
+        next();
+    },
+    validator,
+    async (req, res, next) => {
+        try {
+            const ticketType: chevre.factory.ticketType.ITicketType = {
+                id: req.body.id,
+                name: req.body.name,
+                description: req.body.description,
+                notes: req.body.notes,
+                charge: req.body.charge
+            };
+            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            await ticketTypeRepo.updateTicketType(ticketType);
+            res.status(NO_CONTENT).end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+ticketTypesRouter.delete(
+    '/:id',
+    permitScopes(['admin']),
+    (_, __, next) => {
+        next();
+    },
+    validator,
+    async (req, res, next) => {
+        try {
+            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            await ticketTypeRepo.deleteTicketType({ id: req.params.id });
+            res.status(NO_CONTENT).end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+export default ticketTypesRouter;

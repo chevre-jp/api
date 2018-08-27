@@ -8,6 +8,8 @@ import devRouter from './dev';
 import eventsRouter from './events';
 import placesRouter from './places';
 import reservationsRouter from './reservations';
+import ticketTypeGroupsRouter from './ticketTypeGroups';
+import ticketTypesRouter from './ticketTypes';
 import cancelReservationTransactionsRouter from './transactions/cancelReservation';
 import reserveTransactionsRouter from './transactions/reserve';
 const router = express.Router();
@@ -22,6 +24,8 @@ router.use('/creativeWorks', creativeWorksRouter);
 router.use('/places', placesRouter);
 router.use('/events', eventsRouter);
 router.use('/reservations', reservationsRouter);
+router.use('/ticketTypeGroups', ticketTypeGroupsRouter);
+router.use('/ticketTypes', ticketTypesRouter);
 router.use('/transactions/cancelReservation', cancelReservationTransactionsRouter);
 router.use('/transactions/reserve', reserveTransactionsRouter);
 
