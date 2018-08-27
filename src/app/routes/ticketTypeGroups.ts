@@ -40,10 +40,19 @@ ticketTypeGroupsRouter.get(
         next();
     },
     validator,
-    async (_, res, next) => {
+    async (req, res, next) => {
         try {
             const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
-            const ticketTypeGroups = await ticketTypeRepo.searchTicketTypeGroups({});
+            const searchCoinditions = {
+                // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : /* istanbul ignore next*/ 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : /* istanbul ignore next*/ 1,
+                id: req.query.id,
+                name: req.query.name
+            };
+            const totalCount = await ticketTypeRepo.countTicketTypeGroups(searchCoinditions);
+            const ticketTypeGroups = await ticketTypeRepo.searchTicketTypeGroups(searchCoinditions);
+            res.set('Total-Count', totalCount.toString());
             res.json(ticketTypeGroups);
         } catch (error) {
             next(error);

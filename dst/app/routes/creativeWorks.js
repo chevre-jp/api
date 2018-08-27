@@ -41,10 +41,19 @@ creativeWorksRouter.post('/movie', permitScopes_1.default(['admin']), (_, __, ne
 }));
 creativeWorksRouter.get('/movie', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), (_, __, next) => {
     next();
-}, validator_1.default, (_, res, next) => __awaiter(this, void 0, void 0, function* () {
+}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
-        const movies = yield creativeWorkRepo.searchMovies({});
+        const searchCoinditions = {
+            // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : /* istanbul ignore next*/ 100,
+            page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : /* istanbul ignore next*/ 1,
+            identifier: req.query.identifier,
+            name: req.query.name
+        };
+        const totalCount = yield creativeWorkRepo.countMovies(searchCoinditions);
+        const movies = yield creativeWorkRepo.searchMovies(searchCoinditions);
+        res.set('Total-Count', totalCount.toString());
         res.json(movies);
     }
     catch (error) {

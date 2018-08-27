@@ -40,10 +40,19 @@ ticketTypesRouter.post('', permitScopes_1.default(['admin']), (_, __, next) => {
 }));
 ticketTypesRouter.get('', permitScopes_1.default(['admin', 'ticketTypes', 'ticketTypes.read-only']), (_, __, next) => {
     next();
-}, validator_1.default, (_, res, next) => __awaiter(this, void 0, void 0, function* () {
+}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
-        const ticketTypes = yield ticketTypeRepo.searchTicketTypes({});
+        const searchCoinditions = {
+            // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : /* istanbul ignore next*/ 100,
+            page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : /* istanbul ignore next*/ 1,
+            id: req.query.id,
+            name: req.query.name
+        };
+        const totalCount = yield ticketTypeRepo.countTicketTypes(searchCoinditions);
+        const ticketTypes = yield ticketTypeRepo.searchTicketTypes(searchCoinditions);
+        res.set('Total-Count', totalCount.toString());
         res.json(ticketTypes);
     }
     catch (error) {
