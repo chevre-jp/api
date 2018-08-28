@@ -60,7 +60,7 @@ screeningEventSeriesRouter.get(
     async (req, res, next) => {
         try {
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            const searchCoinditions = {
+            const searchCoinditions: chevre.factory.event.screeningEventSeries.ISearchConditions = {
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : /* istanbul ignore next*/ 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : /* istanbul ignore next*/ 1,

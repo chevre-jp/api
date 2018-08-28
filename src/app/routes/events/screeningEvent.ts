@@ -60,7 +60,7 @@ screeningEventRouter.get(
         try {
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
             const aggregationRepo = new chevre.repository.aggregation.ScreeningEvent(redis.getClient());
-            const searchCoinditions = {
+            const searchCoinditions: chevre.factory.event.screeningEvent.ISearchConditions = {
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : /* istanbul ignore next*/ 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : /* istanbul ignore next*/ 1,
