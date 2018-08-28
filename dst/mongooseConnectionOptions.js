@@ -1,9 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * mongoose接続オプション
- * @see http://mongoosejs.com/docs/api.html#index_Mongoose-connect
- */
 const mongooseConnectionOptions = {
     autoReconnect: true,
     keepAlive: 120000,

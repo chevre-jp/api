@@ -47,6 +47,8 @@ screeningEventSeriesRouter.post('', permitScopes_1.default(['admin']), (_, __, n
     }
 }));
 screeningEventSeriesRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-only']), (req, __, next) => {
+    req.checkQuery('inSessionFrom').optional().isISO8601().withMessage('inSessionFrom must be ISO8601 timestamp');
+    req.checkQuery('inSessionThrough').optional().isISO8601().withMessage('inSessionThrough must be ISO8601 timestamp');
     req.checkQuery('startFrom').optional().isISO8601().withMessage('startFrom must be ISO8601 timestamp');
     req.checkQuery('startThrough').optional().isISO8601().withMessage('startThrough must be ISO8601 timestamp');
     req.checkQuery('endFrom').optional().isISO8601().withMessage('endFrom must be ISO8601 timestamp');
@@ -55,16 +57,24 @@ screeningEventSeriesRouter.get('', permitScopes_1.default(['admin', 'events', 'e
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        const events = yield eventRepo.searchScreeningEventSeries({
+        const searchCoinditions = {
+            // tslint:disable-next-line:no-magic-numbers
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : /* istanbul ignore next*/ 100,
+            page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : /* istanbul ignore next*/ 1,
             name: req.query.name,
+            inSessionFrom: (req.query.inSessionFrom !== undefined) ? moment(req.query.inSessionFrom).toDate() : undefined,
+            inSessionThrough: (req.query.inSessionThrough !== undefined) ? moment(req.query.inSessionThrough).toDate() : undefined,
             startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom).toDate() : undefined,
             startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough).toDate() : undefined,
             endFrom: (req.query.endFrom !== undefined) ? moment(req.query.endFrom).toDate() : undefined,
             endThrough: (req.query.endThrough !== undefined) ? moment(req.query.endThrough).toDate() : undefined,
             eventStatuses: (Array.isArray(req.query.eventStatuses)) ? req.query.eventStatuses : undefined,
-            locationIds: (Array.isArray(req.query.locationIds)) ? req.query.locationIds : undefined,
-            workPerformedIds: (Array.isArray(req.query.workPerformedIds)) ? req.query.workPerformedIds : undefined
-        });
+            location: req.query.location,
+            workPerformed: req.query.workPerformed
+        };
+        const events = yield eventRepo.searchScreeningEventSeries(searchCoinditions);
+        const totalCount = yield eventRepo.countScreeningEventSeries(searchCoinditions);
+        res.set('Total-Count', totalCount.toString());
         res.json(events);
     }
     catch (error) {

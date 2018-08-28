@@ -46,6 +46,8 @@ screeningEventRouter.get(
     '',
     permitScopes(['admin', 'events', 'events.read-only']),
     (req, __, next) => {
+        req.checkQuery('inSessionFrom').optional().isISO8601().withMessage('inSessionFrom must be ISO8601 timestamp');
+        req.checkQuery('inSessionThrough').optional().isISO8601().withMessage('inSessionThrough must be ISO8601 timestamp');
         req.checkQuery('startFrom').optional().isISO8601().withMessage('startFrom must be ISO8601 timestamp');
         req.checkQuery('startThrough').optional().isISO8601().withMessage('startThrough must be ISO8601 timestamp');
         req.checkQuery('endFrom').optional().isISO8601().withMessage('endFrom must be ISO8601 timestamp');
@@ -58,23 +60,28 @@ screeningEventRouter.get(
         try {
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
             const aggregationRepo = new chevre.repository.aggregation.ScreeningEvent(redis.getClient());
-            let events = await eventRepo.searchScreeningEvents({
+            const searchCoinditions = {
+                // tslint:disable-next-line:no-magic-numbers
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : /* istanbul ignore next*/ 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : /* istanbul ignore next*/ 1,
                 name: req.query.name,
+                inSessionFrom: (req.query.inSessionFrom !== undefined) ? moment(req.query.inSessionFrom).toDate() : undefined,
+                inSessionThrough: (req.query.inSessionThrough !== undefined) ? moment(req.query.inSessionThrough).toDate() : undefined,
                 startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom).toDate() : undefined,
                 startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough).toDate() : undefined,
                 endFrom: (req.query.endFrom !== undefined) ? moment(req.query.endFrom).toDate() : undefined,
                 endThrough: (req.query.endThrough !== undefined) ? moment(req.query.endThrough).toDate() : undefined,
                 eventStatuses: (Array.isArray(req.query.eventStatuses)) ? req.query.eventStatuses : undefined,
-                superEventLocationIds:
-                    (Array.isArray(req.query.superEventLocationIds)) ? req.query.superEventLocationIds : undefined,
-                workPerformedIds:
-                    (Array.isArray(req.query.workPerformedIds)) ? req.query.workPerformedIds : undefined
-            });
+                superEvent: req.query.superEvent
+            };
+            let events = await eventRepo.searchScreeningEvents(searchCoinditions);
+            const totalCount = await eventRepo.countScreeningEvents(searchCoinditions);
             // 集計情報を追加
             const aggregations = await aggregationRepo.findAll();
             events = events.map((e) => {
                 return { ...e, ...aggregations[e.id] };
             });
+            res.set('Total-Count', totalCount.toString());
             res.json(events);
         } catch (error) {
             next(error);

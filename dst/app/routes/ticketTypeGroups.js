@@ -26,6 +26,8 @@ ticketTypeGroupsRouter.post('', permitScopes_1.default(['admin']), (_, __, next)
         const ticketTypeGroup = {
             id: req.body.id,
             name: req.body.name,
+            description: req.body.description,
+            notes: req.body.notes,
             ticketTypes: req.body.ticketTypes
         };
         const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
@@ -76,6 +78,8 @@ ticketTypeGroupsRouter.put('/:id', permitScopes_1.default(['admin']), (_, __, ne
         const ticketTypeGroup = {
             id: req.body.id,
             name: req.body.name,
+            description: req.body.description,
+            notes: req.body.notes,
             ticketTypes: req.body.ticketTypes
         };
         const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);

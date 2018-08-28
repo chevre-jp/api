@@ -23,6 +23,8 @@ ticketTypeGroupsRouter.post(
             const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = {
                 id: req.body.id,
                 name: req.body.name,
+                description: req.body.description,
+                notes: req.body.notes,
                 ticketTypes: req.body.ticketTypes
             };
             const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
@@ -88,6 +90,8 @@ ticketTypeGroupsRouter.put(
             const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = {
                 id: req.body.id,
                 name: req.body.name,
+                description: req.body.description,
+                notes: req.body.notes,
                 ticketTypes: req.body.ticketTypes
             };
             const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
