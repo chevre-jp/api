@@ -16,7 +16,7 @@ const chevre = require("@chevre/domain");
 const createDebug = require("debug");
 const http_status_1 = require("http-status");
 const api_1 = require("../error/api");
-const debug = createDebug('chevre-api:*');
+const debug = createDebug('chevre-api:middlewares');
 exports.default = (req, __, next) => __awaiter(this, void 0, void 0, function* () {
     const validatorResult = yield req.getValidationResult();
     if (!validatorResult.isEmpty()) {

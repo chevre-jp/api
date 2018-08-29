@@ -20,7 +20,7 @@ const cancelReservationTransactionsRouter = express_1.Router();
 const authentication_1 = require("../../middlewares/authentication");
 // import permitScopes from '../../middlewares/permitScopes';
 const validator_1 = require("../../middlewares/validator");
-const debug = createDebug('chevre-api:*');
+const debug = createDebug('chevre-api:routes');
 cancelReservationTransactionsRouter.use(authentication_1.default);
 cancelReservationTransactionsRouter.post('/start', 
 // permitScopes(['admin']),

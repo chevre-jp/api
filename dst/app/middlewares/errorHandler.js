@@ -7,7 +7,7 @@ const chevre = require("@chevre/domain");
 const createDebug = require("debug");
 const http_status_1 = require("http-status");
 const api_1 = require("../error/api");
-const debug = createDebug('chevre-api:*');
+const debug = createDebug('chevre-api:middlewares');
 exports.default = (err, __, res, next) => {
     debug(err);
     // logger.error('chevre-api:middleware', err);

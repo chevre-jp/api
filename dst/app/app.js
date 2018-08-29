@@ -14,7 +14,7 @@ const mongooseConnectionOptions_1 = require("../mongooseConnectionOptions");
 const errorHandler_1 = require("./middlewares/errorHandler");
 const notFoundHandler_1 = require("./middlewares/notFoundHandler");
 const router_1 = require("./routes/router");
-// const debug = createDebug('chevre-api:*');
+// const debug = createDebug('chevre-api:app');
 const app = express();
 const options = {
     origin: '*',

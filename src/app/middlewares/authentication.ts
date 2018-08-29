@@ -5,7 +5,7 @@ import * as chevre from '@chevre/domain';
 import { cognitoAuth } from '@motionpicture/express-middleware';
 import * as createDebug from 'debug';
 
-const debug = createDebug('chevre-api:*');
+const debug = createDebug('chevre-api:middlewares');
 
 // 許可発行者リスト
 const ISSUERS = (<string>process.env.TOKEN_ISSUERS).split(',');

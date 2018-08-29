@@ -10,7 +10,7 @@ import { BAD_REQUEST } from 'http-status';
 
 import { APIError } from '../error/api';
 
-const debug = createDebug('chevre-api:*');
+const debug = createDebug('chevre-api:middlewares');
 
 export default async (req: Request, __: Response, next: NextFunction) => {
     const validatorResult = await req.getValidationResult();

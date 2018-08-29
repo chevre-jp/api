@@ -16,7 +16,7 @@ import errorHandler from './middlewares/errorHandler';
 import notFoundHandler from './middlewares/notFoundHandler';
 import router from './routes/router';
 
-// const debug = createDebug('chevre-api:*');
+// const debug = createDebug('chevre-api:app');
 
 const app = express();
 

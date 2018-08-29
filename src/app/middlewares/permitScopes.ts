@@ -5,7 +5,7 @@ import * as chevre from '@chevre/domain';
 import * as createDebug from 'debug';
 import { NextFunction, Request, Response } from 'express';
 
-const debug = createDebug('chevre-api:*');
+const debug = createDebug('chevre-api:middlewares');
 
 /**
  * スコープインターフェース

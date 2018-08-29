@@ -14,7 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/domain");
 const express_middleware_1 = require("@motionpicture/express-middleware");
 const createDebug = require("debug");
-const debug = createDebug('chevre-api:*');
+const debug = createDebug('chevre-api:middlewares');
 // 許可発行者リスト
 const ISSUERS = process.env.TOKEN_ISSUERS.split(',');
 const authentication = express_middleware_1.cognitoAuth({

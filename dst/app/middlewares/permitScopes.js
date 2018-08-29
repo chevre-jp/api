@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const createDebug = require("debug");
-const debug = createDebug('chevre-api:*');
+const debug = createDebug('chevre-api:middlewares');
 exports.default = (permittedScopes) => {
     return (req, __, next) => {
         if (process.env.RESOURECE_SERVER_IDENTIFIER === undefined) {

@@ -17,7 +17,7 @@ import {
 
 import { APIError } from '../error/api';
 
-const debug = createDebug('chevre-api:*');
+const debug = createDebug('chevre-api:middlewares');
 
 export default (err: any, __: Request, res: Response, next: NextFunction) => {
     debug(err);
