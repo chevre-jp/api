@@ -10,7 +10,7 @@ import * as moment from 'moment';
 const cancelReservationTransactionsRouter = Router();
 
 import authentication from '../../middlewares/authentication';
-// import permitScopes from '../../middlewares/permitScopes';
+import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
 const debug = createDebug('chevre-api:routes');
@@ -19,7 +19,7 @@ cancelReservationTransactionsRouter.use(authentication);
 
 cancelReservationTransactionsRouter.post(
     '/start',
-    // permitScopes(['admin']),
+    permitScopes(['admin', 'transactions']),
     (req, _, next) => {
         req.checkBody('expires', 'invalid expires').notEmpty().withMessage('expires is required').isISO8601();
         req.checkBody('agent', 'invalid agent').notEmpty().withMessage('agent is required');
@@ -59,7 +59,7 @@ cancelReservationTransactionsRouter.post(
 
 cancelReservationTransactionsRouter.put(
     '/:transactionId/confirm',
-    // permitScopes(['admin']),
+    permitScopes(['admin', 'transactions']),
     validator,
     async (req, res, next) => {
         try {
@@ -77,7 +77,7 @@ cancelReservationTransactionsRouter.put(
 
 cancelReservationTransactionsRouter.put(
     '/:transactionId/cancel',
-    // permitScopes(['admin']),
+    permitScopes(['admin', 'transactions']),
     validator,
     async (req, res, next) => {
         try {

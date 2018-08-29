@@ -19,13 +19,11 @@ const moment = require("moment");
 const reserveTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
 const authentication_1 = require("../../middlewares/authentication");
-// import permitScopes from '../../middlewares/permitScopes';
+const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const debug = createDebug('chevre-api:routes');
 reserveTransactionsRouter.use(authentication_1.default);
-reserveTransactionsRouter.post('/start', 
-// permitScopes(['admin']),
-(req, _, next) => {
+reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), (req, _, next) => {
     req.checkBody('expires', 'invalid expires').notEmpty().withMessage('expires is required').isISO8601();
     req.checkBody('agent', 'invalid agent').notEmpty().withMessage('agent is required');
     req.checkBody('agent.typeOf', 'invalid agent.typeOf').notEmpty().withMessage('agent.typeOf is required');
@@ -68,9 +66,7 @@ reserveTransactionsRouter.post('/start',
         next(error);
     }
 }));
-reserveTransactionsRouter.put('/:transactionId/confirm', 
-// permitScopes(['admin']),
-validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
         yield chevre.service.transaction.reserve.confirm({
@@ -83,9 +79,7 @@ validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, functio
         next(error);
     }
 }));
-reserveTransactionsRouter.put('/:transactionId/cancel', 
-// permitScopes(['admin']),
-validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
         yield transactionRepo.cancel(chevre.factory.transactionType.Reserve, req.params.transactionId);

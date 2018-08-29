@@ -11,7 +11,7 @@ const reserveTransactionsRouter = Router();
 
 import * as redis from '../../../redis';
 import authentication from '../../middlewares/authentication';
-// import permitScopes from '../../middlewares/permitScopes';
+import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
 const debug = createDebug('chevre-api:routes');
@@ -20,7 +20,7 @@ reserveTransactionsRouter.use(authentication);
 
 reserveTransactionsRouter.post(
     '/start',
-    // permitScopes(['admin']),
+    permitScopes(['admin', 'transactions']),
     (req, _, next) => {
         req.checkBody('expires', 'invalid expires').notEmpty().withMessage('expires is required').isISO8601();
         req.checkBody('agent', 'invalid agent').notEmpty().withMessage('agent is required');
@@ -70,7 +70,7 @@ reserveTransactionsRouter.post(
 
 reserveTransactionsRouter.put(
     '/:transactionId/confirm',
-    // permitScopes(['admin']),
+    permitScopes(['admin', 'transactions']),
     validator,
     async (req, res, next) => {
         try {
@@ -88,7 +88,7 @@ reserveTransactionsRouter.put(
 
 reserveTransactionsRouter.put(
     '/:transactionId/cancel',
-    // permitScopes(['admin']),
+    permitScopes(['admin', 'transactions']),
     validator,
     async (req, res, next) => {
         try {
