@@ -55,8 +55,8 @@ app.use((__, res, next) => {
 // app.set('views', `${__dirname}/../../views`);
 // app.set('view engine', 'ejs');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '1mb' }));
+app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 app.use(expressValidator({})); // this line must be immediately after any of the bodyParser middlewares!
 
 chevre.mongoose.connect(<string>process.env.MONGOLAB_URI, mongooseConnectionOptions).catch(console.error);
