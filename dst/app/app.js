@@ -10,12 +10,19 @@ const cors = require("cors");
 const express = require("express");
 const expressValidator = require("express-validator");
 const helmet = require("helmet");
+const qs = require("qs");
 const mongooseConnectionOptions_1 = require("../mongooseConnectionOptions");
 const errorHandler_1 = require("./middlewares/errorHandler");
 const notFoundHandler_1 = require("./middlewares/notFoundHandler");
 const router_1 = require("./routes/router");
 // const debug = createDebug('chevre-api:app');
 const app = express();
+app.set('query parser', (str) => qs.parse(str, {
+    arrayLimit: 1000,
+    parseArrays: true,
+    allowDots: false,
+    allowPrototypes: true
+}));
 const options = {
     origin: '*',
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Access-Token', 'Authorization'],
