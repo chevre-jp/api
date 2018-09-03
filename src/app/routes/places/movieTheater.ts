@@ -19,13 +19,14 @@ movieTheaterRouter.get(
             const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
             const searchCoinditions: chevre.factory.place.movieTheater.ISearchConditions = {
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : /* istanbul ignore next*/ 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : /* istanbul ignore next*/ 1,
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+                sort: req.query.sort,
                 name: req.query.name
             };
             const totalCount = await placeRepo.countMovieTheaters(searchCoinditions);
             const movieTheaters = await placeRepo.searchMovieTheaters(searchCoinditions);
-            res.set('Total-Count', totalCount.toString());
+            res.set('X-Total-Count', totalCount.toString());
             res.json(movieTheaters);
         } catch (error) {
             next(error);

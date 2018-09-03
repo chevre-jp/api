@@ -48,14 +48,15 @@ movieRouter.get(
             const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
             const searchCoinditions: chevre.factory.creativeWork.movie.ISearchConditions = {
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : /* istanbul ignore next*/ 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : /* istanbul ignore next*/ 1,
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+                sort: req.query.sort,
                 identifier: req.query.identifier,
                 name: req.query.name
             };
             const totalCount = await creativeWorkRepo.countMovies(searchCoinditions);
             const movies = await creativeWorkRepo.searchMovies(searchCoinditions);
-            res.set('Total-Count', totalCount.toString());
+            res.set('X-Total-Count', totalCount.toString());
             res.json(movies);
         } catch (error) {
             next(error);

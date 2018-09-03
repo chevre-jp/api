@@ -26,8 +26,9 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
         const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
         const searchCoinditions = {
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : /* istanbul ignore next*/ 100,
-            page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : /* istanbul ignore next*/ 1,
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+            page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+            sort: req.query.sort,
             reservationStatuses: (Array.isArray(req.query.reservationStatuses)) ? req.query.reservationStatuses : undefined,
             ids: (Array.isArray(req.query.ids)) ? req.query.ids : undefined,
             reservationFor: req.query.reservationFor,
@@ -36,7 +37,7 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
         };
         const totalCount = yield reservationRepo.countScreeningEventReservations(searchCoinditions);
         const reservations = yield reservationRepo.searchScreeningEventReservations(searchCoinditions);
-        res.set('Total-Count', totalCount.toString());
+        res.set('X-Total-Count', totalCount.toString());
         res.json(reservations);
     }
     catch (error) {

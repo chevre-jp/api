@@ -62,8 +62,9 @@ screeningEventRouter.get(
             const aggregationRepo = new chevre.repository.aggregation.ScreeningEvent(redis.getClient());
             const searchCoinditions: chevre.factory.event.screeningEvent.ISearchConditions = {
                 // tslint:disable-next-line:no-magic-numbers
-                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : /* istanbul ignore next*/ 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : /* istanbul ignore next*/ 1,
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+                sort: req.query.sort,
                 name: req.query.name,
                 inSessionFrom: (req.query.inSessionFrom !== undefined) ? moment(req.query.inSessionFrom).toDate() : undefined,
                 inSessionThrough: (req.query.inSessionThrough !== undefined) ? moment(req.query.inSessionThrough).toDate() : undefined,
@@ -81,7 +82,7 @@ screeningEventRouter.get(
             events = events.map((e) => {
                 return { ...e, ...aggregations[e.id] };
             });
-            res.set('Total-Count', totalCount.toString());
+            res.set('X-Total-Count', totalCount.toString());
             res.json(events);
         } catch (error) {
             next(error);
