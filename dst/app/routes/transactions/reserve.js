@@ -70,7 +70,9 @@ reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(
     try {
         const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
         yield chevre.service.transaction.reserve.confirm({
-            transactionId: req.params.transactionId
+            transactionId: req.params.transactionId,
+            issuedBy: req.body.issuedBy,
+            underName: req.body.underName
         })({ transaction: transactionRepo });
         debug('transaction confirmed.');
         res.status(http_status_1.NO_CONTENT).end();
