@@ -9,7 +9,7 @@
     }
   ],
   "dependencies": {
-    "@chevre/domain": "^10.0.0-alpha.15",
+    "@chevre/domain": "^10.0.0-alpha.16",
     "@motionpicture/express-middleware": "^0.1.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
@@ -42,7 +42,7 @@
     "nsp": "^3.2.1",
     "nyc": "^12.0.2",
     "rimraf": "^2.6.2",
-    "sinon": "^6.2.0",
+    "sinon": "^6.3.3",
     "snyk": "^1.95.3",
     "supertest": "^3.3.0",
     "ts-node": "^6.2.0",

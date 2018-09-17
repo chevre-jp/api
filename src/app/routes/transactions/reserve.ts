@@ -94,8 +94,18 @@ reserveTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
+            const actionRepo = new chevre.repository.Action(chevre.mongoose.connection);
+            const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
+            const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
-            await transactionRepo.cancel(chevre.factory.transactionType.Reserve, req.params.transactionId);
+            await chevre.service.transaction.reserve.cancel({
+                transactionId: req.params.transactionId
+            })({
+                action: actionRepo,
+                eventAvailability: eventAvailabilityRepo,
+                reservation: reservationRepo,
+                transaction: transactionRepo
+            });
             debug('transaction canceled.');
             res.status(NO_CONTENT).end();
         } catch (error) {

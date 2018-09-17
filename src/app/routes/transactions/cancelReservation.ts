@@ -82,7 +82,10 @@ cancelReservationTransactionsRouter.put(
     async (req, res, next) => {
         try {
             const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
-            await transactionRepo.cancel(chevre.factory.transactionType.Reserve, req.params.transactionId);
+            await transactionRepo.cancel({
+                typeOf: chevre.factory.transactionType.Reserve,
+                id: req.params.transactionId
+            });
             debug('transaction canceled.');
             res.status(NO_CONTENT).end();
         } catch (error) {

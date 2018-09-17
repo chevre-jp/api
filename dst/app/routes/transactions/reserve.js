@@ -83,8 +83,18 @@ reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(
 }));
 reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
+        const actionRepo = new chevre.repository.Action(chevre.mongoose.connection);
+        const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
+        const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
-        yield transactionRepo.cancel(chevre.factory.transactionType.Reserve, req.params.transactionId);
+        yield chevre.service.transaction.reserve.cancel({
+            transactionId: req.params.transactionId
+        })({
+            action: actionRepo,
+            eventAvailability: eventAvailabilityRepo,
+            reservation: reservationRepo,
+            transaction: transactionRepo
+        });
         debug('transaction canceled.');
         res.status(http_status_1.NO_CONTENT).end();
     }
