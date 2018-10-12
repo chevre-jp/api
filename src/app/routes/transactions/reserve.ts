@@ -33,6 +33,7 @@ reserveTransactionsRouter.post(
     async (req, res, next) => {
         try {
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+            const priceSpecificationRepo = new chevre.repository.PriceSpecification();
             const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
             const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
@@ -49,13 +50,14 @@ reserveTransactionsRouter.post(
                 object: {
                     // clientUser: req.user,
                     event: req.body.object.event,
-                    tickets: req.body.object.tickets,
+                    acceptedOffer: req.body.object.acceptedOffer,
                     notes: (req.body.object.notes !== undefined) ? req.body.object.notes : ''
                 },
                 expires: moment(req.body.expires).toDate()
             })({
                 eventAvailability: eventAvailabilityRepo,
                 event: eventRepo,
+                priceSpecification: priceSpecificationRepo,
                 reservation: reservationRepo,
                 reservationNumber: reservationNumberRepo,
                 transaction: transactionRepo,

@@ -32,6 +32,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const priceSpecificationRepo = new chevre.repository.PriceSpecification();
         const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
         const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
         const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
@@ -48,13 +49,14 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
             object: {
                 // clientUser: req.user,
                 event: req.body.object.event,
-                tickets: req.body.object.tickets,
+                acceptedOffer: req.body.object.acceptedOffer,
                 notes: (req.body.object.notes !== undefined) ? req.body.object.notes : ''
             },
             expires: moment(req.body.expires).toDate()
         })({
             eventAvailability: eventAvailabilityRepo,
             event: eventRepo,
+            priceSpecification: priceSpecificationRepo,
             reservation: reservationRepo,
             reservationNumber: reservationNumberRepo,
             transaction: transactionRepo,

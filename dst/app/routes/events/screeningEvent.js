@@ -141,27 +141,7 @@ screeningEventRouter.delete('/:id', permitScopes_1.default(['admin']), (_, __, n
     }
 }));
 /**
- * 個々の上映イベントに対する券種検索
- */
-screeningEventRouter.get('/:id/ticketTypes', permitScopes_1.default(['admin', 'events', 'events.read-only']), (_1, _2, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
-        const event = yield eventRepo.findById({
-            typeOf: chevre.factory.eventType.ScreeningEvent,
-            id: req.params.id
-        });
-        const ticketTypes = yield ticketTypeRepo.findByTicketGroupId({ ticketGroupId: event.ticketTypeGroup });
-        res.json(ticketTypes);
-    }
-    catch (error) {
-        next(error);
-    }
-}));
-/**
- * 個々の上映イベントに対する座席オファー検索
+ * 上映イベントに対する座席オファー検索
  */
 screeningEventRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'events.read-only']), (_1, _2, next) => {
     next();
@@ -197,6 +177,27 @@ screeningEventRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events
             });
         });
         res.json(screeningRoomSections);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * 上映イベントに対するチケットオファー検索
+ */
+screeningEventRouter.get('/:id/offers/ticket', permitScopes_1.default(['admin', 'events', 'events.read-only']), (_1, _2, next) => {
+    next();
+}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const priceSpecificationRepo = new chevre.repository.PriceSpecification();
+        const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+        const offers = yield chevre.service.offer.searchScreeningEventTicketOffers({ eventId: req.params.id })({
+            event: eventRepo,
+            priceSpecification: priceSpecificationRepo,
+            ticketType: ticketTypeRepo
+        });
+        res.json(offers);
     }
     catch (error) {
         next(error);

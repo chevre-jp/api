@@ -159,32 +159,7 @@ screeningEventRouter.delete(
     }
 );
 /**
- * 個々の上映イベントに対する券種検索
- */
-screeningEventRouter.get(
-    '/:id/ticketTypes',
-    permitScopes(['admin', 'events', 'events.read-only']),
-    (_1, _2, next) => {
-        next();
-    },
-    validator,
-    async (req, res, next) => {
-        try {
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
-            const event = await eventRepo.findById({
-                typeOf: chevre.factory.eventType.ScreeningEvent,
-                id: req.params.id
-            });
-            const ticketTypes = await ticketTypeRepo.findByTicketGroupId({ ticketGroupId: event.ticketTypeGroup });
-            res.json(ticketTypes);
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-/**
- * 個々の上映イベントに対する座席オファー検索
+ * 上映イベントに対する座席オファー検索
  */
 screeningEventRouter.get(
     '/:id/offers',
@@ -229,6 +204,32 @@ screeningEventRouter.get(
                 });
             });
             res.json(screeningRoomSections);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+/**
+ * 上映イベントに対するチケットオファー検索
+ */
+screeningEventRouter.get(
+    '/:id/offers/ticket',
+    permitScopes(['admin', 'events', 'events.read-only']),
+    (_1, _2, next) => {
+        next();
+    },
+    validator,
+    async (req, res, next) => {
+        try {
+            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+            const priceSpecificationRepo = new chevre.repository.PriceSpecification();
+            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const offers = await chevre.service.offer.searchScreeningEventTicketOffers({ eventId: req.params.id })({
+                event: eventRepo,
+                priceSpecification: priceSpecificationRepo,
+                ticketType: ticketTypeRepo
+            });
+            res.json(offers);
         } catch (error) {
             next(error);
         }
