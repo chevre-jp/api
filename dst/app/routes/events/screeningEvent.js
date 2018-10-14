@@ -190,7 +190,7 @@ screeningEventRouter.get('/:id/offers/ticket', permitScopes_1.default(['admin', 
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        const priceSpecificationRepo = new chevre.repository.PriceSpecification();
+        const priceSpecificationRepo = new chevre.repository.PriceSpecification(chevre.mongoose.connection);
         const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
         const offers = yield chevre.service.offer.searchScreeningEventTicketOffers({ eventId: req.params.id })({
             event: eventRepo,

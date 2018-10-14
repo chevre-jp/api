@@ -222,7 +222,7 @@ screeningEventRouter.get(
     async (req, res, next) => {
         try {
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            const priceSpecificationRepo = new chevre.repository.PriceSpecification();
+            const priceSpecificationRepo = new chevre.repository.PriceSpecification(chevre.mongoose.connection);
             const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
             const offers = await chevre.service.offer.searchScreeningEventTicketOffers({ eventId: req.params.id })({
                 event: eventRepo,

@@ -23,15 +23,8 @@ ticketTypesRouter.post('', permitScopes_1.default(['admin']), (_, __, next) => {
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const ticketType = {
-            id: req.body.id,
-            name: req.body.name,
-            description: req.body.description,
-            notes: req.body.notes,
-            charge: req.body.charge
-        };
         const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
-        yield ticketTypeRepo.createTicketType(ticketType);
+        const ticketType = yield ticketTypeRepo.createTicketType(req.body);
         res.status(http_status_1.CREATED).json(ticketType);
     }
     catch (error) {
@@ -75,15 +68,8 @@ ticketTypesRouter.put('/:id', permitScopes_1.default(['admin']), (_, __, next) =
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const ticketType = {
-            id: req.body.id,
-            name: req.body.name,
-            description: req.body.description,
-            notes: req.body.notes,
-            charge: req.body.charge
-        };
         const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
-        yield ticketTypeRepo.updateTicketType(ticketType);
+        yield ticketTypeRepo.updateTicketType(req.body);
         res.status(http_status_1.NO_CONTENT).end();
     }
     catch (error) {

@@ -33,7 +33,7 @@ reserveTransactionsRouter.post(
     async (req, res, next) => {
         try {
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            const priceSpecificationRepo = new chevre.repository.PriceSpecification();
+            const priceSpecificationRepo = new chevre.repository.PriceSpecification(chevre.mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
             const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
