@@ -83,7 +83,7 @@ cancelReservationTransactionsRouter.put(
         try {
             const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
             await transactionRepo.cancel({
-                typeOf: chevre.factory.transactionType.Reserve,
+                typeOf: chevre.factory.transactionType.CancelReservation,
                 id: req.params.transactionId
             });
             debug('transaction canceled.');
