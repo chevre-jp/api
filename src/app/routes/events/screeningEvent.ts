@@ -197,6 +197,7 @@ screeningEventRouter.get(
                     );
                     seat.offers = [{
                         typeOf: 'Offer',
+                        priceCurrency: chevre.factory.priceCurrency.JPY,
                         availability: (unavailableOffer !== undefined)
                             ? chevre.factory.itemAvailability.OutOfStock
                             : chevre.factory.itemAvailability.InStock

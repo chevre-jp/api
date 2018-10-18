@@ -170,6 +170,7 @@ screeningEventRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events
                 const unavailableOffer = unavailableOffers.find((o) => o.seatSection === seatSection && o.seatNumber === seatNumber);
                 seat.offers = [{
                         typeOf: 'Offer',
+                        priceCurrency: chevre.factory.priceCurrency.JPY,
                         availability: (unavailableOffer !== undefined)
                             ? chevre.factory.itemAvailability.OutOfStock
                             : chevre.factory.itemAvailability.InStock
