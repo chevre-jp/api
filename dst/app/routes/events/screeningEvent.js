@@ -13,30 +13,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
+// tslint:disable-next-line:no-submodule-imports
+const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
-const moment = require("moment");
 const redis = require("../../../redis");
 const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const screeningEventRouter = express_1.Router();
 screeningEventRouter.use(authentication_1.default);
-screeningEventRouter.post('', permitScopes_1.default(['admin']), (_, __, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+screeningEventRouter.post('', permitScopes_1.default(['admin']), ...[
+    check_1.body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('doorTime').optional().isISO8601().toDate(),
+    check_1.body('startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+        .isISO8601().toDate(),
+    check_1.body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+        .isISO8601().toDate(),
+    check_1.body('ticketTypeGroup').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('offers').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('offers.availabilityStarts').not().isEmpty().isISO8601().toDate(),
+    check_1.body('offers.availabilityEnds').not().isEmpty().isISO8601().toDate(),
+    check_1.body('offers.validFrom').not().isEmpty().isISO8601().toDate(),
+    check_1.body('offers.validThrough').not().isEmpty().isISO8601().toDate()
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const eventAttributes = {
-            typeOf: chevre.factory.eventType.ScreeningEvent,
-            doorTime: (req.body.doorTime !== undefined) ? moment(req.body.doorTime).toDate() : undefined,
-            startDate: moment(req.body.startDate).toDate(),
-            endDate: moment(req.body.endDate).toDate(),
-            ticketTypeGroup: req.body.ticketTypeGroup,
-            workPerformed: req.body.workPerformed,
-            location: req.body.location,
-            superEvent: req.body.superEvent,
-            name: req.body.name,
-            eventStatus: req.body.eventStatus
-        };
+        const eventAttributes = req.body;
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
         const event = yield eventRepo.saveScreeningEvent({ attributes: eventAttributes });
         res.status(http_status_1.CREATED).json(event);
@@ -45,33 +51,24 @@ screeningEventRouter.post('', permitScopes_1.default(['admin']), (_, __, next) =
         next(error);
     }
 }));
-screeningEventRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-only']), (req, __, next) => {
-    req.checkQuery('inSessionFrom').optional().isISO8601().withMessage('inSessionFrom must be ISO8601 timestamp');
-    req.checkQuery('inSessionThrough').optional().isISO8601().withMessage('inSessionThrough must be ISO8601 timestamp');
-    req.checkQuery('startFrom').optional().isISO8601().withMessage('startFrom must be ISO8601 timestamp');
-    req.checkQuery('startThrough').optional().isISO8601().withMessage('startThrough must be ISO8601 timestamp');
-    req.checkQuery('endFrom').optional().isISO8601().withMessage('endFrom must be ISO8601 timestamp');
-    req.checkQuery('endThrough').optional().isISO8601().withMessage('endThrough must be ISO8601 timestamp');
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+screeningEventRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-only']), ...[
+    check_1.query('inSessionFrom').optional().isISO8601().toDate(),
+    check_1.query('inSessionThrough').optional().isISO8601().toDate(),
+    check_1.query('startFrom').optional().isISO8601().toDate(),
+    check_1.query('startThrough').optional().isISO8601().toDate(),
+    check_1.query('endFrom').optional().isISO8601().toDate(),
+    check_1.query('endThrough').optional().isISO8601().toDate(),
+    check_1.query('offers.availableFrom').optional().isISO8601().toDate(),
+    check_1.query('offers.availableThrough').optional().isISO8601().toDate(),
+    check_1.query('offers.validFrom').optional().isISO8601().toDate(),
+    check_1.query('offers.validThrough').optional().isISO8601().toDate()
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
         const aggregationRepo = new chevre.repository.aggregation.ScreeningEvent(redis.getClient());
-        const searchCoinditions = {
+        const searchCoinditions = Object.assign({}, req.query, { 
             // tslint:disable-next-line:no-magic-numbers
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-            page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
-            sort: req.query.sort,
-            name: req.query.name,
-            inSessionFrom: (req.query.inSessionFrom !== undefined) ? moment(req.query.inSessionFrom).toDate() : undefined,
-            inSessionThrough: (req.query.inSessionThrough !== undefined) ? moment(req.query.inSessionThrough).toDate() : undefined,
-            startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom).toDate() : undefined,
-            startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough).toDate() : undefined,
-            endFrom: (req.query.endFrom !== undefined) ? moment(req.query.endFrom).toDate() : undefined,
-            endThrough: (req.query.endThrough !== undefined) ? moment(req.query.endThrough).toDate() : undefined,
-            eventStatuses: (Array.isArray(req.query.eventStatuses)) ? req.query.eventStatuses : undefined,
-            superEvent: req.query.superEvent
-        };
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         let events = yield eventRepo.searchScreeningEvents(searchCoinditions);
         const totalCount = yield eventRepo.countScreeningEvents(searchCoinditions);
         // 集計情報を追加
@@ -86,9 +83,7 @@ screeningEventRouter.get('', permitScopes_1.default(['admin', 'events', 'events.
         next(error);
     }
 }));
-screeningEventRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read-only']), (_, __, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+screeningEventRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
         const event = yield eventRepo.findById({
@@ -101,22 +96,27 @@ screeningEventRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'eve
         next(error);
     }
 }));
-screeningEventRouter.put('/:id', permitScopes_1.default(['admin']), (_, __, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+screeningEventRouter.put('/:id', permitScopes_1.default(['admin']), ...[
+    check_1.body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('doorTime').optional().isISO8601().toDate(),
+    check_1.body('startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+        .isISO8601().toDate(),
+    check_1.body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+        .isISO8601().toDate(),
+    check_1.body('ticketTypeGroup').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('offers').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('offers.availabilityStarts').not().isEmpty().isISO8601().toDate(),
+    check_1.body('offers.availabilityEnds').not().isEmpty().isISO8601().toDate(),
+    check_1.body('offers.validFrom').not().isEmpty().isISO8601().toDate(),
+    check_1.body('offers.validThrough').not().isEmpty().isISO8601().toDate()
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const eventAttributes = {
-            typeOf: chevre.factory.eventType.ScreeningEvent,
-            doorTime: (req.body.doorTime !== undefined) ? moment(req.body.doorTime).toDate() : undefined,
-            startDate: moment(req.body.startDate).toDate(),
-            endDate: moment(req.body.endDate).toDate(),
-            ticketTypeGroup: req.body.ticketTypeGroup,
-            workPerformed: req.body.workPerformed,
-            location: req.body.location,
-            superEvent: req.body.superEvent,
-            name: req.body.name,
-            eventStatus: req.body.eventStatus
-        };
+        const eventAttributes = req.body;
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
         yield eventRepo.saveScreeningEvent({ id: req.params.id, attributes: eventAttributes });
         res.status(http_status_1.NO_CONTENT).end();
@@ -125,9 +125,7 @@ screeningEventRouter.put('/:id', permitScopes_1.default(['admin']), (_, __, next
         next(error);
     }
 }));
-screeningEventRouter.delete('/:id', permitScopes_1.default(['admin']), (_, __, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+screeningEventRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
         yield eventRepo.deleteById({
@@ -143,9 +141,7 @@ screeningEventRouter.delete('/:id', permitScopes_1.default(['admin']), (_, __, n
 /**
  * 上映イベントに対する座席オファー検索
  */
-screeningEventRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'events.read-only']), (_1, _2, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+screeningEventRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
@@ -186,9 +182,7 @@ screeningEventRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events
 /**
  * 上映イベントに対するチケットオファー検索
  */
-screeningEventRouter.get('/:id/offers/ticket', permitScopes_1.default(['admin', 'events', 'events.read-only']), (_1, _2, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+screeningEventRouter.get('/:id/offers/ticket', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(chevre.mongoose.connection);
