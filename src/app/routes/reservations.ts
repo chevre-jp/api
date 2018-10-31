@@ -72,9 +72,26 @@ reservationsRouter.put(
     async (req, res, next) => {
         try {
             const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-            await reservationRepo.checkIn({
+            const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+
+            const reservation = await reservationRepo.checkIn({
                 id: req.params.id
             });
+
+            const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                name: chevre.factory.taskName.AggregateScreeningEvent,
+                status: chevre.factory.taskStatus.Ready,
+                runsAt: new Date(),
+                remainingNumberOfTries: 3,
+                lastTriedAt: null,
+                numberOfTried: 0,
+                executionResults: [],
+                data: {
+                    typeOf: reservation.reservationFor.typeOf,
+                    id: reservation.reservationFor.id
+                }
+            };
+            await taskRepo.save(aggregateTask);
 
             res.status(NO_CONTENT).end();
         } catch (error) {
@@ -90,9 +107,26 @@ reservationsRouter.put(
     async (req, res, next) => {
         try {
             const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-            await reservationRepo.attend({
+            const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+
+            const reservation = await reservationRepo.attend({
                 id: req.params.id
             });
+
+            const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                name: chevre.factory.taskName.AggregateScreeningEvent,
+                status: chevre.factory.taskStatus.Ready,
+                runsAt: new Date(),
+                remainingNumberOfTries: 3,
+                lastTriedAt: null,
+                numberOfTried: 0,
+                executionResults: [],
+                data: {
+                    typeOf: reservation.reservationFor.typeOf,
+                    id: reservation.reservationFor.id
+                }
+            };
+            await taskRepo.save(aggregateTask);
 
             res.status(NO_CONTENT).end();
         } catch (error) {

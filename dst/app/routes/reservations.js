@@ -62,9 +62,24 @@ reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.de
 reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitScopes_1.default(['admin', 'reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-        yield reservationRepo.checkIn({
+        const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+        const reservation = yield reservationRepo.checkIn({
             id: req.params.id
         });
+        const aggregateTask = {
+            name: chevre.factory.taskName.AggregateScreeningEvent,
+            status: chevre.factory.taskStatus.Ready,
+            runsAt: new Date(),
+            remainingNumberOfTries: 3,
+            lastTriedAt: null,
+            numberOfTried: 0,
+            executionResults: [],
+            data: {
+                typeOf: reservation.reservationFor.typeOf,
+                id: reservation.reservationFor.id
+            }
+        };
+        yield taskRepo.save(aggregateTask);
         res.status(http_status_1.NO_CONTENT).end();
     }
     catch (error) {
@@ -74,9 +89,24 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
 reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitScopes_1.default(['admin', 'reservations.attended']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-        yield reservationRepo.attend({
+        const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+        const reservation = yield reservationRepo.attend({
             id: req.params.id
         });
+        const aggregateTask = {
+            name: chevre.factory.taskName.AggregateScreeningEvent,
+            status: chevre.factory.taskStatus.Ready,
+            runsAt: new Date(),
+            remainingNumberOfTries: 3,
+            lastTriedAt: null,
+            numberOfTried: 0,
+            executionResults: [],
+            data: {
+                typeOf: reservation.reservationFor.typeOf,
+                id: reservation.reservationFor.id
+            }
+        };
+        yield taskRepo.save(aggregateTask);
         res.status(http_status_1.NO_CONTENT).end();
     }
     catch (error) {
