@@ -67,20 +67,14 @@ screeningEventRouter.get(
     async (req, res, next) => {
         try {
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            const aggregationRepo = new chevre.repository.aggregation.ScreeningEvent(redis.getClient());
             const searchCoinditions: chevre.factory.event.screeningEvent.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            let events = await eventRepo.searchScreeningEvents(searchCoinditions);
+            const events = await eventRepo.searchScreeningEvents(searchCoinditions);
             const totalCount = await eventRepo.countScreeningEvents(searchCoinditions);
-            // 集計情報を追加
-            const aggregations = await aggregationRepo.findAll();
-            events = events.map((e) => {
-                return { ...e, ...aggregations[e.id] };
-            });
             res.set('X-Total-Count', totalCount.toString());
             res.json(events);
         } catch (error) {

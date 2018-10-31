@@ -65,17 +65,11 @@ screeningEventRouter.get('', permitScopes_1.default(['admin', 'events', 'events.
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        const aggregationRepo = new chevre.repository.aggregation.ScreeningEvent(redis.getClient());
         const searchCoinditions = Object.assign({}, req.query, { 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        let events = yield eventRepo.searchScreeningEvents(searchCoinditions);
+        const events = yield eventRepo.searchScreeningEvents(searchCoinditions);
         const totalCount = yield eventRepo.countScreeningEvents(searchCoinditions);
-        // 集計情報を追加
-        const aggregations = yield aggregationRepo.findAll();
-        events = events.map((e) => {
-            return Object.assign({}, e, aggregations[e.id]);
-        });
         res.set('X-Total-Count', totalCount.toString());
         res.json(events);
     }
