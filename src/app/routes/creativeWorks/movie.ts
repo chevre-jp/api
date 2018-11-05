@@ -22,14 +22,9 @@ movieRouter.post(
     async (req, res, next) => {
         try {
             const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
-                typeOf: chevre.factory.creativeWorkType.Movie,
-                identifier: req.body.identifier,
-                name: req.body.name,
-                duration: moment.duration(req.body.duration).toISOString(),
-                contentRating: req.body.contentRating
+                ...req.body,
+                duration: moment.duration(req.body.duration).toISOString()
             };
-            const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
-            await creativeWorkRepo.saveMovie(movie);
             res.status(CREATED).json(movie);
         } catch (error) {
             next(error);
@@ -47,12 +42,10 @@ movieRouter.get(
         try {
             const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
             const searchCoinditions: chevre.factory.creativeWork.movie.ISearchConditions = {
+                ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
-                sort: req.query.sort,
-                identifier: req.query.identifier,
-                name: req.query.name
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
             const totalCount = await creativeWorkRepo.countMovies(searchCoinditions);
             const movies = await creativeWorkRepo.searchMovies(searchCoinditions);

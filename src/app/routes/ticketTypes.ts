@@ -39,11 +39,10 @@ ticketTypesRouter.get(
         try {
             const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
             const searchCoinditions = {
+                ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
-                id: req.query.id,
-                name: req.query.name
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
             const totalCount = await ticketTypeRepo.countTicketTypes(searchCoinditions);
             const ticketTypes = await ticketTypeRepo.searchTicketTypes(searchCoinditions);

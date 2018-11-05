@@ -20,13 +20,7 @@ ticketTypeGroupsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = {
-                id: req.body.id,
-                name: req.body.name,
-                description: req.body.description,
-                notes: req.body.notes,
-                ticketTypes: req.body.ticketTypes
-            };
+            const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
             const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
             await ticketTypeRepo.createTicketTypeGroup(ticketTypeGroup);
             res.status(CREATED).json(ticketTypeGroup);
@@ -87,13 +81,7 @@ ticketTypeGroupsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = {
-                id: req.body.id,
-                name: req.body.name,
-                description: req.body.description,
-                notes: req.body.notes,
-                ticketTypes: req.body.ticketTypes
-            };
+            const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
             const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
             await ticketTypeRepo.updateTicketTypeGroup(ticketTypeGroup);
             res.status(NO_CONTENT).end();

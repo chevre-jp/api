@@ -2,6 +2,7 @@
  * oauthミドルウェア
  */
 import * as chevre from '@chevre/domain';
+
 import { cognitoAuth } from '@motionpicture/express-middleware';
 import * as createDebug from 'debug';
 
