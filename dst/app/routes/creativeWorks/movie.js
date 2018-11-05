@@ -20,9 +20,7 @@ const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const movieRouter = express_1.Router();
 movieRouter.use(authentication_1.default);
-movieRouter.post('', permitScopes_1.default(['admin']), (_, __, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+movieRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const movie = Object.assign({}, req.body, { duration: moment.duration(req.body.duration).toISOString() });
         res.status(http_status_1.CREATED).json(movie);
@@ -31,9 +29,7 @@ movieRouter.post('', permitScopes_1.default(['admin']), (_, __, next) => {
         next(error);
     }
 }));
-movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), (_, __, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
         const searchCoinditions = Object.assign({}, req.query, { 
@@ -48,9 +44,7 @@ movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeW
         next(error);
     }
 }));
-movieRouter.get('/:identifier', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), (_, __, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+movieRouter.get('/:identifier', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
         const movie = yield creativeWorkRepo.findMovieByIdentifier({ identifier: req.params.identifier });
@@ -60,17 +54,9 @@ movieRouter.get('/:identifier', permitScopes_1.default(['admin', 'creativeWorks'
         next(error);
     }
 }));
-movieRouter.put('/:identifier', permitScopes_1.default(['admin']), (_, __, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+movieRouter.put('/:identifier', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const movie = {
-            typeOf: chevre.factory.creativeWorkType.Movie,
-            identifier: req.params.identifier,
-            name: req.body.name,
-            duration: moment.duration(Number(req.body.duration), 'm').toISOString(),
-            contentRating: req.body.contentRating
-        };
+        const movie = Object.assign({}, req.body, { duration: moment.duration(req.body.duration).toISOString() });
         const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
         yield creativeWorkRepo.saveMovie(movie);
         res.status(http_status_1.NO_CONTENT).end();
@@ -79,9 +65,7 @@ movieRouter.put('/:identifier', permitScopes_1.default(['admin']), (_, __, next)
         next(error);
     }
 }));
-movieRouter.delete('/:identifier', permitScopes_1.default(['admin']), (_, __, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+movieRouter.delete('/:identifier', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
         yield creativeWorkRepo.deleteMovie({ identifier: req.params.identifier });
