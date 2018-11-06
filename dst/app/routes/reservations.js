@@ -13,29 +13,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
+// tslint:disable-next-line:no-submodule-imports
+const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
-const moment = require("moment");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const reservationsRouter = express_1.Router();
 reservationsRouter.use(authentication_1.default);
-reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), (_, __, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
+    check_1.query('modifiedFrom').optional().isISO8601().toDate(),
+    check_1.query('modifiedThrough').optional().isISO8601().toDate(),
+    check_1.query('reservationFor.startFrom').optional().isISO8601().toDate(),
+    check_1.query('reservationFor.startThrough').optional().isISO8601().toDate()
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-        const searchCoinditions = {
+        const searchCoinditions = Object.assign({}, req.query, { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-            page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
-            sort: req.query.sort,
-            reservationStatuses: (Array.isArray(req.query.reservationStatuses)) ? req.query.reservationStatuses : undefined,
-            ids: (Array.isArray(req.query.ids)) ? req.query.ids : undefined,
-            reservationFor: req.query.reservationFor,
-            modifiedFrom: (req.query.modifiedFrom !== undefined) ? moment(req.query.modifiedFrom).toDate() : undefined,
-            modifiedThrough: (req.query.modifiedThrough !== undefined) ? moment(req.query.modifiedThrough).toDate() : undefined
-        };
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const totalCount = yield reservationRepo.countScreeningEventReservations(searchCoinditions);
         const reservations = yield reservationRepo.searchScreeningEventReservations(searchCoinditions);
         res.set('X-Total-Count', totalCount.toString());

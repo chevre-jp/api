@@ -42,6 +42,20 @@ screeningEventRouter.post(
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes = req.body;
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
             const event = await eventRepo.saveScreeningEvent({ attributes: eventAttributes });
+
+            const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                name: chevre.factory.taskName.AggregateScreeningEvent,
+                status: chevre.factory.taskStatus.Ready,
+                runsAt: new Date(),
+                remainingNumberOfTries: 3,
+                lastTriedAt: null,
+                numberOfTried: 0,
+                executionResults: [],
+                data: event
+            };
+            const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+            await taskRepo.save(aggregateTask);
+
             res.status(CREATED).json(event);
         } catch (error) {
             next(error);
@@ -126,7 +140,21 @@ screeningEventRouter.put(
         try {
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes = req.body;
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            await eventRepo.saveScreeningEvent({ id: req.params.id, attributes: eventAttributes });
+            const event = await eventRepo.saveScreeningEvent({ id: req.params.id, attributes: eventAttributes });
+
+            const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                name: chevre.factory.taskName.AggregateScreeningEvent,
+                status: chevre.factory.taskStatus.Ready,
+                runsAt: new Date(),
+                remainingNumberOfTries: 3,
+                lastTriedAt: null,
+                numberOfTried: 0,
+                executionResults: [],
+                data: event
+            };
+            const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+            await taskRepo.save(aggregateTask);
+
             res.status(NO_CONTENT).end();
         } catch (error) {
             next(error);

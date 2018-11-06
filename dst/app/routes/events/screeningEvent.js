@@ -45,6 +45,18 @@ screeningEventRouter.post('', permitScopes_1.default(['admin']), ...[
         const eventAttributes = req.body;
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
         const event = yield eventRepo.saveScreeningEvent({ attributes: eventAttributes });
+        const aggregateTask = {
+            name: chevre.factory.taskName.AggregateScreeningEvent,
+            status: chevre.factory.taskStatus.Ready,
+            runsAt: new Date(),
+            remainingNumberOfTries: 3,
+            lastTriedAt: null,
+            numberOfTried: 0,
+            executionResults: [],
+            data: event
+        };
+        const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+        yield taskRepo.save(aggregateTask);
         res.status(http_status_1.CREATED).json(event);
     }
     catch (error) {
@@ -112,7 +124,19 @@ screeningEventRouter.put('/:id', permitScopes_1.default(['admin']), ...[
     try {
         const eventAttributes = req.body;
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        yield eventRepo.saveScreeningEvent({ id: req.params.id, attributes: eventAttributes });
+        const event = yield eventRepo.saveScreeningEvent({ id: req.params.id, attributes: eventAttributes });
+        const aggregateTask = {
+            name: chevre.factory.taskName.AggregateScreeningEvent,
+            status: chevre.factory.taskStatus.Ready,
+            runsAt: new Date(),
+            remainingNumberOfTries: 3,
+            lastTriedAt: null,
+            numberOfTried: 0,
+            executionResults: [],
+            data: event
+        };
+        const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+        yield taskRepo.save(aggregateTask);
         res.status(http_status_1.NO_CONTENT).end();
     }
     catch (error) {

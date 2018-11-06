@@ -23,6 +23,8 @@ movieRouter.post(
                 ...req.body,
                 duration: moment.duration(req.body.duration).toISOString()
             };
+            const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
+            await creativeWorkRepo.saveMovie(movie);
             res.status(CREATED).json(movie);
         } catch (error) {
             next(error);
