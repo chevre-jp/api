@@ -4,7 +4,6 @@
 import * as express from 'express';
 
 import creativeWorksRouter from './creativeWorks';
-import devRouter from './dev';
 import eventsRouter from './events';
 import placesRouter from './places';
 import priceSpecificationsRouter from './priceSpecifications';
@@ -28,11 +27,5 @@ router.use('/reservations', reservationsRouter);
 router.use('/ticketTypeGroups', ticketTypeGroupsRouter);
 router.use('/ticketTypes', ticketTypesRouter);
 router.use('/transactions', transactionsRouter);
-
-// tslint:disable-next-line:no-single-line-block-comment
-/* istanbul ignore next */
-if (process.env.NODE_ENV !== 'production') {
-    router.use('/dev', devRouter);
-}
 
 export default router;

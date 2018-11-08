@@ -2,7 +2,6 @@
 /**
  * expressアプリケーション
  */
-const chevre = require("@chevre/domain");
 // import * as middlewares from '@motionpicture/express-middleware';
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -11,7 +10,7 @@ const express = require("express");
 const expressValidator = require("express-validator");
 const helmet = require("helmet");
 const qs = require("qs");
-const mongooseConnectionOptions_1 = require("../mongooseConnectionOptions");
+const connectMongo_1 = require("../connectMongo");
 const errorHandler_1 = require("./middlewares/errorHandler");
 const notFoundHandler_1 = require("./middlewares/notFoundHandler");
 const router_1 = require("./routes/router");
@@ -58,7 +57,11 @@ app.use((__, res, next) => {
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 app.use(expressValidator({})); // this line must be immediately after any of the bodyParser middlewares!
-chevre.mongoose.connect(process.env.MONGOLAB_URI, mongooseConnectionOptions_1.default).catch(console.error);
+connectMongo_1.connectMongo({ defaultConnection: true }).then().catch((err) => {
+    // tslint:disable-next-line:no-console
+    console.error('connetMongo:', err);
+    process.exit(1);
+});
 // routers
 app.use('/', router_1.default);
 // 404

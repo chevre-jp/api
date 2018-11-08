@@ -1,7 +1,6 @@
 /**
  * expressアプリケーション
  */
-import * as chevre from '@chevre/domain';
 // import * as middlewares from '@motionpicture/express-middleware';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
@@ -11,7 +10,7 @@ import * as expressValidator from 'express-validator';
 import * as helmet from 'helmet';
 import * as qs from 'qs';
 
-import mongooseConnectionOptions from '../mongooseConnectionOptions';
+import { connectMongo } from '../connectMongo';
 
 import errorHandler from './middlewares/errorHandler';
 import notFoundHandler from './middlewares/notFoundHandler';
@@ -66,7 +65,11 @@ app.use(bodyParser.json({ limit: '1mb' }));
 app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 app.use(expressValidator({})); // this line must be immediately after any of the bodyParser middlewares!
 
-chevre.mongoose.connect(<string>process.env.MONGOLAB_URI, mongooseConnectionOptions).catch(console.error);
+connectMongo({ defaultConnection: true }).then().catch((err) => {
+    // tslint:disable-next-line:no-console
+    console.error('connetMongo:', err);
+    process.exit(1);
+});
 
 // routers
 app.use('/', router);
