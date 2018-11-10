@@ -17,9 +17,9 @@ const http_status_1 = require("http-status");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
-const movieRouter = express_1.Router();
-movieRouter.use(authentication_1.default);
-movieRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+const accountTitlesRouter = express_1.Router();
+accountTitlesRouter.use(authentication_1.default);
+accountTitlesRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitle = req.body;
         const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
@@ -30,7 +30,7 @@ movieRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (re
         next(error);
     }
 }));
-movieRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'accountTitles.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'accountTitles.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
         const searchCoinditions = Object.assign({}, req.query, { 
@@ -45,7 +45,7 @@ movieRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'accountTi
         next(error);
     }
 }));
-movieRouter.get('/:identifier', permitScopes_1.default(['admin', 'accountTitles', 'accountTitles.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+accountTitlesRouter.get('/:identifier', permitScopes_1.default(['admin', 'accountTitles', 'accountTitles.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
         const accountTitle = yield accountTitleRepo.findMovieByIdentifier({ identifier: req.params.identifier });
@@ -55,7 +55,7 @@ movieRouter.get('/:identifier', permitScopes_1.default(['admin', 'accountTitles'
         next(error);
     }
 }));
-movieRouter.put('/:identifier', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+accountTitlesRouter.put('/:identifier', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitle = req.body;
         const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
@@ -66,7 +66,7 @@ movieRouter.put('/:identifier', permitScopes_1.default(['admin']), validator_1.d
         next(error);
     }
 }));
-movieRouter.delete('/:identifier', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+accountTitlesRouter.delete('/:identifier', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
         yield accountTitleRepo.deleteByIdentifier({ identifier: req.params.identifier });
@@ -76,4 +76,4 @@ movieRouter.delete('/:identifier', permitScopes_1.default(['admin']), validator_
         next(error);
     }
 }));
-exports.default = movieRouter;
+exports.default = accountTitlesRouter;

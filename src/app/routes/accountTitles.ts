@@ -9,10 +9,10 @@ import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
-const movieRouter = Router();
-movieRouter.use(authentication);
+const accountTitlesRouter = Router();
+accountTitlesRouter.use(authentication);
 
-movieRouter.post(
+accountTitlesRouter.post(
     '',
     permitScopes(['admin']),
     validator,
@@ -28,7 +28,7 @@ movieRouter.post(
     }
 );
 
-movieRouter.get(
+accountTitlesRouter.get(
     '',
     permitScopes(['admin', 'accountTitles', 'accountTitles.read-only']),
     validator,
@@ -51,7 +51,7 @@ movieRouter.get(
     }
 );
 
-movieRouter.get(
+accountTitlesRouter.get(
     '/:identifier',
     permitScopes(['admin', 'accountTitles', 'accountTitles.read-only']),
     validator,
@@ -66,7 +66,7 @@ movieRouter.get(
     }
 );
 
-movieRouter.put(
+accountTitlesRouter.put(
     '/:identifier',
     permitScopes(['admin']),
     validator,
@@ -82,7 +82,7 @@ movieRouter.put(
     }
 );
 
-movieRouter.delete(
+accountTitlesRouter.delete(
     '/:identifier',
     permitScopes(['admin']),
     validator,
@@ -97,4 +97,4 @@ movieRouter.delete(
     }
 );
 
-export default movieRouter;
+export default accountTitlesRouter;
