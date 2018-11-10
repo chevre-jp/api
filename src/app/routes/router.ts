@@ -3,6 +3,7 @@
  */
 import * as express from 'express';
 
+import accountTitlesRouter from './accountTitles';
 import creativeWorksRouter from './creativeWorks';
 import eventsRouter from './events';
 import placesRouter from './places';
@@ -19,6 +20,7 @@ const router = express.Router();
 //   next()
 // })
 
+router.use('/accountTitles', accountTitlesRouter);
 router.use('/creativeWorks', creativeWorksRouter);
 router.use('/places', placesRouter);
 router.use('/events', eventsRouter);
