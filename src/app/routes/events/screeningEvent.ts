@@ -14,6 +14,7 @@ import validator from '../../middlewares/validator';
 
 const screeningEventRouter = Router();
 screeningEventRouter.use(authentication);
+
 screeningEventRouter.post(
     '',
     permitScopes(['admin']),
@@ -96,6 +97,7 @@ screeningEventRouter.get(
         }
     }
 );
+
 screeningEventRouter.get(
     '/:id',
     permitScopes(['admin', 'events', 'events.read-only']),
@@ -161,23 +163,7 @@ screeningEventRouter.put(
         }
     }
 );
-screeningEventRouter.delete(
-    '/:id',
-    permitScopes(['admin']),
-    validator,
-    async (req, res, next) => {
-        try {
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            await eventRepo.deleteById({
-                typeOf: chevre.factory.eventType.ScreeningEvent,
-                id: req.params.id
-            });
-            res.status(NO_CONTENT).end();
-        } catch (error) {
-            next(error);
-        }
-    }
-);
+
 /**
  * 上映イベントに対する座席オファー検索
  */
@@ -227,6 +213,7 @@ screeningEventRouter.get(
         }
     }
 );
+
 /**
  * 上映イベントに対するチケットオファー検索
  */
@@ -250,4 +237,5 @@ screeningEventRouter.get(
         }
     }
 );
+
 export default screeningEventRouter;

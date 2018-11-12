@@ -117,22 +117,4 @@ screeningEventSeriesRouter.put(
     }
 );
 
-screeningEventSeriesRouter.delete(
-    '/:id',
-    permitScopes(['admin']),
-    validator,
-    async (req, res, next) => {
-        try {
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            await eventRepo.deleteById({
-                typeOf: chevre.factory.eventType.ScreeningEventSeries,
-                id: req.params.id
-            });
-            res.status(NO_CONTENT).end();
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
 export default screeningEventSeriesRouter;

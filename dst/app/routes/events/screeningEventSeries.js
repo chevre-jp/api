@@ -98,17 +98,4 @@ screeningEventSeriesRouter.put('/:id', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-screeningEventSeriesRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        yield eventRepo.deleteById({
-            typeOf: chevre.factory.eventType.ScreeningEventSeries,
-            id: req.params.id
-        });
-        res.status(http_status_1.NO_CONTENT).end();
-    }
-    catch (error) {
-        next(error);
-    }
-}));
 exports.default = screeningEventSeriesRouter;
