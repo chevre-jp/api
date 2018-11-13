@@ -72,9 +72,8 @@ reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(
     try {
         const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
         yield chevre.service.transaction.reserve.confirm({
-            transactionId: req.params.transactionId,
-            issuedBy: req.body.issuedBy,
-            underName: req.body.underName
+            id: req.params.transactionId,
+            object: req.body.object
         })({ transaction: transactionRepo });
         debug('transaction confirmed.');
         res.status(http_status_1.NO_CONTENT).end();
@@ -90,7 +89,7 @@ reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default([
         const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
         yield chevre.service.transaction.reserve.cancel({
-            transactionId: req.params.transactionId
+            id: req.params.transactionId
         })({
             action: actionRepo,
             eventAvailability: eventAvailabilityRepo,

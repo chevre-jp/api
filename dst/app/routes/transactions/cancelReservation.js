@@ -59,7 +59,7 @@ cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_
     try {
         const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
         yield chevre.service.transaction.cancelReservation.confirm({
-            transactionId: req.params.transactionId
+            id: req.params.transactionId
         })({ transaction: transactionRepo });
         debug('transaction confirmed.');
         res.status(http_status_1.NO_CONTENT).end();
