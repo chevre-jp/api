@@ -3,6 +3,8 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
+// tslint:disable-next-line:no-submodule-imports
+import { query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
 
 import authentication from '../middlewares/authentication';
@@ -11,6 +13,7 @@ import validator from '../middlewares/validator';
 
 const ticketTypesRouter = Router();
 ticketTypesRouter.use(authentication);
+
 ticketTypesRouter.post(
     '',
     permitScopes(['admin']),
@@ -28,12 +31,14 @@ ticketTypesRouter.post(
         }
     }
 );
+
 ticketTypesRouter.get(
     '',
     permitScopes(['admin', 'ticketTypes', 'ticketTypes.read-only']),
-    (_, __, next) => {
-        next();
-    },
+    ...[
+        query('priceSpecification.minPrice').optional().isInt().toInt(),
+        query('priceSpecification.maxPrice').optional().isInt().toInt()
+    ],
     validator,
     async (req, res, next) => {
         try {
@@ -53,6 +58,7 @@ ticketTypesRouter.get(
         }
     }
 );
+
 ticketTypesRouter.get(
     '/:id',
     permitScopes(['admin', 'ticketTypes', 'ticketTypes.read-only']),
@@ -70,6 +76,7 @@ ticketTypesRouter.get(
         }
     }
 );
+
 ticketTypesRouter.put(
     '/:id',
     permitScopes(['admin']),
@@ -87,6 +94,7 @@ ticketTypesRouter.put(
         }
     }
 );
+
 ticketTypesRouter.delete(
     '/:id',
     permitScopes(['admin']),
@@ -104,4 +112,5 @@ ticketTypesRouter.delete(
         }
     }
 );
+
 export default ticketTypesRouter;

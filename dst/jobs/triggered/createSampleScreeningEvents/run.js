@@ -52,6 +52,17 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
                 value: 4,
                 unitCode: chevre.factory.unitCode.C62,
                 typeOf: 'QuantitativeValue'
+            },
+            category: {
+                id: ticketTypeGroup.id,
+                name: ticketTypeGroup.name
+            },
+            itemOffered: {
+                serviceType: {
+                    typeOf: 'ServiceType',
+                    id: '',
+                    name: ''
+                }
             }
         };
         const eventAttributes = {
@@ -72,7 +83,6 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
             },
             workPerformed: eventSeries.workPerformed,
             superEvent: eventSeries,
-            ticketTypeGroup: ticketTypeGroup.id,
             offers: offers,
             maximumAttendeeCapacity: maximumAttendeeCapacity,
             remainingAttendeeCapacity: maximumAttendeeCapacity,

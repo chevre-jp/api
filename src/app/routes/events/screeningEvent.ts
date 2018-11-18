@@ -25,7 +25,6 @@ screeningEventRouter.post(
             .isISO8601().toDate(),
         body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
             .isISO8601().toDate(),
-        body('ticketTypeGroup').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
         body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
         body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
         body('superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
@@ -63,6 +62,7 @@ screeningEventRouter.post(
         }
     }
 );
+
 screeningEventRouter.get(
     '',
     permitScopes(['admin', 'events', 'events.read-only']),
@@ -115,6 +115,7 @@ screeningEventRouter.get(
         }
     }
 );
+
 screeningEventRouter.put(
     '/:id',
     permitScopes(['admin']),
@@ -125,7 +126,6 @@ screeningEventRouter.put(
             .isISO8601().toDate(),
         body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
             .isISO8601().toDate(),
-        body('ticketTypeGroup').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
         body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
         body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
         body('superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),

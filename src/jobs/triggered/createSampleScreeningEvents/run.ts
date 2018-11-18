@@ -51,6 +51,17 @@ export default async () => {
                     value: 4,
                     unitCode: chevre.factory.unitCode.C62,
                     typeOf: 'QuantitativeValue'
+                },
+                category: {
+                    id: ticketTypeGroup.id,
+                    name: ticketTypeGroup.name
+                },
+                itemOffered: {
+                    serviceType: {
+                        typeOf: 'ServiceType',
+                        id: '',
+                        name: ''
+                    }
                 }
             };
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes = {
@@ -71,7 +82,6 @@ export default async () => {
                 },
                 workPerformed: eventSeries.workPerformed,
                 superEvent: eventSeries,
-                ticketTypeGroup: ticketTypeGroup.id,
                 offers: offers,
                 maximumAttendeeCapacity: maximumAttendeeCapacity,
                 remainingAttendeeCapacity: maximumAttendeeCapacity,
