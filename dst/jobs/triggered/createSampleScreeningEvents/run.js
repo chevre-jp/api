@@ -28,7 +28,7 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         // イベントシリーズをランダム選定
         const eventSeries = eventSeriesList[Math.floor(Math.random() * eventSeriesList.length)];
         // 上映ルームをランダム選定
-        const movieTheater = yield placeRepo.findMovieTheaterByBranchCode(eventSeries.location.branchCode);
+        const movieTheater = yield placeRepo.findMovieTheaterByBranchCode({ branchCode: eventSeries.location.branchCode });
         const screeningRooms = movieTheater.containsPlace;
         const screeningRoom = screeningRooms[Math.floor(Math.random() * screeningRooms.length)];
         const maximumAttendeeCapacity = screeningRoom.containsPlace.reduce((a, b) => a + b.containsPlace.length, 0);

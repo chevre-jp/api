@@ -40,7 +40,7 @@ movieTheaterRouter.get('', permitScopes_1.default(['admin', 'places', 'places.re
 movieTheaterRouter.get('/:branchCode', permitScopes_1.default(['admin', 'places', 'places.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-        const movieTheater = yield placeRepo.findMovieTheaterByBranchCode(req.params.branchCode);
+        const movieTheater = yield placeRepo.findMovieTheaterByBranchCode({ branchCode: req.params.branchCode });
         res.json(movieTheater);
     }
     catch (error) {

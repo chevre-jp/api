@@ -154,7 +154,7 @@ screeningEventRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events
             id: req.params.id
         });
         const unavailableOffers = yield eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });
-        const movieTheater = yield placeRepo.findMovieTheaterByBranchCode(event.superEvent.location.branchCode);
+        const movieTheater = yield placeRepo.findMovieTheaterByBranchCode({ branchCode: event.superEvent.location.branchCode });
         const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === event.location.branchCode);
         if (screeningRoom === undefined) {
             throw new chevre.factory.errors.NotFound('Screening room');

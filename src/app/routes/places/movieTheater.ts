@@ -40,7 +40,7 @@ movieTheaterRouter.get(
     async (req, res, next) => {
         try {
             const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-            const movieTheater = await placeRepo.findMovieTheaterByBranchCode(req.params.branchCode);
+            const movieTheater = await placeRepo.findMovieTheaterByBranchCode({ branchCode: req.params.branchCode });
             res.json(movieTheater);
         } catch (error) {
             next(error);

@@ -181,7 +181,7 @@ screeningEventRouter.get(
                 id: req.params.id
             });
             const unavailableOffers = await eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });
-            const movieTheater = await placeRepo.findMovieTheaterByBranchCode(event.superEvent.location.branchCode);
+            const movieTheater = await placeRepo.findMovieTheaterByBranchCode({ branchCode: event.superEvent.location.branchCode });
             const screeningRoom = <chevre.factory.place.movieTheater.IScreeningRoom>movieTheater.containsPlace.find(
                 (p) => p.branchCode === event.location.branchCode
             );

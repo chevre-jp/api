@@ -26,7 +26,7 @@ export default async () => {
             // イベントシリーズをランダム選定
             const eventSeries = eventSeriesList[Math.floor(Math.random() * eventSeriesList.length)];
             // 上映ルームをランダム選定
-            const movieTheater = await placeRepo.findMovieTheaterByBranchCode(eventSeries.location.branchCode);
+            const movieTheater = await placeRepo.findMovieTheaterByBranchCode({ branchCode: eventSeries.location.branchCode });
             const screeningRooms = movieTheater.containsPlace;
             const screeningRoom = <chevre.factory.place.movieTheater.IScreeningRoom>
                 screeningRooms[Math.floor(Math.random() * screeningRooms.length)];
