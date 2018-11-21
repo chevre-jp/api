@@ -21,7 +21,7 @@ movieRouter.post(
         try {
             const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,
-                duration: moment.duration(req.body.duration).toISOString()
+                duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration).toISOString() : null
             };
             const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
             await creativeWorkRepo.saveMovie(movie);
@@ -78,7 +78,7 @@ movieRouter.put(
         try {
             const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,
-                duration: moment.duration(req.body.duration).toISOString()
+                duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration).toISOString() : null
             };
             const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
             await creativeWorkRepo.saveMovie(movie);

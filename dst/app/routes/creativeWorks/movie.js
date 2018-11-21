@@ -22,7 +22,7 @@ const movieRouter = express_1.Router();
 movieRouter.use(authentication_1.default);
 movieRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const movie = Object.assign({}, req.body, { duration: moment.duration(req.body.duration).toISOString() });
+        const movie = Object.assign({}, req.body, { duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration).toISOString() : null });
         const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
         yield creativeWorkRepo.saveMovie(movie);
         res.status(http_status_1.CREATED).json(movie);
@@ -58,7 +58,7 @@ movieRouter.get('/:identifier', permitScopes_1.default(['admin', 'creativeWorks'
 }));
 movieRouter.put('/:identifier', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const movie = Object.assign({}, req.body, { duration: moment.duration(req.body.duration).toISOString() });
+        const movie = Object.assign({}, req.body, { duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration).toISOString() : null });
         const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
         yield creativeWorkRepo.saveMovie(movie);
         res.status(http_status_1.NO_CONTENT).end();
