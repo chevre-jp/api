@@ -3,6 +3,8 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
+// tslint:disable-next-line:no-submodule-imports
+import { body, query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
 
@@ -16,6 +18,14 @@ movieRouter.use(authentication);
 movieRouter.post(
     '',
     permitScopes(['admin']),
+    ...[
+        body('datePublished').optional().isISO8601().toDate(),
+        body('datePublished').optional().isISO8601().toDate(),
+        body('offers.availabilityStarts').optional().isISO8601().toDate(),
+        body('offers.availabilityEnds').optional().isISO8601().toDate(),
+        body('offers.validFrom').optional().isISO8601().toDate(),
+        body('offers.validThrough').optional().isISO8601().toDate()
+    ],
     validator,
     async (req, res, next) => {
         try {
@@ -35,6 +45,14 @@ movieRouter.post(
 movieRouter.get(
     '',
     permitScopes(['admin', 'creativeWorks', 'creativeWorks.read-only']),
+    ...[
+        query('datePublishedFrom').optional().isISO8601().toDate(),
+        query('datePublishedThrough').optional().isISO8601().toDate(),
+        query('offers.availableFrom').optional().isISO8601().toDate(),
+        query('offers.availableThrough').optional().isISO8601().toDate(),
+        query('offers.validFrom').optional().isISO8601().toDate(),
+        query('offers.validThrough').optional().isISO8601().toDate()
+    ],
     validator,
     async (req, res, next) => {
         try {
@@ -73,6 +91,14 @@ movieRouter.get(
 movieRouter.put(
     '/:identifier',
     permitScopes(['admin']),
+    ...[
+        body('datePublished').optional().isISO8601().toDate(),
+        body('datePublished').optional().isISO8601().toDate(),
+        body('offers.availabilityStarts').optional().isISO8601().toDate(),
+        body('offers.availabilityEnds').optional().isISO8601().toDate(),
+        body('offers.validFrom').optional().isISO8601().toDate(),
+        body('offers.validThrough').optional().isISO8601().toDate()
+    ],
     validator,
     async (req, res, next) => {
         try {
