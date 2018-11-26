@@ -41,6 +41,8 @@ export default async () => {
             const startDate = moment(doorTime).add(10, 'minutes').toDate();
             const endDate = moment(startDate).add(duration, 'minutes').toDate();
             const offers: chevre.factory.event.screeningEvent.IOffer = {
+                id: ticketTypeGroup.id,
+                name: ticketTypeGroup.name,
                 typeOf: 'Offer',
                 priceCurrency: chevre.factory.priceCurrency.JPY,
                 availabilityEnds: endDate,
@@ -51,10 +53,6 @@ export default async () => {
                     value: 4,
                     unitCode: chevre.factory.unitCode.C62,
                     typeOf: 'QuantitativeValue'
-                },
-                category: {
-                    id: ticketTypeGroup.id,
-                    name: ticketTypeGroup.name
                 },
                 itemOffered: {
                     serviceType: {

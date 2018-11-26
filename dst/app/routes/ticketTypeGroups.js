@@ -37,13 +37,9 @@ ticketTypeGroupsRouter.get('', permitScopes_1.default(['admin', 'ticketTypeGroup
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
-        const searchCoinditions = {
+        const searchCoinditions = Object.assign({}, req.query, { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-            page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
-            id: req.query.id,
-            name: req.query.name
-        };
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const totalCount = yield ticketTypeRepo.countTicketTypeGroups(searchCoinditions);
         const ticketTypeGroups = yield ticketTypeRepo.searchTicketTypeGroups(searchCoinditions);
         res.set('X-Total-Count', totalCount.toString());

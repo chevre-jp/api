@@ -9,7 +9,7 @@
     }
   ],
   "dependencies": {
-    "@chevre/domain": "^1.0.0-alpha.45",
+    "@chevre/domain": "^1.0.0-alpha.46",
     "@motionpicture/express-middleware": "^0.1.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
@@ -21,7 +21,7 @@
     "helmet": "^3.15.0",
     "http-status": "^1.3.1",
     "moment": "^2.22.2",
-    "qs": "^6.5.2"
+    "qs": "^6.6.0"
   },
   "description": "Chevre API Web Application",
   "devDependencies": {
@@ -45,7 +45,7 @@
     "nyc": "^12.0.2",
     "rimraf": "^2.6.2",
     "sinon": "^6.3.5",
-    "snyk": "^1.110.1",
+    "snyk": "^1.110.2",
     "supertest": "^3.3.0",
     "ts-node": "^6.2.0",
     "tslint": "^5.11.0",
