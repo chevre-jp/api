@@ -55,11 +55,59 @@ reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.de
         next(error);
     }
 }));
+/**
+ * 発券
+ */
+reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScopes_1.default(['admin', 'reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        if (req.body.id === undefined && req.body.reservationNumber === undefined) {
+            throw new chevre.factory.errors.ArgumentNull('At least one of id and reservationNumber');
+        }
+        const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
+        const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+        const reservations = yield reservationRepo.searchScreeningEventReservations({
+            limit: 1,
+            ids: (req.body.id !== undefined) ? [req.body.id] : undefined,
+            reservationNumbers: (req.body.reservationNumber !== undefined) ? [req.body.reservationNumber] : undefined
+        });
+        const reservation = reservations.shift();
+        if (reservation === undefined) {
+            throw new chevre.factory.errors.NotFound('Reservation');
+        }
+        yield reservationRepo.checkIn({
+            id: req.body.id,
+            reservationNumber: req.body.reservationNumber
+        });
+        // 上映イベント集計タスクを追加
+        const aggregateTask = {
+            name: chevre.factory.taskName.AggregateScreeningEvent,
+            status: chevre.factory.taskStatus.Ready,
+            runsAt: new Date(),
+            remainingNumberOfTries: 3,
+            lastTriedAt: null,
+            numberOfTried: 0,
+            executionResults: [],
+            data: {
+                typeOf: reservation.reservationFor.typeOf,
+                id: reservation.reservationFor.id
+            }
+        };
+        yield taskRepo.save(aggregateTask);
+        res.status(http_status_1.NO_CONTENT).end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitScopes_1.default(['admin', 'reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
         const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
-        const reservation = yield reservationRepo.checkIn({
+        // 上映イベント集計タスクを追加
+        const reservation = yield reservationRepo.findScreeningEventReservationById({
+            id: req.params.id
+        });
+        yield reservationRepo.checkIn({
             id: req.params.id
         });
         const aggregateTask = {
