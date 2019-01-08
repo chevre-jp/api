@@ -16,11 +16,9 @@ const express_1 = require("express");
 // tslint:disable-next-line:no-submodule-imports
 const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
-const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const screeningEventSeriesRouter = express_1.Router();
-screeningEventSeriesRouter.use(authentication_1.default);
 screeningEventSeriesRouter.post('', permitScopes_1.default(['admin']), ...[
     check_1.body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
     check_1.body('startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
@@ -68,7 +66,6 @@ screeningEventSeriesRouter.get('/:id', permitScopes_1.default(['admin', 'events'
     try {
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
         const event = yield eventRepo.findById({
-            typeOf: chevre.factory.eventType.ScreeningEventSeries,
             id: req.params.id
         });
         res.json(event);

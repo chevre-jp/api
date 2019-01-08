@@ -24,7 +24,9 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         const eventRepo = new chevre.repository.Event(connection);
         const placeRepo = new chevre.repository.Place(connection);
         const ticketTypeRepo = new chevre.repository.TicketType(connection);
-        const eventSeriesList = yield eventRepo.searchScreeningEventSeries({});
+        const eventSeriesList = yield eventRepo.search({
+            typeOf: chevre.factory.eventType.ScreeningEventSeries
+        });
         // イベントシリーズをランダム選定
         const eventSeries = eventSeriesList[Math.floor(Math.random() * eventSeriesList.length)];
         // 上映ルームをランダム選定

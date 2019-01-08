@@ -7,12 +7,10 @@ import { Router } from 'express';
 import { body, query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
 
-import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
 const screeningEventSeriesRouter = Router();
-screeningEventSeriesRouter.use(authentication);
 
 screeningEventSeriesRouter.post(
     '',
@@ -80,7 +78,6 @@ screeningEventSeriesRouter.get(
         try {
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
             const event = await eventRepo.findById({
-                typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 id: req.params.id
             });
             res.json(event);

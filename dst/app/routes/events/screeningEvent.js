@@ -17,11 +17,9 @@ const express_1 = require("express");
 const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
 const redis = require("../../../redis");
-const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const screeningEventRouter = express_1.Router();
-screeningEventRouter.use(authentication_1.default);
 screeningEventRouter.post('', permitScopes_1.default(['admin']), ...[
     check_1.body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
     check_1.body('doorTime').optional().isISO8601().toDate(),
@@ -92,7 +90,6 @@ screeningEventRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'eve
     try {
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
         const event = yield eventRepo.findById({
-            typeOf: chevre.factory.eventType.ScreeningEvent,
             id: req.params.id
         });
         res.json(event);
@@ -150,7 +147,6 @@ screeningEventRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events
         const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
         const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
         const event = yield eventRepo.findById({
-            typeOf: chevre.factory.eventType.ScreeningEvent,
             id: req.params.id
         });
         const unavailableOffers = yield eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });

@@ -8,12 +8,10 @@ import { body, query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
 
 import * as redis from '../../../redis';
-import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
 const screeningEventRouter = Router();
-screeningEventRouter.use(authentication);
 
 screeningEventRouter.post(
     '',
@@ -106,7 +104,6 @@ screeningEventRouter.get(
         try {
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
             const event = await eventRepo.findById({
-                typeOf: chevre.factory.eventType.ScreeningEvent,
                 id: req.params.id
             });
             res.json(event);
@@ -176,8 +173,7 @@ screeningEventRouter.get(
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
             const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
             const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-            const event = await eventRepo.findById({
-                typeOf: chevre.factory.eventType.ScreeningEvent,
+            const event = await eventRepo.findById<chevre.factory.eventType.ScreeningEvent>({
                 id: req.params.id
             });
             const unavailableOffers = await eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });

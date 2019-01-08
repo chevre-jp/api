@@ -22,7 +22,9 @@ export default async () => {
             const placeRepo = new chevre.repository.Place(connection);
             const ticketTypeRepo = new chevre.repository.TicketType(connection);
 
-            const eventSeriesList = await eventRepo.searchScreeningEventSeries({});
+            const eventSeriesList = await eventRepo.search<chevre.factory.eventType.ScreeningEventSeries>({
+                typeOf: chevre.factory.eventType.ScreeningEventSeries
+            });
             // イベントシリーズをランダム選定
             const eventSeries = eventSeriesList[Math.floor(Math.random() * eventSeriesList.length)];
             // 上映ルームをランダム選定
