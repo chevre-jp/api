@@ -37,51 +37,109 @@ accountTitlesRouter.post(
     }
 );
 
-// accountTitlesRouter.get(
-//     '/:codeValue',
-//     permitScopes(['admin', 'accountTitles', 'accountTitles.read-only']),
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
-//             const accountTitle = await accountTitleRepo.find({ codeValue: req.params.codeValue });
-//             res.json(accountTitle);
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
+/**
+ * 科目分類検索
+ */
+accountTitlesRouter.get(
+    '/accountTitleCategory',
+    permitScopes(['admin', 'accountTitles', 'accountTitles.read-only']),
+    validator,
+    // tslint:disable-next-line:max-func-body-length
+    async (req, res, next) => {
+        try {
+            const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
+            const searchCoinditions: chevre.factory.accountTitle.ISearchConditions = {
+                ...req.query,
+                // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+            };
+            // const totalCount = await accountTitleRepo.count(searchCoinditions);
+            // const accountTitles = await accountTitleRepo.search(searchCoinditions);
+            // res.set('X-Total-Count', totalCount.toString());
+            // res.json(accountTitles);
 
-// accountTitlesRouter.put(
-//     '/:identifier',
-//     permitScopes(['admin']),
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const accountTitle: chevre.factory.accountTitle.IAccountTitle = req.body;
-//             const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
-//             await accountTitleRepo.save(accountTitle);
-//             res.status(NO_CONTENT).end();
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
+            const conditions: any[] = [
+                { typeOf: 'AccountTitle' }
+            ];
+            if (searchCoinditions.codeValue !== undefined) {
+                conditions.push({
+                    codeValue: {
+                        $exists: true,
+                        $regex: new RegExp(searchCoinditions.codeValue, 'i')
+                    }
+                });
+            }
 
-// accountTitlesRouter.delete(
-//     '/:identifier',
-//     permitScopes(['admin']),
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
-//             await accountTitleRepo.deleteByIdentifier({ identifier: req.params.identifier });
-//             res.status(NO_CONTENT).end();
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
+            const totalCount = await accountTitleRepo.accountTitleModel.countDocuments(
+                { $and: conditions }
+            ).setOptions({ maxTimeMS: 10000 })
+                .exec();
+
+            const query = accountTitleRepo.accountTitleModel.find(
+                { $and: conditions },
+                {
+                    __v: 0,
+                    createdAt: 0,
+                    updatedAt: 0,
+                    hasCategoryCode: 0
+                }
+            );
+            // tslint:disable-next-line:no-single-line-block-comment
+            /* istanbul ignore else */
+            if (searchCoinditions.limit !== undefined && searchCoinditions.page !== undefined) {
+                query.limit(searchCoinditions.limit).skip(searchCoinditions.limit * (searchCoinditions.page - 1));
+            }
+            // tslint:disable-next-line:no-single-line-block-comment
+            /* istanbul ignore else */
+            if (searchCoinditions.sort !== undefined) {
+                query.sort(searchCoinditions.sort);
+            }
+
+            const accountTitles = await query.setOptions({ maxTimeMS: 10000 }).exec().then((docs) => docs.map((doc) => doc.toObject()));
+
+            res.set('X-Total-Count', totalCount.toString());
+            res.json(accountTitles);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * 科目分類更新
+ */
+accountTitlesRouter.put(
+    '/accountTitleCategory/:codeValue',
+    permitScopes(['admin']),
+    ...[
+        body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+        body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const accountTitle: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
+            delete accountTitle.inCodeSet;
+            delete accountTitle.hasCategoryCode;
+
+            const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
+
+            const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
+                { codeValue: accountTitle.codeValue },
+                accountTitle,
+                { new: true }
+            ).exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound('AccountTitle');
+            }
+
+            res.status(NO_CONTENT).end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 /**
  * 科目追加
@@ -219,68 +277,37 @@ accountTitlesRouter.get(
 );
 
 /**
- * 科目分類検索
+ * 科目更新
  */
-accountTitlesRouter.get(
-    '/accountTitleCategory',
-    permitScopes(['admin', 'accountTitles', 'accountTitles.read-only']),
+accountTitlesRouter.put(
+    '/accountTitleSet/:codeValue',
+    permitScopes(['admin']),
+    ...[
+        body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+        body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+    ],
     validator,
-    // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
         try {
+            const accountTitle: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
+            delete accountTitle.inCodeSet;
+            delete accountTitle.hasCategoryCode;
+
             const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
-            const searchCoinditions: chevre.factory.accountTitle.ISearchConditions = {
-                ...req.query,
-                // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
-            };
-            // const totalCount = await accountTitleRepo.count(searchCoinditions);
-            // const accountTitles = await accountTitleRepo.search(searchCoinditions);
-            // res.set('X-Total-Count', totalCount.toString());
-            // res.json(accountTitles);
 
-            const conditions: any[] = [
-                { typeOf: 'AccountTitle' }
-            ];
-            if (searchCoinditions.codeValue !== undefined) {
-                conditions.push({
-                    codeValue: {
-                        $exists: true,
-                        $regex: new RegExp(searchCoinditions.codeValue, 'i')
-                    }
-                });
-            }
-
-            const totalCount = await accountTitleRepo.accountTitleModel.countDocuments(
-                { $and: conditions }
-            ).setOptions({ maxTimeMS: 10000 })
-                .exec();
-
-            const query = accountTitleRepo.accountTitleModel.find(
-                { $and: conditions },
+            const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
+                { 'hasCategoryCode.codeValue': accountTitle.codeValue },
                 {
-                    __v: 0,
-                    createdAt: 0,
-                    updatedAt: 0,
-                    hasCategoryCode: 0
-                }
-            );
-            // tslint:disable-next-line:no-single-line-block-comment
-            /* istanbul ignore else */
-            if (searchCoinditions.limit !== undefined && searchCoinditions.page !== undefined) {
-                query.limit(searchCoinditions.limit).skip(searchCoinditions.limit * (searchCoinditions.page - 1));
-            }
-            // tslint:disable-next-line:no-single-line-block-comment
-            /* istanbul ignore else */
-            if (searchCoinditions.sort !== undefined) {
-                query.sort(searchCoinditions.sort);
+                    'hasCategoryCode.$.name': accountTitle.name,
+                    'hasCategoryCode.$.description': accountTitle.description
+                },
+                { new: true }
+            ).exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound('AccountTitle');
             }
 
-            const accountTitles = await query.setOptions({ maxTimeMS: 10000 }).exec().then((docs) => docs.map((doc) => doc.toObject()));
-
-            res.set('X-Total-Count', totalCount.toString());
-            res.json(accountTitles);
+            res.status(NO_CONTENT).end();
         } catch (error) {
             next(error);
         }
@@ -462,7 +489,7 @@ accountTitlesRouter.put(
     async (req, res, next) => {
         try {
             const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet;
-            const accountTitle: chevre.factory.accountTitle.IAccountTitle = req.body;
+            const accountTitle: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
             delete accountTitle.inCodeSet;
 
             const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
