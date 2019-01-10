@@ -13,6 +13,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
+// tslint:disable-next-line:no-submodule-imports
+const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
@@ -22,11 +24,14 @@ accountTitlesRouter.use(authentication_1.default);
 /**
  * 科目分類追加
  */
-accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['admin']), ...[
+    check_1.body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitle = req.body;
         const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
-        yield accountTitleRepo.save(accountTitle);
+        yield accountTitleRepo.accountTitleModel.create(accountTitle);
         res.status(http_status_1.CREATED).json(accountTitle);
     }
     catch (error) {
@@ -79,129 +84,31 @@ accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['admin
 /**
  * 科目追加
  */
-accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), ...[
+    check_1.body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('inCodeSet').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('inCodeSet.codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const accountTitle = {
-            typeOf: req.body.typeOf,
-            codeValue: req.body.codeValue,
-            name: req.body.name,
-            description: req.body.description
-        };
-        const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
-        yield accountTitleRepo.accountTitleModel.findOneAndUpdate({ codeValue: req.params.codeValue }, {
-            $push: { hasCategoryCode: accountTitle }
-        }, { new: true }).exec();
-        res.status(http_status_1.CREATED).json(accountTitle);
-    }
-    catch (error) {
-        next(error);
-    }
-}));
-/**
- * 細目追加
- */
-accountTitlesRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
+        const accountTitleCategory = req.body.inCodeSet;
         const accountTitle = req.body;
+        delete accountTitle.inCodeSet;
         const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
-        yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
-            codeValue: req.params.codeValue,
-            'hasCategoryCode.codeValue': req.params.accountTitleSetCodeValue
-        }, {
-            $push: { 'hasCategoryCode.$.hasCategoryCode': accountTitle }
-        }, { new: true }).exec();
+        // 科目分類の存在確認
+        let doc = yield accountTitleRepo.accountTitleModel.findOne({ codeValue: accountTitleCategory.codeValue }).exec();
+        if (doc === null) {
+            throw new chevre.factory.errors.NotFound('AccountTitleCategory');
+        }
+        doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
+            codeValue: accountTitleCategory.codeValue,
+            'hasCategoryCode.codeValue': { $ne: accountTitle.codeValue }
+        }, { $push: { hasCategoryCode: accountTitle } }, { new: true }).exec();
+        // 存在しなければ科目コード重複
+        if (doc === null) {
+            throw new chevre.factory.errors.AlreadyInUse('AccountTitle', ['hasCategoryCode.codeValue']);
+        }
         res.status(http_status_1.CREATED).json(accountTitle);
-    }
-    catch (error) {
-        next(error);
-    }
-}));
-/**
- * 細目検索
- */
-accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
-// tslint:disable-next-line:max-func-body-length
-(req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
-        const searchCoinditions = Object.assign({}, req.query, { 
-            // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        // const totalCount = await accountTitleRepo.count(searchCoinditions);
-        // const accountTitles = await accountTitleRepo.search(searchCoinditions);
-        // res.set('X-Total-Count', totalCount.toString());
-        // res.json(accountTitles);
-        const matchStages = [];
-        if (searchCoinditions.codeValue !== undefined) {
-            matchStages.push({
-                $match: {
-                    'hasCategoryCode.hasCategoryCode.codeValue': {
-                        $exists: true,
-                        $regex: new RegExp(searchCoinditions.codeValue, 'i')
-                    }
-                }
-            });
-        }
-        if (searchCoinditions.inCodeSet !== undefined) {
-            if (searchCoinditions.inCodeSet.codeValue !== undefined) {
-                matchStages.push({
-                    $match: {
-                        'hasCategoryCode.codeValue': {
-                            $exists: true,
-                            $regex: new RegExp(searchCoinditions.inCodeSet.codeValue, 'i')
-                        }
-                    }
-                });
-            }
-            if (searchCoinditions.inCodeSet.inCodeSet !== undefined) {
-                if (searchCoinditions.inCodeSet.inCodeSet.codeValue !== undefined) {
-                    matchStages.push({
-                        $match: {
-                            codeValue: {
-                                $exists: true,
-                                $regex: new RegExp(searchCoinditions.inCodeSet.inCodeSet.codeValue, 'i')
-                            }
-                        }
-                    });
-                }
-            }
-        }
-        const totalCountResult = yield accountTitleRepo.accountTitleModel.aggregate([
-            { $unwind: '$hasCategoryCode' },
-            { $unwind: '$hasCategoryCode.hasCategoryCode' },
-            ...matchStages,
-            { $count: 'totalCount' }
-        ]).exec();
-        const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
-        const aggregate = accountTitleRepo.accountTitleModel.aggregate([
-            { $unwind: '$hasCategoryCode' },
-            { $unwind: '$hasCategoryCode.hasCategoryCode' },
-            ...matchStages,
-            {
-                $project: {
-                    _id: 0,
-                    codeValue: '$hasCategoryCode.hasCategoryCode.codeValue',
-                    name: '$hasCategoryCode.hasCategoryCode.name',
-                    inCodeSet: {
-                        codeValue: '$hasCategoryCode.codeValue',
-                        name: '$hasCategoryCode.name',
-                        inCodeSet: {
-                            codeValue: '$codeValue',
-                            name: '$name'
-                        }
-                    }
-                }
-            }
-        ]);
-        // tslint:disable-next-line:no-single-line-block-comment
-        /* istanbul ignore else */
-        if (searchCoinditions.limit !== undefined && searchCoinditions.page !== undefined) {
-            aggregate.limit(searchCoinditions.limit * searchCoinditions.page)
-                .skip(searchCoinditions.limit * (searchCoinditions.page - 1));
-        }
-        const accountTitles = yield aggregate.exec();
-        res.set('X-Total-Count', totalCount.toString());
-        res.json(accountTitles);
     }
     catch (error) {
         next(error);
@@ -327,6 +234,166 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin'
         const accountTitles = yield query.setOptions({ maxTimeMS: 10000 }).exec().then((docs) => docs.map((doc) => doc.toObject()));
         res.set('X-Total-Count', totalCount.toString());
         res.json(accountTitles);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * 細目追加
+ */
+accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
+    check_1.body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('inCodeSet').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('inCodeSet.codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('inCodeSet.inCodeSet').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('inCodeSet.inCodeSet.codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const accountTitleSet = req.body.inCodeSet;
+        const accountTitleCategory = req.body.inCodeSet.inCodeSet;
+        const accountTitle = req.body;
+        delete accountTitle.inCodeSet;
+        const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
+        // 科目の存在確認
+        let doc = yield accountTitleRepo.accountTitleModel.findOne({
+            codeValue: accountTitleCategory.codeValue,
+            'hasCategoryCode.codeValue': accountTitleSet.codeValue
+        }).exec();
+        if (doc === null) {
+            throw new chevre.factory.errors.NotFound('AccountTitleSet');
+        }
+        doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
+            codeValue: accountTitleCategory.codeValue,
+            'hasCategoryCode.codeValue': accountTitleSet.codeValue,
+            'hasCategoryCode.hasCategoryCode.codeValue': { $ne: accountTitle.codeValue }
+        }, { $push: { 'hasCategoryCode.$.hasCategoryCode': accountTitle } }, { new: true }).exec();
+        // 存在しなければ細目コード重複
+        if (doc === null) {
+            throw new chevre.factory.errors.AlreadyInUse('AccountTitle', ['hasCategoryCode.hasCategoryCode.codeValue']);
+        }
+        res.status(http_status_1.CREATED).json(accountTitle);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * 細目検索
+ */
+accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
+// tslint:disable-next-line:max-func-body-length
+(req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
+        const searchCoinditions = Object.assign({}, req.query, { 
+            // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
+        // const totalCount = await accountTitleRepo.count(searchCoinditions);
+        // const accountTitles = await accountTitleRepo.search(searchCoinditions);
+        // res.set('X-Total-Count', totalCount.toString());
+        // res.json(accountTitles);
+        const matchStages = [];
+        if (searchCoinditions.codeValue !== undefined) {
+            matchStages.push({
+                $match: {
+                    'hasCategoryCode.hasCategoryCode.codeValue': {
+                        $exists: true,
+                        $regex: new RegExp(searchCoinditions.codeValue, 'i')
+                    }
+                }
+            });
+        }
+        if (searchCoinditions.inCodeSet !== undefined) {
+            if (searchCoinditions.inCodeSet.codeValue !== undefined) {
+                matchStages.push({
+                    $match: {
+                        'hasCategoryCode.codeValue': {
+                            $exists: true,
+                            $regex: new RegExp(searchCoinditions.inCodeSet.codeValue, 'i')
+                        }
+                    }
+                });
+            }
+            if (searchCoinditions.inCodeSet.inCodeSet !== undefined) {
+                if (searchCoinditions.inCodeSet.inCodeSet.codeValue !== undefined) {
+                    matchStages.push({
+                        $match: {
+                            codeValue: {
+                                $exists: true,
+                                $regex: new RegExp(searchCoinditions.inCodeSet.inCodeSet.codeValue, 'i')
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        const totalCountResult = yield accountTitleRepo.accountTitleModel.aggregate([
+            { $unwind: '$hasCategoryCode' },
+            { $unwind: '$hasCategoryCode.hasCategoryCode' },
+            ...matchStages,
+            { $count: 'totalCount' }
+        ]).exec();
+        const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
+        const aggregate = accountTitleRepo.accountTitleModel.aggregate([
+            { $unwind: '$hasCategoryCode' },
+            { $unwind: '$hasCategoryCode.hasCategoryCode' },
+            ...matchStages,
+            {
+                $project: {
+                    _id: 0,
+                    codeValue: '$hasCategoryCode.hasCategoryCode.codeValue',
+                    name: '$hasCategoryCode.hasCategoryCode.name',
+                    inCodeSet: {
+                        codeValue: '$hasCategoryCode.codeValue',
+                        name: '$hasCategoryCode.name',
+                        inCodeSet: {
+                            codeValue: '$codeValue',
+                            name: '$name'
+                        }
+                    }
+                }
+            }
+        ]);
+        // tslint:disable-next-line:no-single-line-block-comment
+        /* istanbul ignore else */
+        if (searchCoinditions.limit !== undefined && searchCoinditions.page !== undefined) {
+            aggregate.limit(searchCoinditions.limit * searchCoinditions.page)
+                .skip(searchCoinditions.limit * (searchCoinditions.page - 1));
+        }
+        const accountTitles = yield aggregate.exec();
+        res.set('X-Total-Count', totalCount.toString());
+        res.json(accountTitles);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * 細目更新
+ */
+accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['admin']), ...[
+    check_1.body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('inCodeSet').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('inCodeSet.codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const accountTitleSet = req.body.inCodeSet;
+        const accountTitle = req.body;
+        delete accountTitle.inCodeSet;
+        const accountTitleRepo = new chevre.repository.AccountTitle(chevre.mongoose.connection);
+        const doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
+            'hasCategoryCode.hasCategoryCode.codeValue': accountTitle.codeValue
+        }, { 'hasCategoryCode.$[element].hasCategoryCode.$': accountTitle }, {
+            new: true,
+            arrayFilters: [{ 'element.codeValue': accountTitleSet.codeValue }]
+        }).exec();
+        if (doc === null) {
+            throw new chevre.factory.errors.NotFound('AccountTitle');
+        }
+        res.status(http_status_1.NO_CONTENT).end();
     }
     catch (error) {
         next(error);
