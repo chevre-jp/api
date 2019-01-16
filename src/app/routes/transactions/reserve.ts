@@ -52,7 +52,7 @@ reserveTransactionsRouter.post(
                     // clientUser: req.user,
                     event: req.body.object.event,
                     acceptedOffer: req.body.object.acceptedOffer,
-                    notes: (req.body.object.notes !== undefined) ? req.body.object.notes : ''
+                    notes: ''
                 },
                 expires: moment(req.body.expires).toDate()
             })({

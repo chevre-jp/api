@@ -62,6 +62,14 @@ export default async () => {
                         id: '',
                         name: ''
                     }
+                    // serviceOutput: {
+                    //     typeOf: chevre.factory.reservationType.EventReservation,
+                    //     reservedTicket: {
+                    //         ticketedSeat: {
+                    //             typeOf: chevre.factory.placeType.Seat
+                    //         }
+                    //     }
+                    // }
                 }
             };
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes = {

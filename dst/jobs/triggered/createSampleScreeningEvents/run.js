@@ -63,6 +63,14 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
                     id: '',
                     name: ''
                 }
+                // serviceOutput: {
+                //     typeOf: chevre.factory.reservationType.EventReservation,
+                //     reservedTicket: {
+                //         ticketedSeat: {
+                //             typeOf: chevre.factory.placeType.Seat
+                //         }
+                //     }
+                // }
             }
         };
         const eventAttributes = {

@@ -14,7 +14,7 @@ function createClient() {
         port: Number(<string>process.env.REDIS_PORT),
         host: <string>process.env.REDIS_HOST,
         password: <string>process.env.REDIS_KEY,
-        tls: { servername: <string>process.env.REDIS_HOST }
+        tls: (process.env.REDIS_TLS_SERVERNAME !== undefined) ? { servername: process.env.REDIS_TLS_SERVERNAME } : undefined
     });
 
     c.on('error', (err: any) => {

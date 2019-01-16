@@ -13,7 +13,7 @@ function createClient() {
         port: Number(process.env.REDIS_PORT),
         host: process.env.REDIS_HOST,
         password: process.env.REDIS_KEY,
-        tls: { servername: process.env.REDIS_HOST }
+        tls: (process.env.REDIS_TLS_SERVERNAME !== undefined) ? { servername: process.env.REDIS_TLS_SERVERNAME } : undefined
     });
     c.on('error', (err) => {
         console.error(err);
