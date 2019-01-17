@@ -35,7 +35,9 @@ ticketTypesRouter.post('', permitScopes_1.default(['admin']), (_, __, next) => {
 }));
 ticketTypesRouter.get('', permitScopes_1.default(['admin', 'ticketTypes', 'ticketTypes.read-only']), ...[
     check_1.query('priceSpecification.minPrice').optional().isInt().toInt(),
-    check_1.query('priceSpecification.maxPrice').optional().isInt().toInt()
+    check_1.query('priceSpecification.maxPrice').optional().isInt().toInt(),
+    check_1.query('priceSpecification.accounting.minAccountsReceivable').optional().isInt().toInt(),
+    check_1.query('priceSpecification.accounting.maxAccountsReceivable').optional().isInt().toInt()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);

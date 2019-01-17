@@ -37,7 +37,9 @@ ticketTypesRouter.get(
     permitScopes(['admin', 'ticketTypes', 'ticketTypes.read-only']),
     ...[
         query('priceSpecification.minPrice').optional().isInt().toInt(),
-        query('priceSpecification.maxPrice').optional().isInt().toInt()
+        query('priceSpecification.maxPrice').optional().isInt().toInt(),
+        query('priceSpecification.accounting.minAccountsReceivable').optional().isInt().toInt(),
+        query('priceSpecification.accounting.maxAccountsReceivable').optional().isInt().toInt()
     ],
     validator,
     async (req, res, next) => {

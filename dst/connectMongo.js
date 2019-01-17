@@ -15,6 +15,7 @@ const chevre = require("@chevre/domain");
 const createDebug = require("debug");
 const debug = createDebug('chevre-api:connectMongo');
 const PING_INTERVAL = 10000;
+const MONGOLAB_URI = process.env.MONGOLAB_URI;
 const connectOptions = {
     autoReconnect: true,
     keepAlive: 120000,
@@ -29,11 +30,11 @@ function connectMongo(params) {
         let connection;
         if (params === undefined || params.defaultConnection) {
             // コネクション確立
-            yield chevre.mongoose.connect(process.env.MONGOLAB_URI, connectOptions);
+            yield chevre.mongoose.connect(MONGOLAB_URI, connectOptions);
             connection = chevre.mongoose.connection;
         }
         else {
-            connection = chevre.mongoose.createConnection(process.env.MONGOLAB_URI, connectOptions);
+            connection = chevre.mongoose.createConnection(MONGOLAB_URI, connectOptions);
         }
         // 定期的にコネクションチェック
         // tslint:disable-next-line:no-single-line-block-comment
@@ -43,29 +44,28 @@ function connectMongo(params) {
             if (connection.readyState === 1) {
                 // 接続済であれば疎通確認
                 let pingResult;
-                try {
-                    pingResult = yield connection.db.admin().ping();
-                    debug('pingResult:', pingResult);
-                }
-                catch (error) {
-                    // tslint:disable-next-line:no-console
-                    console.error('ping:', error);
-                }
+                yield new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                    try {
+                        pingResult = yield connection.db.admin().ping();
+                        debug('pingResult:', pingResult);
+                    }
+                    catch (error) {
+                        // tslint:disable-next-line:no-console
+                        console.error('ping:', error);
+                    }
+                    // tslint:disable-next-line:no-magic-numbers
+                    setTimeout(() => { resolve(); }, 5000);
+                }));
                 // 疎通確認結果が適性であれば何もしない
                 if (pingResult !== undefined && pingResult.ok === 1) {
                     return;
                 }
             }
-            // コネクション確立
             try {
-                if (params === undefined || params.defaultConnection) {
-                    // コネクション確立
-                    yield chevre.mongoose.connect(process.env.MONGOLAB_URI, connectOptions);
-                }
-                else {
-                    connection = chevre.mongoose.createConnection(process.env.MONGOLAB_URI, connectOptions);
-                }
-                debug('MongoDB connected!');
+                // コネクション再確立
+                yield connection.close();
+                yield connection.openUri(MONGOLAB_URI, undefined, undefined, connectOptions);
+                debug('MongoDB reconnected!');
             }
             catch (error) {
                 // tslint:disable-next-line:no-console
