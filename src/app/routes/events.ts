@@ -6,6 +6,7 @@ import { RequestHandler, Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
 import { body, oneOf, query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
+import * as mongoose from 'mongoose';
 
 import screeningEventRouter from './events/screeningEvent';
 import screeningEventSeriesRouter from './events/screeningEventSeries';
@@ -73,7 +74,7 @@ eventsRouter.post(
     async (req, res, next) => {
         try {
             const params = req.body;
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
             const events = await eventRepo.createMany(params);
 
             await Promise.all(events.map(async (event) => {
@@ -88,7 +89,7 @@ eventsRouter.post(
                         executionResults: [],
                         data: event
                     };
-                    const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+                    const taskRepo = new chevre.repository.Task(mongoose.connection);
                     await taskRepo.save(aggregateTask);
                 }
             }));
@@ -122,7 +123,7 @@ eventsRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
             const searchCoinditions: chevre.factory.event.ISearchConditions<typeof req.query.typeOf> = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers
@@ -149,7 +150,7 @@ eventsRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
             const event = await eventRepo.findById({
                 id: req.params.id
             });
@@ -171,7 +172,7 @@ eventsRouter.put(
     async (req, res, next) => {
         try {
             const eventAttributes: chevre.factory.event.IAttributes<typeof req.body.typeOf> = req.body[0];
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
             const event = await eventRepo.save({ id: req.params.id, attributes: eventAttributes });
 
             if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
@@ -183,9 +184,9 @@ eventsRouter.put(
                     lastTriedAt: null,
                     numberOfTried: 0,
                     executionResults: [],
-                    data: event
+                    data: <chevre.factory.event.IEvent<chevre.factory.eventType.ScreeningEvent>>event
                 };
-                const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+                const taskRepo = new chevre.repository.Task(mongoose.connection);
                 await taskRepo.save(aggregateTask);
             }
 
@@ -206,8 +207,8 @@ eventsRouter.get(
     async (req, res, next) => {
         try {
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
             const event = await eventRepo.findById<chevre.factory.eventType.ScreeningEvent>({
                 id: req.params.id
             });
@@ -254,9 +255,9 @@ eventsRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            const priceSpecificationRepo = new chevre.repository.PriceSpecification(chevre.mongoose.connection);
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
+            const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             const offers = await chevre.service.offer.searchScreeningEventTicketOffers({ eventId: req.params.id })({
                 event: eventRepo,
                 priceSpecification: priceSpecificationRepo,

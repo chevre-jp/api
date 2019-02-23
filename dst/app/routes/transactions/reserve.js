@@ -16,6 +16,7 @@ const createDebug = require("debug");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment");
+const mongoose = require("mongoose");
 const reserveTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
 const authentication_1 = require("../../middlewares/authentication");
@@ -31,13 +32,13 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-        const priceSpecificationRepo = new chevre.repository.PriceSpecification(chevre.mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
-        const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
+        const placeRepo = new chevre.repository.Place(mongoose.connection);
+        const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
+        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
         const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
-        const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const reservationNumberRepo = new chevre.repository.ReservationNumber(redis.getClient());
         const transaction = yield chevre.service.transaction.reserve.start({
             typeOf: chevre.factory.transactionType.Reserve,
@@ -50,8 +51,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
             object: {
                 // clientUser: req.user,
                 event: req.body.object.event,
-                acceptedOffer: req.body.object.acceptedOffer,
-                notes: ''
+                acceptedOffer: req.body.object.acceptedOffer
             },
             expires: moment(req.body.expires).toDate()
         })({
@@ -72,7 +72,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
 }));
 reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
+        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         yield chevre.service.transaction.reserve.confirm({
             id: req.params.transactionId,
             object: req.body.object
@@ -86,10 +86,10 @@ reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(
 }));
 reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const actionRepo = new chevre.repository.Action(chevre.mongoose.connection);
+        const actionRepo = new chevre.repository.Action(mongoose.connection);
         const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
-        const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         yield chevre.service.transaction.reserve.cancel({
             id: req.params.transactionId
         })({

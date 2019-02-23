@@ -3,6 +3,7 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
+import * as mongoose from 'mongoose';
 
 import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
@@ -16,7 +17,7 @@ movieTheaterRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
             const searchCoinditions: chevre.factory.place.movieTheater.ISearchConditions = {
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
@@ -39,7 +40,7 @@ movieTheaterRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
             const movieTheater = await placeRepo.findMovieTheaterByBranchCode({ branchCode: req.params.branchCode });
             res.json(movieTheater);
         } catch (error) {

@@ -1,16 +1,16 @@
 /**
  * MongoDBコネクション確立
  */
-import * as chevre from '@chevre/domain';
 import * as createDebug from 'debug';
+import * as mongoose from 'mongoose';
 
 const debug = createDebug('chevre-api:connectMongo');
 const PING_INTERVAL = 10000;
 const MONGOLAB_URI = <string>process.env.MONGOLAB_URI;
 
-const connectOptions: chevre.mongoose.ConnectionOptions = {
+const connectOptions: mongoose.ConnectionOptions = {
     autoReconnect: true,
-    keepAlive: 120000,
+    keepAlive: true,
     connectTimeoutMS: 30000,
     socketTimeoutMS: 0,
     reconnectTries: 30,
@@ -21,13 +21,13 @@ const connectOptions: chevre.mongoose.ConnectionOptions = {
 export async function connectMongo(params: {
     defaultConnection: boolean;
 }) {
-    let connection: chevre.mongoose.Connection;
+    let connection: mongoose.Connection;
     if (params === undefined || params.defaultConnection) {
         // コネクション確立
-        await chevre.mongoose.connect(MONGOLAB_URI, connectOptions);
-        connection = chevre.mongoose.connection;
+        await mongoose.connect(MONGOLAB_URI, connectOptions);
+        connection = mongoose.connection;
     } else {
-        connection = chevre.mongoose.createConnection(MONGOLAB_URI, connectOptions);
+        connection = mongoose.createConnection(MONGOLAB_URI, connectOptions);
     }
 
     // 定期的にコネクションチェック

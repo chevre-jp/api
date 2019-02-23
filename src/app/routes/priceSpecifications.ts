@@ -3,6 +3,7 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
+import * as mongoose from 'mongoose';
 
 import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
@@ -19,7 +20,7 @@ priceSpecificationsRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const priceSpecificationRepo = new chevre.repository.PriceSpecification(chevre.mongoose.connection);
+            const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
             const searchCoinditions: chevre.factory.compoundPriceSpecification.ISearchConditions<chevre.factory.priceSpecificationType> = {
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,

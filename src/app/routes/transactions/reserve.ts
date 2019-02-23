@@ -6,6 +6,7 @@ import * as createDebug from 'debug';
 import { Router } from 'express';
 import { NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
+import * as mongoose from 'mongoose';
 
 const reserveTransactionsRouter = Router();
 
@@ -32,13 +33,13 @@ reserveTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-            const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-            const priceSpecificationRepo = new chevre.repository.PriceSpecification(chevre.mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+            const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
+            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
-            const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const reservationNumberRepo = new chevre.repository.ReservationNumber(redis.getClient());
             const transaction = await chevre.service.transaction.reserve.start({
                 typeOf: chevre.factory.transactionType.Reserve,
@@ -51,8 +52,7 @@ reserveTransactionsRouter.post(
                 object: {
                     // clientUser: req.user,
                     event: req.body.object.event,
-                    acceptedOffer: req.body.object.acceptedOffer,
-                    notes: ''
+                    acceptedOffer: req.body.object.acceptedOffer
                 },
                 expires: moment(req.body.expires).toDate()
             })({
@@ -78,7 +78,7 @@ reserveTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
+            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.reserve.confirm({
                 id: req.params.transactionId,
                 object: req.body.object
@@ -97,10 +97,10 @@ reserveTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const actionRepo = new chevre.repository.Action(chevre.mongoose.connection);
+            const actionRepo = new chevre.repository.Action(mongoose.connection);
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
-            const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.reserve.cancel({
                 id: req.params.transactionId
             })({

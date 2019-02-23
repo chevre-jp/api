@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
+const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
@@ -22,7 +23,7 @@ priceSpecificationsRouter.get('/compoundPriceSpecification', permitScopes_1.defa
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const priceSpecificationRepo = new chevre.repository.PriceSpecification(chevre.mongoose.connection);
+        const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         const searchCoinditions = {
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,

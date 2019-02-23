@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
+const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
@@ -22,7 +23,7 @@ serviceTypesRouter.use(authentication_1.default);
 serviceTypesRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const serviceType = Object.assign({}, req.body);
-        const serviceTypeRepo = new chevre.repository.ServiceType(chevre.mongoose.connection);
+        const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         yield serviceTypeRepo.save(serviceType);
         res.status(http_status_1.CREATED).json(serviceType);
     }
@@ -32,7 +33,7 @@ serviceTypesRouter.post('', permitScopes_1.default(['admin']), validator_1.defau
 }));
 serviceTypesRouter.get('', permitScopes_1.default(['admin', 'serviceTypes', 'serviceTypes.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const serviceTypeRepo = new chevre.repository.ServiceType(chevre.mongoose.connection);
+        const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         const searchCoinditions = Object.assign({}, req.query, { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
@@ -47,7 +48,7 @@ serviceTypesRouter.get('', permitScopes_1.default(['admin', 'serviceTypes', 'ser
 }));
 serviceTypesRouter.get('/:id', permitScopes_1.default(['admin', 'serviceTypes', 'serviceTypes.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const serviceTypeRepo = new chevre.repository.ServiceType(chevre.mongoose.connection);
+        const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         const serviceType = yield serviceTypeRepo.findById({ id: req.params.id });
         res.json(serviceType);
     }
@@ -58,7 +59,7 @@ serviceTypesRouter.get('/:id', permitScopes_1.default(['admin', 'serviceTypes', 
 serviceTypesRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const serviceType = Object.assign({}, req.body);
-        const serviceTypeRepo = new chevre.repository.ServiceType(chevre.mongoose.connection);
+        const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         yield serviceTypeRepo.save(serviceType);
         res.status(http_status_1.NO_CONTENT).end();
     }

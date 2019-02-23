@@ -4,6 +4,7 @@
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 import { CREATED, NO_CONTENT } from 'http-status';
+import * as mongoose from 'mongoose';
 
 import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
@@ -21,7 +22,7 @@ ticketTypeGroupsRouter.post(
     async (req, res, next) => {
         try {
             const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             await ticketTypeRepo.createTicketTypeGroup(ticketTypeGroup);
             res.status(CREATED).json(ticketTypeGroup);
         } catch (error) {
@@ -38,7 +39,7 @@ ticketTypeGroupsRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             const searchCoinditions: chevre.factory.ticketType.ITicketTypeGroupSearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
@@ -63,7 +64,7 @@ ticketTypeGroupsRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             const ticketTypeGroup = await ticketTypeRepo.findTicketTypeGroupById({ id: req.params.id });
             res.json(ticketTypeGroup);
         } catch (error) {
@@ -81,7 +82,7 @@ ticketTypeGroupsRouter.put(
     async (req, res, next) => {
         try {
             const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             await ticketTypeRepo.updateTicketTypeGroup(ticketTypeGroup);
             res.status(NO_CONTENT).end();
         } catch (error) {
@@ -98,7 +99,7 @@ ticketTypeGroupsRouter.delete(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             await ticketTypeRepo.deleteTicketTypeGroup({ id: req.params.id });
             res.status(NO_CONTENT).end();
         } catch (error) {

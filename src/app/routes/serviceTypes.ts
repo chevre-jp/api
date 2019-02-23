@@ -4,6 +4,7 @@
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 import { CREATED, NO_CONTENT } from 'http-status';
+import * as mongoose from 'mongoose';
 
 import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
@@ -21,7 +22,7 @@ serviceTypesRouter.post(
             const serviceType: chevre.factory.serviceType.IServiceType = {
                 ...req.body
             };
-            const serviceTypeRepo = new chevre.repository.ServiceType(chevre.mongoose.connection);
+            const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             await serviceTypeRepo.save(serviceType);
             res.status(CREATED).json(serviceType);
         } catch (error) {
@@ -36,7 +37,7 @@ serviceTypesRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const serviceTypeRepo = new chevre.repository.ServiceType(chevre.mongoose.connection);
+            const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             const searchCoinditions: chevre.factory.serviceType.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
@@ -59,7 +60,7 @@ serviceTypesRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const serviceTypeRepo = new chevre.repository.ServiceType(chevre.mongoose.connection);
+            const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             const serviceType = await serviceTypeRepo.findById({ id: req.params.id });
             res.json(serviceType);
         } catch (error) {
@@ -77,7 +78,7 @@ serviceTypesRouter.put(
             const serviceType: chevre.factory.serviceType.IServiceType = {
                 ...req.body
             };
-            const serviceTypeRepo = new chevre.repository.ServiceType(chevre.mongoose.connection);
+            const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             await serviceTypeRepo.save(serviceType);
             res.status(NO_CONTENT).end();
         } catch (error) {

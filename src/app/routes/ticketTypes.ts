@@ -6,6 +6,7 @@ import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
 import { query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
+import * as mongoose from 'mongoose';
 
 import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
@@ -23,7 +24,7 @@ ticketTypesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             const ticketType = await ticketTypeRepo.createTicketType(req.body);
             res.status(CREATED).json(ticketType);
         } catch (error) {
@@ -44,7 +45,7 @@ ticketTypesRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             const searchCoinditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
@@ -70,7 +71,7 @@ ticketTypesRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             const ticketType = await ticketTypeRepo.findTicketTypeById({ id: req.params.id });
             res.json(ticketType);
         } catch (error) {
@@ -88,7 +89,7 @@ ticketTypesRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             await ticketTypeRepo.updateTicketType(req.body);
             res.status(NO_CONTENT).end();
         } catch (error) {
@@ -106,7 +107,7 @@ ticketTypesRouter.delete(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             await ticketTypeRepo.deleteTicketType({ id: req.params.id });
             res.status(NO_CONTENT).end();
         } catch (error) {

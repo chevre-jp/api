@@ -16,6 +16,7 @@ const express_1 = require("express");
 // tslint:disable-next-line:no-submodule-imports
 const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
+const mongoose = require("mongoose");
 const screeningEvent_1 = require("./events/screeningEvent");
 const screeningEventSeries_1 = require("./events/screeningEventSeries");
 const authentication_1 = require("../middlewares/authentication");
@@ -68,7 +69,7 @@ const validations = [
 eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const params = req.body;
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
         const events = yield eventRepo.createMany(params);
         yield Promise.all(events.map((event) => __awaiter(this, void 0, void 0, function* () {
             if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
@@ -82,7 +83,7 @@ eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validat
                     executionResults: [],
                     data: event
                 };
-                const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+                const taskRepo = new chevre.repository.Task(mongoose.connection);
                 yield taskRepo.save(aggregateTask);
             }
         })));
@@ -109,7 +110,7 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
     check_1.query('offers.validThrough').optional().isISO8601().toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
         const searchCoinditions = Object.assign({}, req.query, { 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
@@ -127,7 +128,7 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
  */
 eventsRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
         const event = yield eventRepo.findById({
             id: req.params.id
         });
@@ -143,7 +144,7 @@ eventsRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read
 eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body[0];
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
         const event = yield eventRepo.save({ id: req.params.id, attributes: eventAttributes });
         if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
             const aggregateTask = {
@@ -156,7 +157,7 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
                 executionResults: [],
                 data: event
             };
-            const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
             yield taskRepo.save(aggregateTask);
         }
         res.status(http_status_1.NO_CONTENT).end();
@@ -171,8 +172,8 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
 eventsRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
+        const placeRepo = new chevre.repository.Place(mongoose.connection);
         const event = yield eventRepo.findById({
             id: req.params.id
         });
@@ -210,9 +211,9 @@ eventsRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'even
  */
 eventsRouter.get('/:id/offers/ticket', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        const priceSpecificationRepo = new chevre.repository.PriceSpecification(chevre.mongoose.connection);
-        const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
+        const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
+        const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
         const offers = yield chevre.service.offer.searchScreeningEventTicketOffers({ eventId: req.params.id })({
             event: eventRepo,
             priceSpecification: priceSpecificationRepo,

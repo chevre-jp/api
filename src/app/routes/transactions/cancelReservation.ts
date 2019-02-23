@@ -6,6 +6,7 @@ import * as createDebug from 'debug';
 import { Router } from 'express';
 import { NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
+import * as mongoose from 'mongoose';
 
 const cancelReservationTransactionsRouter = Router();
 
@@ -31,8 +32,8 @@ cancelReservationTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
-            const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
+            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const transaction = await chevre.service.transaction.cancelReservation.start({
                 typeOf: chevre.factory.transactionType.CancelReservation,
                 agent: {
@@ -63,7 +64,7 @@ cancelReservationTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
+            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.cancelReservation.confirm({
                 id: req.params.transactionId
             })({ transaction: transactionRepo });
@@ -81,7 +82,7 @@ cancelReservationTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const transactionRepo = new chevre.repository.Transaction(chevre.mongoose.connection);
+            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await transactionRepo.cancel({
                 typeOf: chevre.factory.transactionType.CancelReservation,
                 id: req.params.transactionId

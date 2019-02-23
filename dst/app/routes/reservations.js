@@ -16,6 +16,7 @@ const express_1 = require("express");
 // tslint:disable-next-line:no-submodule-imports
 const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
+const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
@@ -28,7 +29,7 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
     check_1.query('reservationFor.startThrough').optional().isISO8601().toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const searchCoinditions = Object.assign({}, req.query, { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
@@ -45,7 +46,7 @@ reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.de
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const reservation = yield reservationRepo.findScreeningEventReservationById({
             id: req.params.id
         });
@@ -63,8 +64,8 @@ reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScope
         if (req.body.id === undefined && req.body.reservationNumber === undefined) {
             throw new chevre.factory.errors.ArgumentNull('At least one of id and reservationNumber');
         }
-        const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-        const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        const taskRepo = new chevre.repository.Task(mongoose.connection);
         const reservations = yield reservationRepo.searchScreeningEventReservations({
             limit: 1,
             ids: (req.body.id !== undefined) ? [req.body.id] : undefined,
@@ -101,8 +102,8 @@ reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScope
 }));
 reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitScopes_1.default(['admin', 'reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-        const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        const taskRepo = new chevre.repository.Task(mongoose.connection);
         // 上映イベント集計タスクを追加
         const reservation = yield reservationRepo.findScreeningEventReservationById({
             id: req.params.id
@@ -132,8 +133,8 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
 }));
 reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitScopes_1.default(['admin', 'reservations.attended']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-        const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        const taskRepo = new chevre.repository.Task(mongoose.connection);
         const reservation = yield reservationRepo.attend({
             id: req.params.id
         });

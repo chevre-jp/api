@@ -16,6 +16,7 @@ const express_1 = require("express");
 // tslint:disable-next-line:no-submodule-imports
 const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
+const mongoose = require("mongoose");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const screeningEventSeriesRouter = express_1.Router();
@@ -32,7 +33,7 @@ screeningEventSeriesRouter.post('', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body;
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
         const event = yield eventRepo.saveScreeningEventSeries({ attributes: eventAttributes });
         res.status(http_status_1.CREATED).json(event);
     }
@@ -49,7 +50,7 @@ screeningEventSeriesRouter.get('', permitScopes_1.default(['admin', 'events', 'e
     check_1.query('endThrough').optional().isISO8601().toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
         const searchCoinditions = Object.assign({}, req.query, { 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
@@ -64,7 +65,7 @@ screeningEventSeriesRouter.get('', permitScopes_1.default(['admin', 'events', 'e
 }));
 screeningEventSeriesRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
         const event = yield eventRepo.findById({
             id: req.params.id
         });
@@ -87,7 +88,7 @@ screeningEventSeriesRouter.put('/:id', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body;
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
         yield eventRepo.saveScreeningEventSeries({ id: req.params.id, attributes: eventAttributes });
         res.status(http_status_1.NO_CONTENT).end();
     }

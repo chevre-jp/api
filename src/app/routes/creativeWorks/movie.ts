@@ -7,6 +7,7 @@ import { Router } from 'express';
 import { body, query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
+import * as mongoose from 'mongoose';
 
 import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
@@ -33,7 +34,7 @@ movieRouter.post(
                 ...req.body,
                 duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration).toISOString() : null
             };
-            const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
+            const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             await creativeWorkRepo.saveMovie(movie);
             res.status(CREATED).json(movie);
         } catch (error) {
@@ -56,7 +57,7 @@ movieRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
+            const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             const searchCoinditions: chevre.factory.creativeWork.movie.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
@@ -79,7 +80,7 @@ movieRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
+            const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             const movie = await creativeWorkRepo.findMovieByIdentifier({ identifier: req.params.identifier });
             res.json(movie);
         } catch (error) {
@@ -106,7 +107,7 @@ movieRouter.put(
                 ...req.body,
                 duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration).toISOString() : null
             };
-            const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
+            const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             await creativeWorkRepo.saveMovie(movie);
             res.status(NO_CONTENT).end();
         } catch (error) {
@@ -121,7 +122,7 @@ movieRouter.delete(
     validator,
     async (req, res, next) => {
         try {
-            const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
+            const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             await creativeWorkRepo.deleteMovie({ identifier: req.params.identifier });
             res.status(NO_CONTENT).end();
         } catch (error) {

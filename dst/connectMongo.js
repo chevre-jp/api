@@ -11,14 +11,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * MongoDBコネクション確立
  */
-const chevre = require("@chevre/domain");
 const createDebug = require("debug");
+const mongoose = require("mongoose");
 const debug = createDebug('chevre-api:connectMongo');
 const PING_INTERVAL = 10000;
 const MONGOLAB_URI = process.env.MONGOLAB_URI;
 const connectOptions = {
     autoReconnect: true,
-    keepAlive: 120000,
+    keepAlive: true,
     connectTimeoutMS: 30000,
     socketTimeoutMS: 0,
     reconnectTries: 30,
@@ -30,11 +30,11 @@ function connectMongo(params) {
         let connection;
         if (params === undefined || params.defaultConnection) {
             // コネクション確立
-            yield chevre.mongoose.connect(MONGOLAB_URI, connectOptions);
-            connection = chevre.mongoose.connection;
+            yield mongoose.connect(MONGOLAB_URI, connectOptions);
+            connection = mongoose.connection;
         }
         else {
-            connection = chevre.mongoose.createConnection(MONGOLAB_URI, connectOptions);
+            connection = mongoose.createConnection(MONGOLAB_URI, connectOptions);
         }
         // 定期的にコネクションチェック
         // tslint:disable-next-line:no-single-line-block-comment

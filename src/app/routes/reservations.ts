@@ -6,6 +6,7 @@ import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
 import { query } from 'express-validator/check';
 import { NO_CONTENT } from 'http-status';
+import * as mongoose from 'mongoose';
 
 import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
@@ -26,7 +27,7 @@ reservationsRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const searchCoinditions: chevre.factory.reservation.event.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
@@ -52,7 +53,7 @@ reservationsRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const reservation = await reservationRepo.findScreeningEventReservationById({
                 id: req.params.id
             });
@@ -77,8 +78,8 @@ reservationsRouter.put(
                 throw new chevre.factory.errors.ArgumentNull('At least one of id and reservationNumber');
             }
 
-            const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-            const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
 
             const reservations = await reservationRepo.searchScreeningEventReservations({
                 limit: 1,
@@ -124,8 +125,8 @@ reservationsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-            const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
 
             // 上映イベント集計タスクを追加
             const reservation = await reservationRepo.findScreeningEventReservationById({
@@ -164,8 +165,8 @@ reservationsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const reservationRepo = new chevre.repository.Reservation(chevre.mongoose.connection);
-            const taskRepo = new chevre.repository.Task(chevre.mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
 
             const reservation = await reservationRepo.attend({
                 id: req.params.id
