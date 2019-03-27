@@ -6,6 +6,7 @@ import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
 import { body, query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
+import * as moment from 'moment';
 import * as mongoose from 'mongoose';
 
 import * as redis from '../../../redis';
@@ -62,6 +63,56 @@ screeningEventRouter.post(
     }
 );
 
+screeningEventRouter.post(
+    '/saveMultiple',
+    permitScopes(['admin']),
+    ...[
+        body('attributes.*.typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+        body('attributes.*.doorTime').optional().isISO8601().toDate(),
+        body('attributes.*.startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+            .isISO8601().toDate(),
+        body('attributes.*.endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+            .isISO8601().toDate(),
+        body('attributes.*.workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+        body('attributes.*.location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+        body('attributes.*.superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+        body('attributes.*.name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+        body('attributes.*.eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+        body('attributes.*.offers').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+        body('attributes.*.offers.availabilityStarts').not().isEmpty().isISO8601().toDate(),
+        body('attributes.*.offers.availabilityEnds').not().isEmpty().isISO8601().toDate(),
+        body('attributes.*.offers.validFrom').not().isEmpty().isISO8601().toDate(),
+        body('attributes.*.offers.validThrough').not().isEmpty().isISO8601().toDate()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const eventAttributes: chevre.factory.event.screeningEvent.IAttributes[] = req.body.attributes;
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
+            const events = await eventRepo.createMany(eventAttributes);
+
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
+            await Promise.all(events.map(async (event) => {
+                const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                    name: chevre.factory.taskName.AggregateScreeningEvent,
+                    status: chevre.factory.taskStatus.Ready,
+                    runsAt: new Date(),
+                    remainingNumberOfTries: 3,
+                    lastTriedAt: null,
+                    numberOfTried: 0,
+                    executionResults: [],
+                    data: event
+                };
+                await taskRepo.save(aggregateTask);
+            }));
+
+            res.status(CREATED).json(events);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 screeningEventRouter.get(
     '',
     permitScopes(['admin', 'events', 'events.read-only']),
@@ -90,6 +141,35 @@ screeningEventRouter.get(
             const events = await eventRepo.searchScreeningEvents(searchCoinditions);
             const totalCount = await eventRepo.countScreeningEvents(searchCoinditions);
             res.set('X-Total-Count', totalCount.toString());
+            res.json(events);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+screeningEventRouter.get(
+    '/countTicketTypePerEvent',
+    permitScopes(['admin']),
+    (req, __, next) => {
+        req.checkQuery('startFrom').optional().isISO8601().withMessage('startFrom must be ISO8601 timestamp');
+        req.checkQuery('startThrough').optional().isISO8601().withMessage('startThrough must be ISO8601 timestamp');
+        next();
+    },
+    validator,
+    async (req, res, next) => {
+        try {
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+            const events = await chevre.service.event.countTicketTypePerEvent({
+                // tslint:disable-next-line:no-magic-numbers
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+                id: req.query.id,
+                startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom).toDate() : undefined,
+                startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough).toDate() : undefined
+            })({
+                reservation: reservationRepo
+            });
             res.json(events);
         } catch (error) {
             next(error);

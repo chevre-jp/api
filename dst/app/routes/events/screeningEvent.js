@@ -16,6 +16,7 @@ const express_1 = require("express");
 // tslint:disable-next-line:no-submodule-imports
 const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
+const moment = require("moment");
 const mongoose = require("mongoose");
 const redis = require("../../../redis");
 const permitScopes_1 = require("../../middlewares/permitScopes");
@@ -61,6 +62,48 @@ screeningEventRouter.post('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
+screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ...[
+    check_1.body('attributes.*.typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('attributes.*.doorTime').optional().isISO8601().toDate(),
+    check_1.body('attributes.*.startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+        .isISO8601().toDate(),
+    check_1.body('attributes.*.endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+        .isISO8601().toDate(),
+    check_1.body('attributes.*.workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('attributes.*.location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('attributes.*.superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('attributes.*.name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('attributes.*.eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('attributes.*.offers').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body('attributes.*.offers.availabilityStarts').not().isEmpty().isISO8601().toDate(),
+    check_1.body('attributes.*.offers.availabilityEnds').not().isEmpty().isISO8601().toDate(),
+    check_1.body('attributes.*.offers.validFrom').not().isEmpty().isISO8601().toDate(),
+    check_1.body('attributes.*.offers.validThrough').not().isEmpty().isISO8601().toDate()
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const eventAttributes = req.body.attributes;
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
+        const events = yield eventRepo.createMany(eventAttributes);
+        const taskRepo = new chevre.repository.Task(mongoose.connection);
+        yield Promise.all(events.map((event) => __awaiter(this, void 0, void 0, function* () {
+            const aggregateTask = {
+                name: chevre.factory.taskName.AggregateScreeningEvent,
+                status: chevre.factory.taskStatus.Ready,
+                runsAt: new Date(),
+                remainingNumberOfTries: 3,
+                lastTriedAt: null,
+                numberOfTried: 0,
+                executionResults: [],
+                data: event
+            };
+            yield taskRepo.save(aggregateTask);
+        })));
+        res.status(http_status_1.CREATED).json(events);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 screeningEventRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-only']), ...[
     check_1.query('inSessionFrom').optional().isISO8601().toDate(),
     check_1.query('inSessionThrough').optional().isISO8601().toDate(),
@@ -81,6 +124,29 @@ screeningEventRouter.get('', permitScopes_1.default(['admin', 'events', 'events.
         const events = yield eventRepo.searchScreeningEvents(searchCoinditions);
         const totalCount = yield eventRepo.countScreeningEvents(searchCoinditions);
         res.set('X-Total-Count', totalCount.toString());
+        res.json(events);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+screeningEventRouter.get('/countTicketTypePerEvent', permitScopes_1.default(['admin']), (req, __, next) => {
+    req.checkQuery('startFrom').optional().isISO8601().withMessage('startFrom must be ISO8601 timestamp');
+    req.checkQuery('startThrough').optional().isISO8601().withMessage('startThrough must be ISO8601 timestamp');
+    next();
+}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        const events = yield chevre.service.event.countTicketTypePerEvent({
+            // tslint:disable-next-line:no-magic-numbers
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+            page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+            id: req.query.id,
+            startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom).toDate() : undefined,
+            startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough).toDate() : undefined
+        })({
+            reservation: reservationRepo
+        });
         res.json(events);
     }
     catch (error) {
