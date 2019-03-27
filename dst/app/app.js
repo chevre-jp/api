@@ -19,8 +19,9 @@ const app = express();
 app.set('query parser', (str) => qs.parse(str, {
     arrayLimit: 1000,
     parseArrays: true,
+    depth: 10,
     allowDots: false,
-    allowPrototypes: true
+    allowPrototypes: false
 }));
 const options = {
     origin: '*',
