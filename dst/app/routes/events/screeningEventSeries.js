@@ -21,33 +21,75 @@ const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const screeningEventSeriesRouter = express_1.Router();
 screeningEventSeriesRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+    check_1.body('typeOf')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('startDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('endDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('workPerformed')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('location')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('eventStatus')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body;
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const event = yield eventRepo.saveScreeningEventSeries({ attributes: eventAttributes });
-        res.status(http_status_1.CREATED).json(event);
+        res.status(http_status_1.CREATED)
+            .json(event);
     }
     catch (error) {
         next(error);
     }
 }));
 screeningEventSeriesRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-only']), ...[
-    check_1.query('inSessionFrom').optional().isISO8601().toDate(),
-    check_1.query('inSessionThrough').optional().isISO8601().toDate(),
-    check_1.query('startFrom').optional().isISO8601().toDate(),
-    check_1.query('startThrough').optional().isISO8601().toDate(),
-    check_1.query('endFrom').optional().isISO8601().toDate(),
-    check_1.query('endThrough').optional().isISO8601().toDate()
+    check_1.query('inSessionFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('inSessionThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('startFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('startThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('endFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('endThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
@@ -76,21 +118,45 @@ screeningEventSeriesRouter.get('/:id', permitScopes_1.default(['admin', 'events'
     }
 }));
 screeningEventSeriesRouter.put('/:id', permitScopes_1.default(['admin']), ...[
-    check_1.body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+    check_1.body('typeOf')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('startDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('endDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('workPerformed')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('location')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('eventStatus')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body;
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         yield eventRepo.saveScreeningEventSeries({ id: req.params.id, attributes: eventAttributes });
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

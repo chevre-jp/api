@@ -23,22 +23,70 @@ const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const screeningEventRouter = express_1.Router();
 screeningEventRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('doorTime').optional().isISO8601().toDate(),
-    check_1.body('startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('offers').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('offers.availabilityStarts').not().isEmpty().isISO8601().toDate(),
-    check_1.body('offers.availabilityEnds').not().isEmpty().isISO8601().toDate(),
-    check_1.body('offers.validFrom').not().isEmpty().isISO8601().toDate(),
-    check_1.body('offers.validThrough').not().isEmpty().isISO8601().toDate()
+    check_1.body('typeOf')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('doorTime')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('startDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('endDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('workPerformed')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('location')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('superEvent')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('eventStatus')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('offers')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('offers.availabilityStarts')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.availabilityEnds')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.validFrom')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.validThrough')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body;
@@ -49,6 +97,7 @@ screeningEventRouter.post('', permitScopes_1.default(['admin']), ...[
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
             remainingNumberOfTries: 3,
+            // tslint:disable-next-line:no-null-keyword
             lastTriedAt: null,
             numberOfTried: 0,
             executionResults: [],
@@ -64,22 +113,70 @@ screeningEventRouter.post('', permitScopes_1.default(['admin']), ...[
     }
 }));
 screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ...[
-    check_1.body('attributes.*.typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('attributes.*.doorTime').optional().isISO8601().toDate(),
-    check_1.body('attributes.*.startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('attributes.*.endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('attributes.*.workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('attributes.*.location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('attributes.*.superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('attributes.*.name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('attributes.*.eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('attributes.*.offers').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('attributes.*.offers.availabilityStarts').not().isEmpty().isISO8601().toDate(),
-    check_1.body('attributes.*.offers.availabilityEnds').not().isEmpty().isISO8601().toDate(),
-    check_1.body('attributes.*.offers.validFrom').not().isEmpty().isISO8601().toDate(),
-    check_1.body('attributes.*.offers.validThrough').not().isEmpty().isISO8601().toDate()
+    check_1.body('attributes.*.typeOf')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('attributes.*.doorTime')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('attributes.*.startDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('attributes.*.endDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('attributes.*.workPerformed')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('attributes.*.location')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('attributes.*.superEvent')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('attributes.*.name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('attributes.*.eventStatus')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('attributes.*.offers')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('attributes.*.offers.availabilityStarts')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate(),
+    check_1.body('attributes.*.offers.availabilityEnds')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate(),
+    check_1.body('attributes.*.offers.validFrom')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate(),
+    check_1.body('attributes.*.offers.validThrough')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body.attributes;
@@ -92,6 +189,7 @@ screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ..
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 3,
+                // tslint:disable-next-line:no-null-keyword
                 lastTriedAt: null,
                 numberOfTried: 0,
                 executionResults: [],
@@ -107,16 +205,46 @@ screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ..
     }
 }));
 screeningEventRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-only']), ...[
-    check_1.query('inSessionFrom').optional().isISO8601().toDate(),
-    check_1.query('inSessionThrough').optional().isISO8601().toDate(),
-    check_1.query('startFrom').optional().isISO8601().toDate(),
-    check_1.query('startThrough').optional().isISO8601().toDate(),
-    check_1.query('endFrom').optional().isISO8601().toDate(),
-    check_1.query('endThrough').optional().isISO8601().toDate(),
-    check_1.query('offers.availableFrom').optional().isISO8601().toDate(),
-    check_1.query('offers.availableThrough').optional().isISO8601().toDate(),
-    check_1.query('offers.validFrom').optional().isISO8601().toDate(),
-    check_1.query('offers.validThrough').optional().isISO8601().toDate()
+    check_1.query('inSessionFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('inSessionThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('startFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('startThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('endFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('endThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.availableFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.availableThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.validFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.validThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
@@ -133,8 +261,14 @@ screeningEventRouter.get('', permitScopes_1.default(['admin', 'events', 'events.
     }
 }));
 screeningEventRouter.get('/countTicketTypePerEvent', permitScopes_1.default(['admin']), (req, __, next) => {
-    req.checkQuery('startFrom').optional().isISO8601().withMessage('startFrom must be ISO8601 timestamp');
-    req.checkQuery('startThrough').optional().isISO8601().withMessage('startThrough must be ISO8601 timestamp');
+    req.checkQuery('startFrom')
+        .optional()
+        .isISO8601()
+        .withMessage('startFrom must be ISO8601 timestamp');
+    req.checkQuery('startThrough')
+        .optional()
+        .isISO8601()
+        .withMessage('startThrough must be ISO8601 timestamp');
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
@@ -144,8 +278,10 @@ screeningEventRouter.get('/countTicketTypePerEvent', permitScopes_1.default(['ad
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
             page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
             id: req.query.id,
-            startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom).toDate() : undefined,
-            startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough).toDate() : undefined
+            startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom)
+                .toDate() : undefined,
+            startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough)
+                .toDate() : undefined
         })({
             reservation: reservationRepo
         });
@@ -168,22 +304,70 @@ screeningEventRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'eve
     }
 }));
 screeningEventRouter.put('/:id', permitScopes_1.default(['admin']), ...[
-    check_1.body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('doorTime').optional().isISO8601().toDate(),
-    check_1.body('startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('offers').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('offers.availabilityStarts').not().isEmpty().isISO8601().toDate(),
-    check_1.body('offers.availabilityEnds').not().isEmpty().isISO8601().toDate(),
-    check_1.body('offers.validFrom').not().isEmpty().isISO8601().toDate(),
-    check_1.body('offers.validThrough').not().isEmpty().isISO8601().toDate()
+    check_1.body('typeOf')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('doorTime')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('startDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('endDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('workPerformed')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('location')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('superEvent')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('eventStatus')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('offers')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('offers.availabilityStarts')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.availabilityEnds')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.validFrom')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.validThrough')
+        .not()
+        .isEmpty()
+        .isISO8601()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body;
@@ -194,6 +378,7 @@ screeningEventRouter.put('/:id', permitScopes_1.default(['admin']), ...[
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
             remainingNumberOfTries: 3,
+            // tslint:disable-next-line:no-null-keyword
             lastTriedAt: null,
             numberOfTried: 0,
             executionResults: [],
@@ -201,7 +386,8 @@ screeningEventRouter.put('/:id', permitScopes_1.default(['admin']), ...[
         };
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         yield taskRepo.save(aggregateTask);
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

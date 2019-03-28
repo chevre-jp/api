@@ -24,10 +24,19 @@ const validator_1 = require("../../middlewares/validator");
 const debug = createDebug('chevre-api:routes');
 cancelReservationTransactionsRouter.use(authentication_1.default);
 cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), (req, _, next) => {
-    req.checkBody('expires', 'invalid expires').notEmpty().withMessage('expires is required').isISO8601();
-    req.checkBody('agent', 'invalid agent').notEmpty().withMessage('agent is required');
-    req.checkBody('agent.typeOf', 'invalid agent.typeOf').notEmpty().withMessage('agent.typeOf is required');
-    req.checkBody('agent.name', 'invalid agent.name').notEmpty().withMessage('agent.name is required');
+    req.checkBody('expires', 'invalid expires')
+        .notEmpty()
+        .withMessage('Required')
+        .isISO8601();
+    req.checkBody('agent', 'invalid agent')
+        .notEmpty()
+        .withMessage('Required');
+    req.checkBody('agent.typeOf', 'invalid agent.typeOf')
+        .notEmpty()
+        .withMessage('Required');
+    req.checkBody('agent.name', 'invalid agent.name')
+        .notEmpty()
+        .withMessage('Required');
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
@@ -45,7 +54,8 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
                 clientUser: req.user,
                 transaction: req.body.object.transaction
             },
-            expires: moment(req.body.expires).toDate()
+            expires: moment(req.body.expires)
+                .toDate()
         })({
             reservation: reservationRepo,
             transaction: transactionRepo
@@ -63,7 +73,8 @@ cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_
             id: req.params.transactionId
         })({ transaction: transactionRepo });
         debug('transaction confirmed.');
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
@@ -77,7 +88,8 @@ cancelReservationTransactionsRouter.put('/:transactionId/cancel', permitScopes_1
             id: req.params.transactionId
         });
         debug('transaction canceled.');
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

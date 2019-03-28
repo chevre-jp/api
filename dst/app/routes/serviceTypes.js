@@ -25,7 +25,8 @@ serviceTypesRouter.post('', permitScopes_1.default(['admin']), validator_1.defau
         const serviceType = Object.assign({}, req.body);
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         yield serviceTypeRepo.save(serviceType);
-        res.status(http_status_1.CREATED).json(serviceType);
+        res.status(http_status_1.CREATED)
+            .json(serviceType);
     }
     catch (error) {
         next(error);
@@ -61,7 +62,8 @@ serviceTypesRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.de
         const serviceType = Object.assign({}, req.body);
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         yield serviceTypeRepo.save(serviceType);
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

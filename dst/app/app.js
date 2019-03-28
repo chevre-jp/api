@@ -58,7 +58,9 @@ app.use((__, res, next) => {
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 app.use(expressValidator({})); // this line must be immediately after any of the bodyParser middlewares!
-connectMongo_1.connectMongo({ defaultConnection: true }).then().catch((err) => {
+connectMongo_1.connectMongo({ defaultConnection: true })
+    .then()
+    .catch((err) => {
     // tslint:disable-next-line:no-console
     console.error('connetMongo:', err);
     process.exit(1);

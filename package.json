@@ -49,9 +49,9 @@
     "snyk": "^1.122.0",
     "supertest": "^3.4.1",
     "ts-node": "^6.2.0",
-    "tslint": "^5.12.1",
-    "tslint-microsoft-contrib": "^5.2.1",
-    "typescript": "^3.2.2"
+    "tslint": "^5.14.0",
+    "tslint-microsoft-contrib": "^6.1.0",
+    "typescript": "^3.3.4000"
   },
   "engines": {
     "node": ">=6.9.1",
@@ -59,7 +59,7 @@
   },
   "keywords": [],
   "license": "ISC",
-  "main": "index.js",
+  "main": "dst/server.js",
   "name": "chevre-api",
   "private": true,
   "repository": {},

@@ -55,7 +55,9 @@ distributeRouter.put(
     '/:id',
     permitScopes(['admin']),
     (req, _, next) => {
-        req.checkBody('name').exists().withMessage('name is required');
+        req.checkBody('name')
+            .exists()
+            .withMessage('Required');
         next();
     },
     validator,
@@ -66,7 +68,8 @@ distributeRouter.put(
                 id: req.params.id,
                 name: req.body.name
             });
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }
@@ -77,8 +80,12 @@ distributeRouter.post(
     '/add',
     permitScopes(['admin']),
     (req, _, next) => {
-        req.checkBody('id').exists().withMessage('id is required');
-        req.checkBody('name').exists().withMessage('name is required');
+        req.checkBody('id')
+            .exists()
+            .withMessage('Required');
+        req.checkBody('name')
+            .exists()
+            .withMessage('Required');
         next();
     },
     validator,
@@ -89,7 +96,8 @@ distributeRouter.post(
                 id: req.body.id,
                 name: req.body.name
             });
-            res.status(CREATED).json(distributions);
+            res.status(CREATED)
+                .json(distributions);
         } catch (error) {
             next(error);
         }
@@ -106,7 +114,8 @@ distributeRouter.delete(
             await distributionRepo.deleteById({
                 id: req.params.id
             });
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

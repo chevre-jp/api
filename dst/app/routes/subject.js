@@ -44,7 +44,8 @@ subjectRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (
         yield subjectRepo.save({
             attributes: req.body.attributes
         });
-        res.status(http_status_1.CREATED).json('ok');
+        res.status(http_status_1.CREATED)
+            .json('ok');
     }
     catch (error) {
         next(error);
@@ -88,7 +89,8 @@ subjectRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default
             id: req.params.id,
             attributes: req.body.attributes
         });
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

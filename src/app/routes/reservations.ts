@@ -19,10 +19,22 @@ reservationsRouter.get(
     '/eventReservation/screeningEvent',
     permitScopes(['admin', 'reservations', 'reservations.read-only']),
     ...[
-        query('modifiedFrom').optional().isISO8601().toDate(),
-        query('modifiedThrough').optional().isISO8601().toDate(),
-        query('reservationFor.startFrom').optional().isISO8601().toDate(),
-        query('reservationFor.startThrough').optional().isISO8601().toDate()
+        query('modifiedFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('modifiedThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('reservationFor.startFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('reservationFor.startThrough')
+            .optional()
+            .isISO8601()
+            .toDate()
     ],
     validator,
     async (req, res, next) => {
@@ -47,9 +59,6 @@ reservationsRouter.get(
 reservationsRouter.get(
     '/eventReservation/screeningEvent/:id',
     permitScopes(['admin', 'reservations', 'reservations.read-only']),
-    (_, __, next) => {
-        next();
-    },
     validator,
     async (req, res, next) => {
         try {
@@ -102,6 +111,7 @@ reservationsRouter.put(
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 3,
+                // tslint:disable-next-line:no-null-keyword
                 lastTriedAt: null,
                 numberOfTried: 0,
                 executionResults: [],
@@ -112,7 +122,8 @@ reservationsRouter.put(
             };
             await taskRepo.save(aggregateTask);
 
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }
@@ -142,6 +153,7 @@ reservationsRouter.put(
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 3,
+                // tslint:disable-next-line:no-null-keyword
                 lastTriedAt: null,
                 numberOfTried: 0,
                 executionResults: [],
@@ -152,7 +164,8 @@ reservationsRouter.put(
             };
             await taskRepo.save(aggregateTask);
 
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }
@@ -177,6 +190,7 @@ reservationsRouter.put(
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 3,
+                // tslint:disable-next-line:no-null-keyword
                 lastTriedAt: null,
                 numberOfTried: 0,
                 executionResults: [],
@@ -187,7 +201,8 @@ reservationsRouter.put(
             };
             await taskRepo.save(aggregateTask);
 
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

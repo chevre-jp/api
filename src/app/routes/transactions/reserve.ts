@@ -23,10 +23,19 @@ reserveTransactionsRouter.post(
     '/start',
     permitScopes(['admin', 'transactions']),
     (req, _, next) => {
-        req.checkBody('expires', 'invalid expires').notEmpty().withMessage('expires is required').isISO8601();
-        req.checkBody('agent', 'invalid agent').notEmpty().withMessage('agent is required');
-        req.checkBody('agent.typeOf', 'invalid agent.typeOf').notEmpty().withMessage('agent.typeOf is required');
-        req.checkBody('agent.name', 'invalid agent.name').notEmpty().withMessage('agent.name is required');
+        req.checkBody('expires', 'invalid expires')
+            .notEmpty()
+            .withMessage('Required')
+            .isISO8601();
+        req.checkBody('agent', 'invalid agent')
+            .notEmpty()
+            .withMessage('Required');
+        req.checkBody('agent.typeOf', 'invalid agent.typeOf')
+            .notEmpty()
+            .withMessage('Required');
+        req.checkBody('agent.name', 'invalid agent.name')
+            .notEmpty()
+            .withMessage('Required');
 
         next();
     },
@@ -54,7 +63,8 @@ reserveTransactionsRouter.post(
                     event: req.body.object.event,
                     acceptedOffer: req.body.object.acceptedOffer
                 },
-                expires: moment(req.body.expires).toDate()
+                expires: moment(req.body.expires)
+                    .toDate()
             })({
                 eventAvailability: eventAvailabilityRepo,
                 event: eventRepo,
@@ -84,7 +94,8 @@ reserveTransactionsRouter.put(
                 object: req.body.object
             })({ transaction: transactionRepo });
             debug('transaction confirmed.');
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }
@@ -110,7 +121,8 @@ reserveTransactionsRouter.put(
                 transaction: transactionRepo
             });
             debug('transaction canceled.');
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

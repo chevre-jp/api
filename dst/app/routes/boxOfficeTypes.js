@@ -47,7 +47,9 @@ boxOfficeTypesRouter.get('/search', permitScopes_1.default(['admin']), validator
     }
 }));
 boxOfficeTypesRouter.put('/:id', permitScopes_1.default(['admin']), (req, _, next) => {
-    req.checkBody('name').exists().withMessage('name is required');
+    req.checkBody('name')
+        .exists()
+        .withMessage('Required');
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
@@ -56,15 +58,20 @@ boxOfficeTypesRouter.put('/:id', permitScopes_1.default(['admin']), (req, _, nex
             id: req.params.id,
             name: req.body.name
         });
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
     }
 }));
 boxOfficeTypesRouter.post('/add', permitScopes_1.default(['admin']), (req, _, next) => {
-    req.checkBody('id').exists().withMessage('id is required');
-    req.checkBody('name').exists().withMessage('name is required');
+    req.checkBody('id')
+        .exists()
+        .withMessage('Required');
+    req.checkBody('name')
+        .exists()
+        .withMessage('Required');
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
@@ -73,7 +80,8 @@ boxOfficeTypesRouter.post('/add', permitScopes_1.default(['admin']), (req, _, ne
             id: req.body.id,
             name: req.body.name
         });
-        res.status(http_status_1.CREATED).json(boxOfficeType);
+        res.status(http_status_1.CREATED)
+            .json(boxOfficeType);
     }
     catch (error) {
         next(error);
@@ -85,7 +93,8 @@ boxOfficeTypesRouter.delete('/:id', permitScopes_1.default(['admin']), validator
         yield boxOfficeTypeRepo.deleteById({
             id: req.params.id
         });
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

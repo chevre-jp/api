@@ -28,14 +28,21 @@ accountTitlesRouter.use(authentication_1.default);
  * 科目分類追加
  */
 accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['admin']), ...[
-    check_1.body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+    check_1.body('codeValue')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitle = req.body;
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         yield accountTitleRepo.accountTitleModel.create(accountTitle);
-        res.status(http_status_1.CREATED).json(accountTitle);
+        res.status(http_status_1.CREATED)
+            .json(accountTitle);
     }
     catch (error) {
         next(error);
@@ -67,7 +74,8 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin'
                 }
             });
         }
-        const totalCount = yield accountTitleRepo.accountTitleModel.countDocuments({ $and: conditions }).setOptions({ maxTimeMS: 10000 })
+        const totalCount = yield accountTitleRepo.accountTitleModel.countDocuments({ $and: conditions })
+            .setOptions({ maxTimeMS: 10000 })
             .exec();
         const query = accountTitleRepo.accountTitleModel.find({ $and: conditions }, {
             __v: 0,
@@ -78,14 +86,17 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin'
         // tslint:disable-next-line:no-single-line-block-comment
         /* istanbul ignore else */
         if (searchCoinditions.limit !== undefined && searchCoinditions.page !== undefined) {
-            query.limit(searchCoinditions.limit).skip(searchCoinditions.limit * (searchCoinditions.page - 1));
+            query.limit(searchCoinditions.limit)
+                .skip(searchCoinditions.limit * (searchCoinditions.page - 1));
         }
         // tslint:disable-next-line:no-single-line-block-comment
         /* istanbul ignore else */
         if (searchCoinditions.sort !== undefined) {
             query.sort(searchCoinditions.sort);
         }
-        const accountTitles = yield query.setOptions({ maxTimeMS: 10000 }).exec().then((docs) => docs.map((doc) => doc.toObject()));
+        const accountTitles = yield query.setOptions({ maxTimeMS: 10000 })
+            .exec()
+            .then((docs) => docs.map((doc) => doc.toObject()));
         res.set('X-Total-Count', totalCount.toString());
         res.json(accountTitles);
     }
@@ -97,19 +108,27 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin'
  * 科目分類更新
  */
 accountTitlesRouter.put('/accountTitleCategory/:codeValue', permitScopes_1.default(['admin']), ...[
-    check_1.body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+    check_1.body('codeValue')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitle = Object.assign({}, req.body, { codeValue: req.params.codeValue });
         delete accountTitle.inCodeSet;
         delete accountTitle.hasCategoryCode;
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-        const doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({ codeValue: accountTitle.codeValue }, accountTitle, { new: true }).exec();
+        const doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({ codeValue: accountTitle.codeValue }, accountTitle, { new: true })
+            .exec();
         if (doc === null) {
             throw new chevre.factory.errors.NotFound('AccountTitle');
         }
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
@@ -119,10 +138,22 @@ accountTitlesRouter.put('/accountTitleCategory/:codeValue', permitScopes_1.defau
  * 科目追加
  */
 accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), ...[
-    check_1.body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('inCodeSet').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('inCodeSet.codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+    check_1.body('codeValue')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('inCodeSet')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('inCodeSet.codeValue')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitleCategory = req.body.inCodeSet;
@@ -130,7 +161,8 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), 
         delete accountTitle.inCodeSet;
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         // 科目分類の存在確認
-        let doc = yield accountTitleRepo.accountTitleModel.findOne({ codeValue: accountTitleCategory.codeValue }).exec();
+        let doc = yield accountTitleRepo.accountTitleModel.findOne({ codeValue: accountTitleCategory.codeValue })
+            .exec();
         if (doc === null) {
             throw new chevre.factory.errors.NotFound('AccountTitleCategory');
         }
@@ -138,12 +170,14 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), 
         doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             codeValue: accountTitleCategory.codeValue,
             'hasCategoryCode.codeValue': { $ne: accountTitle.codeValue }
-        }, { $push: { hasCategoryCode: accountTitle } }, { new: true }).exec();
+        }, { $push: { hasCategoryCode: accountTitle } }, { new: true })
+            .exec();
         // 存在しなければ科目コード重複
         if (doc === null) {
             throw new chevre.factory.errors.AlreadyInUse('AccountTitle', ['hasCategoryCode.codeValue']);
         }
-        res.status(http_status_1.CREATED).json(accountTitle);
+        res.status(http_status_1.CREATED)
+            .json(accountTitle);
     }
     catch (error) {
         next(error);
@@ -191,7 +225,8 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['admin', 'ac
             { $unwind: '$hasCategoryCode' },
             ...matchStages,
             { $count: 'totalCount' }
-        ]).exec();
+        ])
+            .exec();
         const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
         const aggregate = accountTitleRepo.accountTitleModel.aggregate([
             { $unwind: '$hasCategoryCode' },
@@ -228,8 +263,14 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['admin', 'ac
  * 科目更新
  */
 accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default(['admin']), ...[
-    check_1.body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+    check_1.body('codeValue')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitle = Object.assign({}, req.body, { codeValue: req.params.codeValue });
@@ -242,11 +283,13 @@ accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default(['
             'hasCategoryCode.$.description': accountTitle.description,
             'hasCategoryCode.$.inDefinedTermSet': accountTitle.inDefinedTermSet,
             'hasCategoryCode.$.additionalProperty': accountTitle.additionalProperty
-        }, { new: true }).exec();
+        }, { new: true })
+            .exec();
         if (doc === null) {
             throw new chevre.factory.errors.NotFound('AccountTitle');
         }
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
@@ -256,12 +299,30 @@ accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default(['
  * 細目追加
  */
 accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('inCodeSet').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('inCodeSet.codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('inCodeSet.inCodeSet').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('inCodeSet.inCodeSet.codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+    check_1.body('codeValue')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('inCodeSet')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('inCodeSet.codeValue')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('inCodeSet.inCodeSet')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('inCodeSet.inCodeSet.codeValue')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitleSet = req.body.inCodeSet;
@@ -273,7 +334,8 @@ accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
         let doc = yield accountTitleRepo.accountTitleModel.findOne({
             codeValue: accountTitleCategory.codeValue,
             'hasCategoryCode.codeValue': accountTitleSet.codeValue
-        }).exec();
+        })
+            .exec();
         if (doc === null) {
             throw new chevre.factory.errors.NotFound('AccountTitleSet');
         }
@@ -281,12 +343,14 @@ accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
             codeValue: accountTitleCategory.codeValue,
             'hasCategoryCode.codeValue': accountTitleSet.codeValue,
             'hasCategoryCode.hasCategoryCode.codeValue': { $ne: accountTitle.codeValue }
-        }, { $push: { 'hasCategoryCode.$.hasCategoryCode': accountTitle } }, { new: true }).exec();
+        }, { $push: { 'hasCategoryCode.$.hasCategoryCode': accountTitle } }, { new: true })
+            .exec();
         // 存在しなければ細目コード重複
         if (doc === null) {
             throw new chevre.factory.errors.AlreadyInUse('AccountTitle', ['hasCategoryCode.hasCategoryCode.codeValue']);
         }
-        res.status(http_status_1.CREATED).json(accountTitle);
+        res.status(http_status_1.CREATED)
+            .json(accountTitle);
     }
     catch (error) {
         next(error);
@@ -347,7 +411,8 @@ accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'a
             { $unwind: '$hasCategoryCode.hasCategoryCode' },
             ...matchStages,
             { $count: 'totalCount' }
-        ]).exec();
+        ])
+            .exec();
         const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
         const aggregate = accountTitleRepo.accountTitleModel.aggregate([
             { $unwind: '$hasCategoryCode' },
@@ -389,10 +454,22 @@ accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'a
  * 細目更新
  */
 accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['admin']), ...[
-    check_1.body('codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('inCodeSet').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('inCodeSet.codeValue').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+    check_1.body('codeValue')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('inCodeSet')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('inCodeSet.codeValue')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const accountTitleSet = req.body.inCodeSet;
@@ -404,11 +481,13 @@ accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['admin']), ...[
         }, { 'hasCategoryCode.$[element].hasCategoryCode.$': accountTitle }, {
             new: true,
             arrayFilters: [{ 'element.codeValue': accountTitleSet.codeValue }]
-        }).exec();
+        })
+            .exec();
         if (doc === null) {
             throw new chevre.factory.errors.NotFound('AccountTitle');
         }
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

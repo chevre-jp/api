@@ -51,7 +51,9 @@ boxOfficeTypesRouter.put(
     '/:id',
     permitScopes(['admin']),
     (req, _, next) => {
-        req.checkBody('name').exists().withMessage('name is required');
+        req.checkBody('name')
+            .exists()
+            .withMessage('Required');
         next();
     },
     validator,
@@ -62,7 +64,8 @@ boxOfficeTypesRouter.put(
                 id: req.params.id,
                 name: req.body.name
             });
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }
@@ -73,8 +76,12 @@ boxOfficeTypesRouter.post(
     '/add',
     permitScopes(['admin']),
     (req, _, next) => {
-        req.checkBody('id').exists().withMessage('id is required');
-        req.checkBody('name').exists().withMessage('name is required');
+        req.checkBody('id')
+            .exists()
+            .withMessage('Required');
+        req.checkBody('name')
+            .exists()
+            .withMessage('Required');
         next();
     },
     validator,
@@ -85,7 +92,8 @@ boxOfficeTypesRouter.post(
                 id: req.body.id,
                 name: req.body.name
             });
-            res.status(CREATED).json(boxOfficeType);
+            res.status(CREATED)
+                .json(boxOfficeType);
         } catch (error) {
             next(error);
         }
@@ -102,7 +110,8 @@ boxOfficeTypesRouter.delete(
             await boxOfficeTypeRepo.deleteById({
                 id: req.params.id
             });
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

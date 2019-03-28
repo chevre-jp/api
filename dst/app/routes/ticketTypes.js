@@ -28,17 +28,30 @@ ticketTypesRouter.post('', permitScopes_1.default(['admin']), (_, __, next) => {
     try {
         const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
         const ticketType = yield ticketTypeRepo.createTicketType(req.body);
-        res.status(http_status_1.CREATED).json(ticketType);
+        res.status(http_status_1.CREATED)
+            .json(ticketType);
     }
     catch (error) {
         next(error);
     }
 }));
 ticketTypesRouter.get('', permitScopes_1.default(['admin', 'ticketTypes', 'ticketTypes.read-only']), ...[
-    check_1.query('priceSpecification.minPrice').optional().isInt().toInt(),
-    check_1.query('priceSpecification.maxPrice').optional().isInt().toInt(),
-    check_1.query('priceSpecification.accounting.minAccountsReceivable').optional().isInt().toInt(),
-    check_1.query('priceSpecification.accounting.maxAccountsReceivable').optional().isInt().toInt()
+    check_1.query('priceSpecification.minPrice')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.maxPrice')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.accounting.minAccountsReceivable')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.accounting.maxAccountsReceivable')
+        .optional()
+        .isInt()
+        .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
@@ -72,7 +85,8 @@ ticketTypesRouter.put('/:id', permitScopes_1.default(['admin']), (_, __, next) =
     try {
         const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
         yield ticketTypeRepo.updateTicketType(req.body);
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
@@ -84,7 +98,8 @@ ticketTypesRouter.delete('/:id', permitScopes_1.default(['admin']), (_, __, next
     try {
         const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
         yield ticketTypeRepo.deleteTicketType({ id: req.params.id });
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

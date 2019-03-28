@@ -46,7 +46,9 @@ distributeRouter.get('/search', permitScopes_1.default(['admin']), validator_1.d
     }
 }));
 distributeRouter.put('/:id', permitScopes_1.default(['admin']), (req, _, next) => {
-    req.checkBody('name').exists().withMessage('name is required');
+    req.checkBody('name')
+        .exists()
+        .withMessage('Required');
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
@@ -55,15 +57,20 @@ distributeRouter.put('/:id', permitScopes_1.default(['admin']), (req, _, next) =
             id: req.params.id,
             name: req.body.name
         });
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
     }
 }));
 distributeRouter.post('/add', permitScopes_1.default(['admin']), (req, _, next) => {
-    req.checkBody('id').exists().withMessage('id is required');
-    req.checkBody('name').exists().withMessage('name is required');
+    req.checkBody('id')
+        .exists()
+        .withMessage('Required');
+    req.checkBody('name')
+        .exists()
+        .withMessage('Required');
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
@@ -72,7 +79,8 @@ distributeRouter.post('/add', permitScopes_1.default(['admin']), (req, _, next) 
             id: req.body.id,
             name: req.body.name
         });
-        res.status(http_status_1.CREATED).json(distributions);
+        res.status(http_status_1.CREATED)
+            .json(distributions);
     }
     catch (error) {
         next(error);
@@ -84,7 +92,8 @@ distributeRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.d
         yield distributionRepo.deleteById({
             id: req.params.id
         });
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

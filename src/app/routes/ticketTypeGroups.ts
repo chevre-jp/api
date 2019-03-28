@@ -24,7 +24,8 @@ ticketTypeGroupsRouter.post(
             const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
             const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             await ticketTypeRepo.createTicketTypeGroup(ticketTypeGroup);
-            res.status(CREATED).json(ticketTypeGroup);
+            res.status(CREATED)
+                .json(ticketTypeGroup);
         } catch (error) {
             next(error);
         }
@@ -84,7 +85,8 @@ ticketTypeGroupsRouter.put(
             const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
             const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             await ticketTypeRepo.updateTicketTypeGroup(ticketTypeGroup);
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }
@@ -101,7 +103,8 @@ ticketTypeGroupsRouter.delete(
         try {
             const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
             await ticketTypeRepo.deleteTicketTypeGroup({ id: req.params.id });
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

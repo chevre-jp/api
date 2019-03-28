@@ -17,15 +17,38 @@ screeningEventSeriesRouter.post(
     '',
     permitScopes(['admin']),
     ...[
-        body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-            .isISO8601().toDate(),
-        body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-            .isISO8601().toDate(),
-        body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+        body('typeOf')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('startDate')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+            .isISO8601()
+            .toDate(),
+        body('endDate')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+            .isISO8601()
+            .toDate(),
+        body('workPerformed')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('location')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('name')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('eventStatus')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
     ],
     validator,
     async (req, res, next) => {
@@ -33,7 +56,8 @@ screeningEventSeriesRouter.post(
             const eventAttributes: chevre.factory.event.screeningEventSeries.IAttributes = req.body;
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             const event = await eventRepo.saveScreeningEventSeries({ attributes: eventAttributes });
-            res.status(CREATED).json(event);
+            res.status(CREATED)
+                .json(event);
         } catch (error) {
             next(error);
         }
@@ -44,12 +68,30 @@ screeningEventSeriesRouter.get(
     '',
     permitScopes(['admin', 'events', 'events.read-only']),
     ...[
-        query('inSessionFrom').optional().isISO8601().toDate(),
-        query('inSessionThrough').optional().isISO8601().toDate(),
-        query('startFrom').optional().isISO8601().toDate(),
-        query('startThrough').optional().isISO8601().toDate(),
-        query('endFrom').optional().isISO8601().toDate(),
-        query('endThrough').optional().isISO8601().toDate()
+        query('inSessionFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('inSessionThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('startFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('startThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('endFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('endThrough')
+            .optional()
+            .isISO8601()
+            .toDate()
     ],
     validator,
     async (req, res, next) => {
@@ -92,15 +134,38 @@ screeningEventSeriesRouter.put(
     '/:id',
     permitScopes(['admin']),
     ...[
-        body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-            .isISO8601().toDate(),
-        body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-            .isISO8601().toDate(),
-        body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
+        body('typeOf')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('startDate')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+            .isISO8601()
+            .toDate(),
+        body('endDate')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+            .isISO8601()
+            .toDate(),
+        body('workPerformed')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('location')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('name')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('eventStatus')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
     ],
     validator,
     async (req, res, next) => {
@@ -108,7 +173,8 @@ screeningEventSeriesRouter.put(
             const eventAttributes: chevre.factory.event.screeningEventSeries.IAttributes = req.body;
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             await eventRepo.saveScreeningEventSeries({ id: req.params.id, attributes: eventAttributes });
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

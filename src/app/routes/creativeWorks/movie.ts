@@ -20,23 +20,44 @@ movieRouter.post(
     '',
     permitScopes(['admin']),
     ...[
-        body('datePublished').optional().isISO8601().toDate(),
-        body('datePublished').optional().isISO8601().toDate(),
-        body('offers.availabilityStarts').optional().isISO8601().toDate(),
-        body('offers.availabilityEnds').optional().isISO8601().toDate(),
-        body('offers.validFrom').optional().isISO8601().toDate(),
-        body('offers.validThrough').optional().isISO8601().toDate()
+        body('datePublished')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('datePublished')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.availabilityStarts')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.availabilityEnds')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.validFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.validThrough')
+            .optional()
+            .isISO8601()
+            .toDate()
     ],
     validator,
     async (req, res, next) => {
         try {
             const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,
-                duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration).toISOString() : null
+                duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
+                    // tslint:disable-next-line:no-null-keyword
+                    .toISOString() : null
             };
             const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             await creativeWorkRepo.saveMovie(movie);
-            res.status(CREATED).json(movie);
+            res.status(CREATED)
+                .json(movie);
         } catch (error) {
             next(error);
         }
@@ -47,12 +68,30 @@ movieRouter.get(
     '',
     permitScopes(['admin', 'creativeWorks', 'creativeWorks.read-only']),
     ...[
-        query('datePublishedFrom').optional().isISO8601().toDate(),
-        query('datePublishedThrough').optional().isISO8601().toDate(),
-        query('offers.availableFrom').optional().isISO8601().toDate(),
-        query('offers.availableThrough').optional().isISO8601().toDate(),
-        query('offers.validFrom').optional().isISO8601().toDate(),
-        query('offers.validThrough').optional().isISO8601().toDate()
+        query('datePublishedFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('datePublishedThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('offers.availableFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('offers.availableThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('offers.validFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('offers.validThrough')
+            .optional()
+            .isISO8601()
+            .toDate()
     ],
     validator,
     async (req, res, next) => {
@@ -93,23 +132,44 @@ movieRouter.put(
     '/:identifier',
     permitScopes(['admin']),
     ...[
-        body('datePublished').optional().isISO8601().toDate(),
-        body('datePublished').optional().isISO8601().toDate(),
-        body('offers.availabilityStarts').optional().isISO8601().toDate(),
-        body('offers.availabilityEnds').optional().isISO8601().toDate(),
-        body('offers.validFrom').optional().isISO8601().toDate(),
-        body('offers.validThrough').optional().isISO8601().toDate()
+        body('datePublished')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('datePublished')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.availabilityStarts')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.availabilityEnds')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.validFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.validThrough')
+            .optional()
+            .isISO8601()
+            .toDate()
     ],
     validator,
     async (req, res, next) => {
         try {
             const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,
-                duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration).toISOString() : null
+                duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
+                    // tslint:disable-next-line:no-null-keyword
+                    .toISOString() : null
             };
             const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             await creativeWorkRepo.saveMovie(movie);
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }
@@ -124,7 +184,8 @@ movieRouter.delete(
         try {
             const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             await creativeWorkRepo.deleteMovie({ identifier: req.params.identifier });
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

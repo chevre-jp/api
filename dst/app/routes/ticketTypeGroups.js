@@ -27,7 +27,8 @@ ticketTypeGroupsRouter.post('', permitScopes_1.default(['admin']), (_, __, next)
         const ticketTypeGroup = req.body;
         const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
         yield ticketTypeRepo.createTicketTypeGroup(ticketTypeGroup);
-        res.status(http_status_1.CREATED).json(ticketTypeGroup);
+        res.status(http_status_1.CREATED)
+            .json(ticketTypeGroup);
     }
     catch (error) {
         next(error);
@@ -69,7 +70,8 @@ ticketTypeGroupsRouter.put('/:id', permitScopes_1.default(['admin']), (_, __, ne
         const ticketTypeGroup = req.body;
         const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
         yield ticketTypeRepo.updateTicketTypeGroup(ticketTypeGroup);
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
@@ -81,7 +83,8 @@ ticketTypeGroupsRouter.delete('/:id', permitScopes_1.default(['admin']), (_, __,
     try {
         const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
         yield ticketTypeRepo.deleteTicketTypeGroup({ id: req.params.id });
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

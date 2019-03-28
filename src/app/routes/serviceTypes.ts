@@ -24,7 +24,8 @@ serviceTypesRouter.post(
             };
             const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             await serviceTypeRepo.save(serviceType);
-            res.status(CREATED).json(serviceType);
+            res.status(CREATED)
+                .json(serviceType);
         } catch (error) {
             next(error);
         }
@@ -80,7 +81,8 @@ serviceTypesRouter.put(
             };
             const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             await serviceTypeRepo.save(serviceType);
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

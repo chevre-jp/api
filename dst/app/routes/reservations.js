@@ -23,10 +23,22 @@ const validator_1 = require("../middlewares/validator");
 const reservationsRouter = express_1.Router();
 reservationsRouter.use(authentication_1.default);
 reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
-    check_1.query('modifiedFrom').optional().isISO8601().toDate(),
-    check_1.query('modifiedThrough').optional().isISO8601().toDate(),
-    check_1.query('reservationFor.startFrom').optional().isISO8601().toDate(),
-    check_1.query('reservationFor.startThrough').optional().isISO8601().toDate()
+    check_1.query('modifiedFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('modifiedThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.startFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.startThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
@@ -42,9 +54,7 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
         next(error);
     }
 }));
-reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), (_, __, next) => {
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const reservation = yield reservationRepo.findScreeningEventReservationById({
@@ -85,6 +95,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScope
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
             remainingNumberOfTries: 3,
+            // tslint:disable-next-line:no-null-keyword
             lastTriedAt: null,
             numberOfTried: 0,
             executionResults: [],
@@ -94,7 +105,8 @@ reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScope
             }
         };
         yield taskRepo.save(aggregateTask);
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
@@ -116,6 +128,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
             remainingNumberOfTries: 3,
+            // tslint:disable-next-line:no-null-keyword
             lastTriedAt: null,
             numberOfTried: 0,
             executionResults: [],
@@ -125,7 +138,8 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
             }
         };
         yield taskRepo.save(aggregateTask);
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
@@ -143,6 +157,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
             remainingNumberOfTries: 3,
+            // tslint:disable-next-line:no-null-keyword
             lastTriedAt: null,
             numberOfTried: 0,
             executionResults: [],
@@ -152,7 +167,8 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
             }
         };
         yield taskRepo.save(aggregateTask);
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

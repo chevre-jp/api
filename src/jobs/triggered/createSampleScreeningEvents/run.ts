@@ -47,18 +47,29 @@ export default async () => {
             // const boxOfficeType = await boxOfficeTypeRepo.findById({ id: ticketTypeGroup.itemOffered.serviceType.id });
             const duration = Math.floor((Math.random() * 90) + 90);
             const delay = Math.floor(Math.random() * 780);
-            const doorTime = moment(`${moment().add(Math.floor(Math.random() * 7), 'days').format('YYYY-MM-DD')}T09:00:00+09:00`)
-                .add(delay, 'minutes').toDate();
-            const startDate = moment(doorTime).add(10, 'minutes').toDate();
-            const endDate = moment(startDate).add(duration, 'minutes').toDate();
+            const doorTime = moment(`${moment()
+                .add(Math.floor(Math.random() * 7), 'days')
+                .format('YYYY-MM-DD')}T09:00:00+09:00`)
+                .add(delay, 'minutes')
+                .toDate();
+            const startDate = moment(doorTime)
+                .add(10, 'minutes')
+                .toDate();
+            const endDate = moment(startDate)
+                .add(duration, 'minutes')
+                .toDate();
             const offers: chevre.factory.event.screeningEvent.IOffer = {
                 id: ticketTypeGroup.id,
                 name: ticketTypeGroup.name,
                 typeOf: 'Offer',
                 priceCurrency: chevre.factory.priceCurrency.JPY,
                 availabilityEnds: endDate,
-                availabilityStarts: moment(startDate).add(-7, 'days').toDate(),
-                validFrom: moment(startDate).add(-3, 'days').toDate(),
+                availabilityStarts: moment(startDate)
+                    .add(-7, 'days')
+                    .toDate(),
+                validFrom: moment(startDate)
+                    .add(-3, 'days')
+                    .toDate(),
                 validThrough: endDate,
                 eligibleQuantity: {
                     value: 4,
@@ -87,7 +98,8 @@ export default async () => {
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes = {
                 typeOf: chevre.factory.eventType.ScreeningEvent,
                 name: eventSeries.name,
-                duration: moment.duration(duration, 'minutes').toISOString(),
+                duration: moment.duration(duration, 'minutes')
+                    .toISOString(),
                 doorTime: doorTime,
                 startDate: startDate,
                 endDate: endDate,

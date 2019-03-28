@@ -24,30 +24,69 @@ const validator_1 = require("../../middlewares/validator");
 const movieRouter = express_1.Router();
 movieRouter.use(authentication_1.default);
 movieRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('datePublished').optional().isISO8601().toDate(),
-    check_1.body('datePublished').optional().isISO8601().toDate(),
-    check_1.body('offers.availabilityStarts').optional().isISO8601().toDate(),
-    check_1.body('offers.availabilityEnds').optional().isISO8601().toDate(),
-    check_1.body('offers.validFrom').optional().isISO8601().toDate(),
-    check_1.body('offers.validThrough').optional().isISO8601().toDate()
+    check_1.body('datePublished')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('datePublished')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.availabilityStarts')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.availabilityEnds')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.validFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.validThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const movie = Object.assign({}, req.body, { duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration).toISOString() : null });
+        const movie = Object.assign({}, req.body, { duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
+                // tslint:disable-next-line:no-null-keyword
+                .toISOString() : null });
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         yield creativeWorkRepo.saveMovie(movie);
-        res.status(http_status_1.CREATED).json(movie);
+        res.status(http_status_1.CREATED)
+            .json(movie);
     }
     catch (error) {
         next(error);
     }
 }));
 movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), ...[
-    check_1.query('datePublishedFrom').optional().isISO8601().toDate(),
-    check_1.query('datePublishedThrough').optional().isISO8601().toDate(),
-    check_1.query('offers.availableFrom').optional().isISO8601().toDate(),
-    check_1.query('offers.availableThrough').optional().isISO8601().toDate(),
-    check_1.query('offers.validFrom').optional().isISO8601().toDate(),
-    check_1.query('offers.validThrough').optional().isISO8601().toDate()
+    check_1.query('datePublishedFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('datePublishedThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.availableFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.availableThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.validFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.validThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
@@ -74,18 +113,39 @@ movieRouter.get('/:identifier', permitScopes_1.default(['admin', 'creativeWorks'
     }
 }));
 movieRouter.put('/:identifier', permitScopes_1.default(['admin']), ...[
-    check_1.body('datePublished').optional().isISO8601().toDate(),
-    check_1.body('datePublished').optional().isISO8601().toDate(),
-    check_1.body('offers.availabilityStarts').optional().isISO8601().toDate(),
-    check_1.body('offers.availabilityEnds').optional().isISO8601().toDate(),
-    check_1.body('offers.validFrom').optional().isISO8601().toDate(),
-    check_1.body('offers.validThrough').optional().isISO8601().toDate()
+    check_1.body('datePublished')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('datePublished')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.availabilityStarts')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.availabilityEnds')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.validFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('offers.validThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const movie = Object.assign({}, req.body, { duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration).toISOString() : null });
+        const movie = Object.assign({}, req.body, { duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
+                // tslint:disable-next-line:no-null-keyword
+                .toISOString() : null });
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         yield creativeWorkRepo.saveMovie(movie);
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
@@ -95,7 +155,8 @@ movieRouter.delete('/:identifier', permitScopes_1.default(['admin']), validator_
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         yield creativeWorkRepo.deleteMovie({ identifier: req.params.identifier });
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

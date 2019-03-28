@@ -1,14 +1,15 @@
 import { factory } from '@chevre/domain';
 
 /**
- * APIError
+ * APIエラー
  */
 export class APIError extends Error {
     public readonly code: number;
     public readonly errors: factory.errors.Chevre[];
 
     constructor(code: number, errors: factory.errors.Chevre[]) {
-        const message = errors.map((error) => error.message).join('\n');
+        const message = errors.map((error) => error.message)
+            .join('\n');
         super(message);
 
         this.name = 'APIError';

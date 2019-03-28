@@ -22,10 +22,19 @@ cancelReservationTransactionsRouter.post(
     '/start',
     permitScopes(['admin', 'transactions']),
     (req, _, next) => {
-        req.checkBody('expires', 'invalid expires').notEmpty().withMessage('expires is required').isISO8601();
-        req.checkBody('agent', 'invalid agent').notEmpty().withMessage('agent is required');
-        req.checkBody('agent.typeOf', 'invalid agent.typeOf').notEmpty().withMessage('agent.typeOf is required');
-        req.checkBody('agent.name', 'invalid agent.name').notEmpty().withMessage('agent.name is required');
+        req.checkBody('expires', 'invalid expires')
+            .notEmpty()
+            .withMessage('Required')
+            .isISO8601();
+        req.checkBody('agent', 'invalid agent')
+            .notEmpty()
+            .withMessage('Required');
+        req.checkBody('agent.typeOf', 'invalid agent.typeOf')
+            .notEmpty()
+            .withMessage('Required');
+        req.checkBody('agent.name', 'invalid agent.name')
+            .notEmpty()
+            .withMessage('Required');
 
         next();
     },
@@ -46,7 +55,8 @@ cancelReservationTransactionsRouter.post(
                     clientUser: req.user,
                     transaction: req.body.object.transaction
                 },
-                expires: moment(req.body.expires).toDate()
+                expires: moment(req.body.expires)
+                    .toDate()
             })({
                 reservation: reservationRepo,
                 transaction: transactionRepo
@@ -69,7 +79,8 @@ cancelReservationTransactionsRouter.put(
                 id: req.params.transactionId
             })({ transaction: transactionRepo });
             debug('transaction confirmed.');
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }
@@ -88,7 +99,8 @@ cancelReservationTransactionsRouter.put(
                 id: req.params.transactionId
             });
             debug('transaction canceled.');
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

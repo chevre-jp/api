@@ -37,29 +37,82 @@ const validations = [
         req.body = (Array.isArray(req.body)) ? req.body : [req.body];
         next();
     },
-    check_1.body().isArray().custom((value) => value.length <= MAX_NUM_EVENTS_CREATED).withMessage(() => 'Array length max exceeded'),
-    check_1.body('*.typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('*.eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('*.name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('*.doorTime').optional().isISO8601().toDate(),
-    check_1.body('*.startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('*.endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-        .isISO8601().toDate(),
-    check_1.body('*.workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.body('*.location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
+    check_1.body()
+        .isArray()
+        .custom((value) => value.length <= MAX_NUM_EVENTS_CREATED)
+        .withMessage(() => 'Array length max exceeded'),
+    check_1.body('*.typeOf')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('*.eventStatus')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('*.name')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('*.doorTime')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('*.startDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('*.endDate')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+        .isISO8601()
+        .toDate(),
+    check_1.body('*.workPerformed')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.body('*.location')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
     check_1.oneOf([
         [
-            check_1.body('*.typeOf').equals(chevre.factory.eventType.ScreeningEvent),
-            check_1.body('*.superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-            check_1.body('*.offers').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-            check_1.body('*.offers.availabilityStarts').not().isEmpty().isISO8601().toDate(),
-            check_1.body('*.offers.availabilityEnds').not().isEmpty().isISO8601().toDate(),
-            check_1.body('*.offers.validFrom').not().isEmpty().isISO8601().toDate(),
-            check_1.body('*.offers.validThrough').not().isEmpty().isISO8601().toDate()
+            check_1.body('*.typeOf')
+                .equals(chevre.factory.eventType.ScreeningEvent),
+            check_1.body('*.superEvent')
+                .not()
+                .isEmpty()
+                .withMessage((_, __) => 'Required'),
+            check_1.body('*.offers')
+                .not()
+                .isEmpty()
+                .withMessage((_, __) => 'Required'),
+            check_1.body('*.offers.availabilityStarts')
+                .not()
+                .isEmpty()
+                .isISO8601()
+                .toDate(),
+            check_1.body('*.offers.availabilityEnds')
+                .not()
+                .isEmpty()
+                .isISO8601()
+                .toDate(),
+            check_1.body('*.offers.validFrom')
+                .not()
+                .isEmpty()
+                .isISO8601()
+                .toDate(),
+            check_1.body('*.offers.validThrough')
+                .not()
+                .isEmpty()
+                .isISO8601()
+                .toDate()
         ],
         [
-            check_1.body('*.typeOf').equals(chevre.factory.eventType.ScreeningEventSeries)
+            check_1.body('*.typeOf')
+                .equals(chevre.factory.eventType.ScreeningEventSeries)
         ]
     ])
 ];
@@ -78,6 +131,7 @@ eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validat
                     status: chevre.factory.taskStatus.Ready,
                     runsAt: new Date(),
                     remainingNumberOfTries: 3,
+                    // tslint:disable-next-line:no-null-keyword
                     lastTriedAt: null,
                     numberOfTried: 0,
                     executionResults: [],
@@ -87,7 +141,8 @@ eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validat
                 yield taskRepo.save(aggregateTask);
             }
         })));
-        res.status(http_status_1.CREATED).json(events);
+        res.status(http_status_1.CREATED)
+            .json(events);
     }
     catch (error) {
         next(error);
@@ -97,17 +152,50 @@ eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validat
  * イベント検索
  */
 eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-only']), ...[
-    check_1.query('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-    check_1.query('inSessionFrom').optional().isISO8601().toDate(),
-    check_1.query('inSessionThrough').optional().isISO8601().toDate(),
-    check_1.query('startFrom').optional().isISO8601().toDate(),
-    check_1.query('startThrough').optional().isISO8601().toDate(),
-    check_1.query('endFrom').optional().isISO8601().toDate(),
-    check_1.query('endThrough').optional().isISO8601().toDate(),
-    check_1.query('offers.availableFrom').optional().isISO8601().toDate(),
-    check_1.query('offers.availableThrough').optional().isISO8601().toDate(),
-    check_1.query('offers.validFrom').optional().isISO8601().toDate(),
-    check_1.query('offers.validThrough').optional().isISO8601().toDate()
+    check_1.query('typeOf')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.query('inSessionFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('inSessionThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('startFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('startThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('endFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('endThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.availableFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.availableThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.validFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.validThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
@@ -116,8 +204,8 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const events = yield eventRepo.search(searchCoinditions);
         const totalCount = yield eventRepo.count(searchCoinditions);
-        res.set('X-Total-Count', totalCount.toString());
-        res.json(events);
+        res.set('X-Total-Count', totalCount.toString())
+            .json(events);
     }
     catch (error) {
         next(error);
@@ -152,6 +240,7 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 3,
+                // tslint:disable-next-line:no-null-keyword
                 lastTriedAt: null,
                 numberOfTried: 0,
                 executionResults: [],
@@ -160,7 +249,8 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
             const taskRepo = new chevre.repository.Task(mongoose.connection);
             yield taskRepo.save(aggregateTask);
         }
-        res.status(http_status_1.NO_CONTENT).end();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
@@ -171,36 +261,44 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
  */
 eventsRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
+        let offers = [];
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const placeRepo = new chevre.repository.Place(mongoose.connection);
         const event = yield eventRepo.findById({
             id: req.params.id
         });
-        const unavailableOffers = yield eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });
-        const movieTheater = yield placeRepo.findMovieTheaterByBranchCode({ branchCode: event.superEvent.location.branchCode });
-        const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === event.location.branchCode);
-        if (screeningRoom === undefined) {
-            throw new chevre.factory.errors.NotFound('Screening room');
-        }
-        const screeningRoomSections = screeningRoom.containsPlace;
-        const offers = screeningRoomSections;
-        offers.forEach((offer) => {
-            const seats = offer.containsPlace;
-            const seatSection = offer.branchCode;
-            seats.forEach((seat) => {
-                const seatNumber = seat.branchCode;
-                const unavailableOffer = unavailableOffers.find((o) => o.seatSection === seatSection && o.seatNumber === seatNumber);
-                seat.offers = [{
-                        typeOf: 'Offer',
-                        priceCurrency: chevre.factory.priceCurrency.JPY,
-                        availability: (unavailableOffer !== undefined)
-                            ? chevre.factory.itemAvailability.OutOfStock
-                            : chevre.factory.itemAvailability.InStock
-                    }];
+        // 座席指定利用可能かどうか
+        const reservedSeatsAvailable = !(event.offers !== undefined
+            && event.offers.itemOffered !== undefined
+            && event.offers.itemOffered.serviceOutput !== undefined
+            && event.offers.itemOffered.serviceOutput.reservedTicket !== undefined
+            && event.offers.itemOffered.serviceOutput.reservedTicket.ticketedSeat === undefined);
+        if (reservedSeatsAvailable) {
+            const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+            const unavailableOffers = yield eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });
+            const movieTheater = yield placeRepo.findMovieTheaterByBranchCode({ branchCode: event.superEvent.location.branchCode });
+            const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === event.location.branchCode);
+            if (screeningRoom === undefined) {
+                throw new chevre.factory.errors.NotFound('Screening Room');
+            }
+            offers = screeningRoom.containsPlace;
+            offers.forEach((offer) => {
+                const seats = offer.containsPlace;
+                const seatSection = offer.branchCode;
+                seats.forEach((seat) => {
+                    const seatNumber = seat.branchCode;
+                    const unavailableOffer = unavailableOffers.find((o) => o.seatSection === seatSection && o.seatNumber === seatNumber);
+                    seat.offers = [{
+                            typeOf: 'Offer',
+                            priceCurrency: chevre.factory.priceCurrency.JPY,
+                            availability: (unavailableOffer !== undefined)
+                                ? chevre.factory.itemAvailability.OutOfStock
+                                : chevre.factory.itemAvailability.InStock
+                        }];
+                });
             });
-        });
-        res.json(screeningRoomSections);
+        }
+        res.json(offers);
     }
     catch (error) {
         next(error);

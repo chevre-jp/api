@@ -44,7 +44,8 @@ subjectRouter.post(
             await subjectRepo.save({
                 attributes: req.body.attributes
             });
-            res.status(CREATED).json('ok');
+            res.status(CREATED)
+                .json('ok');
         } catch (error) {
             next(error);
         }
@@ -100,7 +101,8 @@ subjectRouter.put(
                 id: req.params.id,
                 attributes: req.body.attributes
             });
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

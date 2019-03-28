@@ -19,22 +19,70 @@ screeningEventRouter.post(
     '',
     permitScopes(['admin']),
     ...[
-        body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('doorTime').optional().isISO8601().toDate(),
-        body('startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-            .isISO8601().toDate(),
-        body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-            .isISO8601().toDate(),
-        body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('offers').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('offers.availabilityStarts').not().isEmpty().isISO8601().toDate(),
-        body('offers.availabilityEnds').not().isEmpty().isISO8601().toDate(),
-        body('offers.validFrom').not().isEmpty().isISO8601().toDate(),
-        body('offers.validThrough').not().isEmpty().isISO8601().toDate()
+        body('typeOf')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('doorTime')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('startDate')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+            .isISO8601()
+            .toDate(),
+        body('endDate')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+            .isISO8601()
+            .toDate(),
+        body('workPerformed')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('location')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('superEvent')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('name')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('eventStatus')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('offers')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('offers.availabilityStarts')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate(),
+        body('offers.availabilityEnds')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate(),
+        body('offers.validFrom')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate(),
+        body('offers.validThrough')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate()
     ],
     validator,
     async (req, res, next) => {
@@ -48,6 +96,7 @@ screeningEventRouter.post(
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 3,
+                // tslint:disable-next-line:no-null-keyword
                 lastTriedAt: null,
                 numberOfTried: 0,
                 executionResults: [],
@@ -68,22 +117,70 @@ screeningEventRouter.post(
     '/saveMultiple',
     permitScopes(['admin']),
     ...[
-        body('attributes.*.typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('attributes.*.doorTime').optional().isISO8601().toDate(),
-        body('attributes.*.startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-            .isISO8601().toDate(),
-        body('attributes.*.endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-            .isISO8601().toDate(),
-        body('attributes.*.workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('attributes.*.location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('attributes.*.superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('attributes.*.name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('attributes.*.eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('attributes.*.offers').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('attributes.*.offers.availabilityStarts').not().isEmpty().isISO8601().toDate(),
-        body('attributes.*.offers.availabilityEnds').not().isEmpty().isISO8601().toDate(),
-        body('attributes.*.offers.validFrom').not().isEmpty().isISO8601().toDate(),
-        body('attributes.*.offers.validThrough').not().isEmpty().isISO8601().toDate()
+        body('attributes.*.typeOf')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('attributes.*.doorTime')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('attributes.*.startDate')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+            .isISO8601()
+            .toDate(),
+        body('attributes.*.endDate')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+            .isISO8601()
+            .toDate(),
+        body('attributes.*.workPerformed')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('attributes.*.location')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('attributes.*.superEvent')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('attributes.*.name')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('attributes.*.eventStatus')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('attributes.*.offers')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('attributes.*.offers.availabilityStarts')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate(),
+        body('attributes.*.offers.availabilityEnds')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate(),
+        body('attributes.*.offers.validFrom')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate(),
+        body('attributes.*.offers.validThrough')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate()
     ],
     validator,
     async (req, res, next) => {
@@ -99,6 +196,7 @@ screeningEventRouter.post(
                     status: chevre.factory.taskStatus.Ready,
                     runsAt: new Date(),
                     remainingNumberOfTries: 3,
+                    // tslint:disable-next-line:no-null-keyword
                     lastTriedAt: null,
                     numberOfTried: 0,
                     executionResults: [],
@@ -119,16 +217,46 @@ screeningEventRouter.get(
     '',
     permitScopes(['admin', 'events', 'events.read-only']),
     ...[
-        query('inSessionFrom').optional().isISO8601().toDate(),
-        query('inSessionThrough').optional().isISO8601().toDate(),
-        query('startFrom').optional().isISO8601().toDate(),
-        query('startThrough').optional().isISO8601().toDate(),
-        query('endFrom').optional().isISO8601().toDate(),
-        query('endThrough').optional().isISO8601().toDate(),
-        query('offers.availableFrom').optional().isISO8601().toDate(),
-        query('offers.availableThrough').optional().isISO8601().toDate(),
-        query('offers.validFrom').optional().isISO8601().toDate(),
-        query('offers.validThrough').optional().isISO8601().toDate()
+        query('inSessionFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('inSessionThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('startFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('startThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('endFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('endThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('offers.availableFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('offers.availableThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('offers.validFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('offers.validThrough')
+            .optional()
+            .isISO8601()
+            .toDate()
     ],
     validator,
     async (req, res, next) => {
@@ -155,8 +283,14 @@ screeningEventRouter.get(
     '/countTicketTypePerEvent',
     permitScopes(['admin']),
     (req, __, next) => {
-        req.checkQuery('startFrom').optional().isISO8601().withMessage('startFrom must be ISO8601 timestamp');
-        req.checkQuery('startThrough').optional().isISO8601().withMessage('startThrough must be ISO8601 timestamp');
+        req.checkQuery('startFrom')
+            .optional()
+            .isISO8601()
+            .withMessage('startFrom must be ISO8601 timestamp');
+        req.checkQuery('startThrough')
+            .optional()
+            .isISO8601()
+            .withMessage('startThrough must be ISO8601 timestamp');
         next();
     },
     validator,
@@ -168,8 +302,10 @@ screeningEventRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
                 id: req.query.id,
-                startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom).toDate() : undefined,
-                startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough).toDate() : undefined
+                startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom)
+                    .toDate() : undefined,
+                startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough)
+                    .toDate() : undefined
             })({
                 reservation: reservationRepo
             });
@@ -203,22 +339,70 @@ screeningEventRouter.put(
     '/:id',
     permitScopes(['admin']),
     ...[
-        body('typeOf').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('doorTime').optional().isISO8601().toDate(),
-        body('startDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-            .isISO8601().toDate(),
-        body('endDate').not().isEmpty().withMessage((_, options) => `${options.path} is required`)
-            .isISO8601().toDate(),
-        body('workPerformed').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('location').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('superEvent').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('name').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('eventStatus').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('offers').not().isEmpty().withMessage((_, options) => `${options.path} is required`),
-        body('offers.availabilityStarts').not().isEmpty().isISO8601().toDate(),
-        body('offers.availabilityEnds').not().isEmpty().isISO8601().toDate(),
-        body('offers.validFrom').not().isEmpty().isISO8601().toDate(),
-        body('offers.validThrough').not().isEmpty().isISO8601().toDate()
+        body('typeOf')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('doorTime')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('startDate')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+            .isISO8601()
+            .toDate(),
+        body('endDate')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+            .isISO8601()
+            .toDate(),
+        body('workPerformed')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('location')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('superEvent')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('name')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('eventStatus')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('offers')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
+        body('offers.availabilityStarts')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate(),
+        body('offers.availabilityEnds')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate(),
+        body('offers.validFrom')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate(),
+        body('offers.validThrough')
+            .not()
+            .isEmpty()
+            .isISO8601()
+            .toDate()
     ],
     validator,
     async (req, res, next) => {
@@ -232,6 +416,7 @@ screeningEventRouter.put(
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 3,
+                // tslint:disable-next-line:no-null-keyword
                 lastTriedAt: null,
                 numberOfTried: 0,
                 executionResults: [],
@@ -240,7 +425,8 @@ screeningEventRouter.put(
             const taskRepo = new chevre.repository.Task(mongoose.connection);
             await taskRepo.save(aggregateTask);
 
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }
