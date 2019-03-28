@@ -12,7 +12,14 @@ import { connectMongo } from '../../../connectMongo';
 
 const debug = createDebug('chevre-api:jobs');
 
+const CREATE_SAMPLE_EVENTS_DISABLED = (process.env.CREATE_SAMPLE_EVENTS_DISABLED === '1');
+
+// tslint:disable-next-line:max-func-body-length
 export default async () => {
+    if (CREATE_SAMPLE_EVENTS_DISABLED) {
+        return;
+    }
+
     const connection = await connectMongo({ defaultConnection: false });
 
     const job = new CronJob(
@@ -21,6 +28,7 @@ export default async () => {
             const eventRepo = new chevre.repository.Event(connection);
             const placeRepo = new chevre.repository.Place(connection);
             const ticketTypeRepo = new chevre.repository.TicketType(connection);
+            // const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(connection);
 
             const eventSeriesList = await eventRepo.search<chevre.factory.eventType.ScreeningEventSeries>({
                 typeOf: chevre.factory.eventType.ScreeningEventSeries
@@ -36,6 +44,7 @@ export default async () => {
             const ticketTypeGroups = await ticketTypeRepo.searchTicketTypeGroups({});
             // 券種グループをランダム選定
             const ticketTypeGroup = ticketTypeGroups[Math.floor(Math.random() * ticketTypeGroups.length)];
+            // const boxOfficeType = await boxOfficeTypeRepo.findById({ id: ticketTypeGroup.itemOffered.serviceType.id });
             const duration = Math.floor((Math.random() * 90) + 90);
             const delay = Math.floor(Math.random() * 780);
             const doorTime = moment(`${moment().add(Math.floor(Math.random() * 7), 'days').format('YYYY-MM-DD')}T09:00:00+09:00`)
