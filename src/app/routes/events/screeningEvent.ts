@@ -56,7 +56,8 @@ screeningEventRouter.post(
             const taskRepo = new chevre.repository.Task(mongoose.connection);
             await taskRepo.save(aggregateTask);
 
-            res.status(CREATED).json(event);
+            res.status(CREATED)
+                .json(event);
         } catch (error) {
             next(error);
         }
@@ -106,7 +107,8 @@ screeningEventRouter.post(
                 await taskRepo.save(aggregateTask);
             }));
 
-            res.status(CREATED).json(events);
+            res.status(CREATED)
+                .json(events);
         } catch (error) {
             next(error);
         }
@@ -140,8 +142,9 @@ screeningEventRouter.get(
             };
             const events = await eventRepo.searchScreeningEvents(searchCoinditions);
             const totalCount = await eventRepo.countScreeningEvents(searchCoinditions);
-            res.set('X-Total-Count', totalCount.toString());
-            res.json(events);
+
+            res.set('X-Total-Count', totalCount.toString())
+                .json(events);
         } catch (error) {
             next(error);
         }
@@ -170,6 +173,7 @@ screeningEventRouter.get(
             })({
                 reservation: reservationRepo
             });
+
             res.json(events);
         } catch (error) {
             next(error);
@@ -187,6 +191,7 @@ screeningEventRouter.get(
             const event = await eventRepo.findById({
                 id: req.params.id
             });
+
             res.json(event);
         } catch (error) {
             next(error);
@@ -251,40 +256,55 @@ screeningEventRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
+            let offers: chevre.factory.event.screeningEvent.IScreeningRoomSectionOffer[] = [];
+
             const eventRepo = new chevre.repository.Event(mongoose.connection);
-            const placeRepo = new chevre.repository.Place(mongoose.connection);
             const event = await eventRepo.findById<chevre.factory.eventType.ScreeningEvent>({
                 id: req.params.id
             });
-            const unavailableOffers = await eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });
-            const movieTheater = await placeRepo.findMovieTheaterByBranchCode({ branchCode: event.superEvent.location.branchCode });
-            const screeningRoom = <chevre.factory.place.movieTheater.IScreeningRoom>movieTheater.containsPlace.find(
-                (p) => p.branchCode === event.location.branchCode
+
+            // 座席指定利用可能かどうか
+            const reservedSeatsAvailable = !(
+                event.offers !== undefined
+                && event.offers.itemOffered !== undefined
+                && event.offers.itemOffered.serviceOutput !== undefined
+                && event.offers.itemOffered.serviceOutput.reservedTicket !== undefined
+                && event.offers.itemOffered.serviceOutput.reservedTicket.ticketedSeat === undefined
             );
-            if (screeningRoom === undefined) {
-                throw new chevre.factory.errors.NotFound('Screening room');
-            }
-            const screeningRoomSections = screeningRoom.containsPlace;
-            const offers: chevre.factory.event.screeningEvent.IScreeningRoomSectionOffer[] = screeningRoomSections;
-            offers.forEach((offer) => {
-                const seats = offer.containsPlace;
-                const seatSection = offer.branchCode;
-                seats.forEach((seat) => {
-                    const seatNumber = seat.branchCode;
-                    const unavailableOffer = unavailableOffers.find(
-                        (o) => o.seatSection === seatSection && o.seatNumber === seatNumber
-                    );
-                    seat.offers = [{
-                        typeOf: 'Offer',
-                        priceCurrency: chevre.factory.priceCurrency.JPY,
-                        availability: (unavailableOffer !== undefined)
-                            ? chevre.factory.itemAvailability.OutOfStock
-                            : chevre.factory.itemAvailability.InStock
-                    }];
+
+            if (reservedSeatsAvailable) {
+                const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
+                const placeRepo = new chevre.repository.Place(mongoose.connection);
+                const unavailableOffers = await eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });
+                const movieTheater = await placeRepo.findMovieTheaterByBranchCode({ branchCode: event.superEvent.location.branchCode });
+                const screeningRoom = <chevre.factory.place.movieTheater.IScreeningRoom>movieTheater.containsPlace.find(
+                    (p) => p.branchCode === event.location.branchCode
+                );
+                if (screeningRoom === undefined) {
+                    throw new chevre.factory.errors.NotFound('Screening Room');
+                }
+
+                offers = screeningRoom.containsPlace;
+                offers.forEach((offer) => {
+                    const seats = offer.containsPlace;
+                    const seatSection = offer.branchCode;
+                    seats.forEach((seat) => {
+                        const seatNumber = seat.branchCode;
+                        const unavailableOffer = unavailableOffers.find(
+                            (o) => o.seatSection === seatSection && o.seatNumber === seatNumber
+                        );
+                        seat.offers = [{
+                            typeOf: 'Offer',
+                            priceCurrency: chevre.factory.priceCurrency.JPY,
+                            availability: (unavailableOffer !== undefined)
+                                ? chevre.factory.itemAvailability.OutOfStock
+                                : chevre.factory.itemAvailability.InStock
+                        }];
+                    });
                 });
-            });
-            res.json(screeningRoomSections);
+            }
+
+            res.json(offers);
         } catch (error) {
             next(error);
         }
@@ -303,11 +323,13 @@ screeningEventRouter.get(
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
             const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
+
             const offers = await chevre.service.offer.searchScreeningEventTicketOffers({ eventId: req.params.id })({
                 event: eventRepo,
                 priceSpecification: priceSpecificationRepo,
                 ticketType: ticketTypeRepo
             });
+
             res.json(offers);
         } catch (error) {
             next(error);
