@@ -62,15 +62,17 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
                     typeOf: 'ServiceType',
                     id: '',
                     name: ''
+                },
+                serviceOutput: {
+                    typeOf: chevre.factory.reservationType.EventReservation,
+                    reservedTicket: {
+                        typeOf: 'Ticket',
+                        // 座席指定イベントを生成
+                        ticketedSeat: {
+                            typeOf: chevre.factory.placeType.Seat
+                        }
+                    }
                 }
-                // serviceOutput: {
-                //     typeOf: chevre.factory.reservationType.EventReservation,
-                //     reservedTicket: {
-                //         ticketedSeat: {
-                //             typeOf: chevre.factory.placeType.Seat
-                //         }
-                //     }
-                // }
             }
         };
         const eventAttributes = {

@@ -61,17 +61,20 @@ export default async () => {
                         typeOf: 'ServiceType',
                         id: '',
                         name: ''
+                    },
+                    serviceOutput: {
+                        typeOf: chevre.factory.reservationType.EventReservation,
+                        reservedTicket: {
+                            typeOf: 'Ticket',
+                            // 座席指定イベントを生成
+                            ticketedSeat: {
+                                typeOf: chevre.factory.placeType.Seat
+                            }
+                        }
                     }
-                    // serviceOutput: {
-                    //     typeOf: chevre.factory.reservationType.EventReservation,
-                    //     reservedTicket: {
-                    //         ticketedSeat: {
-                    //             typeOf: chevre.factory.placeType.Seat
-                    //         }
-                    //     }
-                    // }
                 }
             };
+
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes = {
                 typeOf: chevre.factory.eventType.ScreeningEvent,
                 name: eventSeries.name,
@@ -96,6 +99,7 @@ export default async () => {
                 checkInCount: 0,
                 attendeeCount: 0
             };
+
             await eventRepo.saveScreeningEvent({ attributes: eventAttributes });
         },
         undefined,
