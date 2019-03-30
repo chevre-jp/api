@@ -40,6 +40,7 @@ boxOfficeTypesRouter.get(
             const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             const searchCoinditions: chevre.factory.serviceType.ISearchConditions = {
                 ...req.query,
+                ids: (req.query.id !== undefined) ? [req.query.id] : req.query.ids, // 互換性対応のため
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -95,7 +96,10 @@ boxOfficeTypesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const serviceType: chevre.factory.serviceType.IServiceType = req.body;
+            const serviceType: chevre.factory.serviceType.IServiceType = {
+                ...req.body,
+                typeOf: 'ServiceType'
+            };
             const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             await serviceTypeRepo.save(serviceType);
             res.status(CREATED)

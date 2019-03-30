@@ -19,7 +19,10 @@ serviceTypesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const serviceType: chevre.factory.serviceType.IServiceType = req.body;
+            const serviceType: chevre.factory.serviceType.IServiceType = {
+                ...req.body,
+                typeOf: 'ServiceType'
+            };
             const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             await serviceTypeRepo.save(serviceType);
 

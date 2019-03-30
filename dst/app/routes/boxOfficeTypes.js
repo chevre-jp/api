@@ -38,7 +38,7 @@ boxOfficeTypesRouter.get('/getBoxOfficeTypeList', permitScopes_1.default(['admin
 boxOfficeTypesRouter.get('/search', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-        const searchCoinditions = Object.assign({}, req.query, { 
+        const searchCoinditions = Object.assign({}, req.query, { ids: (req.query.id !== undefined) ? [req.query.id] : req.query.ids, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const totalCount = yield serviceTypeRepo.count(searchCoinditions);
@@ -77,7 +77,7 @@ boxOfficeTypesRouter.post('/add', permitScopes_1.default(['admin']), (req, _, ne
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const serviceType = req.body;
+        const serviceType = Object.assign({}, req.body, { typeOf: 'ServiceType' });
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         yield serviceTypeRepo.save(serviceType);
         res.status(http_status_1.CREATED)
