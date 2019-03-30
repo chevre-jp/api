@@ -18,9 +18,14 @@ boxOfficeTypesRouter.get(
     validator,
     async (__, res, next) => {
         try {
-            const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(mongoose.connection);
-            const boxOfficeTypes = await boxOfficeTypeRepo.getBoxOfficeTypeList();
-            res.json(boxOfficeTypes);
+            const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
+            const searchCoinditions: chevre.factory.serviceType.ISearchConditions = {
+                sort: <any>{ _id: chevre.factory.sortType.Ascending }
+            };
+            const totalCount = await serviceTypeRepo.count(searchCoinditions);
+            const serviceTypes = await serviceTypeRepo.search(searchCoinditions);
+            res.set('X-Total-Count', totalCount.toString());
+            res.json(serviceTypes);
         } catch (error) {
             next(error);
         }
@@ -32,15 +37,17 @@ boxOfficeTypesRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(mongoose.connection);
-            const searchCondition = {
-                id: req.query.id,
-                name: req.query.name
+            const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
+            const searchCoinditions: chevre.factory.serviceType.ISearchConditions = {
+                ...req.query,
+                // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const totalCount = await boxOfficeTypeRepo.countBoxOfficeType(searchCondition);
-            const boxOfficeType = await boxOfficeTypeRepo.searchBoxOfficeType(searchCondition);
+            const totalCount = await serviceTypeRepo.count(searchCoinditions);
+            const serviceTypes = await serviceTypeRepo.search(searchCoinditions);
             res.set('X-Total-Count', totalCount.toString());
-            res.json(boxOfficeType);
+            res.json(serviceTypes);
         } catch (error) {
             next(error);
         }
@@ -59,11 +66,12 @@ boxOfficeTypesRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(mongoose.connection);
-            await boxOfficeTypeRepo.updateBoxOfficeType({
-                id: req.params.id,
-                name: req.body.name
-            });
+            const serviceType: chevre.factory.serviceType.IServiceType = {
+                ...req.body,
+                id: req.params.id
+            };
+            const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
+            await serviceTypeRepo.save(serviceType);
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
@@ -87,13 +95,11 @@ boxOfficeTypesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(mongoose.connection);
-            const boxOfficeType = await boxOfficeTypeRepo.createBoxOfficeType({
-                id: req.body.id,
-                name: req.body.name
-            });
+            const serviceType: chevre.factory.serviceType.IServiceType = req.body;
+            const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
+            await serviceTypeRepo.save(serviceType);
             res.status(CREATED)
-                .json(boxOfficeType);
+                .json(serviceType);
         } catch (error) {
             next(error);
         }
@@ -106,10 +112,11 @@ boxOfficeTypesRouter.delete(
     validator,
     async (req, res, next) => {
         try {
-            const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(mongoose.connection);
-            await boxOfficeTypeRepo.deleteById({
+            const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
+            await serviceTypeRepo.deleteById({
                 id: req.params.id
             });
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {

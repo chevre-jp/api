@@ -29,7 +29,6 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         const eventRepo = new chevre.repository.Event(connection);
         const placeRepo = new chevre.repository.Place(connection);
         const ticketTypeRepo = new chevre.repository.TicketType(connection);
-        // const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(connection);
         const eventSeriesList = yield eventRepo.search({
             typeOf: chevre.factory.eventType.ScreeningEventSeries
         });
@@ -43,7 +42,6 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         const ticketTypeGroups = yield ticketTypeRepo.searchTicketTypeGroups({});
         // 券種グループをランダム選定
         const ticketTypeGroup = ticketTypeGroups[Math.floor(Math.random() * ticketTypeGroups.length)];
-        // const boxOfficeType = await boxOfficeTypeRepo.findById({ id: ticketTypeGroup.itemOffered.serviceType.id });
         const duration = Math.floor((Math.random() * 90) + 90);
         const delay = Math.floor(Math.random() * 780);
         const doorTime = moment(`${moment()

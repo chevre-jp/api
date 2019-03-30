@@ -22,9 +22,14 @@ const boxOfficeTypesRouter = express_1.Router();
 boxOfficeTypesRouter.use(authentication_1.default);
 boxOfficeTypesRouter.get('/getBoxOfficeTypeList', permitScopes_1.default(['admin', 'boxOfficeTypes', 'boxOfficeTypes.read-only']), validator_1.default, (__, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(mongoose.connection);
-        const boxOfficeTypes = yield boxOfficeTypeRepo.getBoxOfficeTypeList();
-        res.json(boxOfficeTypes);
+        const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
+        const searchCoinditions = {
+            sort: { _id: chevre.factory.sortType.Ascending }
+        };
+        const totalCount = yield serviceTypeRepo.count(searchCoinditions);
+        const serviceTypes = yield serviceTypeRepo.search(searchCoinditions);
+        res.set('X-Total-Count', totalCount.toString());
+        res.json(serviceTypes);
     }
     catch (error) {
         next(error);
@@ -32,15 +37,14 @@ boxOfficeTypesRouter.get('/getBoxOfficeTypeList', permitScopes_1.default(['admin
 }));
 boxOfficeTypesRouter.get('/search', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(mongoose.connection);
-        const searchCondition = {
-            id: req.query.id,
-            name: req.query.name
-        };
-        const totalCount = yield boxOfficeTypeRepo.countBoxOfficeType(searchCondition);
-        const boxOfficeType = yield boxOfficeTypeRepo.searchBoxOfficeType(searchCondition);
+        const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
+        const searchCoinditions = Object.assign({}, req.query, { 
+            // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
+        const totalCount = yield serviceTypeRepo.count(searchCoinditions);
+        const serviceTypes = yield serviceTypeRepo.search(searchCoinditions);
         res.set('X-Total-Count', totalCount.toString());
-        res.json(boxOfficeType);
+        res.json(serviceTypes);
     }
     catch (error) {
         next(error);
@@ -53,11 +57,9 @@ boxOfficeTypesRouter.put('/:id', permitScopes_1.default(['admin']), (req, _, nex
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(mongoose.connection);
-        yield boxOfficeTypeRepo.updateBoxOfficeType({
-            id: req.params.id,
-            name: req.body.name
-        });
+        const serviceType = Object.assign({}, req.body, { id: req.params.id });
+        const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
+        yield serviceTypeRepo.save(serviceType);
         res.status(http_status_1.NO_CONTENT)
             .end();
     }
@@ -75,13 +77,11 @@ boxOfficeTypesRouter.post('/add', permitScopes_1.default(['admin']), (req, _, ne
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(mongoose.connection);
-        const boxOfficeType = yield boxOfficeTypeRepo.createBoxOfficeType({
-            id: req.body.id,
-            name: req.body.name
-        });
+        const serviceType = req.body;
+        const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
+        yield serviceTypeRepo.save(serviceType);
         res.status(http_status_1.CREATED)
-            .json(boxOfficeType);
+            .json(serviceType);
     }
     catch (error) {
         next(error);
@@ -89,8 +89,8 @@ boxOfficeTypesRouter.post('/add', permitScopes_1.default(['admin']), (req, _, ne
 }));
 boxOfficeTypesRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const boxOfficeTypeRepo = new chevre.repository.BoxOfficeType(mongoose.connection);
-        yield boxOfficeTypeRepo.deleteById({
+        const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
+        yield serviceTypeRepo.deleteById({
             id: req.params.id
         });
         res.status(http_status_1.NO_CONTENT)

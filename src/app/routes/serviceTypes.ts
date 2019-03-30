@@ -19,11 +19,10 @@ serviceTypesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const serviceType: chevre.factory.serviceType.IServiceType = {
-                ...req.body
-            };
+            const serviceType: chevre.factory.serviceType.IServiceType = req.body;
             const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             await serviceTypeRepo.save(serviceType);
+
             res.status(CREATED)
                 .json(serviceType);
         } catch (error) {
@@ -47,8 +46,9 @@ serviceTypesRouter.get(
             };
             const totalCount = await serviceTypeRepo.count(searchCoinditions);
             const serviceTypes = await serviceTypeRepo.search(searchCoinditions);
-            res.set('X-Total-Count', totalCount.toString());
-            res.json(serviceTypes);
+
+            res.set('X-Total-Count', totalCount.toString())
+                .json(serviceTypes);
         } catch (error) {
             next(error);
         }
@@ -63,6 +63,7 @@ serviceTypesRouter.get(
         try {
             const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             const serviceType = await serviceTypeRepo.findById({ id: req.params.id });
+
             res.json(serviceType);
         } catch (error) {
             next(error);
@@ -77,10 +78,31 @@ serviceTypesRouter.put(
     async (req, res, next) => {
         try {
             const serviceType: chevre.factory.serviceType.IServiceType = {
-                ...req.body
+                ...req.body,
+                id: req.params.id
             };
             const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
             await serviceTypeRepo.save(serviceType);
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+serviceTypesRouter.delete(
+    '/:id',
+    permitScopes(['admin']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
+            await serviceTypeRepo.deleteById({
+                id: req.params.id
+            });
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
