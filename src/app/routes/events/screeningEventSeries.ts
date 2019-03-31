@@ -55,7 +55,8 @@ screeningEventSeriesRouter.post(
         try {
             const eventAttributes: chevre.factory.event.screeningEventSeries.IAttributes = req.body;
             const eventRepo = new chevre.repository.Event(mongoose.connection);
-            const event = await eventRepo.saveScreeningEventSeries({ attributes: eventAttributes });
+            const event = await eventRepo.save({ attributes: eventAttributes });
+
             res.status(CREATED)
                 .json(event);
         } catch (error) {
@@ -99,14 +100,17 @@ screeningEventSeriesRouter.get(
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             const searchCoinditions: chevre.factory.event.screeningEventSeries.ISearchConditions = {
                 ...req.query,
+                typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const events = await eventRepo.searchScreeningEventSeries(searchCoinditions);
-            const totalCount = await eventRepo.countScreeningEventSeries(searchCoinditions);
-            res.set('X-Total-Count', totalCount.toString());
-            res.json(events);
+
+            const events = await eventRepo.search(searchCoinditions);
+            const totalCount = await eventRepo.count(searchCoinditions);
+
+            res.set('X-Total-Count', totalCount.toString())
+                .json(events);
         } catch (error) {
             next(error);
         }
@@ -172,7 +176,8 @@ screeningEventSeriesRouter.put(
         try {
             const eventAttributes: chevre.factory.event.screeningEventSeries.IAttributes = req.body;
             const eventRepo = new chevre.repository.Event(mongoose.connection);
-            await eventRepo.saveScreeningEventSeries({ id: req.params.id, attributes: eventAttributes });
+            await eventRepo.save({ id: req.params.id, attributes: eventAttributes });
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {

@@ -119,7 +119,7 @@ export default async () => {
                 attendeeCount: 0
             };
 
-            await eventRepo.saveScreeningEvent({ attributes: eventAttributes });
+            await eventRepo.save({ attributes: eventAttributes });
         },
         undefined,
         true

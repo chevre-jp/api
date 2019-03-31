@@ -57,7 +57,7 @@ screeningEventSeriesRouter.post('', permitScopes_1.default(['admin']), ...[
     try {
         const eventAttributes = req.body;
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const event = yield eventRepo.saveScreeningEventSeries({ attributes: eventAttributes });
+        const event = yield eventRepo.save({ attributes: eventAttributes });
         res.status(http_status_1.CREATED)
             .json(event);
     }
@@ -93,13 +93,13 @@ screeningEventSeriesRouter.get('', permitScopes_1.default(['admin', 'events', 'e
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const searchCoinditions = Object.assign({}, req.query, { 
+        const searchCoinditions = Object.assign({}, req.query, { typeOf: chevre.factory.eventType.ScreeningEventSeries, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const events = yield eventRepo.searchScreeningEventSeries(searchCoinditions);
-        const totalCount = yield eventRepo.countScreeningEventSeries(searchCoinditions);
-        res.set('X-Total-Count', totalCount.toString());
-        res.json(events);
+        const events = yield eventRepo.search(searchCoinditions);
+        const totalCount = yield eventRepo.count(searchCoinditions);
+        res.set('X-Total-Count', totalCount.toString())
+            .json(events);
     }
     catch (error) {
         next(error);
@@ -154,7 +154,7 @@ screeningEventSeriesRouter.put('/:id', permitScopes_1.default(['admin']), ...[
     try {
         const eventAttributes = req.body;
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        yield eventRepo.saveScreeningEventSeries({ id: req.params.id, attributes: eventAttributes });
+        yield eventRepo.save({ id: req.params.id, attributes: eventAttributes });
         res.status(http_status_1.NO_CONTENT)
             .end();
     }

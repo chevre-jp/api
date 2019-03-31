@@ -116,7 +116,7 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
             checkInCount: 0,
             attendeeCount: 0
         };
-        yield eventRepo.saveScreeningEvent({ attributes: eventAttributes });
+        yield eventRepo.save({ attributes: eventAttributes });
     }), undefined, true);
     debug('job started', job);
 });

@@ -89,7 +89,7 @@ screeningEventRouter.post(
         try {
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes = req.body;
             const eventRepo = new chevre.repository.Event(mongoose.connection);
-            const event = await eventRepo.saveScreeningEvent({ attributes: eventAttributes });
+            const event = await eventRepo.save({ attributes: eventAttributes });
 
             const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
                 name: chevre.factory.taskName.AggregateScreeningEvent,
@@ -264,12 +264,14 @@ screeningEventRouter.get(
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             const searchCoinditions: chevre.factory.event.screeningEvent.ISearchConditions = {
                 ...req.query,
+                typeOf: chevre.factory.eventType.ScreeningEvent,
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const events = await eventRepo.searchScreeningEvents(searchCoinditions);
-            const totalCount = await eventRepo.countScreeningEvents(searchCoinditions);
+
+            const events = await eventRepo.search(searchCoinditions);
+            const totalCount = await eventRepo.count(searchCoinditions);
 
             res.set('X-Total-Count', totalCount.toString())
                 .json(events);
@@ -409,7 +411,7 @@ screeningEventRouter.put(
         try {
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes = req.body;
             const eventRepo = new chevre.repository.Event(mongoose.connection);
-            const event = await eventRepo.saveScreeningEvent({ id: req.params.id, attributes: eventAttributes });
+            const event = await eventRepo.save({ id: req.params.id, attributes: eventAttributes });
 
             const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
                 name: chevre.factory.taskName.AggregateScreeningEvent,

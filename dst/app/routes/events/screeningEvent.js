@@ -91,7 +91,7 @@ screeningEventRouter.post('', permitScopes_1.default(['admin']), ...[
     try {
         const eventAttributes = req.body;
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const event = yield eventRepo.saveScreeningEvent({ attributes: eventAttributes });
+        const event = yield eventRepo.save({ attributes: eventAttributes });
         const aggregateTask = {
             name: chevre.factory.taskName.AggregateScreeningEvent,
             status: chevre.factory.taskStatus.Ready,
@@ -248,11 +248,11 @@ screeningEventRouter.get('', permitScopes_1.default(['admin', 'events', 'events.
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const searchCoinditions = Object.assign({}, req.query, { 
+        const searchCoinditions = Object.assign({}, req.query, { typeOf: chevre.factory.eventType.ScreeningEvent, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const events = yield eventRepo.searchScreeningEvents(searchCoinditions);
-        const totalCount = yield eventRepo.countScreeningEvents(searchCoinditions);
+        const events = yield eventRepo.search(searchCoinditions);
+        const totalCount = yield eventRepo.count(searchCoinditions);
         res.set('X-Total-Count', totalCount.toString())
             .json(events);
     }
@@ -372,7 +372,7 @@ screeningEventRouter.put('/:id', permitScopes_1.default(['admin']), ...[
     try {
         const eventAttributes = req.body;
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const event = yield eventRepo.saveScreeningEvent({ id: req.params.id, attributes: eventAttributes });
+        const event = yield eventRepo.save({ id: req.params.id, attributes: eventAttributes });
         const aggregateTask = {
             name: chevre.factory.taskName.AggregateScreeningEvent,
             status: chevre.factory.taskStatus.Ready,
