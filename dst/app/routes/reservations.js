@@ -22,7 +22,18 @@ const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const reservationsRouter = express_1.Router();
 reservationsRouter.use(authentication_1.default);
-reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
+/**
+ * 予約検索
+ */
+reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
+    check_1.query('limit')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('page')
+        .optional()
+        .isInt()
+        .toInt(),
     check_1.query('modifiedFrom')
         .optional()
         .isISO8601()
@@ -45,10 +56,54 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
         const searchCoinditions = Object.assign({}, req.query, { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const totalCount = yield reservationRepo.countScreeningEventReservations(searchCoinditions);
-        const reservations = yield reservationRepo.searchScreeningEventReservations(searchCoinditions);
-        res.set('X-Total-Count', totalCount.toString());
-        res.json(reservations);
+        const totalCount = yield reservationRepo.count(searchCoinditions);
+        const reservations = yield reservationRepo.search(searchCoinditions);
+        res.set('X-Total-Count', totalCount.toString())
+            .json(reservations);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+reservationsRouter.get('/:id', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        const reservation = yield reservationRepo.findById({
+            id: req.params.id
+        });
+        res.json(reservation);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
+    check_1.query('modifiedFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('modifiedThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.startFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.startThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        const searchCoinditions = Object.assign({}, req.query, { typeOf: chevre.factory.reservationType.EventReservation, 
+            // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
+        const totalCount = yield reservationRepo.count(searchCoinditions);
+        const reservations = yield reservationRepo.search(searchCoinditions);
+        res.set('X-Total-Count', totalCount.toString())
+            .json(reservations);
     }
     catch (error) {
         next(error);
@@ -57,7 +112,7 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
 reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const reservation = yield reservationRepo.findScreeningEventReservationById({
+        const reservation = yield reservationRepo.findById({
             id: req.params.id
         });
         res.json(reservation);
@@ -76,8 +131,9 @@ reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScope
         }
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const reservations = yield reservationRepo.searchScreeningEventReservations({
+        const reservations = yield reservationRepo.search({
             limit: 1,
+            typeOf: chevre.factory.reservationType.EventReservation,
             ids: (req.body.id !== undefined) ? [req.body.id] : undefined,
             reservationNumbers: (req.body.reservationNumber !== undefined) ? [req.body.reservationNumber] : undefined
         });
@@ -117,7 +173,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         // 上映イベント集計タスクを追加
-        const reservation = yield reservationRepo.findScreeningEventReservationById({
+        const reservation = yield reservationRepo.findById({
             id: req.params.id
         });
         yield reservationRepo.checkIn({
