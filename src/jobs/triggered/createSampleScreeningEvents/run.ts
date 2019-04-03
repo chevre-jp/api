@@ -27,7 +27,7 @@ export default async () => {
         async () => {
             const eventRepo = new chevre.repository.Event(connection);
             const placeRepo = new chevre.repository.Place(connection);
-            const ticketTypeRepo = new chevre.repository.TicketType(connection);
+            const offerRepo = new chevre.repository.Offer(connection);
 
             const eventSeriesList = await eventRepo.search<chevre.factory.eventType.ScreeningEventSeries>({
                 typeOf: chevre.factory.eventType.ScreeningEventSeries
@@ -40,9 +40,9 @@ export default async () => {
             const screeningRoom = <chevre.factory.place.movieTheater.IScreeningRoom>
                 screeningRooms[Math.floor(Math.random() * screeningRooms.length)];
             const maximumAttendeeCapacity = screeningRoom.containsPlace.reduce((a, b) => a + b.containsPlace.length, 0);
-            const ticketTypeGroups = await ticketTypeRepo.searchTicketTypeGroups({});
+            const offerCatalogs = await offerRepo.searchOfferCatalogs({});
             // 券種グループをランダム選定
-            const ticketTypeGroup = ticketTypeGroups[Math.floor(Math.random() * ticketTypeGroups.length)];
+            const ticketTypeGroup = offerCatalogs[Math.floor(Math.random() * offerCatalogs.length)];
             const duration = Math.floor((Math.random() * 90) + 90);
             const delay = Math.floor(Math.random() * 780);
             const doorTime = moment(`${moment()

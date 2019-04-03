@@ -28,7 +28,7 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
     const job = new cron_1.CronJob('0 * * * *', () => __awaiter(this, void 0, void 0, function* () {
         const eventRepo = new chevre.repository.Event(connection);
         const placeRepo = new chevre.repository.Place(connection);
-        const ticketTypeRepo = new chevre.repository.TicketType(connection);
+        const offerRepo = new chevre.repository.Offer(connection);
         const eventSeriesList = yield eventRepo.search({
             typeOf: chevre.factory.eventType.ScreeningEventSeries
         });
@@ -39,9 +39,9 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         const screeningRooms = movieTheater.containsPlace;
         const screeningRoom = screeningRooms[Math.floor(Math.random() * screeningRooms.length)];
         const maximumAttendeeCapacity = screeningRoom.containsPlace.reduce((a, b) => a + b.containsPlace.length, 0);
-        const ticketTypeGroups = yield ticketTypeRepo.searchTicketTypeGroups({});
+        const offerCatalogs = yield offerRepo.searchOfferCatalogs({});
         // 券種グループをランダム選定
-        const ticketTypeGroup = ticketTypeGroups[Math.floor(Math.random() * ticketTypeGroups.length)];
+        const ticketTypeGroup = offerCatalogs[Math.floor(Math.random() * offerCatalogs.length)];
         const duration = Math.floor((Math.random() * 90) + 90);
         const delay = Math.floor(Math.random() * 780);
         const doorTime = moment(`${moment()

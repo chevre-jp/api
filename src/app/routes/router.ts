@@ -9,13 +9,13 @@ import creativeWorksRouter from './creativeWorks';
 import distributorsRouter from './distributors';
 import eventsRouter from './events';
 import healthRouter from './health';
+import offerCatalogsRouter from './offerCatalogs';
+import offersRouter from './offers';
 import placesRouter from './places';
 import priceSpecificationsRouter from './priceSpecifications';
 import reservationsRouter from './reservations';
 import serviceTypesRouter from './serviceTypes';
 import subjectRouter from './subject';
-import ticketTypeGroupsRouter from './ticketTypeGroups';
-import ticketTypesRouter from './ticketTypes';
 import transactionsRouter from './transactions';
 const router = express.Router();
 
@@ -36,8 +36,10 @@ router.use('/priceSpecifications', priceSpecificationsRouter);
 router.use('/reservations', reservationsRouter);
 router.use('/serviceTypes', serviceTypesRouter);
 router.use('/subjects', subjectRouter);
-router.use('/ticketTypeGroups', ticketTypeGroupsRouter);
-router.use('/ticketTypes', ticketTypesRouter);
+router.use('/ticketTypeGroups', offerCatalogsRouter);
+router.use('/offerCatalogs', offerCatalogsRouter);
+router.use('/ticketTypes', offersRouter);
+router.use('/offers', offersRouter);
 router.use('/transactions', transactionsRouter);
 
 export default router;

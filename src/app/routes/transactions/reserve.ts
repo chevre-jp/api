@@ -46,7 +46,7 @@ reserveTransactionsRouter.post(
             const placeRepo = new chevre.repository.Place(mongoose.connection);
             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
+            const offerRepo = new chevre.repository.Offer(mongoose.connection);
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const reservationNumberRepo = new chevre.repository.ReservationNumber(redis.getClient());
@@ -68,12 +68,12 @@ reserveTransactionsRouter.post(
             })({
                 eventAvailability: eventAvailabilityRepo,
                 event: eventRepo,
+                offer: offerRepo,
                 place: placeRepo,
                 priceSpecification: priceSpecificationRepo,
                 reservation: reservationRepo,
                 reservationNumber: reservationNumberRepo,
-                transaction: transactionRepo,
-                ticketType: ticketTypeRepo
+                transaction: transactionRepo
             });
             res.json(transaction);
         } catch (error) {

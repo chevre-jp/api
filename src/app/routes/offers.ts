@@ -1,5 +1,5 @@
 /**
- * 券種ルーター
+ * オファールーター
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
@@ -12,20 +12,17 @@ import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
-const ticketTypesRouter = Router();
-ticketTypesRouter.use(authentication);
+const offersRouter = Router();
+offersRouter.use(authentication);
 
-ticketTypesRouter.post(
+offersRouter.post(
     '',
     permitScopes(['admin']),
-    (_, __, next) => {
-        next();
-    },
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
-            const ticketType = await ticketTypeRepo.createTicketType(req.body);
+            const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            const ticketType = await offerRepo.createOffer(req.body);
             res.status(CREATED)
                 .json(ticketType);
         } catch (error) {
@@ -34,7 +31,7 @@ ticketTypesRouter.post(
     }
 );
 
-ticketTypesRouter.get(
+offersRouter.get(
     '',
     permitScopes(['admin', 'ticketTypes', 'ticketTypes.read-only']),
     ...[
@@ -53,39 +50,43 @@ ticketTypesRouter.get(
         query('priceSpecification.accounting.maxAccountsReceivable')
             .optional()
             .isInt()
+            .toInt(),
+        query('priceSpecification.referenceQuantity.value')
+            .optional()
+            .isInt()
             .toInt()
     ],
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
+            const offerRepo = new chevre.repository.Offer(mongoose.connection);
             const searchCoinditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const totalCount = await ticketTypeRepo.countTicketTypes(searchCoinditions);
-            const ticketTypes = await ticketTypeRepo.searchTicketTypes(searchCoinditions);
-            res.set('X-Total-Count', totalCount.toString());
-            res.json(ticketTypes);
+
+            const totalCount = await offerRepo.countOffers(searchCoinditions);
+            const offers = await offerRepo.searchOffers(searchCoinditions);
+
+            res.set('X-Total-Count', totalCount.toString())
+                .json(offers);
         } catch (error) {
             next(error);
         }
     }
 );
 
-ticketTypesRouter.get(
+offersRouter.get(
     '/:id',
     permitScopes(['admin', 'ticketTypes', 'ticketTypes.read-only']),
-    (_, __, next) => {
-        next();
-    },
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
-            const ticketType = await ticketTypeRepo.findTicketTypeById({ id: req.params.id });
+            const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            const ticketType = await offerRepo.findOfferById({ id: req.params.id });
+
             res.json(ticketType);
         } catch (error) {
             next(error);
@@ -93,17 +94,15 @@ ticketTypesRouter.get(
     }
 );
 
-ticketTypesRouter.put(
+offersRouter.put(
     '/:id',
     permitScopes(['admin']),
-    (_, __, next) => {
-        next();
-    },
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
-            await ticketTypeRepo.updateTicketType(req.body);
+            const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            await offerRepo.updateOffer(req.body);
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
@@ -112,17 +111,15 @@ ticketTypesRouter.put(
     }
 );
 
-ticketTypesRouter.delete(
+offersRouter.delete(
     '/:id',
     permitScopes(['admin']),
-    (_, __, next) => {
-        next();
-    },
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeRepo = new chevre.repository.TicketType(mongoose.connection);
-            await ticketTypeRepo.deleteTicketType({ id: req.params.id });
+            const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            await offerRepo.deleteOffer({ id: req.params.id });
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
@@ -131,4 +128,4 @@ ticketTypesRouter.delete(
     }
 );
 
-export default ticketTypesRouter;
+export default offersRouter;
