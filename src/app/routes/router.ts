@@ -6,8 +6,9 @@ import * as express from 'express';
 import accountTitlesRouter from './accountTitles';
 import boxOfficeTypesRouter from './boxOfficeTypes';
 import creativeWorksRouter from './creativeWorks';
-import distributeRouter from './distributions/distributeRouter';
+import distributorsRouter from './distributors';
 import eventsRouter from './events';
+import healthRouter from './health';
 import placesRouter from './places';
 import priceSpecificationsRouter from './priceSpecifications';
 import reservationsRouter from './reservations';
@@ -24,9 +25,10 @@ const router = express.Router();
 //   next()
 // })
 
+router.use('/health', healthRouter);
 router.use('/accountTitles', accountTitlesRouter);
 router.use('/creativeWorks', creativeWorksRouter);
-router.use('/distributions', distributeRouter);
+router.use('/distributions', distributorsRouter);
 router.use('/boxOfficeTypes', boxOfficeTypesRouter);
 router.use('/places', placesRouter);
 router.use('/events', eventsRouter);

@@ -299,7 +299,7 @@ screeningEventRouter.get(
     async (req, res, next) => {
         try {
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-            const events = await chevre.service.event.countTicketTypePerEvent({
+            const events = await chevre.service.aggregation.countTicketTypePerEvent({
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,

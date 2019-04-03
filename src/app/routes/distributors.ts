@@ -6,14 +6,14 @@ import { Router } from 'express';
 import * as mongoose from 'mongoose';
 
 import { CREATED, NO_CONTENT } from 'http-status';
-import authentication from '../../middlewares/authentication';
-import permitScopes from '../../middlewares/permitScopes';
-import validator from '../../middlewares/validator';
+import authentication from '../middlewares/authentication';
+import permitScopes from '../middlewares/permitScopes';
+import validator from '../middlewares/validator';
 
-const distributeRouter = Router();
-distributeRouter.use(authentication);
+const distributorsRouter = Router();
+distributorsRouter.use(authentication);
 
-distributeRouter.get(
+distributorsRouter.get(
     '/list',
     permitScopes(['admin']),
     validator,
@@ -28,14 +28,14 @@ distributeRouter.get(
     }
 );
 
-distributeRouter.get(
+distributorsRouter.get(
     '/search',
     permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
             const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
-            const searchCoinditions: chevre.factory.distributions.distribute.ISearchConditions = {
+            const searchCoinditions: chevre.factory.distributor.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
@@ -51,7 +51,7 @@ distributeRouter.get(
     }
 );
 
-distributeRouter.put(
+distributorsRouter.put(
     '/:id',
     permitScopes(['admin']),
     (req, _, next) => {
@@ -76,7 +76,7 @@ distributeRouter.put(
     }
 );
 
-distributeRouter.post(
+distributorsRouter.post(
     '/add',
     permitScopes(['admin']),
     (req, _, next) => {
@@ -104,7 +104,7 @@ distributeRouter.post(
     }
 );
 
-distributeRouter.delete(
+distributorsRouter.delete(
     '/:id',
     permitScopes(['admin']),
     validator,
@@ -122,4 +122,4 @@ distributeRouter.delete(
     }
 );
 
-export default distributeRouter;
+export default distributorsRouter;

@@ -273,7 +273,7 @@ screeningEventRouter.get('/countTicketTypePerEvent', permitScopes_1.default(['ad
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const events = yield chevre.service.event.countTicketTypePerEvent({
+        const events = yield chevre.service.aggregation.countTicketTypePerEvent({
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
             page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
