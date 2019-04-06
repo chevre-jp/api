@@ -55,7 +55,10 @@ reservationsRouter.get(
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+                sort: (req.query.sort !== undefined && req.query.sort.modifiedTime !== undefined)
+                    ? { modifiedTime: req.query.sort.modifiedTime }
+                    : undefined
             };
 
             const totalCount = await reservationRepo.count(searchCoinditions);
@@ -117,7 +120,10 @@ reservationsRouter.get(
                 typeOf: chevre.factory.reservationType.EventReservation,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+                sort: (req.query.sort !== undefined && req.query.sort.modifiedTime !== undefined)
+                    ? { modifiedTime: req.query.sort.modifiedTime }
+                    : undefined
             };
 
             const totalCount = await reservationRepo.count(searchCoinditions);

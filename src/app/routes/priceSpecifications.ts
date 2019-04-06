@@ -114,7 +114,7 @@ priceSpecificationsRouter.get(
     async (req, res, next) => {
         try {
             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
-            const searchCoinditions: chevre.factory.priceSpecification.IPriceSpecification<any> = {
+            const searchCoinditions: chevre.factory.priceSpecification.ISearchConditions<any> = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,

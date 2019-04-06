@@ -55,7 +55,9 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const searchCoinditions = Object.assign({}, req.query, { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (req.query.sort !== undefined && req.query.sort.modifiedTime !== undefined)
+                ? { modifiedTime: req.query.sort.modifiedTime }
+                : undefined });
         const totalCount = yield reservationRepo.count(searchCoinditions);
         const reservations = yield reservationRepo.search(searchCoinditions);
         res.set('X-Total-Count', totalCount.toString())
@@ -99,7 +101,9 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const searchCoinditions = Object.assign({}, req.query, { typeOf: chevre.factory.reservationType.EventReservation, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (req.query.sort !== undefined && req.query.sort.modifiedTime !== undefined)
+                ? { modifiedTime: req.query.sort.modifiedTime }
+                : undefined });
         const totalCount = yield reservationRepo.count(searchCoinditions);
         const reservations = yield reservationRepo.search(searchCoinditions);
         res.set('X-Total-Count', totalCount.toString())
