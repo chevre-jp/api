@@ -49,7 +49,15 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
     check_1.query('reservationFor.startThrough')
         .optional()
         .isISO8601()
-        .toDate()
+        .toDate(),
+    check_1.query('checkedIn')
+        .optional()
+        .isBoolean()
+        .toBoolean(),
+    check_1.query('attended')
+        .optional()
+        .isBoolean()
+        .toBoolean()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);

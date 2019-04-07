@@ -45,7 +45,15 @@ reservationsRouter.get(
         query('reservationFor.startThrough')
             .optional()
             .isISO8601()
-            .toDate()
+            .toDate(),
+        query('checkedIn')
+            .optional()
+            .isBoolean()
+            .toBoolean(),
+        query('attended')
+            .optional()
+            .isBoolean()
+            .toBoolean()
     ],
     validator,
     async (req, res, next) => {
