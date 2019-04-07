@@ -16,7 +16,6 @@ const express_1 = require("express");
 // tslint:disable-next-line:no-submodule-imports
 const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
-const moment = require("moment");
 const mongoose = require("mongoose");
 const redis = require("../../../redis");
 const permitScopes_1 = require("../../middlewares/permitScopes");
@@ -260,32 +259,45 @@ screeningEventRouter.get('', permitScopes_1.default(['admin', 'events', 'events.
         next(error);
     }
 }));
-screeningEventRouter.get('/countTicketTypePerEvent', permitScopes_1.default(['admin']), (req, __, next) => {
-    req.checkQuery('startFrom')
+screeningEventRouter.get('/countTicketTypePerEvent', permitScopes_1.default(['admin']), ...[
+    check_1.query('startFrom')
         .optional()
         .isISO8601()
-        .withMessage('startFrom must be ISO8601 timestamp');
-    req.checkQuery('startThrough')
+        .toDate(),
+    check_1.query('startThrough')
         .optional()
         .isISO8601()
-        .withMessage('startThrough must be ISO8601 timestamp');
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+        .toDate()
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const events = yield chevre.service.aggregation.countTicketTypePerEvent({
+        // イベント検索
+        const searchCoinditions = {
+            startFrom: req.query.startFrom,
+            startThrough: req.query.startThrough,
+            superEvent: {
+                ids: (req.query.id !== undefined) ? [req.query.id] : undefined
+            },
+            typeOf: chevre.factory.eventType.ScreeningEvent,
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-            page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
-            id: req.query.id,
-            startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom)
-                .toDate() : undefined,
-            startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough)
-                .toDate() : undefined
-        })({
-            reservation: reservationRepo
+            page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+        };
+        const events = yield eventRepo.search(searchCoinditions);
+        const totalCount = yield eventRepo.count(searchCoinditions);
+        const eventsWithAggregation = yield Promise.all(events.map((e) => __awaiter(this, void 0, void 0, function* () {
+            const aggregation = yield chevre.service.aggregation.aggregateEventReservation({
+                id: e.id
+            })({
+                reservation: reservationRepo
+            });
+            return Object.assign({}, e, aggregation, { preSaleTicketCount: aggregation.advanceTicketCount });
+        })));
+        res.json({
+            totalCount: totalCount,
+            data: eventsWithAggregation
         });
-        res.json(events);
     }
     catch (error) {
         next(error);

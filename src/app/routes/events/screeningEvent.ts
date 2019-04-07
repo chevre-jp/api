@@ -6,7 +6,6 @@ import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
 import { body, query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
-import * as moment from 'moment';
 import * as mongoose from 'mongoose';
 
 import * as redis from '../../../redis';
@@ -284,35 +283,56 @@ screeningEventRouter.get(
 screeningEventRouter.get(
     '/countTicketTypePerEvent',
     permitScopes(['admin']),
-    (req, __, next) => {
-        req.checkQuery('startFrom')
+    ...[
+        query('startFrom')
             .optional()
             .isISO8601()
-            .withMessage('startFrom must be ISO8601 timestamp');
-        req.checkQuery('startThrough')
+            .toDate(),
+        query('startThrough')
             .optional()
             .isISO8601()
-            .withMessage('startThrough must be ISO8601 timestamp');
-        next();
-    },
+            .toDate()
+    ],
     validator,
     async (req, res, next) => {
         try {
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-            const events = await chevre.service.aggregation.countTicketTypePerEvent({
+
+            // イベント検索
+            const searchCoinditions: chevre.factory.event.screeningEvent.ISearchConditions = {
+                startFrom: req.query.startFrom,
+                startThrough: req.query.startThrough,
+                superEvent: {
+                    ids: (req.query.id !== undefined) ? [req.query.id] : undefined
+                },
+                typeOf: chevre.factory.eventType.ScreeningEvent,
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
-                id: req.query.id,
-                startFrom: (req.query.startFrom !== undefined) ? moment(req.query.startFrom)
-                    .toDate() : undefined,
-                startThrough: (req.query.startThrough !== undefined) ? moment(req.query.startThrough)
-                    .toDate() : undefined
-            })({
-                reservation: reservationRepo
-            });
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+            };
 
-            res.json(events);
+            const events = await eventRepo.search(searchCoinditions);
+            const totalCount = await eventRepo.count(searchCoinditions);
+
+            const eventsWithAggregation = await Promise.all(events.map(async (e) => {
+                const aggregation = await chevre.service.aggregation.aggregateEventReservation({
+                    id: e.id
+                })({
+                    reservation: reservationRepo
+                });
+
+                return {
+                    ...e,
+                    ...aggregation,
+                    preSaleTicketCount: aggregation.advanceTicketCount
+                };
+            }));
+
+            res.json({
+                totalCount: totalCount,
+                data: eventsWithAggregation
+            });
         } catch (error) {
             next(error);
         }
