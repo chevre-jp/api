@@ -1,8 +1,10 @@
 /**
- * 券種グループルーター
+ * プロダクトオファールーター
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
+// tslint:disable-next-line:no-submodule-imports
+import { query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -10,74 +12,81 @@ import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
-const offerCatalogsRouter = Router();
+const productOffersRouter = Router();
+productOffersRouter.use(authentication);
 
-offerCatalogsRouter.use(authentication);
-
-offerCatalogsRouter.post(
+productOffersRouter.post(
     '',
     permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.createOfferCatalog(ticketTypeGroup);
+            const ticketType = await offerRepo.createProductOffer(req.body);
             res.status(CREATED)
-                .json(ticketTypeGroup);
+                .json(ticketType);
         } catch (error) {
             next(error);
         }
     }
 );
 
-offerCatalogsRouter.get(
+productOffersRouter.get(
     '',
-    permitScopes(['admin', 'ticketTypeGroups', 'ticketTypeGroups.read-only']),
+    permitScopes(['admin']),
+    ...[
+        query('priceSpecification.minPrice')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.maxPrice')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.accounting.minAccountsReceivable')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.accounting.maxAccountsReceivable')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.referenceQuantity.value')
+            .optional()
+            .isInt()
+            .toInt()
+    ],
     validator,
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const searchCoinditions: chevre.factory.ticketType.ITicketTypeGroupSearchConditions = {
+            const searchCoinditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const totalCount = await offerRepo.countOfferCatalogs(searchCoinditions);
-            const ticketTypeGroups = await offerRepo.searchOfferCatalogs(searchCoinditions);
-            res.set('X-Total-Count', totalCount.toString());
-            res.json(ticketTypeGroups);
+
+            const totalCount = await offerRepo.countProductOffers(searchCoinditions);
+            const offers = await offerRepo.searchProductOffers(searchCoinditions);
+
+            res.set('X-Total-Count', totalCount.toString())
+                .json(offers);
         } catch (error) {
             next(error);
         }
     }
 );
 
-offerCatalogsRouter.get(
-    '/:id',
-    permitScopes(['admin', 'ticketTypeGroups', 'ticketTypeGroups.read-only']),
-    validator,
-    async (req, res, next) => {
-        try {
-            const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const ticketTypeGroup = await offerRepo.findOfferCatalogById({ id: req.params.id });
-            res.json(ticketTypeGroup);
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
-offerCatalogsRouter.put(
+productOffersRouter.put(
     '/:id',
     permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.updateOfferCatalog(ticketTypeGroup);
+            await offerRepo.updateProductOffer(req.body);
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
@@ -86,14 +95,15 @@ offerCatalogsRouter.put(
     }
 );
 
-offerCatalogsRouter.delete(
+productOffersRouter.delete(
     '/:id',
     permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.deleteOfferCatalog({ id: req.params.id });
+            await offerRepo.deleteProductOffer({ id: req.params.id });
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
@@ -102,4 +112,4 @@ offerCatalogsRouter.delete(
     }
 );
 
-export default offerCatalogsRouter;
+export default productOffersRouter;
