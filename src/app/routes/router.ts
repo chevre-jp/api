@@ -17,6 +17,7 @@ import productOffersRouter from './productOffer';
 import reservationsRouter from './reservations';
 import serviceTypesRouter from './serviceTypes';
 import subjectRouter from './subject';
+import tasksRouter from './tasks';
 import transactionsRouter from './transactions';
 const router = express.Router();
 
@@ -33,15 +34,16 @@ router.use('/distributions', distributorsRouter);
 router.use('/boxOfficeTypes', boxOfficeTypesRouter);
 router.use('/places', placesRouter);
 router.use('/events', eventsRouter);
+router.use('/offers', offersRouter);
+router.use('/offerCatalogs', offerCatalogsRouter);
 router.use('/priceSpecifications', priceSpecificationsRouter);
 router.use('/productOffers', productOffersRouter);
 router.use('/reservations', reservationsRouter);
 router.use('/serviceTypes', serviceTypesRouter);
 router.use('/subjects', subjectRouter);
+router.use('/tasks', tasksRouter);
 router.use('/ticketTypeGroups', offerCatalogsRouter);
-router.use('/offerCatalogs', offerCatalogsRouter);
 router.use('/ticketTypes', offersRouter);
-router.use('/offers', offersRouter);
 router.use('/transactions', transactionsRouter);
 
 export default router;

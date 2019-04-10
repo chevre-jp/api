@@ -96,8 +96,6 @@ screeningEventRouter.post('', permitScopes_1.default(['admin']), ...[
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
             remainingNumberOfTries: 3,
-            // tslint:disable-next-line:no-null-keyword
-            lastTriedAt: null,
             numberOfTried: 0,
             executionResults: [],
             data: event
@@ -188,8 +186,6 @@ screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ..
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 3,
-                // tslint:disable-next-line:no-null-keyword
-                lastTriedAt: null,
                 numberOfTried: 0,
                 executionResults: [],
                 data: event
@@ -390,8 +386,6 @@ screeningEventRouter.put('/:id', permitScopes_1.default(['admin']), ...[
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
             remainingNumberOfTries: 3,
-            // tslint:disable-next-line:no-null-keyword
-            lastTriedAt: null,
             numberOfTried: 0,
             executionResults: [],
             data: event

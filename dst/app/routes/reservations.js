@@ -163,8 +163,6 @@ reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScope
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
             remainingNumberOfTries: 3,
-            // tslint:disable-next-line:no-null-keyword
-            lastTriedAt: null,
             numberOfTried: 0,
             executionResults: [],
             data: {
@@ -196,8 +194,6 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
             remainingNumberOfTries: 3,
-            // tslint:disable-next-line:no-null-keyword
-            lastTriedAt: null,
             numberOfTried: 0,
             executionResults: [],
             data: {
@@ -225,8 +221,6 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
             remainingNumberOfTries: 3,
-            // tslint:disable-next-line:no-null-keyword
-            lastTriedAt: null,
             numberOfTried: 0,
             executionResults: [],
             data: {

@@ -95,8 +95,6 @@ screeningEventRouter.post(
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 3,
-                // tslint:disable-next-line:no-null-keyword
-                lastTriedAt: null,
                 numberOfTried: 0,
                 executionResults: [],
                 data: event
@@ -195,8 +193,6 @@ screeningEventRouter.post(
                     status: chevre.factory.taskStatus.Ready,
                     runsAt: new Date(),
                     remainingNumberOfTries: 3,
-                    // tslint:disable-next-line:no-null-keyword
-                    lastTriedAt: null,
                     numberOfTried: 0,
                     executionResults: [],
                     data: event
@@ -438,8 +434,6 @@ screeningEventRouter.put(
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 3,
-                // tslint:disable-next-line:no-null-keyword
-                lastTriedAt: null,
                 numberOfTried: 0,
                 executionResults: [],
                 data: event

@@ -137,8 +137,6 @@ eventsRouter.post(
                         status: chevre.factory.taskStatus.Ready,
                         runsAt: new Date(),
                         remainingNumberOfTries: 3,
-                        // tslint:disable-next-line:no-null-keyword
-                        lastTriedAt: null,
                         numberOfTried: 0,
                         executionResults: [],
                         data: event
@@ -270,8 +268,6 @@ eventsRouter.put(
                     status: chevre.factory.taskStatus.Ready,
                     runsAt: new Date(),
                     remainingNumberOfTries: 3,
-                    // tslint:disable-next-line:no-null-keyword
-                    lastTriedAt: null,
                     numberOfTried: 0,
                     executionResults: [],
                     data: <chevre.factory.event.IEvent<chevre.factory.eventType.ScreeningEvent>>event

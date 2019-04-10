@@ -131,8 +131,6 @@ eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validat
                     status: chevre.factory.taskStatus.Ready,
                     runsAt: new Date(),
                     remainingNumberOfTries: 3,
-                    // tslint:disable-next-line:no-null-keyword
-                    lastTriedAt: null,
                     numberOfTried: 0,
                     executionResults: [],
                     data: event
@@ -240,8 +238,6 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 3,
-                // tslint:disable-next-line:no-null-keyword
-                lastTriedAt: null,
                 numberOfTried: 0,
                 executionResults: [],
                 data: event
