@@ -5,6 +5,7 @@ import abortTasks from './continuous/abortTasks/run';
 import aggregateScreeningEvent from './continuous/aggregateScreeningEvent/run';
 import cancelPendingReservation from './continuous/cancelPendingReservation/run';
 import cancelPoincancelReservationtAward from './continuous/cancelReservation/run';
+import importEventsFromCOA from './continuous/importEventsFromCOA/run';
 import importOffersFromCOA from './continuous/importOffersFromCOA/run';
 import makeTransactionExpired from './continuous/makeTransactionExpired/run';
 import onCanceledCancelReservation from './continuous/onCanceledCancelReservation/run';
@@ -23,6 +24,7 @@ export default async () => {
     await aggregateScreeningEvent();
     await cancelPendingReservation();
     await cancelPoincancelReservationtAward();
+    await importEventsFromCOA();
     await importOffersFromCOA();
     await makeTransactionExpired();
     await onCanceledCancelReservation();
