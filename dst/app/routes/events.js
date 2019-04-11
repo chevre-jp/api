@@ -209,6 +209,76 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
         next(error);
     }
 }));
+eventsRouter.get('/withAggregateReservation', permitScopes_1.default(['admin']), ...[
+    check_1.query('typeOf')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
+    check_1.query('inSessionFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('inSessionThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('startFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('startThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('endFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('endThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.availableFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.availableThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.validFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('offers.validThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        // イベント検索
+        const searchCoinditions = Object.assign({}, req.query, { typeOf: chevre.factory.eventType.ScreeningEvent, 
+            // tslint:disable-next-line:no-magic-numbers
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
+        const events = yield eventRepo.search(searchCoinditions);
+        const totalCount = yield eventRepo.count(searchCoinditions);
+        const eventsWithAggregation = yield Promise.all(events.map((e) => __awaiter(this, void 0, void 0, function* () {
+            const aggregation = yield chevre.service.aggregation.aggregateEventReservation({
+                id: e.id
+            })({
+                reservation: reservationRepo
+            });
+            return Object.assign({}, e, aggregation, { preSaleTicketCount: aggregation.advanceTicketCount });
+        })));
+        res.set('X-Total-Count', totalCount.toString())
+            .json(eventsWithAggregation);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 /**
  * IDでイベント検索
  */
