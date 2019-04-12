@@ -9,7 +9,6 @@ import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
 import screeningEventRouter from './events/screeningEvent';
-import screeningEventSeriesRouter from './events/screeningEventSeries';
 
 import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
@@ -22,7 +21,6 @@ const eventsRouter = Router();
 eventsRouter.use(authentication);
 
 eventsRouter.use('/screeningEvent', screeningEventRouter);
-eventsRouter.use('/screeningEventSeries', screeningEventSeriesRouter);
 
 const MAX_NUM_EVENTS_CREATED = 200;
 

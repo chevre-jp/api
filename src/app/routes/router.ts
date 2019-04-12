@@ -4,7 +4,6 @@
 import * as express from 'express';
 
 import accountTitlesRouter from './accountTitles';
-import boxOfficeTypesRouter from './boxOfficeTypes';
 import creativeWorksRouter from './creativeWorks';
 import distributorsRouter from './distributors';
 import eventsRouter from './events';
@@ -32,7 +31,6 @@ router.use('/health', healthRouter);
 router.use('/accountTitles', accountTitlesRouter);
 router.use('/creativeWorks', creativeWorksRouter);
 router.use('/distributions', distributorsRouter);
-router.use('/boxOfficeTypes', boxOfficeTypesRouter);
 router.use('/places', placesRouter);
 router.use('/events', eventsRouter);
 router.use('/offers', offersRouter);
