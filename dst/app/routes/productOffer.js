@@ -25,7 +25,7 @@ productOffersRouter.use(authentication_1.default);
 productOffersRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const ticketType = yield offerRepo.createProductOffer(req.body);
+        const ticketType = yield offerRepo.saveProductOffer(Object.assign({}, req.body, { id: '' }));
         res.status(http_status_1.CREATED)
             .json(ticketType);
     }
@@ -72,7 +72,7 @@ productOffersRouter.get('', permitScopes_1.default(['admin']), ...[
 productOffersRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        yield offerRepo.updateProductOffer(req.body);
+        yield offerRepo.saveProductOffer(req.body);
         res.status(http_status_1.NO_CONTENT)
             .end();
     }

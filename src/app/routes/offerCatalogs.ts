@@ -20,9 +20,9 @@ offerCatalogsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
+            const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = { ...req.body, id: '' };
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.createOfferCatalog(ticketTypeGroup);
+            await offerRepo.saveOfferCatalog(ticketTypeGroup);
             res.status(CREATED)
                 .json(ticketTypeGroup);
         } catch (error) {
@@ -77,7 +77,7 @@ offerCatalogsRouter.put(
         try {
             const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.updateOfferCatalog(ticketTypeGroup);
+            await offerRepo.saveOfferCatalog(ticketTypeGroup);
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {

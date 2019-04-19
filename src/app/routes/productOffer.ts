@@ -22,7 +22,7 @@ productOffersRouter.post(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const ticketType = await offerRepo.createProductOffer(req.body);
+            const ticketType = await offerRepo.saveProductOffer({ ...req.body, id: '' });
             res.status(CREATED)
                 .json(ticketType);
         } catch (error) {
@@ -85,7 +85,7 @@ productOffersRouter.put(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.updateProductOffer(req.body);
+            await offerRepo.saveProductOffer(req.body);
 
             res.status(NO_CONTENT)
                 .end();

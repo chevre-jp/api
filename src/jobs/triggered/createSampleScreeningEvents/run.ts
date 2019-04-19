@@ -78,6 +78,7 @@ export default async () => {
                     serviceType: {
                         typeOf: 'ServiceType',
                         id: '',
+                        identifier: '',
                         name: ''
                     },
                     serviceOutput: {

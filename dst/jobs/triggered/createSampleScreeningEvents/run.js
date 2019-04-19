@@ -77,6 +77,7 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
                 serviceType: {
                     typeOf: 'ServiceType',
                     id: '',
+                    identifier: '',
                     name: ''
                 },
                 serviceOutput: {
