@@ -20,9 +20,9 @@ offerCatalogsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = { ...req.body, id: '' };
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.saveOfferCatalog(ticketTypeGroup);
+            const ticketTypeGroup = await offerRepo.saveOfferCatalog({ ...req.body, id: '' });
+
             res.status(CREATED)
                 .json(ticketTypeGroup);
         } catch (error) {

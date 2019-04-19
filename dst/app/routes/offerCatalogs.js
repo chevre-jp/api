@@ -22,9 +22,8 @@ const offerCatalogsRouter = express_1.Router();
 offerCatalogsRouter.use(authentication_1.default);
 offerCatalogsRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const ticketTypeGroup = Object.assign({}, req.body, { id: '' });
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        yield offerRepo.saveOfferCatalog(ticketTypeGroup);
+        const ticketTypeGroup = yield offerRepo.saveOfferCatalog(Object.assign({}, req.body, { id: '' }));
         res.status(http_status_1.CREATED)
             .json(ticketTypeGroup);
     }

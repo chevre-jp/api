@@ -23,6 +23,7 @@ productOffersRouter.post(
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
             const ticketType = await offerRepo.saveProductOffer({ ...req.body, id: '' });
+
             res.status(CREATED)
                 .json(ticketType);
         } catch (error) {

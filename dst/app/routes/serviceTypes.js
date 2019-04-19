@@ -22,9 +22,9 @@ const serviceTypesRouter = express_1.Router();
 serviceTypesRouter.use(authentication_1.default);
 serviceTypesRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const serviceType = Object.assign({}, req.body, { typeOf: 'ServiceType' });
+        let serviceType = Object.assign({}, req.body, { typeOf: 'ServiceType', id: '' });
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-        yield serviceTypeRepo.save(serviceType);
+        serviceType = yield serviceTypeRepo.save(serviceType);
         res.status(http_status_1.CREATED)
             .json(serviceType);
     }
