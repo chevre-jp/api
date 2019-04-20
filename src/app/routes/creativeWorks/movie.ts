@@ -48,12 +48,18 @@ movieRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
+                ? { ...req.body.project, typeOf: 'Project' }
+                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+
             const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,
                 duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
                     // tslint:disable-next-line:no-null-keyword
-                    .toISOString() : null
+                    .toISOString() : null,
+                project: project
             };
+
             const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             await creativeWorkRepo.saveMovie(movie);
             res.status(CREATED)

@@ -30,10 +30,16 @@ movieTheaterRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
+                ? { ...req.body.project, typeOf: 'Project' }
+                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+
             const movieTheater: chevre.factory.place.movieTheater.IPlace = {
                 ...req.body,
-                typeOf: chevre.factory.placeType.MovieTheater
+                typeOf: chevre.factory.placeType.MovieTheater,
+                project: project
             };
+
             const placeRepo = new chevre.repository.Place(mongoose.connection);
             await placeRepo.saveMovieTheater(movieTheater);
 

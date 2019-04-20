@@ -45,9 +45,15 @@ priceSpecificationsRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
+                ? { ...req.body.project, typeOf: 'Project' }
+                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+
             let priceSpecification: chevre.factory.priceSpecification.IPriceSpecification<any> = {
-                ...req.body
+                ...req.body,
+                project: project
             };
+
             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
             const doc = await priceSpecificationRepo.priceSpecificationModel.create(priceSpecification);
 

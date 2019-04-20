@@ -197,6 +197,7 @@ reservationsRouter.put(
 
             // 上映イベント集計タスクを追加
             const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                project: reservation.project,
                 name: chevre.factory.taskName.AggregateScreeningEvent,
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
@@ -237,6 +238,7 @@ reservationsRouter.put(
             });
 
             const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                project: reservation.project,
                 name: chevre.factory.taskName.AggregateScreeningEvent,
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
@@ -272,6 +274,7 @@ reservationsRouter.put(
             });
 
             const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                project: reservation.project,
                 name: chevre.factory.taskName.AggregateScreeningEvent,
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),

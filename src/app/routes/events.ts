@@ -124,13 +124,24 @@ eventsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const params = req.body;
+            const params = req.body.map((a: any) => {
+                const project: chevre.factory.project.IProject = (a.project !== undefined)
+                    ? { ...a.project, typeOf: 'Project' }
+                    : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+
+                return {
+                    ...a,
+                    project: project
+                };
+            });
+
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             const events = await eventRepo.createMany(params);
 
             await Promise.all(events.map(async (event) => {
                 if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
                     const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                        project: event.project,
                         name: chevre.factory.taskName.AggregateScreeningEvent,
                         status: chevre.factory.taskStatus.Ready,
                         runsAt: new Date(),
@@ -351,6 +362,7 @@ eventsRouter.put(
 
             if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
                 const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                    project: event.project,
                     name: chevre.factory.taskName.AggregateScreeningEvent,
                     status: chevre.factory.taskStatus.Ready,
                     runsAt: new Date(),

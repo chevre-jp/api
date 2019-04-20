@@ -31,7 +31,9 @@ movieTheaterRouter.post('', permitScopes_1.default(['admin']), ...[
         .isEmpty()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const movieTheater = Object.assign({}, req.body, { typeOf: chevre.factory.placeType.MovieTheater });
+        const project = (req.body.project !== undefined)
+            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+        const movieTheater = Object.assign({}, req.body, { typeOf: chevre.factory.placeType.MovieTheater, project: project });
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         yield placeRepo.saveMovieTheater(movieTheater);
         res.status(http_status_1.CREATED)

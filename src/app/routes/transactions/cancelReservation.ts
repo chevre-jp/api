@@ -43,7 +43,13 @@ cancelReservationTransactionsRouter.post(
         try {
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+
+            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
+                ? { ...req.body.project, typeOf: 'Project' }
+                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+
             const transaction = await chevre.service.transaction.cancelReservation.start({
+                project: project,
                 typeOf: chevre.factory.transactionType.CancelReservation,
                 agent: {
                     typeOf: req.body.agent.typeOf,

@@ -42,7 +42,13 @@ tasksRouter.post(
     async (req, res, next) => {
         try {
             const taskRepo = new chevre.repository.Task(mongoose.connection);
+
+            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
+                ? { ...req.body.project, typeOf: 'Project' }
+                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+
             const attributes: chevre.factory.task.IAttributes = {
+                project: project,
                 name: req.params.name,
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: moment(req.body.runsAt)

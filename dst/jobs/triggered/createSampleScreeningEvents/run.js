@@ -25,7 +25,9 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         return;
     }
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
-    const job = new cron_1.CronJob('0 * * * *', () => __awaiter(this, void 0, void 0, function* () {
+    const job = new cron_1.CronJob('0 * * * *', 
+    // tslint:disable-next-line:max-func-body-length
+    () => __awaiter(this, void 0, void 0, function* () {
         const eventRepo = new chevre.repository.Event(connection);
         const placeRepo = new chevre.repository.Place(connection);
         const offerRepo = new chevre.repository.Offer(connection);
@@ -92,7 +94,12 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
                 }
             }
         };
+        const project = {
+            typeOf: 'Project',
+            id: process.env.PROJECT_ID
+        };
         const eventAttributes = {
+            project: project,
             typeOf: chevre.factory.eventType.ScreeningEvent,
             name: eventSeries.name,
             duration: moment.duration(duration, 'minutes')
@@ -102,6 +109,7 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
             endDate: endDate,
             eventStatus: chevre.factory.eventStatusType.EventScheduled,
             location: {
+                project: project,
                 typeOf: screeningRoom.typeOf,
                 branchCode: screeningRoom.branchCode,
                 name: screeningRoom.name,

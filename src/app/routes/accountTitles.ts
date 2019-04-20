@@ -37,7 +37,15 @@ accountTitlesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const accountTitle: chevre.factory.accountTitle.IAccountTitle = req.body;
+            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
+                ? { ...req.body.project, typeOf: 'Project' }
+                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+
+            const accountTitle: chevre.factory.accountTitle.IAccountTitle = {
+                ...req.body,
+                project: project
+            };
+
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
             await accountTitleRepo.accountTitleModel.create(accountTitle);
             res.status(CREATED)

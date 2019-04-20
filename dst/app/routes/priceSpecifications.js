@@ -46,7 +46,9 @@ priceSpecificationsRouter.use(authentication_1.default);
 // );
 priceSpecificationsRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        let priceSpecification = Object.assign({}, req.body);
+        const project = (req.body.project !== undefined)
+            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+        let priceSpecification = Object.assign({}, req.body, { project: project });
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         const doc = yield priceSpecificationRepo.priceSpecificationModel.create(priceSpecification);
         priceSpecification = doc.toObject();

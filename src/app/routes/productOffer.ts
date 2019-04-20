@@ -22,7 +22,12 @@ productOffersRouter.post(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const ticketType = await offerRepo.saveProductOffer({ ...req.body, id: '' });
+
+            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
+                ? { ...req.body.project, typeOf: 'Project' }
+                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+
+            const ticketType = await offerRepo.saveProductOffer({ ...req.body, id: '', project: project });
 
             res.status(CREATED)
                 .json(ticketType);

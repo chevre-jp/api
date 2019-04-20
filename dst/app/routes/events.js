@@ -119,12 +119,17 @@ const validations = [
  */
 eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const params = req.body;
+        const params = req.body.map((a) => {
+            const project = (a.project !== undefined)
+                ? Object.assign({}, a.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+            return Object.assign({}, a, { project: project });
+        });
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const events = yield eventRepo.createMany(params);
         yield Promise.all(events.map((event) => __awaiter(this, void 0, void 0, function* () {
             if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
                 const aggregateTask = {
+                    project: event.project,
                     name: chevre.factory.taskName.AggregateScreeningEvent,
                     status: chevre.factory.taskStatus.Ready,
                     runsAt: new Date(),
@@ -302,6 +307,7 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
         const event = yield eventRepo.save({ id: req.params.id, attributes: eventAttributes });
         if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
             const aggregateTask = {
+                project: event.project,
                 name: chevre.factory.taskName.AggregateScreeningEvent,
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),

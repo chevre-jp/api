@@ -24,6 +24,7 @@ export default async () => {
 
     const job = new CronJob(
         '0 * * * *',
+        // tslint:disable-next-line:max-func-body-length
         async () => {
             const eventRepo = new chevre.repository.Event(connection);
             const placeRepo = new chevre.repository.Place(connection);
@@ -94,7 +95,13 @@ export default async () => {
                 }
             };
 
+            const project: chevre.factory.project.IProject = {
+                typeOf: 'Project',
+                id: <string>process.env.PROJECT_ID
+            };
+
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes = {
+                project: project,
                 typeOf: chevre.factory.eventType.ScreeningEvent,
                 name: eventSeries.name,
                 duration: moment.duration(duration, 'minutes')
@@ -104,6 +111,7 @@ export default async () => {
                 endDate: endDate,
                 eventStatus: chevre.factory.eventStatusType.EventScheduled,
                 location: {
+                    project: project,
                     typeOf: <chevre.factory.placeType.ScreeningRoom>screeningRoom.typeOf,
                     branchCode: screeningRoom.branchCode,
                     name: screeningRoom.name,

@@ -50,9 +50,11 @@ movieRouter.post('', permitScopes_1.default(['admin']), ...[
         .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
+        const project = (req.body.project !== undefined)
+            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
         const movie = Object.assign({}, req.body, { duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
                 // tslint:disable-next-line:no-null-keyword
-                .toISOString() : null });
+                .toISOString() : null, project: project });
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         yield creativeWorkRepo.saveMovie(movie);
         res.status(http_status_1.CREATED)

@@ -21,7 +21,12 @@ offerCatalogsRouter.post(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const ticketTypeGroup = await offerRepo.saveOfferCatalog({ ...req.body, id: '' });
+
+            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
+                ? { ...req.body.project, typeOf: 'Project' }
+                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+
+            const ticketTypeGroup = await offerRepo.saveOfferCatalog({ ...req.body, id: '', project: project });
 
             res.status(CREATED)
                 .json(ticketTypeGroup);

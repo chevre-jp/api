@@ -159,6 +159,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScope
         });
         // 上映イベント集計タスクを追加
         const aggregateTask = {
+            project: reservation.project,
             name: chevre.factory.taskName.AggregateScreeningEvent,
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
@@ -190,6 +191,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
             id: req.params.id
         });
         const aggregateTask = {
+            project: reservation.project,
             name: chevre.factory.taskName.AggregateScreeningEvent,
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
@@ -217,6 +219,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
             id: req.params.id
         });
         const aggregateTask = {
+            project: reservation.project,
             name: chevre.factory.taskName.AggregateScreeningEvent,
             status: chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
