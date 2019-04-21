@@ -81,6 +81,16 @@ accountTitlesRouter.get(
             const conditions: any[] = [
                 { typeOf: 'AccountTitle' }
             ];
+            if (searchCoinditions.project !== undefined) {
+                if (Array.isArray(searchCoinditions.project.ids)) {
+                    conditions.push({
+                        'project.id': {
+                            $exists: true,
+                            $in: searchCoinditions.project.ids
+                        }
+                    });
+                }
+            }
             if (searchCoinditions.codeValue !== undefined) {
                 conditions.push({
                     codeValue: {
@@ -260,6 +270,18 @@ accountTitlesRouter.get(
             // res.json(accountTitles);
 
             const matchStages: any[] = [];
+            if (searchCoinditions.project !== undefined) {
+                if (Array.isArray(searchCoinditions.project.ids)) {
+                    matchStages.push({
+                        $match: {
+                            'project.id': {
+                                $exists: true,
+                                $in: searchCoinditions.project.ids
+                            }
+                        }
+                    });
+                }
+            }
             if (searchCoinditions.codeValue !== undefined) {
                 matchStages.push({
                     $match: {
@@ -473,6 +495,18 @@ accountTitlesRouter.get(
             // res.json(accountTitles);
 
             const matchStages: any[] = [];
+            if (searchCoinditions.project !== undefined) {
+                if (Array.isArray(searchCoinditions.project.ids)) {
+                    matchStages.push({
+                        $match: {
+                            'project.id': {
+                                $exists: true,
+                                $in: searchCoinditions.project.ids
+                            }
+                        }
+                    });
+                }
+            }
             if (searchCoinditions.codeValue !== undefined) {
                 matchStages.push({
                     $match: {
