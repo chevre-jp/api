@@ -48,20 +48,23 @@ movieRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
+
             const project: chevre.factory.project.IProject = (req.body.project !== undefined)
                 ? { ...req.body.project, typeOf: 'Project' }
                 : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
 
             const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,
+                id: '',
                 duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
                     // tslint:disable-next-line:no-null-keyword
                     .toISOString() : null,
                 project: project
             };
 
-            const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             await creativeWorkRepo.saveMovie(movie);
+
             res.status(CREATED)
                 .json(movie);
         } catch (error) {
@@ -120,13 +123,14 @@ movieRouter.get(
 );
 
 movieRouter.get(
-    '/:identifier',
+    '/:id',
     permitScopes(['admin', 'creativeWorks', 'creativeWorks.read-only']),
     validator,
     async (req, res, next) => {
         try {
             const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
-            const movie = await creativeWorkRepo.findMovieByIdentifier({ identifier: req.params.identifier });
+            const movie = await creativeWorkRepo.findMovieById({ id: req.params.id });
+
             res.json(movie);
         } catch (error) {
             next(error);
@@ -135,7 +139,7 @@ movieRouter.get(
 );
 
 movieRouter.put(
-    '/:identifier',
+    '/:id',
     permitScopes(['admin']),
     ...[
         body('datePublished')
@@ -166,14 +170,17 @@ movieRouter.put(
     validator,
     async (req, res, next) => {
         try {
+            const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
+
             const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,
+                id: req.params.id,
                 duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
                     // tslint:disable-next-line:no-null-keyword
                     .toISOString() : null
             };
-            const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             await creativeWorkRepo.saveMovie(movie);
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
@@ -183,13 +190,14 @@ movieRouter.put(
 );
 
 movieRouter.delete(
-    '/:identifier',
+    '/:id',
     permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
             const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
-            await creativeWorkRepo.deleteMovie({ identifier: req.params.identifier });
+            await creativeWorkRepo.deleteMovie({ id: req.params.id });
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {

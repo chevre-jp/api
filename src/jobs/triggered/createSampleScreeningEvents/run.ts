@@ -30,6 +30,11 @@ export default async () => {
             const placeRepo = new chevre.repository.Place(connection);
             const offerRepo = new chevre.repository.Offer(connection);
 
+            const project: chevre.factory.project.IProject = {
+                typeOf: 'Project',
+                id: <string>process.env.PROJECT_ID
+            };
+
             const eventSeriesList = await eventRepo.search<chevre.factory.eventType.ScreeningEventSeries>({
                 typeOf: chevre.factory.eventType.ScreeningEventSeries
             });
@@ -77,6 +82,7 @@ export default async () => {
                 },
                 itemOffered: {
                     serviceType: {
+                        project: project,
                         typeOf: 'ServiceType',
                         id: '',
                         identifier: '',
@@ -93,11 +99,6 @@ export default async () => {
                         }
                     }
                 }
-            };
-
-            const project: chevre.factory.project.IProject = {
-                typeOf: 'Project',
-                id: <string>process.env.PROJECT_ID
             };
 
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes = {

@@ -31,6 +31,10 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         const eventRepo = new chevre.repository.Event(connection);
         const placeRepo = new chevre.repository.Place(connection);
         const offerRepo = new chevre.repository.Offer(connection);
+        const project = {
+            typeOf: 'Project',
+            id: process.env.PROJECT_ID
+        };
         const eventSeriesList = yield eventRepo.search({
             typeOf: chevre.factory.eventType.ScreeningEventSeries
         });
@@ -77,6 +81,7 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
             },
             itemOffered: {
                 serviceType: {
+                    project: project,
                     typeOf: 'ServiceType',
                     id: '',
                     identifier: '',
@@ -93,10 +98,6 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
                     }
                 }
             }
-        };
-        const project = {
-            typeOf: 'Project',
-            id: process.env.PROJECT_ID
         };
         const eventAttributes = {
             project: project,
