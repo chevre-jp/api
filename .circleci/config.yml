@@ -126,12 +126,12 @@ workflows:
           filters:
             branches:
               only: develop
-      # - prerelease:
-      #     requires:
-      #       - doc
-      #     filters:
-      #       branches:
-      #         only: /feature\/.+-alpha.+/
+      - prerelease:
+          requires:
+            - doc
+          filters:
+            branches:
+              only: /feature\/.+-alpha.+/
       # - deploy:
       #     requires:
       #       - doc
