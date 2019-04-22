@@ -54,7 +54,7 @@ movieRouter.post(
                 ? { ...req.body.project, typeOf: 'Project' }
                 : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
 
-            const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
+            let movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,
                 id: '',
                 duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
@@ -63,7 +63,7 @@ movieRouter.post(
                 project: project
             };
 
-            await creativeWorkRepo.saveMovie(movie);
+            movie = await creativeWorkRepo.saveMovie(movie);
 
             res.status(CREATED)
                 .json(movie);
