@@ -39,6 +39,10 @@ const validations = [
         .isArray()
         .custom((value) => value.length <= MAX_NUM_EVENTS_CREATED)
         .withMessage(() => 'Array length max exceeded'),
+    check_1.body('*.project')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
     check_1.body('*.typeOf')
         .not()
         .isEmpty()
@@ -120,8 +124,7 @@ const validations = [
 eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const params = req.body.map((a) => {
-            const project = (a.project !== undefined)
-                ? Object.assign({}, a.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+            const project = Object.assign({}, a.project, { typeOf: 'Project' });
             return Object.assign({}, a, { project: project });
         });
         const eventRepo = new chevre.repository.Event(mongoose.connection);

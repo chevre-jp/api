@@ -17,6 +17,10 @@ screeningEventRouter.post(
     '/saveMultiple',
     permitScopes(['admin']),
     ...[
+        body('attributes.*.project')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
         body('attributes.*.typeOf')
             .not()
             .isEmpty()
@@ -89,9 +93,7 @@ screeningEventRouter.post(
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes[] = req.body.attributes.map((a: any) => {
-                const project: chevre.factory.project.IProject = (a.project !== undefined)
-                    ? { ...a.project, typeOf: 'Project' }
-                    : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+                const project: chevre.factory.project.IProject = { ...a.project, typeOf: 'Project' };
 
                 return {
                     ...a,

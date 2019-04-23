@@ -23,6 +23,10 @@ tasksRouter.post(
     '/:name',
     permitScopes(['admin']),
     ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
         body('runsAt')
             .not()
             .isEmpty()
@@ -43,9 +47,7 @@ tasksRouter.post(
         try {
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
-                ? { ...req.body.project, typeOf: 'Project' }
-                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
             const attributes: chevre.factory.task.IAttributes = {
                 project: project,

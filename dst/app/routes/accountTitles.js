@@ -28,6 +28,10 @@ accountTitlesRouter.use(authentication_1.default);
  * 科目分類追加
  */
 accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
     check_1.body('codeValue')
         .not()
         .isEmpty()
@@ -38,8 +42,7 @@ accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['admin
         .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const project = (req.body.project !== undefined)
-            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
         const accountTitle = Object.assign({}, req.body, { project: project });
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         yield accountTitleRepo.accountTitleModel.create(accountTitle);

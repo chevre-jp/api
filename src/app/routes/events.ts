@@ -37,6 +37,10 @@ const validations: RequestHandler[] = [
         .isArray()
         .custom((value) => value.length <= MAX_NUM_EVENTS_CREATED)
         .withMessage(() => 'Array length max exceeded'),
+    body('*.project')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
     body('*.typeOf')
         .not()
         .isEmpty()
@@ -125,9 +129,7 @@ eventsRouter.post(
     async (req, res, next) => {
         try {
             const params = req.body.map((a: any) => {
-                const project: chevre.factory.project.IProject = (a.project !== undefined)
-                    ? { ...a.project, typeOf: 'Project' }
-                    : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+                const project: chevre.factory.project.IProject = { ...a.project, typeOf: 'Project' };
 
                 return {
                     ...a,

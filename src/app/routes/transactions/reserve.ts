@@ -23,6 +23,9 @@ reserveTransactionsRouter.post(
     '/start',
     permitScopes(['admin', 'transactions']),
     (req, _, next) => {
+        req.checkBody('project')
+            .notEmpty()
+            .withMessage('Required');
         req.checkBody('expires', 'invalid expires')
             .notEmpty()
             .withMessage('Required')
@@ -51,9 +54,7 @@ reserveTransactionsRouter.post(
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const reservationNumberRepo = new chevre.repository.ReservationNumber(redis.getClient());
 
-            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
-                ? { ...req.body.project, typeOf: 'Project' }
-                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
             const transaction = await chevre.service.transaction.reserve.start({
                 project: project,

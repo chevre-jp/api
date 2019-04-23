@@ -21,6 +21,10 @@ const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const screeningEventRouter = express_1.Router();
 screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ...[
+    check_1.body('attributes.*.project')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
     check_1.body('attributes.*.typeOf')
         .not()
         .isEmpty()
@@ -90,8 +94,7 @@ screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ..
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const eventAttributes = req.body.attributes.map((a) => {
-            const project = (a.project !== undefined)
-                ? Object.assign({}, a.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+            const project = Object.assign({}, a.project, { typeOf: 'Project' });
             return Object.assign({}, a, { project: project });
         });
         const events = yield eventRepo.createMany(eventAttributes);

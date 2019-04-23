@@ -3,6 +3,8 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
+// tslint:disable-next-line:no-submodule-imports
+import { body } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -42,12 +44,16 @@ priceSpecificationsRouter.use(authentication);
 priceSpecificationsRouter.post(
     '',
     permitScopes(['admin']),
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+    ],
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
-                ? { ...req.body.project, typeOf: 'Project' }
-                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
             let priceSpecification: chevre.factory.priceSpecification.IPriceSpecification<any> = {
                 ...req.body,

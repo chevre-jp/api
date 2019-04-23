@@ -4,7 +4,7 @@
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
-import { query } from 'express-validator/check';
+import { body, query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -18,14 +18,18 @@ productOffersRouter.use(authentication);
 productOffersRouter.post(
     '',
     permitScopes(['admin']),
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required')
+    ],
     validator,
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
-                ? { ...req.body.project, typeOf: 'Project' }
-                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
             const ticketType = await offerRepo.saveProductOffer({ ...req.body, id: '', project: project });
 

@@ -25,6 +25,9 @@ const validator_1 = require("../../middlewares/validator");
 const debug = createDebug('chevre-api:routes');
 reserveTransactionsRouter.use(authentication_1.default);
 reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), (req, _, next) => {
+    req.checkBody('project')
+        .notEmpty()
+        .withMessage('Required');
     req.checkBody('expires', 'invalid expires')
         .notEmpty()
         .withMessage('Required')
@@ -49,8 +52,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
         const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const reservationNumberRepo = new chevre.repository.ReservationNumber(redis.getClient());
-        const project = (req.body.project !== undefined)
-            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
         const transaction = yield chevre.service.transaction.reserve.start({
             project: project,
             typeOf: chevre.factory.transactionType.Reserve,

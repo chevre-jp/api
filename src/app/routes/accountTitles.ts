@@ -25,6 +25,10 @@ accountTitlesRouter.post(
     '/accountTitleCategory',
     permitScopes(['admin']),
     ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
         body('codeValue')
             .not()
             .isEmpty()
@@ -37,9 +41,7 @@ accountTitlesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
-                ? { ...req.body.project, typeOf: 'Project' }
-                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
             const accountTitle: chevre.factory.accountTitle.IAccountTitle = {
                 ...req.body,

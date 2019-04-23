@@ -22,11 +22,15 @@ const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const offersRouter = express_1.Router();
 offersRouter.use(authentication_1.default);
-offersRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+offersRouter.post('', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const project = (req.body.project !== undefined)
-            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
         const ticketType = yield offerRepo.saveOffer(Object.assign({}, req.body, { id: '', project: project }));
         res.status(http_status_1.CREATED)
             .json(ticketType);

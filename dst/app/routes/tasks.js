@@ -27,6 +27,10 @@ tasksRouter.use(authentication_1.default);
  * タスク作成
  */
 tasksRouter.post('/:name', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
     check_1.body('runsAt')
         .not()
         .isEmpty()
@@ -44,8 +48,7 @@ tasksRouter.post('/:name', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const project = (req.body.project !== undefined)
-            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
         const attributes = {
             project: project,
             name: req.params.name,

@@ -20,6 +20,10 @@ movieRouter.post(
     '',
     permitScopes(['admin']),
     ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage((_, __) => 'Required'),
         body('datePublished')
             .optional()
             .isISO8601()
@@ -50,9 +54,7 @@ movieRouter.post(
         try {
             const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
-                ? { ...req.body.project, typeOf: 'Project' }
-                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
             let movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,

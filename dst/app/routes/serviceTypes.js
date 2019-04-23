@@ -13,6 +13,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
+// tslint:disable-next-line:no-submodule-imports
+const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
@@ -20,10 +22,14 @@ const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const serviceTypesRouter = express_1.Router();
 serviceTypesRouter.use(authentication_1.default);
-serviceTypesRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+serviceTypesRouter.post('', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required')
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const project = (req.body.project !== undefined)
-            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
         let serviceType = Object.assign({}, req.body, { typeOf: 'ServiceType', id: '', project: project });
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         serviceType = yield serviceTypeRepo.save(serviceType);

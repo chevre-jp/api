@@ -24,6 +24,9 @@ const validator_1 = require("../../middlewares/validator");
 const debug = createDebug('chevre-api:routes');
 cancelReservationTransactionsRouter.use(authentication_1.default);
 cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), (req, _, next) => {
+    req.checkBody('project')
+        .notEmpty()
+        .withMessage('Required');
     req.checkBody('expires', 'invalid expires')
         .notEmpty()
         .withMessage('Required')
@@ -42,8 +45,7 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
     try {
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const project = (req.body.project !== undefined)
-            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
         const transaction = yield chevre.service.transaction.cancelReservation.start({
             project: project,
             typeOf: chevre.factory.transactionType.CancelReservation,

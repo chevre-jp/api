@@ -24,6 +24,10 @@ const validator_1 = require("../../middlewares/validator");
 const movieRouter = express_1.Router();
 movieRouter.use(authentication_1.default);
 movieRouter.post('', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
     check_1.body('datePublished')
         .optional()
         .isISO8601()
@@ -51,8 +55,7 @@ movieRouter.post('', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
-        const project = (req.body.project !== undefined)
-            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
         let movie = Object.assign({}, req.body, { id: '', duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
                 // tslint:disable-next-line:no-null-keyword
                 .toISOString() : null, project: project });

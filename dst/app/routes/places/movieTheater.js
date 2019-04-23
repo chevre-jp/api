@@ -23,6 +23,10 @@ const validator_1 = require("../../middlewares/validator");
 const movieTheaterRouter = express_1.Router();
 movieTheaterRouter.use(authentication_1.default);
 movieTheaterRouter.post('', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage((_, __) => 'Required'),
     check_1.body('branchCode')
         .not()
         .isEmpty(),
@@ -31,8 +35,7 @@ movieTheaterRouter.post('', permitScopes_1.default(['admin']), ...[
         .isEmpty()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const project = (req.body.project !== undefined)
-            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
         let movieTheater = Object.assign({}, req.body, { typeOf: chevre.factory.placeType.MovieTheater, id: '', project: project });
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         movieTheater = yield placeRepo.saveMovieTheater(movieTheater);
