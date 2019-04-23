@@ -412,7 +412,7 @@ eventsRouter.get(
                 const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
                 const placeRepo = new chevre.repository.Place(mongoose.connection);
                 const unavailableOffers = await eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });
-                const movieTheater = await placeRepo.findMovieTheaterByBranchCode({ branchCode: event.superEvent.location.branchCode });
+                const movieTheater = await placeRepo.findById({ id: event.superEvent.location.id });
                 const screeningRoom = <chevre.factory.place.movieTheater.IScreeningRoom>movieTheater.containsPlace.find(
                     (p) => p.branchCode === event.location.branchCode
                 );

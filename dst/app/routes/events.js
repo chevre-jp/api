@@ -346,7 +346,7 @@ eventsRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'even
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
             const placeRepo = new chevre.repository.Place(mongoose.connection);
             const unavailableOffers = yield eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });
-            const movieTheater = yield placeRepo.findMovieTheaterByBranchCode({ branchCode: event.superEvent.location.branchCode });
+            const movieTheater = yield placeRepo.findById({ id: event.superEvent.location.id });
             const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === event.location.branchCode);
             if (screeningRoom === undefined) {
                 throw new chevre.factory.errors.NotFound('Screening Room');

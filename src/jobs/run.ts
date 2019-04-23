@@ -17,7 +17,6 @@ import onExpiredReserve from './continuous/onExpiredReserve/run';
 import reexportTransactionTasks from './continuous/reexportTransactionTasks/run';
 import reserve from './continuous/reserve/run';
 import retryTasks from './continuous/retryTasks/run';
-import createSampleScreeningEvents from './triggered/createSampleScreeningEvents/run';
 
 export default async () => {
     await abortTasks();
@@ -36,6 +35,4 @@ export default async () => {
     await reexportTransactionTasks();
     await reserve();
     await retryTasks();
-
-    await createSampleScreeningEvents();
 };
