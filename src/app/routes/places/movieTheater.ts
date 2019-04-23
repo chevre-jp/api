@@ -4,8 +4,8 @@
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
-// import { body } from 'express-validator/check';
-// import { CREATED, NO_CONTENT } from 'http-status';
+import { body } from 'express-validator/check';
+import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
 import authentication from '../../middlewares/authentication';
@@ -16,40 +16,41 @@ const movieTheaterRouter = Router();
 
 movieTheaterRouter.use(authentication);
 
-// movieTheaterRouter.post(
-//     '',
-//     permitScopes(['admin']),
-//     ...[
-//         body('branchCode')
-//             .not()
-//             .isEmpty(),
-//         body('name')
-//             .not()
-//             .isEmpty()
-//     ],
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const project: chevre.factory.project.IProject = (req.body.project !== undefined)
-//                 ? { ...req.body.project, typeOf: 'Project' }
-//                 : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
+movieTheaterRouter.post(
+    '',
+    permitScopes(['admin']),
+    ...[
+        body('branchCode')
+            .not()
+            .isEmpty(),
+        body('name')
+            .not()
+            .isEmpty()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const project: chevre.factory.project.IProject = (req.body.project !== undefined)
+                ? { ...req.body.project, typeOf: 'Project' }
+                : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
 
-//             const movieTheater: chevre.factory.place.movieTheater.IPlace = {
-//                 ...req.body,
-//                 typeOf: chevre.factory.placeType.MovieTheater,
-//                 project: project
-//             };
+            let movieTheater: chevre.factory.place.movieTheater.IPlace = {
+                ...req.body,
+                typeOf: chevre.factory.placeType.MovieTheater,
+                id: '',
+                project: project
+            };
 
-//             const placeRepo = new chevre.repository.Place(mongoose.connection);
-//             await placeRepo.saveMovieTheater(movieTheater);
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+            movieTheater = await placeRepo.saveMovieTheater(movieTheater);
 
-//             res.status(CREATED)
-//                 .json(movieTheater);
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
+            res.status(CREATED)
+                .json(movieTheater);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 movieTheaterRouter.get(
     '',
@@ -91,31 +92,34 @@ movieTheaterRouter.get(
     }
 );
 
-// movieTheaterRouter.put(
-//     '/:id',
-//     permitScopes(['admin']),
-//     ...[
-//         body('name')
-//             .not()
-//             .isEmpty()
-//     ],
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const movieTheater: chevre.factory.place.movieTheater.IPlace = {
-//                 ...req.body,
-//                 typeOf: chevre.factory.placeType.MovieTheater,
-//                 id: req.params.id
-//             };
-//             const placeRepo = new chevre.repository.Place(mongoose.connection);
-//             await placeRepo.saveMovieTheater(movieTheater);
+movieTheaterRouter.put(
+    '/:id',
+    permitScopes(['admin']),
+    ...[
+        body('branchCode')
+            .not()
+            .isEmpty(),
+        body('name')
+            .not()
+            .isEmpty()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const movieTheater: chevre.factory.place.movieTheater.IPlace = {
+                ...req.body,
+                typeOf: chevre.factory.placeType.MovieTheater,
+                id: req.params.id
+            };
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+            await placeRepo.saveMovieTheater(movieTheater);
 
-//             res.status(NO_CONTENT)
-//                 .end();
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 export default movieTheaterRouter;

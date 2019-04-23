@@ -14,45 +14,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
 // tslint:disable-next-line:no-submodule-imports
-// import { body } from 'express-validator/check';
-// import { CREATED, NO_CONTENT } from 'http-status';
+const check_1 = require("express-validator/check");
+const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const movieTheaterRouter = express_1.Router();
 movieTheaterRouter.use(authentication_1.default);
-// movieTheaterRouter.post(
-//     '',
-//     permitScopes(['admin']),
-//     ...[
-//         body('branchCode')
-//             .not()
-//             .isEmpty(),
-//         body('name')
-//             .not()
-//             .isEmpty()
-//     ],
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const project: chevre.factory.project.IProject = (req.body.project !== undefined)
-//                 ? { ...req.body.project, typeOf: 'Project' }
-//                 : { id: <string>process.env.PROJECT_ID, typeOf: 'Project' };
-//             const movieTheater: chevre.factory.place.movieTheater.IPlace = {
-//                 ...req.body,
-//                 typeOf: chevre.factory.placeType.MovieTheater,
-//                 project: project
-//             };
-//             const placeRepo = new chevre.repository.Place(mongoose.connection);
-//             await placeRepo.saveMovieTheater(movieTheater);
-//             res.status(CREATED)
-//                 .json(movieTheater);
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
+movieTheaterRouter.post('', permitScopes_1.default(['admin']), ...[
+    check_1.body('branchCode')
+        .not()
+        .isEmpty(),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const project = (req.body.project !== undefined)
+            ? Object.assign({}, req.body.project, { typeOf: 'Project' }) : { id: process.env.PROJECT_ID, typeOf: 'Project' };
+        let movieTheater = Object.assign({}, req.body, { typeOf: chevre.factory.placeType.MovieTheater, id: '', project: project });
+        const placeRepo = new chevre.repository.Place(mongoose.connection);
+        movieTheater = yield placeRepo.saveMovieTheater(movieTheater);
+        res.status(http_status_1.CREATED)
+            .json(movieTheater);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 movieTheaterRouter.get('', permitScopes_1.default(['admin', 'places', 'places.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
@@ -78,29 +68,23 @@ movieTheaterRouter.get('/:id', permitScopes_1.default(['admin', 'places', 'place
         next(error);
     }
 }));
-// movieTheaterRouter.put(
-//     '/:id',
-//     permitScopes(['admin']),
-//     ...[
-//         body('name')
-//             .not()
-//             .isEmpty()
-//     ],
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const movieTheater: chevre.factory.place.movieTheater.IPlace = {
-//                 ...req.body,
-//                 typeOf: chevre.factory.placeType.MovieTheater,
-//                 id: req.params.id
-//             };
-//             const placeRepo = new chevre.repository.Place(mongoose.connection);
-//             await placeRepo.saveMovieTheater(movieTheater);
-//             res.status(NO_CONTENT)
-//                 .end();
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
+movieTheaterRouter.put('/:id', permitScopes_1.default(['admin']), ...[
+    check_1.body('branchCode')
+        .not()
+        .isEmpty(),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const movieTheater = Object.assign({}, req.body, { typeOf: chevre.factory.placeType.MovieTheater, id: req.params.id });
+        const placeRepo = new chevre.repository.Place(mongoose.connection);
+        yield placeRepo.saveMovieTheater(movieTheater);
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 exports.default = movieTheaterRouter;
