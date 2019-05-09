@@ -9,7 +9,7 @@
     }
   ],
   "dependencies": {
-    "@chevre/domain": "1.0.0-alpha.93",
+    "@chevre/domain": "1.0.0-alpha.94",
     "@motionpicture/express-middleware": "^0.1.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -39,7 +39,6 @@
     "@types/qs": "^6.5.3",
     "@types/sinon": "^5.0.7",
     "@types/supertest": "^2.0.7",
-    "ink-docstrap": "^1.3.0",
     "mocha": "^5.2.0",
     "nock": "^9.6.1",
     "nyc": "^12.0.2",
