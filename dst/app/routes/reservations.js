@@ -50,6 +50,14 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
         .optional()
         .isISO8601()
         .toDate(),
+    check_1.query('reservationFor.endFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.endThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
     check_1.query('checkedIn')
         .optional()
         .isBoolean()
@@ -88,6 +96,14 @@ reservationsRouter.get('/:id', permitScopes_1.default(['admin', 'reservations', 
     }
 }));
 reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
+    check_1.query('limit')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('page')
+        .optional()
+        .isInt()
+        .toInt(),
     check_1.query('modifiedFrom')
         .optional()
         .isISO8601()
@@ -103,7 +119,23 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
     check_1.query('reservationFor.startThrough')
         .optional()
         .isISO8601()
-        .toDate()
+        .toDate(),
+    check_1.query('reservationFor.endFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.endThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('checkedIn')
+        .optional()
+        .isBoolean()
+        .toBoolean(),
+    check_1.query('attended')
+        .optional()
+        .isBoolean()
+        .toBoolean()
 ], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);

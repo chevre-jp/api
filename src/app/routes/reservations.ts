@@ -46,6 +46,14 @@ reservationsRouter.get(
             .optional()
             .isISO8601()
             .toDate(),
+        query('reservationFor.endFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('reservationFor.endThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
         query('checkedIn')
             .optional()
             .isBoolean()
@@ -102,6 +110,14 @@ reservationsRouter.get(
     '/eventReservation/screeningEvent',
     permitScopes(['admin', 'reservations', 'reservations.read-only']),
     ...[
+        query('limit')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('page')
+            .optional()
+            .isInt()
+            .toInt(),
         query('modifiedFrom')
             .optional()
             .isISO8601()
@@ -117,7 +133,23 @@ reservationsRouter.get(
         query('reservationFor.startThrough')
             .optional()
             .isISO8601()
-            .toDate()
+            .toDate(),
+        query('reservationFor.endFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('reservationFor.endThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('checkedIn')
+            .optional()
+            .isBoolean()
+            .toBoolean(),
+        query('attended')
+            .optional()
+            .isBoolean()
+            .toBoolean()
     ],
     validator,
     async (req, res, next) => {
