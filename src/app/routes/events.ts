@@ -359,8 +359,14 @@ eventsRouter.put(
     async (req, res, next) => {
         try {
             const eventAttributes: chevre.factory.event.IAttributes<typeof req.body.typeOf> = req.body[0];
+            const upsert = req.query.upsert === 'true';
+
             const eventRepo = new chevre.repository.Event(mongoose.connection);
-            const event = await eventRepo.save({ id: req.params.id, attributes: eventAttributes });
+            const event = await eventRepo.save({
+                id: req.params.id,
+                attributes: eventAttributes,
+                upsert: upsert
+            });
 
             if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
                 const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {

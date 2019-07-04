@@ -306,8 +306,13 @@ eventsRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read
 eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body[0];
+        const upsert = req.query.upsert === 'true';
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const event = yield eventRepo.save({ id: req.params.id, attributes: eventAttributes });
+        const event = yield eventRepo.save({
+            id: req.params.id,
+            attributes: eventAttributes,
+            upsert: upsert
+        });
         if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
             const aggregateTask = {
                 project: event.project,
