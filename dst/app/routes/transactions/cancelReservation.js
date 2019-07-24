@@ -55,10 +55,7 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
                 name: req.body.agent.name,
                 url: req.body.agent.url
             },
-            object: {
-                clientUser: req.user,
-                transaction: req.body.object.transaction
-            },
+            object: Object.assign({ clientUser: req.user }, req.body.object),
             expires: moment(req.body.expires)
                 .toDate()
         })({

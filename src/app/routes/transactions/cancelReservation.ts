@@ -60,7 +60,7 @@ cancelReservationTransactionsRouter.post(
                 },
                 object: {
                     clientUser: req.user,
-                    transaction: req.body.object.transaction
+                    ...req.body.object
                 },
                 expires: moment(req.body.expires)
                     .toDate()
