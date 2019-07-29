@@ -17,12 +17,13 @@
     "debug": "^3.2.6",
     "ejs": "^2.6.2",
     "express": "^4.17.1",
-    "express-validator": "^5.3.1",
+    "express-validator": "^6.0.0",
     "helmet": "^3.20.0",
     "http-status": "^1.3.2",
     "moment": "^2.24.0",
     "mongoose": "5.4.9",
-    "qs": "^6.7.0"
+    "qs": "^6.7.0",
+    "snyk": "^1.200.1"
   },
   "description": "Chevre API Web Application",
   "devDependencies": {
@@ -72,7 +73,10 @@
     "tslint": "tslint --project tsconfig.json -c tslint.json --exclude \"**/*.spec.ts\" \"src/**/*.ts\"",
     "preversion": "npm run clean && npm run build && npm test && npm run doc",
     "version": "git add -A",
-    "postversion": "git push origin --tags"
+    "postversion": "git push origin --tags",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
-  "version": "5.0.0"
+  "version": "5.0.0",
+  "snyk": true
 }
