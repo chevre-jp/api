@@ -11,16 +11,21 @@
 
 ### Environment variables
 
-| Name                   | Required | Value        | Purpose                   |
-| ---------------------- | -------- | ------------ | ------------------------- |
-| `DEBUG`                | false    | chevre-api:* | Debug                     |
-| `NODE_ENV`             | true     |              | Environment name          |
-| `MONGOLAB_URI`         | true     |              | MongoDB Connection URI    |
-| `REDIS_PORT`           | true     |              | Redis Cache Connection    |
-| `REDIS_HOST`           | true     |              | Redis Cache Connection    |
-| `REDIS_KEY`            | true     |              | Redis Cache Connection    |
-| `REDIS_TLS_SERVERNAME` | false    |              | Redis Cache Connection    |
-| `OFFER_CATEGORIES`     | true     |              | Offer Categories Settings |
+| Name                          | Required | Value        | Purpose                   |
+| ----------------------------- | -------- | ------------ | ------------------------- |
+| `DEBUG`                       | false    | chevre-api:* | Debug                     |
+| `NODE_ENV`                    | true     |              | Environment name          |
+| `MONGOLAB_URI`                | true     |              | MongoDB Connection URI    |
+| `REDIS_PORT`                  | true     |              | Redis Cache Connection    |
+| `REDIS_HOST`                  | true     |              | Redis Cache Connection    |
+| `REDIS_KEY`                   | true     |              | Redis Cache Connection    |
+| `REDIS_TLS_SERVERNAME`        | false    |              | Redis Cache Connection    |
+| `OFFER_CATEGORIES`            | true     |              | Offer Categories Settings |
+| `COA_ENDPOINT`                | true     |              |                           |
+| `COA_REFRESH_TOKEN`           | true     |              |                           |
+| `JOBS_STOPPED`                | true     |              |                           |
+| `RESOURECE_SERVER_IDENTIFIER` | true     |              |                           |
+| `TOKEN_ISSUERS`               | true     |              |                           |
 
 ## License
 

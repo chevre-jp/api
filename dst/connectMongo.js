@@ -65,7 +65,7 @@ function connectMongo(params) {
             try {
                 // コネクション再確立
                 yield connection.close();
-                yield connection.openUri(MONGOLAB_URI, undefined, undefined, connectOptions);
+                yield connection.openUri(MONGOLAB_URI, connectOptions);
                 debug('MongoDB reconnected!');
             }
             catch (error) {
