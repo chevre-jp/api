@@ -10,9 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- [@chevre/domain](https://www.npmjs.com/package/@chevre/domain)で再構築。
-- 予約管理サービスとして再構築。
-
 ### Deprecated
 
 ### Removed
@@ -20,3 +17,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v5.0.0 - 2019-07-29
+
+### Changed
+
+- [@chevre/domain](https://www.npmjs.com/package/@chevre/domain)で再構築
+- 予約管理サービスとして再構築
