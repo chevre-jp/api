@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v5.0.1 - 2019-08-09
+
+### Changed
+
+- update mongoose
+
 ## v5.0.0 - 2019-07-29
 
 ### Changed

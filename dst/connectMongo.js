@@ -16,7 +16,9 @@ const mongoose = require("mongoose");
 const debug = createDebug('chevre-api:connectMongo');
 const PING_INTERVAL = 10000;
 const MONGOLAB_URI = process.env.MONGOLAB_URI;
+const AUTO_INDEX = process.env.MONGO_AUTO_INDEX_DISABLED !== '1';
 const connectOptions = {
+    autoIndex: AUTO_INDEX,
     autoReconnect: true,
     keepAlive: true,
     connectTimeoutMS: 30000,
