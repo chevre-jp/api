@@ -12,9 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 仮予約キャンセルタスク実行
  */
 const chevre = require("@chevre/domain");
-const createDebug = require("debug");
 const connectMongo_1 = require("../../../connectMongo");
-const debug = createDebug('chevre-api:jobs');
 const redisClient = chevre.redis.createClient({
     // tslint:disable-next-line:no-magic-numbers
     port: Number(process.env.REDIS_PORT),
@@ -34,7 +32,6 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         }
         count += 1;
         try {
-            debug('count:', count);
             yield chevre.service.task.executeByName(chevre.factory.taskName.CancelPendingReservation)({
                 taskRepo: taskRepo,
                 connection: connection,

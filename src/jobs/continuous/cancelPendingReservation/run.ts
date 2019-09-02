@@ -2,11 +2,9 @@
  * 仮予約キャンセルタスク実行
  */
 import * as chevre from '@chevre/domain';
-import * as createDebug from 'debug';
 
 import { connectMongo } from '../../../connectMongo';
 
-const debug = createDebug('chevre-api:jobs');
 const redisClient = chevre.redis.createClient({
     // tslint:disable-next-line:no-magic-numbers
     port: Number(<string>process.env.REDIS_PORT),
@@ -33,7 +31,6 @@ export default async () => {
             count += 1;
 
             try {
-                debug('count:', count);
                 await chevre.service.task.executeByName(
                     chevre.factory.taskName.CancelPendingReservation
                 )({

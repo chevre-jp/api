@@ -12,9 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 取引期限監視
  */
 const chevre = require("@chevre/domain");
-const createDebug = require("debug");
 const connectMongo_1 = require("../../../connectMongo");
-const debug = createDebug('chevre-api:jobs');
 exports.default = () => __awaiter(this, void 0, void 0, function* () {
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
     let count = 0;
@@ -27,7 +25,6 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         }
         count += 1;
         try {
-            debug('transaction expiring...');
             yield transactionRepo.makeExpired();
         }
         catch (error) {

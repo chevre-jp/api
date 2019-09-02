@@ -9,28 +9,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 期限切れ入金取引監視
+ * Webhookをたたく
  */
 const chevre = require("@chevre/domain");
 const connectMongo_1 = require("../../../connectMongo");
 exports.default = () => __awaiter(this, void 0, void 0, function* () {
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
-    let countExecute = 0;
+    let count = 0;
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
-    const INTERVAL_MILLISECONDS = 500;
+    const INTERVAL_MILLISECONDS = 100;
     const taskRepo = new chevre.repository.Task(connection);
-    const transactionRepo = new chevre.repository.Transaction(connection);
     setInterval(() => __awaiter(this, void 0, void 0, function* () {
-        if (countExecute > MAX_NUBMER_OF_PARALLEL_TASKS) {
+        if (count > MAX_NUBMER_OF_PARALLEL_TASKS) {
             return;
         }
-        countExecute += 1;
+        count += 1;
         try {
-            yield chevre.service.transaction.reserve.exportTasks(chevre.factory.transactionStatusType.Expired)({ task: taskRepo, transaction: transactionRepo });
+            yield chevre.service.task.executeByName(chevre.factory.taskName.TriggerWebhook)({ taskRepo: taskRepo, connection: connection });
         }
         catch (error) {
             console.error(error);
         }
-        countExecute -= 1;
+        count -= 1;
     }), INTERVAL_MILLISECONDS);
 });

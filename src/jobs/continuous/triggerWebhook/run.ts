@@ -1,5 +1,5 @@
 /**
- * 中止予約取引監視
+ * Webhookをたたく
  */
 import * as chevre from '@chevre/domain';
 
@@ -8,30 +8,29 @@ import { connectMongo } from '../../../connectMongo';
 export default async () => {
     const connection = await connectMongo({ defaultConnection: false });
 
-    let countExecute = 0;
+    let count = 0;
 
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
-    const INTERVAL_MILLISECONDS = 500;
+    const INTERVAL_MILLISECONDS = 100;
     const taskRepo = new chevre.repository.Task(connection);
-    const transactionRepo = new chevre.repository.Transaction(connection);
 
     setInterval(
         async () => {
-            if (countExecute > MAX_NUBMER_OF_PARALLEL_TASKS) {
+            if (count > MAX_NUBMER_OF_PARALLEL_TASKS) {
                 return;
             }
 
-            countExecute += 1;
+            count += 1;
 
             try {
-                await chevre.service.transaction.reserve.exportTasks(
-                    chevre.factory.transactionStatusType.Canceled
-                )({ task: taskRepo, transaction: transactionRepo });
+                await chevre.service.task.executeByName(
+                    chevre.factory.taskName.TriggerWebhook
+                )({ taskRepo: taskRepo, connection: connection });
             } catch (error) {
                 console.error(error);
             }
 
-            countExecute -= 1;
+            count -= 1;
         },
         INTERVAL_MILLISECONDS
     );

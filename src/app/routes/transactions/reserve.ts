@@ -2,7 +2,6 @@
  * 予約取引ルーター
  */
 import * as chevre from '@chevre/domain';
-import * as createDebug from 'debug';
 import { Router } from 'express';
 import { NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
@@ -14,8 +13,6 @@ import * as redis from '../../../redis';
 import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
-
-const debug = createDebug('chevre-api:routes');
 
 reserveTransactionsRouter.use(authentication);
 
@@ -97,10 +94,10 @@ reserveTransactionsRouter.put(
         try {
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.reserve.confirm({
-                id: req.params.transactionId,
-                object: req.body.object
+                ...req.body,
+                id: req.params.transactionId
             })({ transaction: transactionRepo });
-            debug('transaction confirmed.');
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
@@ -127,7 +124,7 @@ reserveTransactionsRouter.put(
                 reservation: reservationRepo,
                 transaction: transactionRepo
             });
-            debug('transaction canceled.');
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {

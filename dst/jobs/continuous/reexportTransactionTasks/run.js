@@ -12,9 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 取引キューエクスポートが実行中のままになっている取引を監視する
  */
 const chevre = require("@chevre/domain");
-const createDebug = require("debug");
 const connectMongo_1 = require("../../../connectMongo");
-const debug = createDebug('chevre-api:jobs');
 exports.default = () => __awaiter(this, void 0, void 0, function* () {
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
     let countRetry = 0;
@@ -28,7 +26,6 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         }
         countRetry += 1;
         try {
-            debug('reexporting tasks...');
             yield transactionRepo.reexportTasks({ intervalInMinutes: RETRY_INTERVAL_MINUTES });
         }
         catch (error) {
