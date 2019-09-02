@@ -27,6 +27,7 @@ const run_13 = require("./continuous/onExpiredReserve/run");
 const run_14 = require("./continuous/reexportTransactionTasks/run");
 const run_15 = require("./continuous/reserve/run");
 const run_16 = require("./continuous/retryTasks/run");
+const run_17 = require("./continuous/triggerWebhook/run");
 exports.default = () => __awaiter(this, void 0, void 0, function* () {
     yield run_1.default();
     yield run_2.default();
@@ -44,4 +45,5 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
     yield run_14.default();
     yield run_15.default();
     yield run_16.default();
+    yield run_17.default();
 });
