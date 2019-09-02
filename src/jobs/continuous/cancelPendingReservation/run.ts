@@ -20,7 +20,6 @@ export default async () => {
 
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
     const INTERVAL_MILLISECONDS = 500;
-    const taskRepo = new chevre.repository.Task(connection);
 
     setInterval(
         async () => {
@@ -31,13 +30,9 @@ export default async () => {
             count += 1;
 
             try {
-                await chevre.service.task.executeByName(
-                    chevre.factory.taskName.CancelPendingReservation
-                )({
-                    taskRepo: taskRepo,
-                    connection: connection,
-                    redisClient: redisClient
-                });
+                await chevre.service.task.executeByName({
+                    name: chevre.factory.taskName.CancelPendingReservation
+                })({ connection: connection, redisClient: redisClient });
             } catch (error) {
                 console.error(error);
             }

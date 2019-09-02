@@ -24,7 +24,7 @@ export default async () => {
             count += 1;
 
             try {
-                await chevre.service.task.abort(RETRY_INTERVAL_MINUTES)({ task: taskRepo });
+                await chevre.service.task.abort({ intervalInMinutes: RETRY_INTERVAL_MINUTES })({ task: taskRepo });
             } catch (error) {
                 console.error(error);
             }

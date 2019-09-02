@@ -26,7 +26,7 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         }
         count += 1;
         try {
-            yield chevre.service.task.retry(RETRY_INTERVAL_MINUTES)({ task: taskRepo });
+            yield chevre.service.task.retry({ intervalInMinutes: RETRY_INTERVAL_MINUTES })({ task: taskRepo });
         }
         catch (error) {
             console.error(error);

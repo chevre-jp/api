@@ -25,18 +25,15 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
     let count = 0;
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
     const INTERVAL_MILLISECONDS = 500;
-    const taskRepo = new chevre.repository.Task(connection);
     setInterval(() => __awaiter(this, void 0, void 0, function* () {
         if (count > MAX_NUBMER_OF_PARALLEL_TASKS) {
             return;
         }
         count += 1;
         try {
-            yield chevre.service.task.executeByName(chevre.factory.taskName.CancelPendingReservation)({
-                taskRepo: taskRepo,
-                connection: connection,
-                redisClient: redisClient
-            });
+            yield chevre.service.task.executeByName({
+                name: chevre.factory.taskName.CancelPendingReservation
+            })({ connection: connection, redisClient: redisClient });
         }
         catch (error) {
             console.error(error);
