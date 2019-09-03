@@ -16,9 +16,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 
-- 予約が存在しない場合に保留中予約取消タスクが失敗しないように調整
-
 ### Security
+
+## v5.1.1 - 2019-09-03
+
+### Fixed
+
+- 予約が存在しない場合に保留中予約取消タスクが失敗しないように調整
 
 ## v5.1.0 - 2019-09-03
 
