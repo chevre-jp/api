@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 予約取引ルーター
  */
 const chevre = require("@chevre/domain");
-const createDebug = require("debug");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment");
@@ -22,7 +21,6 @@ const redis = require("../../../redis");
 const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-const debug = createDebug('chevre-api:routes');
 reserveTransactionsRouter.use(authentication_1.default);
 reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), (req, _, next) => {
     req.checkBody('project')
@@ -88,11 +86,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
 reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        yield chevre.service.transaction.reserve.confirm({
-            id: req.params.transactionId,
-            object: req.body.object
-        })({ transaction: transactionRepo });
-        debug('transaction confirmed.');
+        yield chevre.service.transaction.reserve.confirm(Object.assign({}, req.body, { id: req.params.transactionId }))({ transaction: transactionRepo });
         res.status(http_status_1.NO_CONTENT)
             .end();
     }
@@ -114,7 +108,6 @@ reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default([
             reservation: reservationRepo,
             transaction: transactionRepo
         });
-        debug('transaction canceled.');
         res.status(http_status_1.NO_CONTENT)
             .end();
     }

@@ -2,11 +2,8 @@
  * 予約タスク実行
  */
 import * as chevre from '@chevre/domain';
-import * as createDebug from 'debug';
 
 import { connectMongo } from '../../../connectMongo';
-
-const debug = createDebug('chevre-api:jobs');
 
 export default async () => {
     const connection = await connectMongo({ defaultConnection: false });
@@ -15,7 +12,6 @@ export default async () => {
 
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
     const INTERVAL_MILLISECONDS = 500;
-    const taskRepo = new chevre.repository.Task(connection);
 
     setInterval(
         async () => {
@@ -26,10 +22,9 @@ export default async () => {
             count += 1;
 
             try {
-                debug('count:', count);
-                await chevre.service.task.executeByName(
-                    chevre.factory.taskName.Reserve
-                )({ taskRepo: taskRepo, connection: connection });
+                await chevre.service.task.executeByName({
+                    name: chevre.factory.taskName.Reserve
+                })({ connection: connection });
             } catch (error) {
                 console.error(error);
             }

@@ -12,7 +12,6 @@ export default async () => {
 
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
     const INTERVAL_MILLISECONDS = 100;
-    const taskRepo = new chevre.repository.Task(connection);
 
     setInterval(
         async () => {
@@ -23,12 +22,9 @@ export default async () => {
             count += 1;
 
             try {
-                await chevre.service.task.executeByName(
-                    chevre.factory.taskName.ImportOffersFromCOA
-                )({
-                    taskRepo: taskRepo,
-                    connection: connection
-                });
+                await chevre.service.task.executeByName({
+                    name: chevre.factory.taskName.ImportOffersFromCOA
+                })({ connection: connection });
             } catch (error) {
                 console.error(error);
             }

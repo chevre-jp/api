@@ -2,11 +2,8 @@
  * 取引期限監視
  */
 import * as chevre from '@chevre/domain';
-import * as createDebug from 'debug';
 
 import { connectMongo } from '../../../connectMongo';
-
-const debug = createDebug('chevre-api:jobs');
 
 export default async () => {
     const connection = await connectMongo({ defaultConnection: false });
@@ -26,7 +23,6 @@ export default async () => {
             count += 1;
 
             try {
-                debug('transaction expiring...');
                 await transactionRepo.makeExpired();
             } catch (error) {
                 console.error(error);

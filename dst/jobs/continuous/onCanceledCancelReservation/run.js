@@ -12,9 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 中止予約キャンセル取引監視
  */
 const chevre = require("@chevre/domain");
-const createDebug = require("debug");
 const connectMongo_1 = require("../../../connectMongo");
-const debug = createDebug('chevre-api:jobs');
 exports.default = () => __awaiter(this, void 0, void 0, function* () {
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
     let countExecute = 0;
@@ -28,7 +26,6 @@ exports.default = () => __awaiter(this, void 0, void 0, function* () {
         }
         countExecute += 1;
         try {
-            debug('exporting tasks...');
             yield chevre.service.transaction.cancelReservation.exportTasks(chevre.factory.transactionStatusType.Canceled)({ task: taskRepo, transaction: transactionRepo });
         }
         catch (error) {

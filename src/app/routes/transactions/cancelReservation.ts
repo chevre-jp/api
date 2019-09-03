@@ -2,7 +2,6 @@
  * 予約キャンセル取引ルーター
  */
 import * as chevre from '@chevre/domain';
-import * as createDebug from 'debug';
 import { Router } from 'express';
 import { NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
@@ -13,8 +12,6 @@ const cancelReservationTransactionsRouter = Router();
 import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
-
-const debug = createDebug('chevre-api:routes');
 
 cancelReservationTransactionsRouter.use(authentication);
 
@@ -83,9 +80,10 @@ cancelReservationTransactionsRouter.put(
         try {
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.cancelReservation.confirm({
+                ...req.body,
                 id: req.params.transactionId
             })({ transaction: transactionRepo });
-            debug('transaction confirmed.');
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
@@ -105,7 +103,7 @@ cancelReservationTransactionsRouter.put(
                 typeOf: chevre.factory.transactionType.CancelReservation,
                 id: req.params.transactionId
             });
-            debug('transaction canceled.');
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {

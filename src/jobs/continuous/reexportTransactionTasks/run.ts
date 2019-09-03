@@ -2,11 +2,8 @@
  * 取引キューエクスポートが実行中のままになっている取引を監視する
  */
 import * as chevre from '@chevre/domain';
-import * as createDebug from 'debug';
 
 import { connectMongo } from '../../../connectMongo';
-
-const debug = createDebug('chevre-api:jobs');
 
 export default async () => {
     const connection = await connectMongo({ defaultConnection: false });
@@ -27,7 +24,6 @@ export default async () => {
             countRetry += 1;
 
             try {
-                debug('reexporting tasks...');
                 await transactionRepo.reexportTasks({ intervalInMinutes: RETRY_INTERVAL_MINUTES });
             } catch (error) {
                 console.error(error);

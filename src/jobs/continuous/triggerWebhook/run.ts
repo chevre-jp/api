@@ -1,5 +1,5 @@
 /**
- * COAイベントインポートタスク実行
+ * Webhookをたたく
  */
 import * as chevre from '@chevre/domain';
 
@@ -23,7 +23,7 @@ export default async () => {
 
             try {
                 await chevre.service.task.executeByName({
-                    name: chevre.factory.taskName.ImportEventsFromCOA
+                    name: chevre.factory.taskName.TriggerWebhook
                 })({ connection: connection });
             } catch (error) {
                 console.error(error);

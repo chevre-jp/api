@@ -18,6 +18,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v5.1.0 - 2019-09-03
+
+### Changed
+
+- 予約確定アクションのポストアクションに予約通知アクションを追加
+- 予約取消アクションのポストアクションに予約通知アクションを追加
+- install @chevre/domain@11.x.x
+
 ## v5.0.1 - 2019-08-09
 
 ### Changed

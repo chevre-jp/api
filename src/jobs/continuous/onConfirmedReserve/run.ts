@@ -1,12 +1,9 @@
 /**
- * 成立入金取引監視
+ * 成立予約取引監視
  */
 import * as chevre from '@chevre/domain';
-import * as createDebug from 'debug';
 
 import { connectMongo } from '../../../connectMongo';
-
-const debug = createDebug('chevre-api:jobs');
 
 export default async () => {
     const connection = await connectMongo({ defaultConnection: false });
@@ -27,7 +24,6 @@ export default async () => {
             countExecute += 1;
 
             try {
-                debug('exporting tasks...');
                 await chevre.service.transaction.reserve.exportTasks(
                     chevre.factory.transactionStatusType.Confirmed
                 )({ task: taskRepo, transaction: transactionRepo });
