@@ -42,13 +42,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
     next();
 }, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
-        const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const placeRepo = new chevre.repository.Place(mongoose.connection);
-        const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
-        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const reservationNumberRepo = new chevre.repository.ReservationNumber(redis.getClient());
         const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
         const transaction = yield chevre.service.transaction.reserve.start({
@@ -61,19 +55,13 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
                 url: req.body.agent.url
             },
             object: {
-                // clientUser: req.user,
-                event: req.body.object.event,
-                acceptedOffer: req.body.object.acceptedOffer
+            // clientUser: req.user,
+            // event: req.body.object.event,
+            // acceptedOffer: req.body.object.acceptedOffer
             },
             expires: moment(req.body.expires)
                 .toDate()
         })({
-            eventAvailability: eventAvailabilityRepo,
-            event: eventRepo,
-            offer: offerRepo,
-            place: placeRepo,
-            priceSpecification: priceSpecificationRepo,
-            reservation: reservationRepo,
             reservationNumber: reservationNumberRepo,
             transaction: transactionRepo
         });
@@ -95,7 +83,6 @@ reserveTransactionsRouter.post('/:transactionId/reservations', permitScopes_1.de
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const reservationNumberRepo = new chevre.repository.ReservationNumber(redis.getClient());
         const transaction = yield chevre.service.transaction.reserve.addReservations({
             id: req.params.transactionId,
             object: {
@@ -109,7 +96,6 @@ reserveTransactionsRouter.post('/:transactionId/reservations', permitScopes_1.de
             place: placeRepo,
             priceSpecification: priceSpecificationRepo,
             reservation: reservationRepo,
-            reservationNumber: reservationNumberRepo,
             transaction: transactionRepo
         });
         res.json(transaction);
