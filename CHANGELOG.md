@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - 予約取引の予約番号発行プロセスと仮予約プロセスを分離
+- 予約データに不要なイベント属性について最適化
 
 ### Deprecated
 
