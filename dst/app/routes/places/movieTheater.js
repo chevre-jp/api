@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -33,10 +34,10 @@ movieTheaterRouter.post('', permitScopes_1.default(['admin']), ...[
     check_1.body('name')
         .not()
         .isEmpty()
-], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
-        let movieTheater = Object.assign({}, req.body, { typeOf: chevre.factory.placeType.MovieTheater, id: '', project: project });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        let movieTheater = Object.assign(Object.assign({}, req.body), { typeOf: chevre.factory.placeType.MovieTheater, id: '', project: project });
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         movieTheater = yield placeRepo.saveMovieTheater(movieTheater);
         res.status(http_status_1.CREATED)
@@ -46,10 +47,10 @@ movieTheaterRouter.post('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-movieTheaterRouter.get('', permitScopes_1.default(['admin', 'places', 'places.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+movieTheaterRouter.get('', permitScopes_1.default(['admin', 'places', 'places.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
-        const searchCoinditions = Object.assign({}, req.query, { 
+        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const totalCount = yield placeRepo.countMovieTheaters(searchCoinditions);
@@ -61,7 +62,7 @@ movieTheaterRouter.get('', permitScopes_1.default(['admin', 'places', 'places.re
         next(error);
     }
 }));
-movieTheaterRouter.get('/:id', permitScopes_1.default(['admin', 'places', 'places.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+movieTheaterRouter.get('/:id', permitScopes_1.default(['admin', 'places', 'places.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const movieTheater = yield placeRepo.findById({ id: req.params.id });
@@ -78,9 +79,9 @@ movieTheaterRouter.put('/:id', permitScopes_1.default(['admin']), ...[
     check_1.body('name')
         .not()
         .isEmpty()
-], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const movieTheater = Object.assign({}, req.body, { typeOf: chevre.factory.placeType.MovieTheater, id: req.params.id });
+        const movieTheater = Object.assign(Object.assign({}, req.body), { typeOf: chevre.factory.placeType.MovieTheater, id: req.params.id });
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         yield placeRepo.saveMovieTheater(movieTheater);
         res.status(http_status_1.NO_CONTENT)

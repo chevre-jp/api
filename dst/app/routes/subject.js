@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -20,7 +21,7 @@ const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const subjectRouter = express_1.Router();
 subjectRouter.use(authentication_1.default);
-subjectRouter.get('/getSubjectList', permitScopes_1.default(['admin', 'subjects', 'subjects.read-only']), validator_1.default, (__, res, next) => __awaiter(this, void 0, void 0, function* () {
+subjectRouter.get('/getSubjectList', permitScopes_1.default(['admin', 'subjects', 'subjects.read-only']), validator_1.default, (__, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const subjectRepo = new chevre.repository.Subject(mongoose.connection);
         const subjects = yield subjectRepo.getSubject();
@@ -30,7 +31,7 @@ subjectRouter.get('/getSubjectList', permitScopes_1.default(['admin', 'subjects'
         next(error);
     }
 }));
-subjectRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+subjectRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // const subject: chevre.factory.subject.ISubjectAttributes = {
         //     subjectClassificationCd: req.body.subjectClassificationCd,
@@ -51,7 +52,7 @@ subjectRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (
         next(error);
     }
 }));
-subjectRouter.get('', permitScopes_1.default(['admin', 'subjects', 'subjects.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+subjectRouter.get('', permitScopes_1.default(['admin', 'subjects', 'subjects.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const subjectRepo = new chevre.repository.Subject(mongoose.connection);
         const searchConditions = {
@@ -70,7 +71,7 @@ subjectRouter.get('', permitScopes_1.default(['admin', 'subjects', 'subjects.rea
         next(error);
     }
 }));
-subjectRouter.get('/:id', permitScopes_1.default(['admin', 'subjects', 'subjects.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+subjectRouter.get('/:id', permitScopes_1.default(['admin', 'subjects', 'subjects.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const subjectRepo = new chevre.repository.Subject(mongoose.connection);
         const subject = yield subjectRepo.findSubjectById({
@@ -82,7 +83,7 @@ subjectRouter.get('/:id', permitScopes_1.default(['admin', 'subjects', 'subjects
         next(error);
     }
 }));
-subjectRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+subjectRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const subjectRepo = new chevre.repository.Subject(mongoose.connection);
         yield subjectRepo.save({

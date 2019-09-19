@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -39,11 +40,11 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
         .notEmpty()
         .withMessage('Required');
     next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+}, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
         const transaction = yield chevre.service.transaction.cancelReservation.start({
             project: project,
             typeOf: chevre.factory.transactionType.CancelReservation,
@@ -66,10 +67,10 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
         next(error);
     }
 }));
-cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        yield chevre.service.transaction.cancelReservation.confirm(Object.assign({}, req.body, { id: req.params.transactionId }))({ transaction: transactionRepo });
+        yield chevre.service.transaction.cancelReservation.confirm(Object.assign(Object.assign({}, req.body), { id: req.params.transactionId }))({ transaction: transactionRepo });
         res.status(http_status_1.NO_CONTENT)
             .end();
     }
@@ -77,7 +78,7 @@ cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_
         next(error);
     }
 }));
-cancelReservationTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+cancelReservationTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         yield transactionRepo.cancel({

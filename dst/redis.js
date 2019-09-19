@@ -3,12 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Redis Cacheクライアント
  */
-const chevre = require("@chevre/domain");
-// import * as createDebug from 'debug';
-// const debug = createDebug('waiter:redis');
+const redis = require("redis");
 let client;
 function createClient() {
-    const c = chevre.redis.createClient({
+    const c = redis.createClient({
         // tslint:disable-next-line:no-magic-numbers
         port: Number(process.env.REDIS_PORT),
         host: process.env.REDIS_HOST,

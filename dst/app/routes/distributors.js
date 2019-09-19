@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -20,7 +21,7 @@ const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const distributorsRouter = express_1.Router();
 distributorsRouter.use(authentication_1.default);
-distributorsRouter.get('/list', permitScopes_1.default(['admin']), validator_1.default, (_, res, next) => __awaiter(this, void 0, void 0, function* () {
+distributorsRouter.get('/list', permitScopes_1.default(['admin']), validator_1.default, (_, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
         const distributions = yield distributionRepo.getDistributions();
@@ -30,10 +31,10 @@ distributorsRouter.get('/list', permitScopes_1.default(['admin']), validator_1.d
         next(error);
     }
 }));
-distributorsRouter.get('/search', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+distributorsRouter.get('/search', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
-        const searchCoinditions = Object.assign({}, req.query, { 
+        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const totalCount = yield distributionRepo.countDistributions(searchCoinditions);
@@ -50,7 +51,7 @@ distributorsRouter.put('/:id', permitScopes_1.default(['admin']), (req, _, next)
         .exists()
         .withMessage('Required');
     next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+}, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
         yield distributionRepo.updateDistribution({
@@ -72,7 +73,7 @@ distributorsRouter.post('/add', permitScopes_1.default(['admin']), (req, _, next
         .exists()
         .withMessage('Required');
     next();
-}, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+}, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
         const distributions = yield distributionRepo.createDistribution({
@@ -86,7 +87,7 @@ distributorsRouter.post('/add', permitScopes_1.default(['admin']), (req, _, next
         next(error);
     }
 }));
-distributorsRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+distributorsRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
         yield distributionRepo.deleteById({

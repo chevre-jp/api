@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -121,15 +122,15 @@ const validations = [
 /**
  * イベント作成
  */
-eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const params = req.body.map((a) => {
-            const project = Object.assign({}, a.project, { typeOf: 'Project' });
-            return Object.assign({}, a, { project: project });
+            const project = Object.assign(Object.assign({}, a.project), { typeOf: 'Project' });
+            return Object.assign(Object.assign({}, a), { project: project });
         });
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const events = yield eventRepo.createMany(params);
-        yield Promise.all(events.map((event) => __awaiter(this, void 0, void 0, function* () {
+        yield Promise.all(events.map((event) => __awaiter(void 0, void 0, void 0, function* () {
             if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
                 const aggregateTask = {
                     project: event.project,
@@ -200,10 +201,10 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
         .optional()
         .isISO8601()
         .toDate()
-], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const searchCoinditions = Object.assign({}, req.query, { 
+        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const events = yield eventRepo.search(searchCoinditions);
@@ -260,23 +261,23 @@ eventsRouter.get('/withAggregateReservation', permitScopes_1.default(['admin']),
         .optional()
         .isISO8601()
         .toDate()
-], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         // イベント検索
-        const searchCoinditions = Object.assign({}, req.query, { typeOf: chevre.factory.eventType.ScreeningEvent, 
+        const searchCoinditions = Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.eventType.ScreeningEvent, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const events = yield eventRepo.search(searchCoinditions);
         const totalCount = yield eventRepo.count(searchCoinditions);
-        const eventsWithAggregation = yield Promise.all(events.map((e) => __awaiter(this, void 0, void 0, function* () {
+        const eventsWithAggregation = yield Promise.all(events.map((e) => __awaiter(void 0, void 0, void 0, function* () {
             const aggregation = yield chevre.service.aggregation.aggregateEventReservation({
                 id: e.id
             })({
                 reservation: reservationRepo
             });
-            return Object.assign({}, e, aggregation, { preSaleTicketCount: aggregation.advanceTicketCount });
+            return Object.assign(Object.assign(Object.assign({}, e), aggregation), { preSaleTicketCount: aggregation.advanceTicketCount });
         })));
         res.set('X-Total-Count', totalCount.toString())
             .json(eventsWithAggregation);
@@ -288,7 +289,7 @@ eventsRouter.get('/withAggregateReservation', permitScopes_1.default(['admin']),
 /**
  * IDでイベント検索
  */
-eventsRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+eventsRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const event = yield eventRepo.findById({
@@ -303,7 +304,7 @@ eventsRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read
 /**
  * イベント更新
  */
-eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body[0];
         const upsert = req.query.upsert === 'true';
@@ -337,7 +338,7 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
 /**
  * イベントに対する座席オファー検索
  */
-eventsRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+eventsRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let offers = [];
         const eventRepo = new chevre.repository.Event(mongoose.connection);
@@ -385,7 +386,7 @@ eventsRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'even
 /**
  * イベントに対するチケットオファー検索
  */
-eventsRouter.get('/:id/offers/ticket', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+eventsRouter.get('/:id/offers/ticket', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
