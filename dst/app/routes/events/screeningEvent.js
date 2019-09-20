@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -89,16 +90,16 @@ screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ..
         .isEmpty()
         .isISO8601()
         .toDate()
-], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const eventAttributes = req.body.attributes.map((a) => {
-            const project = Object.assign({}, a.project, { typeOf: 'Project' });
-            return Object.assign({}, a, { project: project });
+            const project = Object.assign(Object.assign({}, a.project), { typeOf: 'Project' });
+            return Object.assign(Object.assign({}, a), { project: project });
         });
         const events = yield eventRepo.createMany(eventAttributes);
-        yield Promise.all(events.map((event) => __awaiter(this, void 0, void 0, function* () {
+        yield Promise.all(events.map((event) => __awaiter(void 0, void 0, void 0, function* () {
             const aggregateTask = {
                 project: event.project,
                 name: chevre.factory.taskName.AggregateScreeningEvent,

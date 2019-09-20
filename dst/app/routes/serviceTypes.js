@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -27,10 +28,10 @@ serviceTypesRouter.post('', permitScopes_1.default(['admin']), ...[
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required')
-], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
-        let serviceType = Object.assign({}, req.body, { typeOf: 'ServiceType', id: '', project: project });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        let serviceType = Object.assign(Object.assign({}, req.body), { typeOf: 'ServiceType', id: '', project: project });
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         serviceType = yield serviceTypeRepo.save(serviceType);
         res.status(http_status_1.CREATED)
@@ -40,10 +41,10 @@ serviceTypesRouter.post('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-serviceTypesRouter.get('', permitScopes_1.default(['admin', 'serviceTypes', 'serviceTypes.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+serviceTypesRouter.get('', permitScopes_1.default(['admin', 'serviceTypes', 'serviceTypes.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-        const searchCoinditions = Object.assign({}, req.query, { 
+        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const totalCount = yield serviceTypeRepo.count(searchCoinditions);
@@ -55,7 +56,7 @@ serviceTypesRouter.get('', permitScopes_1.default(['admin', 'serviceTypes', 'ser
         next(error);
     }
 }));
-serviceTypesRouter.get('/:id', permitScopes_1.default(['admin', 'serviceTypes', 'serviceTypes.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+serviceTypesRouter.get('/:id', permitScopes_1.default(['admin', 'serviceTypes', 'serviceTypes.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         const serviceType = yield serviceTypeRepo.findById({ id: req.params.id });
@@ -65,9 +66,9 @@ serviceTypesRouter.get('/:id', permitScopes_1.default(['admin', 'serviceTypes', 
         next(error);
     }
 }));
-serviceTypesRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+serviceTypesRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const serviceType = Object.assign({}, req.body, { id: req.params.id });
+        const serviceType = Object.assign(Object.assign({}, req.body), { id: req.params.id });
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         yield serviceTypeRepo.save(serviceType);
         res.status(http_status_1.NO_CONTENT)
@@ -77,7 +78,7 @@ serviceTypesRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.de
         next(error);
     }
 }));
-serviceTypesRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+serviceTypesRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
         yield serviceTypeRepo.deleteById({

@@ -1,15 +1,12 @@
 /**
  * Redis Cacheクライアント
  */
-import * as chevre from '@chevre/domain';
-// import * as createDebug from 'debug';
+import * as redis from 'redis';
 
-// const debug = createDebug('waiter:redis');
-
-let client: chevre.redis.RedisClient | undefined;
+let client: redis.RedisClient | undefined;
 
 function createClient() {
-    const c = chevre.redis.createClient({
+    const c = redis.createClient({
         // tslint:disable-next-line:no-magic-numbers
         port: Number(<string>process.env.REDIS_PORT),
         host: <string>process.env.REDIS_HOST,

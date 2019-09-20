@@ -51,7 +51,7 @@ tasksRouter.post(
 
             const attributes: chevre.factory.task.IAttributes = {
                 project: project,
-                name: req.params.name,
+                name: <chevre.factory.taskName>req.params.name,
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: moment(req.body.runsAt)
                     .toDate(),
@@ -80,7 +80,7 @@ tasksRouter.get(
         try {
             const taskRepo = new chevre.repository.Task(mongoose.connection);
             const task = await taskRepo.findById({
-                name: req.params.name,
+                name: <chevre.factory.taskName>req.params.name,
                 id: req.params.id
             });
             res.json(task);

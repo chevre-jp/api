@@ -42,13 +42,7 @@ reserveTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const eventRepo = new chevre.repository.Event(mongoose.connection);
-            const placeRepo = new chevre.repository.Place(mongoose.connection);
-            const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-            const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
-            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const reservationNumberRepo = new chevre.repository.ReservationNumber(redis.getClient());
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
@@ -64,18 +58,12 @@ reserveTransactionsRouter.post(
                 },
                 object: {
                     // clientUser: req.user,
-                    event: req.body.object.event,
-                    acceptedOffer: req.body.object.acceptedOffer
+                    // event: req.body.object.event,
+                    // acceptedOffer: req.body.object.acceptedOffer
                 },
                 expires: moment(req.body.expires)
                     .toDate()
             })({
-                eventAvailability: eventAvailabilityRepo,
-                event: eventRepo,
-                offer: offerRepo,
-                place: placeRepo,
-                priceSpecification: priceSpecificationRepo,
-                reservation: reservationRepo,
                 reservationNumber: reservationNumberRepo,
                 transaction: transactionRepo
             });
@@ -86,6 +74,49 @@ reserveTransactionsRouter.post(
     }
 );
 
+/**
+ * 予約追加
+ */
+reserveTransactionsRouter.post(
+    '/:transactionId/reservations',
+    permitScopes(['admin', 'transactions']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+            const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
+            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+
+            const transaction = await chevre.service.transaction.reserve.addReservations({
+                id: req.params.transactionId,
+                object: {
+                    event: req.body.object.event,
+                    acceptedOffer: req.body.object.acceptedOffer
+                }
+            })({
+                eventAvailability: eventAvailabilityRepo,
+                event: eventRepo,
+                offer: offerRepo,
+                place: placeRepo,
+                priceSpecification: priceSpecificationRepo,
+                reservation: reservationRepo,
+                transaction: transactionRepo
+            });
+
+            res.json(transaction);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * 取引確定
+ */
 reserveTransactionsRouter.put(
     '/:transactionId/confirm',
     permitScopes(['admin', 'transactions']),

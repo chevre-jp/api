@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -52,11 +53,11 @@ movieRouter.post('', permitScopes_1.default(['admin']), ...[
         .optional()
         .isISO8601()
         .toDate()
-], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
-        const project = Object.assign({}, req.body.project, { typeOf: 'Project' });
-        let movie = Object.assign({}, req.body, { id: '', duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        let movie = Object.assign(Object.assign({}, req.body), { id: '', duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
                 // tslint:disable-next-line:no-null-keyword
                 .toISOString() : null, project: project });
         movie = yield creativeWorkRepo.saveMovie(movie);
@@ -92,10 +93,10 @@ movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeW
         .optional()
         .isISO8601()
         .toDate()
-], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
-        const searchCoinditions = Object.assign({}, req.query, { 
+        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const totalCount = yield creativeWorkRepo.countMovies(searchCoinditions);
@@ -107,7 +108,7 @@ movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeW
         next(error);
     }
 }));
-movieRouter.get('/:id', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+movieRouter.get('/:id', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         const movie = yield creativeWorkRepo.findMovieById({ id: req.params.id });
@@ -142,10 +143,10 @@ movieRouter.put('/:id', permitScopes_1.default(['admin']), ...[
         .optional()
         .isISO8601()
         .toDate()
-], validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
-        const movie = Object.assign({}, req.body, { id: req.params.id, duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
+        const movie = Object.assign(Object.assign({}, req.body), { id: req.params.id, duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
                 // tslint:disable-next-line:no-null-keyword
                 .toISOString() : null });
         yield creativeWorkRepo.saveMovie(movie);
@@ -156,7 +157,7 @@ movieRouter.put('/:id', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-movieRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+movieRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         yield creativeWorkRepo.deleteMovie({ id: req.params.id });
