@@ -57,9 +57,7 @@ reserveTransactionsRouter.post(
                     url: req.body.agent.url
                 },
                 object: {
-                    // clientUser: req.user,
-                    // event: req.body.object.event,
-                    // acceptedOffer: req.body.object.acceptedOffer
+                    ...req.body.object
                 },
                 expires: moment(req.body.expires)
                     .toDate()
@@ -86,6 +84,7 @@ reserveTransactionsRouter.post(
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             const placeRepo = new chevre.repository.Place(mongoose.connection);
             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
@@ -104,6 +103,7 @@ reserveTransactionsRouter.post(
                 place: placeRepo,
                 priceSpecification: priceSpecificationRepo,
                 reservation: reservationRepo,
+                task: taskRepo,
                 transaction: transactionRepo
             });
 
@@ -146,6 +146,7 @@ reserveTransactionsRouter.put(
             const actionRepo = new chevre.repository.Action(mongoose.connection);
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.reserve.cancel({
                 id: req.params.transactionId
@@ -153,6 +154,7 @@ reserveTransactionsRouter.put(
                 action: actionRepo,
                 eventAvailability: eventAvailabilityRepo,
                 reservation: reservationRepo,
+                task: taskRepo,
                 transaction: transactionRepo
             });
 
