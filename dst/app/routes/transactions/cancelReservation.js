@@ -42,6 +42,7 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
     next();
 }, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
@@ -58,6 +59,7 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
             expires: moment(req.body.expires)
                 .toDate()
         })({
+            project: projectRepo,
             reservation: reservationRepo,
             transaction: transactionRepo
         });

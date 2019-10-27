@@ -41,6 +41,7 @@ cancelReservationTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
 
@@ -62,6 +63,7 @@ cancelReservationTransactionsRouter.post(
                 expires: moment(req.body.expires)
                     .toDate()
             })({
+                project: projectRepo,
                 reservation: reservationRepo,
                 transaction: transactionRepo
             });
