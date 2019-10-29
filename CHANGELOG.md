@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 
+- URLの指定がない場合にウェブフックトリガー処理が正常終了しないバグ対応
+
 ### Security
 
 ## v6.1.0 - 2019-10-25
