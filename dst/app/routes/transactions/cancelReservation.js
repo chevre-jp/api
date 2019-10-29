@@ -49,12 +49,9 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
         const transaction = yield chevre.service.transaction.cancelReservation.start({
             project: project,
             typeOf: chevre.factory.transactionType.CancelReservation,
-            agent: {
-                typeOf: req.body.agent.typeOf,
-                // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
-                name: req.body.agent.name,
-                url: req.body.agent.url
-            },
+            agent: Object.assign({}, req.body.agent
+            // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
+            ),
             object: Object.assign({ clientUser: req.user }, req.body.object),
             expires: moment(req.body.expires)
                 .toDate()

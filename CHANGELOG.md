@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 取引開始時のagent指定を拡張
+
 ### Deprecated
 
 ### Removed

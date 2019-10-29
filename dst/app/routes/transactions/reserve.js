@@ -50,12 +50,9 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
         const transaction = yield chevre.service.transaction.reserve.start({
             project: project,
             typeOf: chevre.factory.transactionType.Reserve,
-            agent: {
-                typeOf: req.body.agent.typeOf,
-                // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
-                name: req.body.agent.name,
-                url: req.body.agent.url
-            },
+            agent: Object.assign({}, req.body.agent
+            // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
+            ),
             object: Object.assign({}, req.body.object),
             expires: moment(req.body.expires)
                 .toDate()

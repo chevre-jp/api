@@ -52,10 +52,8 @@ reserveTransactionsRouter.post(
                 project: project,
                 typeOf: chevre.factory.transactionType.Reserve,
                 agent: {
-                    typeOf: req.body.agent.typeOf,
+                    ...req.body.agent
                     // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
-                    name: req.body.agent.name,
-                    url: req.body.agent.url
                 },
                 object: {
                     ...req.body.object
