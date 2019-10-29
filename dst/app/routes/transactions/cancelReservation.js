@@ -42,22 +42,21 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
     next();
 }, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
         const transaction = yield chevre.service.transaction.cancelReservation.start({
             project: project,
             typeOf: chevre.factory.transactionType.CancelReservation,
-            agent: {
-                typeOf: req.body.agent.typeOf,
-                // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
-                name: req.body.agent.name,
-                url: req.body.agent.url
-            },
+            agent: Object.assign({}, req.body.agent
+            // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
+            ),
             object: Object.assign({ clientUser: req.user }, req.body.object),
             expires: moment(req.body.expires)
                 .toDate()
         })({
+            project: projectRepo,
             reservation: reservationRepo,
             transaction: transactionRepo
         });

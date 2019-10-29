@@ -18,6 +18,22 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v6.2.0 - 2019-10-29
+
+### Added
+
+- プロジェクトリポジトリを追加
+- 予約取消取引に予約ステータス変更時イベントを追加
+- プロジェクトの予約通知設定を取引に反映
+
+### Changed
+
+- 取引開始時のagent指定を拡張
+
+### Fixed
+
+- URLの指定がない場合にウェブフックトリガー処理が正常終了しないバグ対応
+
 ## v6.1.0 - 2019-10-25
 
 ### Added

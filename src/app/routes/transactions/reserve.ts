@@ -42,6 +42,7 @@ reserveTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             const reservationNumberRepo = new chevre.repository.ReservationNumber(redis.getClient());
 
@@ -51,10 +52,8 @@ reserveTransactionsRouter.post(
                 project: project,
                 typeOf: chevre.factory.transactionType.Reserve,
                 agent: {
-                    typeOf: req.body.agent.typeOf,
+                    ...req.body.agent
                     // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
-                    name: req.body.agent.name,
-                    url: req.body.agent.url
                 },
                 object: {
                     ...req.body.object
@@ -62,6 +61,7 @@ reserveTransactionsRouter.post(
                 expires: moment(req.body.expires)
                     .toDate()
             })({
+                project: projectRepo,
                 reservationNumber: reservationNumberRepo,
                 transaction: transactionRepo
             });
