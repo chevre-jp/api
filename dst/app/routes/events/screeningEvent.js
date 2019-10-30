@@ -93,6 +93,7 @@ screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ..
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const eventAttributes = req.body.attributes.map((a) => {
             const project = Object.assign(Object.assign({}, a.project), { typeOf: 'Project' });
@@ -100,17 +101,11 @@ screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ..
         });
         const events = yield eventRepo.createMany(eventAttributes);
         yield Promise.all(events.map((event) => __awaiter(void 0, void 0, void 0, function* () {
-            const aggregateTask = {
-                project: event.project,
-                name: chevre.factory.taskName.AggregateScreeningEvent,
-                status: chevre.factory.taskStatus.Ready,
-                runsAt: new Date(),
-                remainingNumberOfTries: 3,
-                numberOfTried: 0,
-                executionResults: [],
-                data: event
-            };
-            yield taskRepo.save(aggregateTask);
+            yield chevre.service.offer.onEventChanged(event)({
+                event: eventRepo,
+                project: projectRepo,
+                task: taskRepo
+            });
         })));
         res.status(http_status_1.CREATED)
             .json(events);
