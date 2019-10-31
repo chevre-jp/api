@@ -138,23 +138,17 @@ eventsRouter.post(
             });
 
             const eventRepo = new chevre.repository.Event(mongoose.connection);
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
+
             const events = await eventRepo.createMany(params);
 
             await Promise.all(events.map(async (event) => {
-                if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
-                    const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
-                        project: event.project,
-                        name: chevre.factory.taskName.AggregateScreeningEvent,
-                        status: chevre.factory.taskStatus.Ready,
-                        runsAt: new Date(),
-                        remainingNumberOfTries: 3,
-                        numberOfTried: 0,
-                        executionResults: [],
-                        data: event
-                    };
-                    const taskRepo = new chevre.repository.Task(mongoose.connection);
-                    await taskRepo.save(aggregateTask);
-                }
+                await chevre.service.offer.onEventChanged(event)({
+                    event: eventRepo,
+                    project: projectRepo,
+                    task: taskRepo
+                });
             }));
 
             res.status(CREATED)
@@ -358,30 +352,24 @@ eventsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const eventAttributes: chevre.factory.event.IAttributes<typeof req.body.typeOf> = req.body[0];
+            const eventAttributes: chevre.factory.event.IAttributes<chevre.factory.eventType> = req.body[0];
             const upsert = req.query.upsert === 'true';
 
             const eventRepo = new chevre.repository.Event(mongoose.connection);
-            const event = await eventRepo.save({
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
+
+            const event = await eventRepo.save<chevre.factory.eventType>({
                 id: req.params.id,
                 attributes: eventAttributes,
                 upsert: upsert
             });
 
-            if (event.typeOf === chevre.factory.eventType.ScreeningEvent) {
-                const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
-                    project: event.project,
-                    name: chevre.factory.taskName.AggregateScreeningEvent,
-                    status: chevre.factory.taskStatus.Ready,
-                    runsAt: new Date(),
-                    remainingNumberOfTries: 3,
-                    numberOfTried: 0,
-                    executionResults: [],
-                    data: <chevre.factory.event.IEvent<chevre.factory.eventType.ScreeningEvent>>event
-                };
-                const taskRepo = new chevre.repository.Task(mongoose.connection);
-                await taskRepo.save(aggregateTask);
-            }
+            await chevre.service.offer.onEventChanged(event)({
+                event: eventRepo,
+                project: projectRepo,
+                task: taskRepo
+            });
 
             res.status(NO_CONTENT)
                 .end();

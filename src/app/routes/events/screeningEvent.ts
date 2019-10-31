@@ -90,6 +90,7 @@ screeningEventRouter.post(
     async (req, res, next) => {
         try {
             const eventRepo = new chevre.repository.Event(mongoose.connection);
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes[] = req.body.attributes.map((a: any) => {
@@ -104,17 +105,11 @@ screeningEventRouter.post(
             const events = await eventRepo.createMany(eventAttributes);
 
             await Promise.all(events.map(async (event) => {
-                const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
-                    project: event.project,
-                    name: chevre.factory.taskName.AggregateScreeningEvent,
-                    status: chevre.factory.taskStatus.Ready,
-                    runsAt: new Date(),
-                    remainingNumberOfTries: 3,
-                    numberOfTried: 0,
-                    executionResults: [],
-                    data: event
-                };
-                await taskRepo.save(aggregateTask);
+                await chevre.service.offer.onEventChanged(event)({
+                    event: eventRepo,
+                    project: projectRepo,
+                    task: taskRepo
+                });
             }));
 
             res.status(CREATED)
