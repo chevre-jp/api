@@ -35,6 +35,14 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
         .optional()
         .isInt()
         .toInt(),
+    check_1.query('bookingFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('bookingThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
     check_1.query('modifiedFrom')
         .optional()
         .isISO8601()
@@ -105,6 +113,14 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
         .optional()
         .isInt()
         .toInt(),
+    check_1.query('bookingFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('bookingThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
     check_1.query('modifiedFrom')
         .optional()
         .isISO8601()

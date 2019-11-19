@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v6.4.0 - 2019-11-19
+
+### Changed
+
+- 予約検索の予約日時期間指定を調整
+
 ## v6.3.0 - 2019-10-31
 
 ### Added
