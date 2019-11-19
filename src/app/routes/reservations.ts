@@ -30,6 +30,14 @@ reservationsRouter.get(
             .optional()
             .isInt()
             .toInt(),
+        query('bookingFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('bookingThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
         query('modifiedFrom')
             .optional()
             .isISO8601()

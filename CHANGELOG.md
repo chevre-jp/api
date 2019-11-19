@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 予約検索の予約日時期間指定を調整
+
 ### Deprecated
 
 ### Removed
