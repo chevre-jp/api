@@ -12,10 +12,10 @@ import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
-const offersRouter = Router();
-offersRouter.use(authentication);
+const ticketTypesRouter = Router();
+ticketTypesRouter.use(authentication);
 
-offersRouter.post(
+ticketTypesRouter.post(
     '',
     permitScopes(['admin']),
     ...[
@@ -31,18 +31,18 @@ offersRouter.post(
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
-            const offer = await offerRepo.save({ ...req.body, id: '', project: project });
+            const ticketType = await offerRepo.saveTicketType({ ...req.body, id: '', project: project });
             res.status(CREATED)
-                .json(offer);
+                .json(ticketType);
         } catch (error) {
             next(error);
         }
     }
 );
 
-offersRouter.get(
+ticketTypesRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes(['admin', 'ticketTypes', 'ticketTypes.read-only']),
     ...[
         query('priceSpecification.minPrice')
             .optional()
@@ -76,8 +76,8 @@ offersRouter.get(
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const totalCount = await offerRepo.count(searchCoinditions);
-            const offers = await offerRepo.search(searchCoinditions);
+            const totalCount = await offerRepo.countTicketTypes(searchCoinditions);
+            const offers = await offerRepo.searchTicketTypes(searchCoinditions);
 
             res.set('X-Total-Count', totalCount.toString())
                 .json(offers);
@@ -87,30 +87,30 @@ offersRouter.get(
     }
 );
 
-offersRouter.get(
+ticketTypesRouter.get(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['admin', 'ticketTypes', 'ticketTypes.read-only']),
     validator,
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const offer = await offerRepo.findById({ id: req.params.id });
+            const ticketType = await offerRepo.findTicketTypeById({ id: req.params.id });
 
-            res.json(offer);
+            res.json(ticketType);
         } catch (error) {
             next(error);
         }
     }
 );
 
-offersRouter.put(
+ticketTypesRouter.put(
     '/:id',
     permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.save(req.body);
+            await offerRepo.saveTicketType(req.body);
 
             res.status(NO_CONTENT)
                 .end();
@@ -120,14 +120,14 @@ offersRouter.put(
     }
 );
 
-offersRouter.delete(
+ticketTypesRouter.delete(
     '/:id',
     permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.deleteById({ id: req.params.id });
+            await offerRepo.deleteTicketType({ id: req.params.id });
 
             res.status(NO_CONTENT)
                 .end();
@@ -137,4 +137,4 @@ offersRouter.delete(
     }
 );
 
-export default offersRouter;
+export default ticketTypesRouter;

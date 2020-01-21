@@ -1,5 +1,5 @@
 /**
- * 券種グループルーター
+ * オファーカタログルーター
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
@@ -44,7 +44,7 @@ offerCatalogsRouter.post(
 
 offerCatalogsRouter.get(
     '',
-    permitScopes(['admin', 'ticketTypeGroups', 'ticketTypeGroups.read-only']),
+    permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
@@ -67,7 +67,7 @@ offerCatalogsRouter.get(
 
 offerCatalogsRouter.get(
     '/:id',
-    permitScopes(['admin', 'ticketTypeGroups', 'ticketTypeGroups.read-only']),
+    permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {

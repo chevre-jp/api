@@ -32,15 +32,15 @@ offersRouter.post('', permitScopes_1.default(['admin']), ...[
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
-        const ticketType = yield offerRepo.saveOffer(Object.assign(Object.assign({}, req.body), { id: '', project: project }));
+        const offer = yield offerRepo.save(Object.assign(Object.assign({}, req.body), { id: '', project: project }));
         res.status(http_status_1.CREATED)
-            .json(ticketType);
+            .json(offer);
     }
     catch (error) {
         next(error);
     }
 }));
-offersRouter.get('', permitScopes_1.default(['admin', 'ticketTypes', 'ticketTypes.read-only']), ...[
+offersRouter.get('', permitScopes_1.default(['admin']), ...[
     check_1.query('priceSpecification.minPrice')
         .optional()
         .isInt()
@@ -67,8 +67,8 @@ offersRouter.get('', permitScopes_1.default(['admin', 'ticketTypes', 'ticketType
         const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const totalCount = yield offerRepo.countOffers(searchCoinditions);
-        const offers = yield offerRepo.searchOffers(searchCoinditions);
+        const totalCount = yield offerRepo.count(searchCoinditions);
+        const offers = yield offerRepo.search(searchCoinditions);
         res.set('X-Total-Count', totalCount.toString())
             .json(offers);
     }
@@ -76,11 +76,11 @@ offersRouter.get('', permitScopes_1.default(['admin', 'ticketTypes', 'ticketType
         next(error);
     }
 }));
-offersRouter.get('/:id', permitScopes_1.default(['admin', 'ticketTypes', 'ticketTypes.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+offersRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const ticketType = yield offerRepo.findOfferById({ id: req.params.id });
-        res.json(ticketType);
+        const offer = yield offerRepo.findById({ id: req.params.id });
+        res.json(offer);
     }
     catch (error) {
         next(error);
@@ -89,7 +89,7 @@ offersRouter.get('/:id', permitScopes_1.default(['admin', 'ticketTypes', 'ticket
 offersRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        yield offerRepo.saveOffer(req.body);
+        yield offerRepo.save(req.body);
         res.status(http_status_1.NO_CONTENT)
             .end();
     }
@@ -100,7 +100,7 @@ offersRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default,
 offersRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        yield offerRepo.deleteOffer({ id: req.params.id });
+        yield offerRepo.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT)
             .end();
     }

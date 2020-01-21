@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- メンバーシッププログラムルーターを追加
+- オファールーターを券種ルーターと分離
+- オファーカタログルーターを券種グループルーターと分離
+
 ### Changed
 
 ### Deprecated
