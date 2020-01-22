@@ -85,11 +85,11 @@ reservationsRouter.get(
                     : undefined
             };
 
-            const totalCount = await reservationRepo.count(searchCoinditions);
+            // const totalCount = await reservationRepo.count(searchCoinditions);
             const reservations = await reservationRepo.search(searchCoinditions);
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(reservations);
+            // res.set('X-Total-Count', totalCount.toString())
+            res.json(reservations);
         } catch (error) {
             next(error);
         }
