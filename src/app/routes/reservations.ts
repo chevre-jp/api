@@ -22,6 +22,10 @@ reservationsRouter.get(
     '',
     permitScopes(['admin', 'reservations', 'reservations.read-only']),
     ...[
+        query('disableTotalCount')
+            .optional()
+            .isBoolean()
+            .toBoolean(),
         query('limit')
             .optional()
             .isInt()
@@ -85,11 +89,15 @@ reservationsRouter.get(
                     : undefined
             };
 
-            const totalCount = await reservationRepo.count(searchCoinditions);
             const reservations = await reservationRepo.search(searchCoinditions);
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(reservations);
+            const disableTotalCount = req.query.disableTotalCount === true;
+            if (!disableTotalCount) {
+                const totalCount = await reservationRepo.count(searchCoinditions);
+                res.set('X-Total-Count', totalCount.toString());
+            }
+
+            res.json(reservations);
         } catch (error) {
             next(error);
         }

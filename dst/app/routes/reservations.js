@@ -27,6 +27,10 @@ reservationsRouter.use(authentication_1.default);
  * 予約検索
  */
 reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
+    check_1.query('disableTotalCount')
+        .optional()
+        .isBoolean()
+        .toBoolean(),
     check_1.query('limit')
         .optional()
         .isInt()
@@ -83,10 +87,13 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (req.query.sort !== undefined && req.query.sort.modifiedTime !== undefined)
                 ? { modifiedTime: req.query.sort.modifiedTime }
                 : undefined });
-        const totalCount = yield reservationRepo.count(searchCoinditions);
         const reservations = yield reservationRepo.search(searchCoinditions);
-        res.set('X-Total-Count', totalCount.toString())
-            .json(reservations);
+        const disableTotalCount = req.query.disableTotalCount === true;
+        if (!disableTotalCount) {
+            const totalCount = yield reservationRepo.count(searchCoinditions);
+            res.set('X-Total-Count', totalCount.toString());
+        }
+        res.json(reservations);
     }
     catch (error) {
         next(error);
