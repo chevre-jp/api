@@ -82,13 +82,23 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin'
                 });
             }
         }
-        if (searchCoinditions.codeValue !== undefined) {
+        if (typeof searchCoinditions.codeValue === 'string') {
             conditions.push({
                 codeValue: {
                     $exists: true,
-                    $regex: new RegExp(searchCoinditions.codeValue, 'i')
+                    $regex: new RegExp(searchCoinditions.codeValue)
                 }
             });
+        }
+        else if (searchCoinditions.codeValue !== undefined && searchCoinditions.codeValue !== null) {
+            if (typeof searchCoinditions.codeValue.$eq === 'string') {
+                conditions.push({
+                    codeValue: {
+                        $exists: true,
+                        $eq: searchCoinditions.codeValue.$eq
+                    }
+                });
+            }
         }
         const totalCount = yield accountTitleRepo.accountTitleModel.countDocuments({ $and: conditions })
             .setOptions({ maxTimeMS: 10000 })
@@ -227,26 +237,50 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['admin', 'ac
                 });
             }
         }
-        if (searchCoinditions.codeValue !== undefined) {
+        if (typeof searchCoinditions.codeValue === 'string') {
             matchStages.push({
                 $match: {
                     'hasCategoryCode.codeValue': {
                         $exists: true,
-                        $regex: new RegExp(searchCoinditions.codeValue, 'i')
+                        $regex: new RegExp(searchCoinditions.codeValue)
                     }
                 }
             });
         }
+        else if (searchCoinditions.codeValue !== undefined && searchCoinditions.codeValue !== null) {
+            if (typeof searchCoinditions.codeValue.$eq === 'string') {
+                matchStages.push({
+                    $match: {
+                        'hasCategoryCode.codeValue': {
+                            $exists: true,
+                            $eq: searchCoinditions.codeValue.$eq
+                        }
+                    }
+                });
+            }
+        }
         if (searchCoinditions.inCodeSet !== undefined) {
-            if (searchCoinditions.inCodeSet.codeValue !== undefined) {
+            if (typeof searchCoinditions.inCodeSet.codeValue === 'string') {
                 matchStages.push({
                     $match: {
                         codeValue: {
                             $exists: true,
-                            $regex: new RegExp(searchCoinditions.inCodeSet.codeValue, 'i')
+                            $regex: new RegExp(searchCoinditions.inCodeSet.codeValue)
                         }
                     }
                 });
+            }
+            else if (searchCoinditions.inCodeSet.codeValue !== undefined && searchCoinditions.inCodeSet.codeValue !== null) {
+                if (typeof searchCoinditions.inCodeSet.codeValue.$eq === 'string') {
+                    matchStages.push({
+                        $match: {
+                            codeValue: {
+                                $exists: true,
+                                $eq: searchCoinditions.inCodeSet.codeValue.$eq
+                            }
+                        }
+                    });
+                }
             }
         }
         const totalCountResult = yield accountTitleRepo.accountTitleModel.aggregate([
@@ -388,7 +422,7 @@ accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
  * 細目検索
  */
 accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
-// tslint:disable-next-line:max-func-body-length
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
@@ -412,37 +446,74 @@ accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'a
                 });
             }
         }
-        if (searchCoinditions.codeValue !== undefined) {
+        if (typeof searchCoinditions.codeValue === 'string') {
             matchStages.push({
                 $match: {
                     'hasCategoryCode.hasCategoryCode.codeValue': {
                         $exists: true,
-                        $regex: new RegExp(searchCoinditions.codeValue, 'i')
+                        $regex: new RegExp(searchCoinditions.codeValue)
                     }
                 }
             });
         }
-        if (searchCoinditions.inCodeSet !== undefined) {
-            if (searchCoinditions.inCodeSet.codeValue !== undefined) {
+        else if (searchCoinditions.codeValue !== undefined && searchCoinditions.codeValue !== null) {
+            if (typeof searchCoinditions.codeValue.$eq === 'string') {
                 matchStages.push({
                     $match: {
-                        'hasCategoryCode.codeValue': {
+                        'hasCategoryCode.hasCategoryCode.codeValue': {
                             $exists: true,
-                            $regex: new RegExp(searchCoinditions.inCodeSet.codeValue, 'i')
+                            $eq: searchCoinditions.codeValue.$eq
                         }
                     }
                 });
             }
+        }
+        if (searchCoinditions.inCodeSet !== undefined) {
+            if (typeof searchCoinditions.inCodeSet.codeValue === 'string') {
+                matchStages.push({
+                    $match: {
+                        'hasCategoryCode.codeValue': {
+                            $exists: true,
+                            $regex: new RegExp(searchCoinditions.inCodeSet.codeValue)
+                        }
+                    }
+                });
+            }
+            else if (searchCoinditions.inCodeSet.codeValue !== undefined && searchCoinditions.inCodeSet.codeValue !== null) {
+                if (typeof searchCoinditions.inCodeSet.codeValue.$eq === 'string') {
+                    matchStages.push({
+                        $match: {
+                            'hasCategoryCode.codeValue': {
+                                $exists: true,
+                                $eq: searchCoinditions.inCodeSet.codeValue.$eq
+                            }
+                        }
+                    });
+                }
+            }
             if (searchCoinditions.inCodeSet.inCodeSet !== undefined) {
-                if (searchCoinditions.inCodeSet.inCodeSet.codeValue !== undefined) {
+                if (typeof searchCoinditions.inCodeSet.inCodeSet.codeValue === 'string') {
                     matchStages.push({
                         $match: {
                             codeValue: {
                                 $exists: true,
-                                $regex: new RegExp(searchCoinditions.inCodeSet.inCodeSet.codeValue, 'i')
+                                $regex: new RegExp(searchCoinditions.inCodeSet.inCodeSet.codeValue)
                             }
                         }
                     });
+                }
+                else if (searchCoinditions.inCodeSet.inCodeSet.codeValue !== undefined
+                    && searchCoinditions.inCodeSet.inCodeSet.codeValue !== null) {
+                    if (typeof searchCoinditions.inCodeSet.inCodeSet.codeValue.$eq === 'string') {
+                        matchStages.push({
+                            $match: {
+                                codeValue: {
+                                    $exists: true,
+                                    $eq: searchCoinditions.inCodeSet.inCodeSet.codeValue.$eq
+                                }
+                            }
+                        });
+                    }
                 }
             }
         }

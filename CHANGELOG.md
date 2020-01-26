@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - 予約検索結果のX-Total-Countを削除
 - 各リソースの正規表現検索についてcase insensitivityを無効化
+- 作品検索条件拡張
+- 券種検索条件拡張
+- 券種グループ検索条件拡張
+- 勘定科目検索条件拡張
 
 ### Deprecated
 
