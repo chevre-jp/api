@@ -12,6 +12,8 @@ import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
+import { connectMongo } from '../../connectMongo';
+
 const reservationsRouter = Router();
 reservationsRouter.use(authentication);
 
@@ -91,6 +93,106 @@ reservationsRouter.get(
             // res.set('X-Total-Count', totalCount.toString())
             res.json(reservations);
         } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * ストリーミングダウンロード
+ */
+reservationsRouter.get(
+    '/download',
+    permitScopes(['admin']),
+    ...[
+        query('limit')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('page')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('bookingFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('bookingThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('modifiedFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('modifiedThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('reservationFor.startFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('reservationFor.startThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('reservationFor.endFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('reservationFor.endThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('checkedIn')
+            .optional()
+            .isBoolean()
+            .toBoolean(),
+        query('attended')
+            .optional()
+            .isBoolean()
+            .toBoolean()
+    ],
+    validator,
+    async (req, res, next) => {
+        let connection: mongoose.Connection | undefined;
+
+        try {
+            connection = await connectMongo({
+                defaultConnection: false,
+                disableCheck: true
+            });
+            const reservationRepo = new chevre.repository.Reservation(connection);
+
+            const searchConditions: chevre.factory.reservation.ISearchConditions<any> = {
+                ...req.query
+            };
+
+            const format = req.query.format;
+
+            const stream = await chevre.service.report.reservation.stream({
+                conditions: searchConditions,
+                format: format
+            })({ reservation: reservationRepo });
+
+            res.type(`${req.query.format}; charset=utf-8`);
+            stream.pipe(res)
+                .on('error', async () => {
+                    if (connection !== undefined) {
+                        await connection.close();
+                    }
+                })
+                .on('finish', async () => {
+                    if (connection !== undefined) {
+                        await connection.close();
+                    }
+                });
+        } catch (error) {
+            if (connection !== undefined) {
+                await connection.close();
+            }
+
             next(error);
         }
     }

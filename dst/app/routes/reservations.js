@@ -21,6 +21,7 @@ const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
+const connectMongo_1 = require("../../connectMongo");
 const reservationsRouter = express_1.Router();
 reservationsRouter.use(authentication_1.default);
 /**
@@ -89,6 +90,92 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
         res.json(reservations);
     }
     catch (error) {
+        next(error);
+    }
+}));
+/**
+ * ストリーミングダウンロード
+ */
+reservationsRouter.get('/download', permitScopes_1.default(['admin']), ...[
+    check_1.query('limit')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('page')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('bookingFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('bookingThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('modifiedFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('modifiedThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.startFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.startThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.endFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.endThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('checkedIn')
+        .optional()
+        .isBoolean()
+        .toBoolean(),
+    check_1.query('attended')
+        .optional()
+        .isBoolean()
+        .toBoolean()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let connection;
+    try {
+        connection = yield connectMongo_1.connectMongo({
+            defaultConnection: false,
+            disableCheck: true
+        });
+        const reservationRepo = new chevre.repository.Reservation(connection);
+        const searchConditions = Object.assign({}, req.query);
+        const format = req.query.format;
+        const stream = yield chevre.service.report.reservation.stream({
+            conditions: searchConditions,
+            format: format
+        })({ reservation: reservationRepo });
+        res.type(`${req.query.format}; charset=utf-8`);
+        stream.pipe(res)
+            .on('error', () => __awaiter(void 0, void 0, void 0, function* () {
+            if (connection !== undefined) {
+                yield connection.close();
+            }
+        }))
+            .on('finish', () => __awaiter(void 0, void 0, void 0, function* () {
+            if (connection !== undefined) {
+                yield connection.close();
+            }
+        }));
+    }
+    catch (error) {
+        if (connection !== undefined) {
+            yield connection.close();
+        }
         next(error);
     }
 }));
