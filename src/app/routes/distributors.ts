@@ -41,9 +41,8 @@ distributorsRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const totalCount = await distributionRepo.countDistributions(searchCoinditions);
+
             const distributions = await distributionRepo.searchDistributions(searchCoinditions);
-            res.set('X-Total-Count', totalCount.toString());
             res.json(distributions);
         } catch (error) {
             next(error);

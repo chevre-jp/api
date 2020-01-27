@@ -76,11 +76,9 @@ offersRouter.get(
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const totalCount = await offerRepo.count(searchCoinditions);
             const offers = await offerRepo.search(searchCoinditions);
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(offers);
+            res.json(offers);
         } catch (error) {
             next(error);
         }

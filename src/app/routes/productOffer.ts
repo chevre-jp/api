@@ -77,11 +77,9 @@ productOffersRouter.get(
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const totalCount = await offerRepo.countProductOffers(searchCoinditions);
             const offers = await offerRepo.searchProductOffers(searchCoinditions);
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(offers);
+            res.json(offers);
         } catch (error) {
             next(error);
         }

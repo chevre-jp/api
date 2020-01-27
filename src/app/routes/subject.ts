@@ -65,9 +65,9 @@ subjectRouter.get(
                 sort: req.query.sort,
                 detailCd: req.query.detailCd
             };
-            const totalCount = await subjectRepo.countSubject(searchConditions);
+
             const subject = await subjectRepo.searchSubject(searchConditions);
-            res.set('X-Total-Count', totalCount.toString());
+
             res.json(subject);
         } catch (error) {
             next(error);

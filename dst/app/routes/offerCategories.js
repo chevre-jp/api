@@ -31,9 +31,7 @@ offerCategoriesRouter.get('', permitScopes_1.default(['admin']), ...[], validato
         if (Array.isArray(projectIds)) {
             categories = ticketTypeCategories.filter((c) => c.project !== undefined && projectIds.indexOf(c.project.id) >= 0);
         }
-        const totalCount = categories.length;
-        res.set('X-Total-Count', totalCount.toString())
-            .json(categories);
+        res.json(categories);
     }
     catch (error) {
         next(error);

@@ -46,9 +46,7 @@ ticketTypeGroupsRouter.get('', permitScopes_1.default(['admin', 'ticketTypeGroup
         const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const totalCount = yield offerRepo.countTicketTypeGroups(searchCoinditions);
         const ticketTypeGroups = yield offerRepo.searchTicketTypeGroups(searchCoinditions);
-        res.set('X-Total-Count', totalCount.toString());
         res.json(ticketTypeGroups);
     }
     catch (error) {

@@ -263,7 +263,6 @@ eventsRouter.get('/withAggregateReservation', permitScopes_1.default(['admin']),
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const events = yield eventRepo.search(searchCoinditions);
-        const totalCount = yield eventRepo.count(searchCoinditions);
         const eventsWithAggregation = yield Promise.all(events.map((e) => __awaiter(void 0, void 0, void 0, function* () {
             const aggregation = yield chevre.service.aggregation.aggregateEventReservation({
                 id: e.id
@@ -272,8 +271,7 @@ eventsRouter.get('/withAggregateReservation', permitScopes_1.default(['admin']),
             });
             return Object.assign(Object.assign(Object.assign({}, e), aggregation), { preSaleTicketCount: aggregation.advanceTicketCount });
         })));
-        res.set('X-Total-Count', totalCount.toString())
-            .json(eventsWithAggregation);
+        res.json(eventsWithAggregation);
     }
     catch (error) {
         next(error);

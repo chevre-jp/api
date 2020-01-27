@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 券種検索条件拡張
 - 券種グループ検索条件拡張
 - 勘定科目検索条件拡張
+- イベントと作品以外のリソース検索からX-Total-Countを削除
 
 ### Deprecated
 

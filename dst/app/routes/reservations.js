@@ -84,9 +84,7 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (req.query.sort !== undefined && req.query.sort.modifiedTime !== undefined)
                 ? { modifiedTime: req.query.sort.modifiedTime }
                 : undefined });
-        // const totalCount = await reservationRepo.count(searchCoinditions);
         const reservations = yield reservationRepo.search(searchCoinditions);
-        // res.set('X-Total-Count', totalCount.toString())
         res.json(reservations);
     }
     catch (error) {
@@ -248,10 +246,8 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (req.query.sort !== undefined && req.query.sort.modifiedTime !== undefined)
                 ? { modifiedTime: req.query.sort.modifiedTime }
                 : undefined });
-        const totalCount = yield reservationRepo.count(searchCoinditions);
         const reservations = yield reservationRepo.search(searchCoinditions);
-        res.set('X-Total-Count', totalCount.toString())
-            .json(reservations);
+        res.json(reservations);
     }
     catch (error) {
         next(error);

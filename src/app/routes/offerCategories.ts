@@ -35,10 +35,7 @@ offerCategoriesRouter.get(
                 categories = ticketTypeCategories.filter((c) => c.project !== undefined && projectIds.indexOf(c.project.id) >= 0);
             }
 
-            const totalCount = categories.length;
-
-            res.set('X-Total-Count', totalCount.toString())
-                .json(categories);
+            res.json(categories);
         } catch (error) {
             next(error);
         }

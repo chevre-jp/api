@@ -78,14 +78,12 @@ programMembershipsRouter.get(
                     }
                     : {}
             };
-            const totalCount = await programMembershipRepo.programMembershipModel.countDocuments(searchConditions)
-                .exec();
+
             const programMemberships = await programMembershipRepo.programMembershipModel.find(searchConditions)
                 .exec()
                 .then((docs) => docs.map((doc) => doc.toObject()));
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(programMemberships);
+            res.json(programMemberships);
         } catch (error) {
             next(error);
         }

@@ -75,9 +75,8 @@ accountTitlesRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            // const totalCount = await accountTitleRepo.count(searchCoinditions);
+
             // const accountTitles = await accountTitleRepo.search(searchCoinditions);
-            // res.set('X-Total-Count', totalCount.toString());
             // res.json(accountTitles);
 
             const conditions: any[] = [
@@ -112,11 +111,11 @@ accountTitlesRouter.get(
                 }
             }
 
-            const totalCount = await accountTitleRepo.accountTitleModel.countDocuments(
-                { $and: conditions }
-            )
-                .setOptions({ maxTimeMS: 10000 })
-                .exec();
+            // const totalCount = await accountTitleRepo.accountTitleModel.countDocuments(
+            //     { $and: conditions }
+            // )
+            //     .setOptions({ maxTimeMS: 10000 })
+            //     .exec();
 
             const query = accountTitleRepo.accountTitleModel.find(
                 { $and: conditions },
@@ -143,7 +142,6 @@ accountTitlesRouter.get(
                 .exec()
                 .then((docs) => docs.map((doc) => doc.toObject()));
 
-            res.set('X-Total-Count', totalCount.toString());
             res.json(accountTitles);
         } catch (error) {
             next(error);
@@ -276,9 +274,8 @@ accountTitlesRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            // const totalCount = await accountTitleRepo.count(searchCoinditions);
+
             // const accountTitles = await accountTitleRepo.search(searchCoinditions);
-            // res.set('X-Total-Count', totalCount.toString());
             // res.json(accountTitles);
 
             const matchStages: any[] = [];
@@ -341,13 +338,13 @@ accountTitlesRouter.get(
                 }
             }
 
-            const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
-                { $unwind: '$hasCategoryCode' },
-                ...matchStages,
-                { $count: 'totalCount' }
-            ])
-                .exec();
-            const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
+            // const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
+            //     { $unwind: '$hasCategoryCode' },
+            //     ...matchStages,
+            //     { $count: 'totalCount' }
+            // ])
+            //     .exec();
+            // const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
 
             const aggregate = accountTitleRepo.accountTitleModel.aggregate([
                 { $unwind: '$hasCategoryCode' },
@@ -376,7 +373,6 @@ accountTitlesRouter.get(
 
             const accountTitles = await aggregate.exec();
 
-            res.set('X-Total-Count', totalCount.toString());
             res.json(accountTitles);
         } catch (error) {
             next(error);
@@ -525,9 +521,8 @@ accountTitlesRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            // const totalCount = await accountTitleRepo.count(searchCoinditions);
+
             // const accountTitles = await accountTitleRepo.search(searchCoinditions);
-            // res.set('X-Total-Count', totalCount.toString());
             // res.json(accountTitles);
 
             const matchStages: any[] = [];
@@ -615,14 +610,14 @@ accountTitlesRouter.get(
                 }
             }
 
-            const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
-                { $unwind: '$hasCategoryCode' },
-                { $unwind: '$hasCategoryCode.hasCategoryCode' },
-                ...matchStages,
-                { $count: 'totalCount' }
-            ])
-                .exec();
-            const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
+            // const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
+            //     { $unwind: '$hasCategoryCode' },
+            //     { $unwind: '$hasCategoryCode.hasCategoryCode' },
+            //     ...matchStages,
+            //     { $count: 'totalCount' }
+            // ])
+            //     .exec();
+            // const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
 
             const aggregate = accountTitleRepo.accountTitleModel.aggregate([
                 { $unwind: '$hasCategoryCode' },
@@ -656,7 +651,6 @@ accountTitlesRouter.get(
 
             const accountTitles = await aggregate.exec();
 
-            res.set('X-Total-Count', totalCount.toString());
             res.json(accountTitles);
         } catch (error) {
             next(error);

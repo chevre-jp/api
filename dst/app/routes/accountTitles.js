@@ -65,9 +65,7 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin'
         const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        // const totalCount = await accountTitleRepo.count(searchCoinditions);
         // const accountTitles = await accountTitleRepo.search(searchCoinditions);
-        // res.set('X-Total-Count', totalCount.toString());
         // res.json(accountTitles);
         const conditions = [
             { typeOf: 'AccountTitle' }
@@ -100,9 +98,11 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin'
                 });
             }
         }
-        const totalCount = yield accountTitleRepo.accountTitleModel.countDocuments({ $and: conditions })
-            .setOptions({ maxTimeMS: 10000 })
-            .exec();
+        // const totalCount = await accountTitleRepo.accountTitleModel.countDocuments(
+        //     { $and: conditions }
+        // )
+        //     .setOptions({ maxTimeMS: 10000 })
+        //     .exec();
         const query = accountTitleRepo.accountTitleModel.find({ $and: conditions }, {
             __v: 0,
             createdAt: 0,
@@ -123,7 +123,6 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin'
         const accountTitles = yield query.setOptions({ maxTimeMS: 10000 })
             .exec()
             .then((docs) => docs.map((doc) => doc.toObject()));
-        res.set('X-Total-Count', totalCount.toString());
         res.json(accountTitles);
     }
     catch (error) {
@@ -220,9 +219,7 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['admin', 'ac
         const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        // const totalCount = await accountTitleRepo.count(searchCoinditions);
         // const accountTitles = await accountTitleRepo.search(searchCoinditions);
-        // res.set('X-Total-Count', totalCount.toString());
         // res.json(accountTitles);
         const matchStages = [];
         if (searchCoinditions.project !== undefined) {
@@ -283,13 +280,13 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['admin', 'ac
                 }
             }
         }
-        const totalCountResult = yield accountTitleRepo.accountTitleModel.aggregate([
-            { $unwind: '$hasCategoryCode' },
-            ...matchStages,
-            { $count: 'totalCount' }
-        ])
-            .exec();
-        const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
+        // const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
+        //     { $unwind: '$hasCategoryCode' },
+        //     ...matchStages,
+        //     { $count: 'totalCount' }
+        // ])
+        //     .exec();
+        // const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
         const aggregate = accountTitleRepo.accountTitleModel.aggregate([
             { $unwind: '$hasCategoryCode' },
             ...matchStages,
@@ -314,7 +311,6 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['admin', 'ac
                 .skip(searchCoinditions.limit * (searchCoinditions.page - 1));
         }
         const accountTitles = yield aggregate.exec();
-        res.set('X-Total-Count', totalCount.toString());
         res.json(accountTitles);
     }
     catch (error) {
@@ -429,9 +425,7 @@ accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'a
         const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        // const totalCount = await accountTitleRepo.count(searchCoinditions);
         // const accountTitles = await accountTitleRepo.search(searchCoinditions);
-        // res.set('X-Total-Count', totalCount.toString());
         // res.json(accountTitles);
         const matchStages = [];
         if (searchCoinditions.project !== undefined) {
@@ -517,14 +511,14 @@ accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'a
                 }
             }
         }
-        const totalCountResult = yield accountTitleRepo.accountTitleModel.aggregate([
-            { $unwind: '$hasCategoryCode' },
-            { $unwind: '$hasCategoryCode.hasCategoryCode' },
-            ...matchStages,
-            { $count: 'totalCount' }
-        ])
-            .exec();
-        const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
+        // const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
+        //     { $unwind: '$hasCategoryCode' },
+        //     { $unwind: '$hasCategoryCode.hasCategoryCode' },
+        //     ...matchStages,
+        //     { $count: 'totalCount' }
+        // ])
+        //     .exec();
+        // const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
         const aggregate = accountTitleRepo.accountTitleModel.aggregate([
             { $unwind: '$hasCategoryCode' },
             { $unwind: '$hasCategoryCode.hasCategoryCode' },
@@ -554,7 +548,6 @@ accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'a
                 .skip(searchCoinditions.limit * (searchCoinditions.page - 1));
         }
         const accountTitles = yield aggregate.exec();
-        res.set('X-Total-Count', totalCount.toString());
         res.json(accountTitles);
     }
     catch (error) {

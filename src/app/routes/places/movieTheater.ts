@@ -67,11 +67,10 @@ movieTheaterRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const totalCount = await placeRepo.countMovieTheaters(searchCoinditions);
+
             const movieTheaters = await placeRepo.searchMovieTheaters(searchCoinditions);
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(movieTheaters);
+            res.json(movieTheaters);
         } catch (error) {
             next(error);
         }

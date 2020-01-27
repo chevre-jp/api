@@ -55,9 +55,8 @@ offerCatalogsRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const totalCount = await offerRepo.countOfferCatalogs(searchCoinditions);
+
             const ticketTypeGroups = await offerRepo.searchOfferCatalogs(searchCoinditions);
-            res.set('X-Total-Count', totalCount.toString());
             res.json(ticketTypeGroups);
         } catch (error) {
             next(error);

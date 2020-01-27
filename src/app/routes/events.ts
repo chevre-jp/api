@@ -297,7 +297,6 @@ eventsRouter.get(
             };
 
             const events = await eventRepo.search(searchCoinditions);
-            const totalCount = await eventRepo.count(searchCoinditions);
 
             const eventsWithAggregation = await Promise.all(events.map(async (e) => {
                 const aggregation = await chevre.service.aggregation.aggregateEventReservation({
@@ -313,8 +312,7 @@ eventsRouter.get(
                 };
             }));
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(eventsWithAggregation);
+            res.json(eventsWithAggregation);
         } catch (error) {
             next(error);
         }

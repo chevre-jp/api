@@ -62,9 +62,7 @@ subjectRouter.get('', permitScopes_1.default(['admin', 'subjects', 'subjects.rea
             sort: req.query.sort,
             detailCd: req.query.detailCd
         };
-        const totalCount = yield subjectRepo.countSubject(searchConditions);
         const subject = yield subjectRepo.searchSubject(searchConditions);
-        res.set('X-Total-Count', totalCount.toString());
         res.json(subject);
     }
     catch (error) {

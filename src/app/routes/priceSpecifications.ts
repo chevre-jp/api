@@ -31,9 +31,7 @@ priceSpecificationsRouter.use(authentication);
 //                 typeOf: chevre.factory.priceSpecificationType.CompoundPriceSpecification,
 //                 priceComponent: req.query.priceComponent
 //             };
-//             const totalCount = await priceSpecificationRepo.countCompoundPriceSpecifications(searchCoinditions);
 //             const priceSpecifications = await priceSpecificationRepo.searchCompoundPriceSpecifications(searchCoinditions);
-//             res.set('X-Total-Count', totalCount.toString());
 //             res.json(priceSpecifications);
 //         } catch (error) {
 //             next(error);
@@ -133,11 +131,9 @@ priceSpecificationsRouter.get(
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const totalCount = await priceSpecificationRepo.count(searchCoinditions);
             const priceSpecifications = await priceSpecificationRepo.search(searchCoinditions);
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(priceSpecifications);
+            res.json(priceSpecifications);
         } catch (error) {
             next(error);
         }
