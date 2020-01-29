@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - プロダクトリポジトリを追加
 - メンバーシップリポジトリを追加
 - メンバーシップ登録取引サービスを追加
+- カテゴリーコードリポジトリを追加
+- カテゴリーコードチャージ仕様インターフェースを追加
 
 ### Changed
 
