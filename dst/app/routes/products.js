@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * メンバーシッププログラムルーター
+ * プロダクトルーター
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
@@ -21,21 +21,21 @@ const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
-const programMembershipsRouter = express_1.Router();
-programMembershipsRouter.use(authentication_1.default);
+const productsRouter = express_1.Router();
+productsRouter.use(authentication_1.default);
 /**
- * メンバーシッププログラム作成
+ * プロダクト作成
  */
-programMembershipsRouter.post('', permitScopes_1.default(['admin']), ...[
+productsRouter.post('', permitScopes_1.default(['admin']), ...[
     check_1.body('project')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const programMembershipRepo = new chevre.repository.ProgramMembership(mongoose.connection);
+        const productRepo = new chevre.repository.Product(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
-        const doc = yield programMembershipRepo.programMembershipModel.create(Object.assign(Object.assign({}, req.body), { project: project }));
+        const doc = yield productRepo.productModel.create(Object.assign(Object.assign({}, req.body), { project: project }));
         res.status(http_status_1.CREATED)
             .json(doc.toObject());
     }
@@ -44,20 +44,20 @@ programMembershipsRouter.post('', permitScopes_1.default(['admin']), ...[
     }
 }));
 /**
- * メンバーシッププログラム検索
+ * プロダクト検索
  */
-programMembershipsRouter.get('', permitScopes_1.default(['admin']), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+productsRouter.get('', permitScopes_1.default(['admin']), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const programMembershipRepo = new chevre.repository.ProgramMembership(mongoose.connection);
+        const productRepo = new chevre.repository.Product(mongoose.connection);
         // const searchCoinditions = {
         //     ...req.query,
         //     // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
         //     limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
         //     page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
         // };
-        // const totalCount = await programMembershipRepo.count(searchCoinditions);
-        // const programMemberships = await programMembershipRepo.search(searchCoinditions);
-        const searchConditions = Object.assign({}, (req.query.project !== undefined && req.query.project !== null
+        // const totalCount = await productRepo.count(searchCoinditions);
+        // const products = await productRepo.search(searchCoinditions);
+        const searchConditions = Object.assign(Object.assign({}, (req.query.project !== undefined && req.query.project !== null
             && req.query.project.id !== undefined && req.query.project.id !== null
             && typeof req.query.project.id.$eq === 'string')
             ? {
@@ -66,26 +66,33 @@ programMembershipsRouter.get('', permitScopes_1.default(['admin']), ...[], valid
                     $eq: req.query.project.id.$eq
                 }
             }
+            : {}), (req.query.typeOf !== undefined && req.query.typeOf !== null
+            && typeof req.query.typeOf.$eq === 'string')
+            ? {
+                typeOf: {
+                    $eq: req.query.typeOf.$eq
+                }
+            }
             : {});
-        const programMemberships = yield programMembershipRepo.programMembershipModel.find(searchConditions)
+        const products = yield productRepo.productModel.find(searchConditions)
             .exec()
             .then((docs) => docs.map((doc) => doc.toObject()));
-        res.json(programMemberships);
+        res.json(products);
     }
     catch (error) {
         next(error);
     }
 }));
 /**
- * メンバーシッププログラム検索
+ * プロダクト検索
  */
-programMembershipsRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+productsRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const programMembershipRepo = new chevre.repository.ProgramMembership(mongoose.connection);
-        const doc = yield programMembershipRepo.programMembershipModel.findById({ _id: req.params.id })
+        const productRepo = new chevre.repository.Product(mongoose.connection);
+        const doc = yield productRepo.productModel.findById({ _id: req.params.id })
             .exec();
         if (doc === null) {
-            throw new chevre.factory.errors.NotFound('ProgramMembership');
+            throw new chevre.factory.errors.NotFound(productRepo.productModel.modelName);
         }
         res.json(doc.toObject());
     }
@@ -94,21 +101,23 @@ programMembershipsRouter.get('/:id', permitScopes_1.default(['admin']), validato
     }
 }));
 /**
- * メンバーシッププログラムに対するオファー検索
+ * プロダクトに対するオファー検索
  */
-programMembershipsRouter.get('/:id/offers', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+productsRouter.get('/:id/offers', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const programMembershipRepo = new chevre.repository.ProgramMembership(mongoose.connection);
-        // メンバーシッププログラム検索
-        const programMembershipDoc = yield programMembershipRepo.programMembershipModel.findById({ _id: req.params.id })
-            .exec();
-        if (programMembershipDoc === null) {
-            throw new chevre.factory.errors.NotFound('ProgramMembership');
-        }
-        const programMembership = programMembershipDoc.toObject();
+        const productRepo = new chevre.repository.Product(mongoose.connection);
+        // プロダクト検索
+        const product = yield productRepo.productModel.findById({ _id: req.params.id })
+            .exec()
+            .then((doc) => {
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound(productRepo.productModel.modelName);
+            }
+            return doc.toObject();
+        });
         // オファーカタログ検索
-        const offerCatalog = yield offerRepo.findOfferCatalogById({ id: programMembership.hasOfferCatalog.id });
+        const offerCatalog = yield offerRepo.findOfferCatalogById({ id: product.hasOfferCatalog.id });
         // オファー検索
         const offers = yield offerRepo.offerModel.find({ _id: { $in: offerCatalog.itemListElement.map((e) => e.id) } }, {
             __v: 0,
@@ -117,11 +126,11 @@ programMembershipsRouter.get('/:id/offers', permitScopes_1.default(['admin']), v
         })
             .exec()
             .then((docs) => docs.map((doc) => doc.toObject()));
-        const programMembershipOffers = offers
+        const productOffers = offers
             .map((o) => {
             const unitSpec = o.priceSpecification;
             const compoundPriceSpecification = {
-                project: programMembership.project,
+                project: product.project,
                 typeOf: chevre.factory.priceSpecificationType.CompoundPriceSpecification,
                 priceCurrency: chevre.factory.priceCurrency.JPY,
                 valueAddedTaxIncluded: true,
@@ -131,23 +140,23 @@ programMembershipsRouter.get('/:id/offers', permitScopes_1.default(['admin']), v
             };
             return Object.assign(Object.assign({}, o), { priceSpecification: compoundPriceSpecification });
         });
-        res.json(programMembershipOffers);
+        res.json(productOffers);
     }
     catch (error) {
         next(error);
     }
 }));
 /**
- * メンバーシッププログラム更新
+ * プロダクト更新
  */
-// programMembershipsRouter.put(
+// productsRouter.put(
 //     '/:id',
 //     permitScopes(['admin']),
 //     validator,
 //     async (req, res, next) => {
 //         try {
-//             const programMembershipRepo = new chevre.repository.ProgramMembership(mongoose.connection);
-//             await programMembershipRepo.save(req.body);
+//             const productRepo = new chevre.repository.Product(mongoose.connection);
+//             await productRepo.save(req.body);
 //             res.status(NO_CONTENT)
 //                 .end();
 //         } catch (error) {
@@ -156,16 +165,16 @@ programMembershipsRouter.get('/:id/offers', permitScopes_1.default(['admin']), v
 //     }
 // );
 /**
- * メンバーシッププログラム削除
+ * プロダクト削除
  */
-// programMembershipsRouter.delete(
+// productsRouter.delete(
 //     '/:id',
 //     permitScopes(['admin']),
 //     validator,
 //     async (req, res, next) => {
 //         try {
-//             const programMembershipRepo = new chevre.repository.ProgramMembership(mongoose.connection);
-//             await programMembershipRepo.deleteById({ id: req.params.id });
+//             const productRepo = new chevre.repository.Product(mongoose.connection);
+//             await productRepo.deleteById({ id: req.params.id });
 //             res.status(NO_CONTENT)
 //                 .end();
 //         } catch (error) {
@@ -173,4 +182,4 @@ programMembershipsRouter.get('/:id/offers', permitScopes_1.default(['admin']), v
 //         }
 //     }
 // );
-exports.default = programMembershipsRouter;
+exports.default = productsRouter;
