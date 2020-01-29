@@ -4,6 +4,7 @@
 import * as express from 'express';
 
 import accountTitlesRouter from './accountTitles';
+import categoryCodesRouter from './categoryCode';
 import creativeWorksRouter from './creativeWorks';
 import distributorsRouter from './distributors';
 import eventsRouter from './events';
@@ -33,6 +34,7 @@ const router = express.Router();
 
 router.use('/health', healthRouter);
 router.use('/accountTitles', accountTitlesRouter);
+router.use('/categoryCodes', categoryCodesRouter);
 router.use('/creativeWorks', creativeWorksRouter);
 router.use('/distributions', distributorsRouter);
 router.use('/places', placesRouter);
