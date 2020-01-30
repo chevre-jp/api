@@ -197,11 +197,11 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const events = yield eventRepo.search(searchCoinditions);
-        const totalCount = yield eventRepo.count(searchCoinditions);
+        const events = yield eventRepo.search(searchConditions);
+        const totalCount = yield eventRepo.count(searchConditions);
         res.set('X-Total-Count', totalCount.toString())
             .json(events);
     }
@@ -259,10 +259,10 @@ eventsRouter.get('/withAggregateReservation', permitScopes_1.default(['admin']),
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         // イベント検索
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.eventType.ScreeningEvent, 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.eventType.ScreeningEvent, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const events = yield eventRepo.search(searchCoinditions);
+        const events = yield eventRepo.search(searchConditions);
         const eventsWithAggregation = yield Promise.all(events.map((e) => __awaiter(void 0, void 0, void 0, function* () {
             const aggregation = yield chevre.service.aggregation.aggregateEventReservation({
                 id: e.id

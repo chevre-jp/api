@@ -215,14 +215,14 @@ eventsRouter.get(
     async (req, res, next) => {
         try {
             const eventRepo = new chevre.repository.Event(mongoose.connection);
-            const searchCoinditions: chevre.factory.event.ISearchConditions<typeof req.query.typeOf> = {
+            const searchConditions: chevre.factory.event.ISearchConditions<typeof req.query.typeOf> = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const events = await eventRepo.search(searchCoinditions);
-            const totalCount = await eventRepo.count(searchCoinditions);
+            const events = await eventRepo.search(searchConditions);
+            const totalCount = await eventRepo.count(searchConditions);
 
             res.set('X-Total-Count', totalCount.toString())
                 .json(events);
@@ -288,7 +288,7 @@ eventsRouter.get(
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
 
             // イベント検索
-            const searchCoinditions: chevre.factory.event.screeningEvent.ISearchConditions = {
+            const searchConditions: chevre.factory.event.screeningEvent.ISearchConditions = {
                 ...req.query,
                 typeOf: chevre.factory.eventType.ScreeningEvent,
                 // tslint:disable-next-line:no-magic-numbers
@@ -296,7 +296,7 @@ eventsRouter.get(
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const events = await eventRepo.search(searchCoinditions);
+            const events = await eventRepo.search(searchConditions);
 
             const eventsWithAggregation = await Promise.all(events.map(async (e) => {
                 const aggregation = await chevre.service.aggregation.aggregateEventReservation({

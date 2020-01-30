@@ -54,14 +54,14 @@ serviceTypesRouter.get(
     async (req, res, next) => {
         try {
             const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-            const searchCoinditions: chevre.factory.serviceType.ISearchConditions = {
+            const searchConditions: chevre.factory.serviceType.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const serviceTypes = await serviceTypeRepo.search(searchCoinditions);
+            const serviceTypes = await serviceTypeRepo.search(searchConditions);
 
             res.json(serviceTypes);
         } catch (error) {

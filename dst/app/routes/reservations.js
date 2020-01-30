@@ -79,12 +79,12 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (req.query.sort !== undefined && req.query.sort.modifiedTime !== undefined)
                 ? { modifiedTime: req.query.sort.modifiedTime }
                 : undefined });
-        const reservations = yield reservationRepo.search(searchCoinditions);
+        const reservations = yield reservationRepo.search(searchConditions);
         res.json(reservations);
     }
     catch (error) {
@@ -241,12 +241,12 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.reservationType.EventReservation, 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.reservationType.EventReservation, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (req.query.sort !== undefined && req.query.sort.modifiedTime !== undefined)
                 ? { modifiedTime: req.query.sort.modifiedTime }
                 : undefined });
-        const reservations = yield reservationRepo.search(searchCoinditions);
+        const reservations = yield reservationRepo.search(searchConditions);
         res.json(reservations);
     }
     catch (error) {

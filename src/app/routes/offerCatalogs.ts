@@ -49,14 +49,14 @@ offerCatalogsRouter.get(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const searchCoinditions: chevre.factory.ticketType.ITicketTypeGroupSearchConditions = {
+            const searchConditions: chevre.factory.ticketType.ITicketTypeGroupSearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const ticketTypeGroups = await offerRepo.searchOfferCatalogs(searchCoinditions);
+            const ticketTypeGroups = await offerRepo.searchOfferCatalogs(searchConditions);
             res.json(ticketTypeGroups);
         } catch (error) {
             next(error);

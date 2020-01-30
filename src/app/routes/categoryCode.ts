@@ -49,19 +49,48 @@ categoryCodesRouter.post(
 );
 
 categoryCodesRouter.get(
+    '',
+    permitScopes(['admin']),
+    ...[
+        query('limit')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('page')
+            .optional()
+            .isInt()
+            .toInt()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
+
+            const searchConditions: chevre.factory.categoryCode.ISearchConditions = {
+                ...req.query,
+                // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+            };
+
+            const categoryCodes = await categoryCodeRepo.search(searchConditions);
+
+            res.json(categoryCodes);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+categoryCodesRouter.get(
     '/:id',
     permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
             const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
-            const doc = await categoryCodeRepo.categoryCodeModel.findById(req.params.id)
-                .exec();
-            if (doc === null) {
-                throw new chevre.factory.errors.NotFound(categoryCodeRepo.categoryCodeModel.modelName);
-            }
 
-            const categoryCode = doc.toObject();
+            const categoryCode = await categoryCodeRepo.findById({ id: req.params.id });
 
             res.json(categoryCode);
         } catch (error) {
@@ -94,42 +123,20 @@ categoryCodesRouter.put(
     }
 );
 
-categoryCodesRouter.get(
-    '',
+categoryCodesRouter.delete(
+    '/:id',
     permitScopes(['admin']),
-    ...[
-        query('limit')
-            .optional()
-            .isInt()
-            .toInt(),
-        query('page')
-            .optional()
-            .isInt()
-            .toInt()
-    ],
     validator,
     async (req, res, next) => {
         try {
             const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
-            const searchCoinditions: any = {
-                ...req.query,
-                // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
-            };
 
-            const categoryCodes = await categoryCodeRepo.categoryCodeModel.find({
-                ...searchCoinditions,
-                limit: undefined,
-                page: undefined
-            })
-                .limit(searchCoinditions.limit)
-                .skip(searchCoinditions.limit * (searchCoinditions.page - 1))
-                .setOptions({ maxTimeMS: 10000 })
-                .exec()
-                .then((docs) => docs.map((doc) => doc.toObject()));
+            await categoryCodeRepo.deleteById({
+                id: req.params.id
+            });
 
-            res.json(categoryCodes);
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

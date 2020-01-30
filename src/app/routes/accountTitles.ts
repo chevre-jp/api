@@ -69,43 +69,43 @@ accountTitlesRouter.get(
     async (req, res, next) => {
         try {
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-            const searchCoinditions: chevre.factory.accountTitle.ISearchConditions = {
+            const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            // const accountTitles = await accountTitleRepo.search(searchCoinditions);
+            // const accountTitles = await accountTitleRepo.search(searchConditions);
             // res.json(accountTitles);
 
             const conditions: any[] = [
                 { typeOf: 'AccountTitle' }
             ];
-            if (searchCoinditions.project !== undefined) {
-                if (Array.isArray(searchCoinditions.project.ids)) {
+            if (searchConditions.project !== undefined) {
+                if (Array.isArray(searchConditions.project.ids)) {
                     conditions.push({
                         'project.id': {
                             $exists: true,
-                            $in: searchCoinditions.project.ids
+                            $in: searchConditions.project.ids
                         }
                     });
                 }
             }
 
-            if (typeof searchCoinditions.codeValue === 'string') {
+            if (typeof searchConditions.codeValue === 'string') {
                 conditions.push({
                     codeValue: {
                         $exists: true,
-                        $regex: new RegExp(searchCoinditions.codeValue)
+                        $regex: new RegExp(searchConditions.codeValue)
                     }
                 });
-            } else if (searchCoinditions.codeValue !== undefined && searchCoinditions.codeValue !== null) {
-                if (typeof searchCoinditions.codeValue.$eq === 'string') {
+            } else if (searchConditions.codeValue !== undefined && searchConditions.codeValue !== null) {
+                if (typeof searchConditions.codeValue.$eq === 'string') {
                     conditions.push({
                         codeValue: {
                             $exists: true,
-                            $eq: searchCoinditions.codeValue.$eq
+                            $eq: searchConditions.codeValue.$eq
                         }
                     });
                 }
@@ -128,14 +128,14 @@ accountTitlesRouter.get(
             );
             // tslint:disable-next-line:no-single-line-block-comment
             /* istanbul ignore else */
-            if (searchCoinditions.limit !== undefined && searchCoinditions.page !== undefined) {
-                query.limit(searchCoinditions.limit)
-                    .skip(searchCoinditions.limit * (searchCoinditions.page - 1));
+            if (searchConditions.limit !== undefined && searchConditions.page !== undefined) {
+                query.limit(searchConditions.limit)
+                    .skip(searchConditions.limit * (searchConditions.page - 1));
             }
             // tslint:disable-next-line:no-single-line-block-comment
             /* istanbul ignore else */
-            if (searchCoinditions.sort !== undefined) {
-                query.sort(searchCoinditions.sort);
+            if (searchConditions.sort !== undefined) {
+                query.sort(searchConditions.sort);
             }
 
             const accountTitles = await query.setOptions({ maxTimeMS: 10000 })
@@ -268,69 +268,69 @@ accountTitlesRouter.get(
     async (req, res, next) => {
         try {
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-            const searchCoinditions: chevre.factory.accountTitle.ISearchConditions = {
+            const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            // const accountTitles = await accountTitleRepo.search(searchCoinditions);
+            // const accountTitles = await accountTitleRepo.search(searchConditions);
             // res.json(accountTitles);
 
             const matchStages: any[] = [];
-            if (searchCoinditions.project !== undefined) {
-                if (Array.isArray(searchCoinditions.project.ids)) {
+            if (searchConditions.project !== undefined) {
+                if (Array.isArray(searchConditions.project.ids)) {
                     matchStages.push({
                         $match: {
                             'project.id': {
                                 $exists: true,
-                                $in: searchCoinditions.project.ids
+                                $in: searchConditions.project.ids
                             }
                         }
                     });
                 }
             }
 
-            if (typeof searchCoinditions.codeValue === 'string') {
+            if (typeof searchConditions.codeValue === 'string') {
                 matchStages.push({
                     $match: {
                         'hasCategoryCode.codeValue': {
                             $exists: true,
-                            $regex: new RegExp(searchCoinditions.codeValue)
+                            $regex: new RegExp(searchConditions.codeValue)
                         }
                     }
                 });
-            } else if (searchCoinditions.codeValue !== undefined && searchCoinditions.codeValue !== null) {
-                if (typeof searchCoinditions.codeValue.$eq === 'string') {
+            } else if (searchConditions.codeValue !== undefined && searchConditions.codeValue !== null) {
+                if (typeof searchConditions.codeValue.$eq === 'string') {
                     matchStages.push({
                         $match: {
                             'hasCategoryCode.codeValue': {
                                 $exists: true,
-                                $eq: searchCoinditions.codeValue.$eq
+                                $eq: searchConditions.codeValue.$eq
                             }
                         }
                     });
                 }
             }
 
-            if (searchCoinditions.inCodeSet !== undefined) {
-                if (typeof searchCoinditions.inCodeSet.codeValue === 'string') {
+            if (searchConditions.inCodeSet !== undefined) {
+                if (typeof searchConditions.inCodeSet.codeValue === 'string') {
                     matchStages.push({
                         $match: {
                             codeValue: {
                                 $exists: true,
-                                $regex: new RegExp(searchCoinditions.inCodeSet.codeValue)
+                                $regex: new RegExp(searchConditions.inCodeSet.codeValue)
                             }
                         }
                     });
-                } else if (searchCoinditions.inCodeSet.codeValue !== undefined && searchCoinditions.inCodeSet.codeValue !== null) {
-                    if (typeof searchCoinditions.inCodeSet.codeValue.$eq === 'string') {
+                } else if (searchConditions.inCodeSet.codeValue !== undefined && searchConditions.inCodeSet.codeValue !== null) {
+                    if (typeof searchConditions.inCodeSet.codeValue.$eq === 'string') {
                         matchStages.push({
                             $match: {
                                 codeValue: {
                                     $exists: true,
-                                    $eq: searchCoinditions.inCodeSet.codeValue.$eq
+                                    $eq: searchConditions.inCodeSet.codeValue.$eq
                                 }
                             }
                         });
@@ -366,9 +366,9 @@ accountTitlesRouter.get(
 
             // tslint:disable-next-line:no-single-line-block-comment
             /* istanbul ignore else */
-            if (searchCoinditions.limit !== undefined && searchCoinditions.page !== undefined) {
-                aggregate.limit(searchCoinditions.limit * searchCoinditions.page)
-                    .skip(searchCoinditions.limit * (searchCoinditions.page - 1));
+            if (searchConditions.limit !== undefined && searchConditions.page !== undefined) {
+                aggregate.limit(searchConditions.limit * searchConditions.page)
+                    .skip(searchConditions.limit * (searchConditions.page - 1));
             }
 
             const accountTitles = await aggregate.exec();
@@ -515,93 +515,93 @@ accountTitlesRouter.get(
     async (req, res, next) => {
         try {
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-            const searchCoinditions: chevre.factory.accountTitle.ISearchConditions = {
+            const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            // const accountTitles = await accountTitleRepo.search(searchCoinditions);
+            // const accountTitles = await accountTitleRepo.search(searchConditions);
             // res.json(accountTitles);
 
             const matchStages: any[] = [];
-            if (searchCoinditions.project !== undefined) {
-                if (Array.isArray(searchCoinditions.project.ids)) {
+            if (searchConditions.project !== undefined) {
+                if (Array.isArray(searchConditions.project.ids)) {
                     matchStages.push({
                         $match: {
                             'project.id': {
                                 $exists: true,
-                                $in: searchCoinditions.project.ids
+                                $in: searchConditions.project.ids
                             }
                         }
                     });
                 }
             }
 
-            if (typeof searchCoinditions.codeValue === 'string') {
+            if (typeof searchConditions.codeValue === 'string') {
                 matchStages.push({
                     $match: {
                         'hasCategoryCode.hasCategoryCode.codeValue': {
                             $exists: true,
-                            $regex: new RegExp(searchCoinditions.codeValue)
+                            $regex: new RegExp(searchConditions.codeValue)
                         }
                     }
                 });
-            } else if (searchCoinditions.codeValue !== undefined && searchCoinditions.codeValue !== null) {
-                if (typeof searchCoinditions.codeValue.$eq === 'string') {
+            } else if (searchConditions.codeValue !== undefined && searchConditions.codeValue !== null) {
+                if (typeof searchConditions.codeValue.$eq === 'string') {
                     matchStages.push({
                         $match: {
                             'hasCategoryCode.hasCategoryCode.codeValue': {
                                 $exists: true,
-                                $eq: searchCoinditions.codeValue.$eq
+                                $eq: searchConditions.codeValue.$eq
                             }
                         }
                     });
                 }
             }
 
-            if (searchCoinditions.inCodeSet !== undefined) {
-                if (typeof searchCoinditions.inCodeSet.codeValue === 'string') {
+            if (searchConditions.inCodeSet !== undefined) {
+                if (typeof searchConditions.inCodeSet.codeValue === 'string') {
                     matchStages.push({
                         $match: {
                             'hasCategoryCode.codeValue': {
                                 $exists: true,
-                                $regex: new RegExp(searchCoinditions.inCodeSet.codeValue)
+                                $regex: new RegExp(searchConditions.inCodeSet.codeValue)
                             }
                         }
                     });
-                } else if (searchCoinditions.inCodeSet.codeValue !== undefined && searchCoinditions.inCodeSet.codeValue !== null) {
-                    if (typeof searchCoinditions.inCodeSet.codeValue.$eq === 'string') {
+                } else if (searchConditions.inCodeSet.codeValue !== undefined && searchConditions.inCodeSet.codeValue !== null) {
+                    if (typeof searchConditions.inCodeSet.codeValue.$eq === 'string') {
                         matchStages.push({
                             $match: {
                                 'hasCategoryCode.codeValue': {
                                     $exists: true,
-                                    $eq: searchCoinditions.inCodeSet.codeValue.$eq
+                                    $eq: searchConditions.inCodeSet.codeValue.$eq
                                 }
                             }
                         });
                     }
                 }
 
-                if (searchCoinditions.inCodeSet.inCodeSet !== undefined) {
-                    if (typeof searchCoinditions.inCodeSet.inCodeSet.codeValue === 'string') {
+                if (searchConditions.inCodeSet.inCodeSet !== undefined) {
+                    if (typeof searchConditions.inCodeSet.inCodeSet.codeValue === 'string') {
                         matchStages.push({
                             $match: {
                                 codeValue: {
                                     $exists: true,
-                                    $regex: new RegExp(searchCoinditions.inCodeSet.inCodeSet.codeValue)
+                                    $regex: new RegExp(searchConditions.inCodeSet.inCodeSet.codeValue)
                                 }
                             }
                         });
-                    } else if (searchCoinditions.inCodeSet.inCodeSet.codeValue !== undefined
-                        && searchCoinditions.inCodeSet.inCodeSet.codeValue !== null) {
-                        if (typeof searchCoinditions.inCodeSet.inCodeSet.codeValue.$eq === 'string') {
+                    } else if (searchConditions.inCodeSet.inCodeSet.codeValue !== undefined
+                        && searchConditions.inCodeSet.inCodeSet.codeValue !== null) {
+                        if (typeof searchConditions.inCodeSet.inCodeSet.codeValue.$eq === 'string') {
                             matchStages.push({
                                 $match: {
                                     codeValue: {
                                         $exists: true,
-                                        $eq: searchCoinditions.inCodeSet.inCodeSet.codeValue.$eq
+                                        $eq: searchConditions.inCodeSet.inCodeSet.codeValue.$eq
                                     }
                                 }
                             });
@@ -644,9 +644,9 @@ accountTitlesRouter.get(
 
             // tslint:disable-next-line:no-single-line-block-comment
             /* istanbul ignore else */
-            if (searchCoinditions.limit !== undefined && searchCoinditions.page !== undefined) {
-                aggregate.limit(searchCoinditions.limit * searchCoinditions.page)
-                    .skip(searchCoinditions.limit * (searchCoinditions.page - 1));
+            if (searchConditions.limit !== undefined && searchConditions.page !== undefined) {
+                aggregate.limit(searchConditions.limit * searchConditions.page)
+                    .skip(searchConditions.limit * (searchConditions.page - 1));
             }
 
             const accountTitles = await aggregate.exec();

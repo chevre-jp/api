@@ -56,15 +56,15 @@ productsRouter.get(
     async (req, res, next) => {
         try {
             const productRepo = new chevre.repository.Product(mongoose.connection);
-            // const searchCoinditions = {
+            // const searchConditions = {
             //     ...req.query,
             //     // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             //     limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
             //     page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             // };
 
-            // const totalCount = await productRepo.count(searchCoinditions);
-            // const products = await productRepo.search(searchCoinditions);
+            // const totalCount = await productRepo.count(searchConditions);
+            // const products = await productRepo.search(searchConditions);
 
             const searchConditions: any = {
                 ...(req.query.project !== undefined && req.query.project !== null

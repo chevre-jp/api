@@ -30,7 +30,7 @@ priceSpecificationsRouter.use(authentication_1.default);
 //     async (req, res, next) => {
 //         try {
 //             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
-//             const searchCoinditions: any = {
+//             const searchConditions: any = {
 //                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
 //                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
 //                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
@@ -38,7 +38,7 @@ priceSpecificationsRouter.use(authentication_1.default);
 //                 typeOf: chevre.factory.priceSpecificationType.CompoundPriceSpecification,
 //                 priceComponent: req.query.priceComponent
 //             };
-//             const priceSpecifications = await priceSpecificationRepo.searchCompoundPriceSpecifications(searchCoinditions);
+//             const priceSpecifications = await priceSpecificationRepo.searchCompoundPriceSpecifications(searchConditions);
 //             res.json(priceSpecifications);
 //         } catch (error) {
 //             next(error);
@@ -95,10 +95,10 @@ priceSpecificationsRouter.put('/:id', permitScopes_1.default(['admin']), validat
 priceSpecificationsRouter.get('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const priceSpecifications = yield priceSpecificationRepo.search(searchCoinditions);
+        const priceSpecifications = yield priceSpecificationRepo.search(searchConditions);
         res.json(priceSpecifications);
     }
     catch (error) {

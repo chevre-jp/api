@@ -77,7 +77,7 @@ reservationsRouter.get(
     async (req, res, next) => {
         try {
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-            const searchCoinditions: chevre.factory.reservation.ISearchConditions<any> = {
+            const searchConditions: chevre.factory.reservation.ISearchConditions<any> = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
@@ -87,7 +87,7 @@ reservationsRouter.get(
                     : undefined
             };
 
-            const reservations = await reservationRepo.search(searchCoinditions);
+            const reservations = await reservationRepo.search(searchConditions);
 
             res.json(reservations);
         } catch (error) {
@@ -271,7 +271,7 @@ reservationsRouter.get(
     async (req, res, next) => {
         try {
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-            const searchCoinditions: chevre.factory.reservation.ISearchConditions<chevre.factory.reservationType.EventReservation> = {
+            const searchConditions: chevre.factory.reservation.ISearchConditions<chevre.factory.reservationType.EventReservation> = {
                 ...req.query,
                 typeOf: chevre.factory.reservationType.EventReservation,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
@@ -282,7 +282,7 @@ reservationsRouter.get(
                     : undefined
             };
 
-            const reservations = await reservationRepo.search(searchCoinditions);
+            const reservations = await reservationRepo.search(searchConditions);
 
             res.json(reservations);
         } catch (error) {

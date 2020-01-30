@@ -50,10 +50,10 @@ movieTheaterRouter.post('', permitScopes_1.default(['admin']), ...[
 movieTheaterRouter.get('', permitScopes_1.default(['admin', 'places', 'places.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const movieTheaters = yield placeRepo.searchMovieTheaters(searchCoinditions);
+        const movieTheaters = yield placeRepo.searchMovieTheaters(searchConditions);
         res.json(movieTheaters);
     }
     catch (error) {

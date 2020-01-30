@@ -23,7 +23,7 @@ priceSpecificationsRouter.use(authentication);
 //     async (req, res, next) => {
 //         try {
 //             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
-//             const searchCoinditions: any = {
+//             const searchConditions: any = {
 //                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
 //                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
 //                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
@@ -31,7 +31,7 @@ priceSpecificationsRouter.use(authentication);
 //                 typeOf: chevre.factory.priceSpecificationType.CompoundPriceSpecification,
 //                 priceComponent: req.query.priceComponent
 //             };
-//             const priceSpecifications = await priceSpecificationRepo.searchCompoundPriceSpecifications(searchCoinditions);
+//             const priceSpecifications = await priceSpecificationRepo.searchCompoundPriceSpecifications(searchConditions);
 //             res.json(priceSpecifications);
 //         } catch (error) {
 //             next(error);
@@ -124,14 +124,14 @@ priceSpecificationsRouter.get(
     async (req, res, next) => {
         try {
             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
-            const searchCoinditions: chevre.factory.priceSpecification.ISearchConditions<any> = {
+            const searchConditions: chevre.factory.priceSpecification.ISearchConditions<any> = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const priceSpecifications = await priceSpecificationRepo.search(searchCoinditions);
+            const priceSpecifications = await priceSpecificationRepo.search(searchConditions);
 
             res.json(priceSpecifications);
         } catch (error) {

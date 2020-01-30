@@ -44,10 +44,10 @@ serviceTypesRouter.post('', permitScopes_1.default(['admin']), ...[
 serviceTypesRouter.get('', permitScopes_1.default(['admin', 'serviceTypes', 'serviceTypes.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const serviceTypes = yield serviceTypeRepo.search(searchCoinditions);
+        const serviceTypes = yield serviceTypeRepo.search(searchConditions);
         res.json(serviceTypes);
     }
     catch (error) {

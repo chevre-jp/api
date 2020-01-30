@@ -43,10 +43,10 @@ ticketTypeGroupsRouter.post('', permitScopes_1.default(['admin']), ...[
 ticketTypeGroupsRouter.get('', permitScopes_1.default(['admin', 'ticketTypeGroups', 'ticketTypeGroups.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const ticketTypeGroups = yield offerRepo.searchTicketTypeGroups(searchCoinditions);
+        const ticketTypeGroups = yield offerRepo.searchTicketTypeGroups(searchConditions);
         res.json(ticketTypeGroups);
     }
     catch (error) {

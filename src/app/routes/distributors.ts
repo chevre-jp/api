@@ -35,14 +35,14 @@ distributorsRouter.get(
     async (req, res, next) => {
         try {
             const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
-            const searchCoinditions: chevre.factory.distributor.ISearchConditions = {
+            const searchConditions: chevre.factory.distributor.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const distributions = await distributionRepo.searchDistributions(searchCoinditions);
+            const distributions = await distributionRepo.searchDistributions(searchConditions);
             res.json(distributions);
         } catch (error) {
             next(error);

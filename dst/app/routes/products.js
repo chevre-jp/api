@@ -49,14 +49,14 @@ productsRouter.post('', permitScopes_1.default(['admin']), ...[
 productsRouter.get('', permitScopes_1.default(['admin']), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productRepo = new chevre.repository.Product(mongoose.connection);
-        // const searchCoinditions = {
+        // const searchConditions = {
         //     ...req.query,
         //     // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
         //     limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
         //     page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
         // };
-        // const totalCount = await productRepo.count(searchCoinditions);
-        // const products = await productRepo.search(searchCoinditions);
+        // const totalCount = await productRepo.count(searchConditions);
+        // const products = await productRepo.search(searchConditions);
         const searchConditions = Object.assign(Object.assign({}, (req.query.project !== undefined && req.query.project !== null
             && req.query.project.id !== undefined && req.query.project.id !== null
             && typeof req.query.project.id.$eq === 'string')
