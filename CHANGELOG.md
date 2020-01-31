@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 勘定科目検索条件拡張
 - イベントと作品以外のリソース検索からX-Total-Countを削除
 - サービスタイプをカテゴリーコードに統合
+- 座席オファー情報に価格仕様を追加
 
 ### Deprecated
 
