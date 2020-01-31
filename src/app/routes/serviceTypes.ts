@@ -34,19 +34,6 @@ serviceTypesRouter.post(
         try {
             const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: 'Project' };
 
-            // let serviceType: chevre.factory.serviceType.IServiceType = {
-            //     ...req.body,
-            //     typeOf: 'ServiceType',
-            //     id: '',
-            //     project: project
-            // };
-
-            // const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-            // serviceType = await serviceTypeRepo.save(serviceType);
-
-            // res.status(CREATED)
-            //     .json(serviceType);
-
             let categoryCode: chevre.factory.categoryCode.ICategoryCode = {
                 ...req.body,
                 typeOf: 'CategoryCode',
@@ -83,18 +70,6 @@ serviceTypesRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            // const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-            // const searchConditions: chevre.factory.serviceType.ISearchConditions = {
-            //     ...req.query,
-            //     // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            //     limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-            //     page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
-            // };
-
-            // const serviceTypes = await serviceTypeRepo.search(searchConditions);
-
-            // res.json(serviceTypes);
-
             const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
 
             const searchConditions: chevre.factory.categoryCode.ISearchConditions = {
@@ -129,11 +104,6 @@ serviceTypesRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            // const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-            // const serviceType = await serviceTypeRepo.findById({ id: req.params.id });
-
-            // res.json(serviceType);
-
             const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
 
             const categoryCode = await categoryCodeRepo.findById({ id: req.params.id });
@@ -168,13 +138,6 @@ serviceTypesRouter.put(
         try {
             const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: 'Project' };
 
-            // const serviceType: chevre.factory.serviceType.IServiceType = {
-            //     ...req.body,
-            //     id: req.params.id
-            // };
-            // const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-            // await serviceTypeRepo.save(serviceType);
-
             const categoryCode: chevre.factory.categoryCode.ICategoryCode = {
                 ...req.body,
                 typeOf: 'CategoryCode',
@@ -187,6 +150,8 @@ serviceTypesRouter.put(
                     : req.body.name,
                 project: project
             };
+            delete categoryCode.id;
+
             const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
             await categoryCodeRepo.categoryCodeModel.findByIdAndUpdate(
                 req.params.id,
@@ -208,11 +173,6 @@ serviceTypesRouter.delete(
     validator,
     async (req, res, next) => {
         try {
-            // const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-            // await serviceTypeRepo.deleteById({
-            //     id: req.params.id
-            // });
-
             const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
 
             await categoryCodeRepo.deleteById({

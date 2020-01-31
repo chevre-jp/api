@@ -36,16 +36,6 @@ serviceTypesRouter.post('', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const project = { id: req.body.project.id, typeOf: 'Project' };
-        // let serviceType: chevre.factory.serviceType.IServiceType = {
-        //     ...req.body,
-        //     typeOf: 'ServiceType',
-        //     id: '',
-        //     project: project
-        // };
-        // const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-        // serviceType = await serviceTypeRepo.save(serviceType);
-        // res.status(CREATED)
-        //     .json(serviceType);
         let categoryCode = Object.assign(Object.assign({}, req.body), { typeOf: 'CategoryCode', inCodeSet: {
                 typeOf: 'CategoryCodeSet',
                 identifier: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType
@@ -64,15 +54,6 @@ serviceTypesRouter.post('', permitScopes_1.default(['admin']), ...[
 }));
 serviceTypesRouter.get('', permitScopes_1.default(['admin', 'serviceTypes', 'serviceTypes.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-        // const searchConditions: chevre.factory.serviceType.ISearchConditions = {
-        //     ...req.query,
-        //     // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-        //     limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-        //     page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
-        // };
-        // const serviceTypes = await serviceTypeRepo.search(searchConditions);
-        // res.json(serviceTypes);
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
         const searchConditions = Object.assign(Object.assign(Object.assign({}, req.query), (typeof req.query.name === 'string' && req.query.name.length > 0)
             ? { name: { $regex: req.query.name } }
@@ -90,9 +71,6 @@ serviceTypesRouter.get('', permitScopes_1.default(['admin', 'serviceTypes', 'ser
 }));
 serviceTypesRouter.get('/:id', permitScopes_1.default(['admin', 'serviceTypes', 'serviceTypes.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-        // const serviceType = await serviceTypeRepo.findById({ id: req.params.id });
-        // res.json(serviceType);
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
         const categoryCode = yield categoryCodeRepo.findById({ id: req.params.id });
         res.json(Object.assign(Object.assign({}, categoryCode), { identifier: categoryCode.codeValue, name: categoryCode.name.ja }));
@@ -114,18 +92,13 @@ serviceTypesRouter.put('/:id', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const project = { id: req.body.project.id, typeOf: 'Project' };
-        // const serviceType: chevre.factory.serviceType.IServiceType = {
-        //     ...req.body,
-        //     id: req.params.id
-        // };
-        // const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-        // await serviceTypeRepo.save(serviceType);
         const categoryCode = Object.assign(Object.assign({}, req.body), { typeOf: 'CategoryCode', inCodeSet: {
                 typeOf: 'CategoryCodeSet',
                 identifier: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType
             }, name: (typeof req.body.name === 'string')
                 ? { ja: req.body.name }
                 : req.body.name, project: project });
+        delete categoryCode.id;
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
         yield categoryCodeRepo.categoryCodeModel.findByIdAndUpdate(req.params.id, categoryCode)
             .exec();
@@ -138,10 +111,6 @@ serviceTypesRouter.put('/:id', permitScopes_1.default(['admin']), ...[
 }));
 serviceTypesRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // const serviceTypeRepo = new chevre.repository.ServiceType(mongoose.connection);
-        // await serviceTypeRepo.deleteById({
-        //     id: req.params.id
-        // });
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
         yield categoryCodeRepo.deleteById({
             id: req.params.id
