@@ -56,7 +56,7 @@ serviceTypesRouter.post('', permitScopes_1.default(['admin']), ...[
         const doc = yield categoryCodeRepo.categoryCodeModel.create(categoryCode);
         categoryCode = doc.toObject();
         res.status(http_status_1.CREATED)
-            .json(Object.assign(Object.assign({}, categoryCode), { name: categoryCode.name.ja }));
+            .json(Object.assign(Object.assign({}, categoryCode), { identifier: categoryCode.codeValue, name: categoryCode.name.ja }));
     }
     catch (error) {
         next(error);
@@ -81,7 +81,7 @@ serviceTypesRouter.get('', permitScopes_1.default(['admin', 'serviceTypes', 'ser
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const categoryCodes = yield categoryCodeRepo.search(searchConditions);
         res.json(categoryCodes.map((c) => {
-            return Object.assign(Object.assign({}, c), { name: c.name.ja });
+            return Object.assign(Object.assign({}, c), { identifier: c.codeValue, name: c.name.ja });
         }));
     }
     catch (error) {
@@ -95,7 +95,7 @@ serviceTypesRouter.get('/:id', permitScopes_1.default(['admin', 'serviceTypes', 
         // res.json(serviceType);
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
         const categoryCode = yield categoryCodeRepo.findById({ id: req.params.id });
-        res.json(Object.assign(Object.assign({}, categoryCode), { name: categoryCode.name.ja }));
+        res.json(Object.assign(Object.assign({}, categoryCode), { identifier: categoryCode.codeValue, name: categoryCode.name.ja }));
     }
     catch (error) {
         next(error);

@@ -68,6 +68,7 @@ serviceTypesRouter.post(
             res.status(CREATED)
                 .json({
                     ...categoryCode,
+                    identifier: categoryCode.codeValue,
                     name: (<any>categoryCode.name).ja
                 });
         } catch (error) {
@@ -112,6 +113,7 @@ serviceTypesRouter.get(
             res.json(categoryCodes.map((c) => {
                 return {
                     ...c,
+                    identifier: c.codeValue,
                     name: (<any>c.name).ja
                 };
             }));
@@ -136,7 +138,11 @@ serviceTypesRouter.get(
 
             const categoryCode = await categoryCodeRepo.findById({ id: req.params.id });
 
-            res.json({ ...categoryCode, name: (<any>categoryCode.name).ja });
+            res.json({
+                ...categoryCode,
+                identifier: categoryCode.codeValue,
+                name: (<any>categoryCode.name).ja
+            });
         } catch (error) {
             next(error);
         }
