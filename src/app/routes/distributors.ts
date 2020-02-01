@@ -24,7 +24,10 @@ distributorsRouter.get(
             res.json(distributions.map((d) => {
                 return {
                     ...d,
-                    distributorType: d.id
+                    codeValue: d.id,
+                    name: (typeof d.name === 'string')
+                        ? d.name
+                        : (d.name !== undefined && d.name !== null) ? (<any>d.name).ja : undefined
                 };
             }));
         } catch (error) {
@@ -51,7 +54,7 @@ distributorsRouter.get(
             res.json(distributions.map((d) => {
                 return {
                     ...d,
-                    distributorType: d.id,
+                    codeValue: d.id,
                     name: (typeof d.name === 'string')
                         ? d.name
                         : (d.name !== undefined && d.name !== null) ? (<any>d.name).ja : undefined
@@ -111,7 +114,7 @@ distributorsRouter.post(
             res.status(CREATED)
                 .json({
                     ...distributor,
-                    distributorType: distributor.id,
+                    codeValue: distributor.id,
                     name: (typeof distributor.name === 'string')
                         ? distributor.name
                         : (distributor.name !== undefined && distributor.name !== null) ? (<any>distributor.name).ja : undefined
