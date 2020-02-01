@@ -1,5 +1,6 @@
 /**
  * 配給ルーター
+ * @deprecated Use categoryCode router
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
@@ -21,6 +22,7 @@ distributorsRouter.get(
         try {
             const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
             const distributions = await distributionRepo.getDistributions();
+
             res.json(distributions.map((d) => {
                 return {
                     ...d,
@@ -51,6 +53,7 @@ distributorsRouter.get(
             };
 
             const distributions = await distributionRepo.searchDistributions(searchConditions);
+
             res.json(distributions.map((d) => {
                 return {
                     ...d,
@@ -79,10 +82,14 @@ distributorsRouter.put(
     async (req, res, next) => {
         try {
             const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
-            await distributionRepo.updateDistribution({
+            await distributionRepo.updateDistribution(<any>{
                 id: req.params.id,
-                name: req.body.name
+                codeValue: req.params.id,
+                name: (typeof req.body.name === 'string')
+                    ? { ja: req.body.name }
+                    : req.body.name
             });
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
@@ -107,10 +114,14 @@ distributorsRouter.post(
     async (req, res, next) => {
         try {
             const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
-            const distributor = await distributionRepo.createDistribution({
+            const distributor = await distributionRepo.createDistribution(<any>{
                 id: req.body.id,
-                name: req.body.name
+                codeValue: req.params.id,
+                name: (typeof req.body.name === 'string')
+                    ? { ja: req.body.name }
+                    : req.body.name
             });
+
             res.status(CREATED)
                 .json({
                     ...distributor,
@@ -135,6 +146,7 @@ distributorsRouter.delete(
             await distributionRepo.deleteById({
                 id: req.params.id
             });
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {

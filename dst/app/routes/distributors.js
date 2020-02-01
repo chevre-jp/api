@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 配給ルーター
+ * @deprecated Use categoryCode router
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
@@ -62,7 +63,10 @@ distributorsRouter.put('/:id', permitScopes_1.default(['admin']), (req, _, next)
         const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
         yield distributionRepo.updateDistribution({
             id: req.params.id,
-            name: req.body.name
+            codeValue: req.params.id,
+            name: (typeof req.body.name === 'string')
+                ? { ja: req.body.name }
+                : req.body.name
         });
         res.status(http_status_1.NO_CONTENT)
             .end();
@@ -84,7 +88,10 @@ distributorsRouter.post('/add', permitScopes_1.default(['admin']), (req, _, next
         const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
         const distributor = yield distributionRepo.createDistribution({
             id: req.body.id,
-            name: req.body.name
+            codeValue: req.params.id,
+            name: (typeof req.body.name === 'string')
+                ? { ja: req.body.name }
+                : req.body.name
         });
         res.status(http_status_1.CREATED)
             .json(Object.assign(Object.assign({}, distributor), { codeValue: distributor.id, name: (typeof distributor.name === 'string')
