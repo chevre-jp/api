@@ -102,7 +102,15 @@ movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeW
         const totalCount = yield creativeWorkRepo.countMovies(searchConditions);
         const movies = yield creativeWorkRepo.searchMovies(searchConditions);
         res.set('X-Total-Count', totalCount.toString());
-        res.json(movies);
+        res.json(movies.map((movie) => {
+            return Object.assign(Object.assign({}, movie), (movie.distributor !== undefined && movie.distributor !== null)
+                ? {
+                    distributor: Object.assign(Object.assign({}, movie.distributor), { distributorType: (typeof movie.distributor.distributorType === 'string')
+                            ? movie.distributor.distributorType
+                            : movie.distributor.id })
+                }
+                : undefined);
+        }));
     }
     catch (error) {
         next(error);
@@ -112,7 +120,13 @@ movieRouter.get('/:id', permitScopes_1.default(['admin', 'creativeWorks', 'creat
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         const movie = yield creativeWorkRepo.findMovieById({ id: req.params.id });
-        res.json(movie);
+        res.json(Object.assign(Object.assign({}, movie), (movie.distributor !== undefined && movie.distributor !== null)
+            ? {
+                distributor: Object.assign(Object.assign({}, movie.distributor), { distributorType: (typeof movie.distributor.distributorType === 'string')
+                        ? movie.distributor.distributorType
+                        : movie.distributor.id })
+            }
+            : undefined));
     }
     catch (error) {
         next(error);
