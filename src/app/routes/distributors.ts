@@ -21,7 +21,12 @@ distributorsRouter.get(
         try {
             const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
             const distributions = await distributionRepo.getDistributions();
-            res.json(distributions);
+            res.json(distributions.map((d) => {
+                return {
+                    ...d,
+                    distributorType: d.id
+                };
+            }));
         } catch (error) {
             next(error);
         }
@@ -43,7 +48,15 @@ distributorsRouter.get(
             };
 
             const distributions = await distributionRepo.searchDistributions(searchConditions);
-            res.json(distributions);
+            res.json(distributions.map((d) => {
+                return {
+                    ...d,
+                    distributorType: d.id,
+                    name: (typeof d.name === 'string')
+                        ? d.name
+                        : (d.name !== undefined && d.name !== null) ? (<any>d.name).ja : undefined
+                };
+            }));
         } catch (error) {
             next(error);
         }
@@ -91,12 +104,18 @@ distributorsRouter.post(
     async (req, res, next) => {
         try {
             const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
-            const distributions = await distributionRepo.createDistribution({
+            const distributor = await distributionRepo.createDistribution({
                 id: req.body.id,
                 name: req.body.name
             });
             res.status(CREATED)
-                .json(distributions);
+                .json({
+                    ...distributor,
+                    distributorType: distributor.id,
+                    name: (typeof distributor.name === 'string')
+                        ? distributor.name
+                        : (distributor.name !== undefined && distributor.name !== null) ? (<any>distributor.name).ja : undefined
+                });
         } catch (error) {
             next(error);
         }

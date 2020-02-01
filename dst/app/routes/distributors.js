@@ -25,7 +25,9 @@ distributorsRouter.get('/list', permitScopes_1.default(['admin']), validator_1.d
     try {
         const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
         const distributions = yield distributionRepo.getDistributions();
-        res.json(distributions);
+        res.json(distributions.map((d) => {
+            return Object.assign(Object.assign({}, d), { distributorType: d.id });
+        }));
     }
     catch (error) {
         next(error);
@@ -38,7 +40,11 @@ distributorsRouter.get('/search', permitScopes_1.default(['admin']), validator_1
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const distributions = yield distributionRepo.searchDistributions(searchConditions);
-        res.json(distributions);
+        res.json(distributions.map((d) => {
+            return Object.assign(Object.assign({}, d), { distributorType: d.id, name: (typeof d.name === 'string')
+                    ? d.name
+                    : (d.name !== undefined && d.name !== null) ? d.name.ja : undefined });
+        }));
     }
     catch (error) {
         next(error);
@@ -74,12 +80,14 @@ distributorsRouter.post('/add', permitScopes_1.default(['admin']), (req, _, next
 }, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
-        const distributions = yield distributionRepo.createDistribution({
+        const distributor = yield distributionRepo.createDistribution({
             id: req.body.id,
             name: req.body.name
         });
         res.status(http_status_1.CREATED)
-            .json(distributions);
+            .json(Object.assign(Object.assign({}, distributor), { distributorType: distributor.id, name: (typeof distributor.name === 'string')
+                ? distributor.name
+                : (distributor.name !== undefined && distributor.name !== null) ? distributor.name.ja : undefined }));
     }
     catch (error) {
         next(error);
