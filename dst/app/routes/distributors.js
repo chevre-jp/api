@@ -26,7 +26,9 @@ distributorsRouter.get('/list', permitScopes_1.default(['admin']), validator_1.d
         const distributionRepo = new chevre.repository.Distributions(mongoose.connection);
         const distributions = yield distributionRepo.getDistributions();
         res.json(distributions.map((d) => {
-            return Object.assign(Object.assign({}, d), { distributorType: d.id });
+            return Object.assign(Object.assign({}, d), { codeValue: d.id, name: (typeof d.name === 'string')
+                    ? d.name
+                    : (d.name !== undefined && d.name !== null) ? d.name.ja : undefined });
         }));
     }
     catch (error) {
@@ -41,7 +43,7 @@ distributorsRouter.get('/search', permitScopes_1.default(['admin']), validator_1
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const distributions = yield distributionRepo.searchDistributions(searchConditions);
         res.json(distributions.map((d) => {
-            return Object.assign(Object.assign({}, d), { distributorType: d.id, name: (typeof d.name === 'string')
+            return Object.assign(Object.assign({}, d), { codeValue: d.id, name: (typeof d.name === 'string')
                     ? d.name
                     : (d.name !== undefined && d.name !== null) ? d.name.ja : undefined });
         }));
@@ -85,7 +87,7 @@ distributorsRouter.post('/add', permitScopes_1.default(['admin']), (req, _, next
             name: req.body.name
         });
         res.status(http_status_1.CREATED)
-            .json(Object.assign(Object.assign({}, distributor), { distributorType: distributor.id, name: (typeof distributor.name === 'string')
+            .json(Object.assign(Object.assign({}, distributor), { codeValue: distributor.id, name: (typeof distributor.name === 'string')
                 ? distributor.name
                 : (distributor.name !== undefined && distributor.name !== null) ? distributor.name.ja : undefined }));
     }
