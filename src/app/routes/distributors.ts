@@ -135,26 +135,14 @@ distributorsRouter.put(
             //         : req.body.name
             // });
 
-            const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: 'Project' };
-
-            const categoryCode: chevre.factory.categoryCode.ICategoryCode = {
-                codeValue: req.params.id,
-                typeOf: 'CategoryCode',
-                inCodeSet: {
-                    typeOf: 'CategoryCodeSet',
-                    identifier: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType
-                },
-                name: (typeof req.body.name === 'string')
-                    ? { ja: req.body.name }
-                    : req.body.name,
-                project: project
-            };
-            delete categoryCode.id;
-
             const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
             await categoryCodeRepo.categoryCodeModel.findByIdAndUpdate(
                 req.params.id,
-                categoryCode
+                {
+                    name: (typeof req.body.name === 'string')
+                        ? { ja: req.body.name }
+                        : req.body.name
+                }
             )
                 .exec();
 

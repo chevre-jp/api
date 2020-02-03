@@ -100,22 +100,12 @@ distributorsRouter.put('/:id', permitScopes_1.default(['admin']), (req, _, next)
         //         ? { ja: req.body.name }
         //         : req.body.name
         // });
-        const project = { id: req.body.project.id, typeOf: 'Project' };
-        const categoryCode = {
-            codeValue: req.params.id,
-            typeOf: 'CategoryCode',
-            inCodeSet: {
-                typeOf: 'CategoryCodeSet',
-                identifier: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType
-            },
+        const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
+        yield categoryCodeRepo.categoryCodeModel.findByIdAndUpdate(req.params.id, {
             name: (typeof req.body.name === 'string')
                 ? { ja: req.body.name }
-                : req.body.name,
-            project: project
-        };
-        delete categoryCode.id;
-        const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
-        yield categoryCodeRepo.categoryCodeModel.findByIdAndUpdate(req.params.id, categoryCode)
+                : req.body.name
+        })
             .exec();
         res.status(http_status_1.NO_CONTENT)
             .end();
