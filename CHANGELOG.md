@@ -35,6 +35,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Deprecated
 
+- 配給ルーターをカテゴリーコードルーターへ移行
+
 ### Removed
 
 ### Fixed
