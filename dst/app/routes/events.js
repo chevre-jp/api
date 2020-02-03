@@ -324,71 +324,14 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
  */
 eventsRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let offers = [];
-        const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
-        const event = yield eventRepo.findById({
-            id: req.params.id
+        const offers = yield chevre.service.offer.searchEventSeatOffers({
+            event: { id: req.params.id }
+        })({
+            event: new chevre.repository.Event(mongoose.connection),
+            priceSpecification: new chevre.repository.PriceSpecification(mongoose.connection),
+            eventAvailability: new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient()),
+            place: new chevre.repository.Place(mongoose.connection)
         });
-        // 座席指定利用可能かどうか
-        const reservedSeatsAvailable = !(event.offers !== undefined
-            && event.offers.itemOffered !== undefined
-            && event.offers.itemOffered.serviceOutput !== undefined
-            && event.offers.itemOffered.serviceOutput.reservedTicket !== undefined
-            && event.offers.itemOffered.serviceOutput.reservedTicket.ticketedSeat === undefined);
-        if (reservedSeatsAvailable) {
-            // 座席タイプ価格仕様を検索
-            const priceSpecs = yield priceSpecificationRepo.search(Object.assign({ limit: 100, project: { ids: [event.project.id] }, typeOf: chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification }, {
-                appliesToCategoryCode: {
-                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-                }
-            }));
-            const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
-            const placeRepo = new chevre.repository.Place(mongoose.connection);
-            const unavailableOffers = yield eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });
-            const movieTheater = yield placeRepo.findById({ id: event.superEvent.location.id });
-            const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === event.location.branchCode);
-            if (screeningRoom === undefined) {
-                throw new chevre.factory.errors.NotFound(chevre.factory.placeType.ScreeningRoom);
-            }
-            offers = screeningRoom.containsPlace;
-            offers.forEach((offer) => {
-                const seats = offer.containsPlace;
-                const seatSection = offer.branchCode;
-                seats.forEach((seat) => {
-                    const seatNumber = seat.branchCode;
-                    const unavailableOffer = unavailableOffers.find((o) => o.seatSection === seatSection && o.seatNumber === seatNumber);
-                    const priceComponent = [];
-                    // 座席タイプが指定されていれば、適用される価格仕様を構成要素に追加
-                    if (typeof seat.seatingType === 'string' && seat.seatingType.length > 0) {
-                        priceComponent.push(...priceSpecs.filter((s) => {
-                            // 適用カテゴリーコードに座席タイプが含まれる価格仕様を検索
-                            return (Array.isArray(s.appliesToCategoryCode))
-                                && s.appliesToCategoryCode.some((categoryCode) => {
-                                    return categoryCode.codeValue === seat.seatingType
-                                        // tslint:disable-next-line:max-line-length
-                                        && categoryCode.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.SeatingType;
-                                });
-                        }));
-                    }
-                    const priceSpecification = {
-                        project: event.project,
-                        typeOf: chevre.factory.priceSpecificationType.CompoundPriceSpecification,
-                        priceCurrency: chevre.factory.priceCurrency.JPY,
-                        valueAddedTaxIncluded: true,
-                        priceComponent: priceComponent
-                    };
-                    seat.offers = [{
-                            typeOf: 'Offer',
-                            priceCurrency: chevre.factory.priceCurrency.JPY,
-                            availability: (unavailableOffer !== undefined)
-                                ? chevre.factory.itemAvailability.OutOfStock
-                                : chevre.factory.itemAvailability.InStock,
-                            priceSpecification: priceSpecification
-                        }];
-                });
-            });
-        }
         res.json(offers);
     }
     catch (error) {
