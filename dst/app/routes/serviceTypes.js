@@ -11,6 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 興行区分ルーター
+ * カテゴリーコードルーターのエイリアス
+ * @deprecated Use categoryCode router
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");

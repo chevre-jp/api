@@ -1,5 +1,7 @@
 /**
  * 興行区分ルーター
+ * カテゴリーコードルーターのエイリアス
+ * @deprecated Use categoryCode router
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
