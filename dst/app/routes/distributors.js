@@ -152,7 +152,7 @@ distributorsRouter.post('/add', permitScopes_1.default(['admin']), (req, _, next
         //     });
         const project = { id: req.body.project.id, typeOf: 'Project' };
         let categoryCode = {
-            codeValue: req.params.id,
+            codeValue: req.body.id,
             typeOf: 'CategoryCode',
             inCodeSet: {
                 typeOf: 'CategoryCodeSet',

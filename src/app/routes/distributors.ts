@@ -202,7 +202,7 @@ distributorsRouter.post(
             const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: 'Project' };
 
             let categoryCode: chevre.factory.categoryCode.ICategoryCode = {
-                codeValue: req.params.id,
+                codeValue: req.body.id,
                 typeOf: 'CategoryCode',
                 inCodeSet: {
                     typeOf: 'CategoryCodeSet',
