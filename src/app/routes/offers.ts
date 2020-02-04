@@ -4,7 +4,7 @@
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
-import { body, query } from 'express-validator/check';
+import { body } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -22,14 +22,19 @@ offersRouter.post(
         body('project')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required'),
+        body('project.id')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString()
     ],
     validator,
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: 'Project' };
 
             const offer = await offerRepo.save({ ...req.body, id: '', project: project });
             res.status(CREATED)
@@ -44,26 +49,26 @@ offersRouter.get(
     '',
     permitScopes(['admin']),
     ...[
-        query('priceSpecification.minPrice')
-            .optional()
-            .isInt()
-            .toInt(),
-        query('priceSpecification.maxPrice')
-            .optional()
-            .isInt()
-            .toInt(),
-        query('priceSpecification.accounting.minAccountsReceivable')
-            .optional()
-            .isInt()
-            .toInt(),
-        query('priceSpecification.accounting.maxAccountsReceivable')
-            .optional()
-            .isInt()
-            .toInt(),
-        query('priceSpecification.referenceQuantity.value')
-            .optional()
-            .isInt()
-            .toInt()
+        // query('priceSpecification.minPrice')
+        //     .optional()
+        //     .isInt()
+        //     .toInt(),
+        // query('priceSpecification.maxPrice')
+        //     .optional()
+        //     .isInt()
+        //     .toInt(),
+        // query('priceSpecification.accounting.minAccountsReceivable')
+        //     .optional()
+        //     .isInt()
+        //     .toInt(),
+        // query('priceSpecification.accounting.maxAccountsReceivable')
+        //     .optional()
+        //     .isInt()
+        //     .toInt(),
+        // query('priceSpecification.referenceQuantity.value')
+        //     .optional()
+        //     .isInt()
+        //     .toInt()
     ],
     validator,
     async (req, res, next) => {
@@ -104,6 +109,17 @@ offersRouter.get(
 offersRouter.put(
     '/:id',
     permitScopes(['admin']),
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
+        body('project.id')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString()
+    ],
     validator,
     async (req, res, next) => {
         try {

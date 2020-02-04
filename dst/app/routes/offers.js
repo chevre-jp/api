@@ -27,11 +27,16 @@ offersRouter.post('', permitScopes_1.default(['admin']), ...[
     check_1.body('project')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required')
+        .withMessage(() => 'Required'),
+    check_1.body('project.id')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const project = { id: req.body.project.id, typeOf: 'Project' };
         const offer = yield offerRepo.save(Object.assign(Object.assign({}, req.body), { id: '', project: project }));
         res.status(http_status_1.CREATED)
             .json(offer);
@@ -41,26 +46,26 @@ offersRouter.post('', permitScopes_1.default(['admin']), ...[
     }
 }));
 offersRouter.get('', permitScopes_1.default(['admin']), ...[
-    check_1.query('priceSpecification.minPrice')
-        .optional()
-        .isInt()
-        .toInt(),
-    check_1.query('priceSpecification.maxPrice')
-        .optional()
-        .isInt()
-        .toInt(),
-    check_1.query('priceSpecification.accounting.minAccountsReceivable')
-        .optional()
-        .isInt()
-        .toInt(),
-    check_1.query('priceSpecification.accounting.maxAccountsReceivable')
-        .optional()
-        .isInt()
-        .toInt(),
-    check_1.query('priceSpecification.referenceQuantity.value')
-        .optional()
-        .isInt()
-        .toInt()
+// query('priceSpecification.minPrice')
+//     .optional()
+//     .isInt()
+//     .toInt(),
+// query('priceSpecification.maxPrice')
+//     .optional()
+//     .isInt()
+//     .toInt(),
+// query('priceSpecification.accounting.minAccountsReceivable')
+//     .optional()
+//     .isInt()
+//     .toInt(),
+// query('priceSpecification.accounting.maxAccountsReceivable')
+//     .optional()
+//     .isInt()
+//     .toInt(),
+// query('priceSpecification.referenceQuantity.value')
+//     .optional()
+//     .isInt()
+//     .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
@@ -84,7 +89,17 @@ offersRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default,
         next(error);
     }
 }));
-offersRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+offersRouter.put('/:id', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
+    check_1.body('project.id')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         yield offerRepo.save(req.body);
