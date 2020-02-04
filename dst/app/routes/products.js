@@ -149,37 +149,34 @@ productsRouter.get('/:id/offers', permitScopes_1.default(['admin']), validator_1
 /**
  * プロダクト更新
  */
-// productsRouter.put(
-//     '/:id',
-//     permitScopes(['admin']),
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const productRepo = new chevre.repository.Product(mongoose.connection);
-//             await productRepo.save(req.body);
-//             res.status(NO_CONTENT)
-//                 .end();
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
+productsRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const project = { id: req.body.project.id, typeOf: 'Project' };
+        const product = Object.assign(Object.assign({}, req.body), { project: project });
+        delete product.id;
+        const productRepo = new chevre.repository.Product(mongoose.connection);
+        yield productRepo.productModel.findOneAndUpdate({ _id: req.params.id }, product)
+            .exec();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 /**
  * プロダクト削除
  */
-// productsRouter.delete(
-//     '/:id',
-//     permitScopes(['admin']),
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const productRepo = new chevre.repository.Product(mongoose.connection);
-//             await productRepo.deleteById({ id: req.params.id });
-//             res.status(NO_CONTENT)
-//                 .end();
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
+productsRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const productRepo = new chevre.repository.Product(mongoose.connection);
+        yield productRepo.productModel.findOneAndDelete({ _id: req.params.id })
+            .exec();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 exports.default = productsRouter;

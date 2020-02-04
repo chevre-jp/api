@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - カテゴリーコードリポジトリを追加
 - カテゴリーコードチャージ仕様インターフェースを追加
 - カテゴリーコードルーターを追加
+- プロダクトサービスを追加
 
 ### Changed
 

@@ -5,7 +5,7 @@ import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
 import { body } from 'express-validator/check';
-import { CREATED } from 'http-status';
+import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
 import authentication from '../middlewares/authentication';
@@ -190,41 +190,55 @@ productsRouter.get(
 /**
  * プロダクト更新
  */
-// productsRouter.put(
-//     '/:id',
-//     permitScopes(['admin']),
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const productRepo = new chevre.repository.Product(mongoose.connection);
-//             await productRepo.save(req.body);
+productsRouter.put(
+    '/:id',
+    permitScopes(['admin']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: 'Project' };
 
-//             res.status(NO_CONTENT)
-//                 .end();
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
+            const product: any = {
+                ...req.body,
+                project: project
+            };
+            delete product.id;
+
+            const productRepo = new chevre.repository.Product(mongoose.connection);
+            await productRepo.productModel.findOneAndUpdate(
+                { _id: req.params.id },
+                product
+            )
+                .exec();
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 /**
  * プロダクト削除
  */
-// productsRouter.delete(
-//     '/:id',
-//     permitScopes(['admin']),
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const productRepo = new chevre.repository.Product(mongoose.connection);
-//             await productRepo.deleteById({ id: req.params.id });
+productsRouter.delete(
+    '/:id',
+    permitScopes(['admin']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const productRepo = new chevre.repository.Product(mongoose.connection);
 
-//             res.status(NO_CONTENT)
-//                 .end();
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
+            await productRepo.productModel.findOneAndDelete({ _id: req.params.id })
+                .exec();
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 export default productsRouter;
