@@ -41,6 +41,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Removed
 
+- 興行区分サービスを削除
+- 配給区分サービスを削除
+
 ### Fixed
 
 ### Security
