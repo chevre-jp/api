@@ -9,6 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * オファーカテゴリルーター
+ */
+// import * as chevre from '@chevre/domain';
 const express_1 = require("express");
 // tslint:disable-next-line:no-submodule-imports
 // import { query } from 'express-validator/check';

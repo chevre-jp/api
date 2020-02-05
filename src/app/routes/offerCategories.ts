@@ -1,7 +1,7 @@
 /**
  * オファーカテゴリルーター
  */
-import * as chevre from '@chevre/domain';
+// import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
 // import { query } from 'express-validator/check';
@@ -11,7 +11,7 @@ import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
-const ticketTypeCategories: chevre.factory.ticketType.ITicketTypeCategory[] = JSON.parse(<string>process.env.OFFER_CATEGORIES);
+const ticketTypeCategories: any[] = JSON.parse(<string>process.env.OFFER_CATEGORIES);
 
 const offerCategoriesRouter = Router();
 offerCategoriesRouter.use(authentication);
