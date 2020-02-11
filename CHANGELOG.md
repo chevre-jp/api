@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 予約にアドオンを指定できるように調整
 - オファー適用条件拡張
 - イベントのacceptedOfferを拡張
+- イベント残席数集計を座席ロック数から計算するように調整
 
 ### Deprecated
 
