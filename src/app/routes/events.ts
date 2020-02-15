@@ -414,9 +414,12 @@ eventsRouter.get(
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
+
             const offers = await chevre.service.offer.searchScreeningEventTicketOffers({ eventId: req.params.id })({
                 event: eventRepo,
                 offer: offerRepo,
+                offerRateLimit: offerRateLimitRepo,
                 priceSpecification: priceSpecificationRepo
             });
 
