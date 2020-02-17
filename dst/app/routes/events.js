@@ -209,74 +209,87 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
         next(error);
     }
 }));
-eventsRouter.get('/withAggregateReservation', permitScopes_1.default(['admin']), ...[
-    check_1.query('typeOf')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'Required'),
-    check_1.query('inSessionFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('inSessionThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('startFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('startThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('endFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('endThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('offers.availableFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('offers.availableThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('offers.validFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('offers.validThrough')
-        .optional()
-        .isISO8601()
-        .toDate()
-], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        // イベント検索
-        const searchConditions = Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.eventType.ScreeningEvent, 
-            // tslint:disable-next-line:no-magic-numbers
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const events = yield eventRepo.search(searchConditions);
-        const eventsWithAggregation = yield Promise.all(events.map((e) => __awaiter(void 0, void 0, void 0, function* () {
-            const aggregation = yield chevre.service.aggregation.aggregateEventReservation({
-                id: e.id
-            })({
-                reservation: reservationRepo
-            });
-            return Object.assign(Object.assign(Object.assign({}, e), aggregation), { preSaleTicketCount: aggregation.advanceTicketCount });
-        })));
-        res.json(eventsWithAggregation);
-    }
-    catch (error) {
-        next(error);
-    }
-}));
+// eventsRouter.get(
+//     '/withAggregateReservation',
+//     permitScopes(['admin']),
+//     ...[
+//         query('typeOf')
+//             .not()
+//             .isEmpty()
+//             .withMessage((_, __) => 'Required'),
+//         query('inSessionFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('inSessionThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('startFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('startThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('endFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('endThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('offers.availableFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('offers.availableThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('offers.validFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('offers.validThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate()
+//     ],
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const eventRepo = new chevre.repository.Event(mongoose.connection);
+//             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+//             // イベント検索
+//             const searchConditions: chevre.factory.event.screeningEvent.ISearchConditions = {
+//                 ...req.query,
+//                 typeOf: chevre.factory.eventType.ScreeningEvent,
+//                 // tslint:disable-next-line:no-magic-numbers
+//                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+//                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+//             };
+//             const events = await eventRepo.search(searchConditions);
+//             const eventsWithAggregation = await Promise.all(events.map(async (e) => {
+//                 const aggregation = await chevre.service.aggregation.aggregateEventReservation({
+//                     id: e.id
+//                 })({
+//                     reservation: reservationRepo
+//                 });
+//                 return {
+//                     ...e,
+//                     ...aggregation,
+//                     preSaleTicketCount: aggregation.advanceTicketCount
+//                 };
+//             }));
+//             res.json(eventsWithAggregation);
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
 /**
  * IDでイベント検索
  */
