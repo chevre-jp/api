@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - カテゴリーコードルーターを追加
 - プロダクトサービスを追加
 - オファーレート制限リポジトリを追加
+- スクリーンルーターを追加
 
 ### Changed
 
