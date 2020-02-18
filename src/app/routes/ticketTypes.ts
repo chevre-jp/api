@@ -2,7 +2,7 @@
  * オファールーター
  */
 import * as chevre from '@chevre/domain';
-import { Router } from 'express';
+import { RequestHandler, Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
 import { body, query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
@@ -12,6 +12,29 @@ import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
+/**
+ * オファーに対するバリデーション
+ */
+const validations: RequestHandler[] = [
+    body('project')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
+    body('project.id')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString(),
+    body('validFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    body('validThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
+];
+
 const ticketTypesRouter = Router();
 ticketTypesRouter.use(authentication);
 
@@ -19,11 +42,8 @@ ticketTypesRouter.post(
     '',
     permitScopes(['admin']),
     ...[
-        body('project')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'Required')
     ],
+    ...validations,
     validator,
     async (req, res, next) => {
         try {
@@ -104,6 +124,7 @@ ticketTypesRouter.get(
 ticketTypesRouter.put(
     '/:id',
     permitScopes(['admin']),
+    ...validations,
     validator,
     async (req, res, next) => {
         try {

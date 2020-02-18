@@ -21,14 +21,31 @@ const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
-const ticketTypesRouter = express_1.Router();
-ticketTypesRouter.use(authentication_1.default);
-ticketTypesRouter.post('', permitScopes_1.default(['admin']), ...[
+/**
+ * オファーに対するバリデーション
+ */
+const validations = [
     check_1.body('project')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required')
-], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        .withMessage(() => 'Required'),
+    check_1.body('project.id')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString(),
+    check_1.body('validFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.body('validThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
+];
+const ticketTypesRouter = express_1.Router();
+ticketTypesRouter.use(authentication_1.default);
+ticketTypesRouter.post('', permitScopes_1.default(['admin']), ...[], ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
@@ -84,7 +101,7 @@ ticketTypesRouter.get('/:id', permitScopes_1.default(['admin', 'ticketTypes', 't
         next(error);
     }
 }));
-ticketTypesRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+ticketTypesRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         yield offerRepo.saveTicketType(req.body);
