@@ -130,6 +130,9 @@ screeningRoomRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
+    check_1.body('additionalProperty')
+        .optional()
+        .isArray(),
     check_1.body('openSeatingAllowed')
         .optional()
         .isBoolean()
@@ -144,15 +147,20 @@ screeningRoomRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
         const doc = yield placeRepo.placeModel.findOneAndUpdate({
             branchCode: screeningRoom.containedInPlace.branchCode,
             'containsPlace.branchCode': screeningRoom.branchCode
-        }, Object.assign(Object.assign(Object.assign(Object.assign({ 'containsPlace.$.name': screeningRoom.name }, (screeningRoom.address !== undefined && screeningRoom.address !== null)
-            ? { 'containsPlace.$.address': screeningRoom.address }
+        }, Object.assign(Object.assign(Object.assign(Object.assign({ 'containsPlace.$[screeningRoom].name': screeningRoom.name }, (screeningRoom.address !== undefined && screeningRoom.address !== null)
+            ? { 'containsPlace.$[screeningRoom].address': screeningRoom.address }
             : undefined), (typeof screeningRoom.openSeatingAllowed === 'boolean')
-            ? { 'containsPlace.$.openSeatingAllowed': screeningRoom.openSeatingAllowed }
+            ? { 'containsPlace.$[screeningRoom].openSeatingAllowed': screeningRoom.openSeatingAllowed }
             : undefined), (Array.isArray(screeningRoom.additionalProperty))
-            ? { 'containsPlace.$.additionalProperty': screeningRoom.additionalProperty }
+            ? { 'containsPlace.$[screeningRoom].additionalProperty': screeningRoom.additionalProperty }
             : undefined), ($unset !== undefined && $unset !== null)
             ? { $unset: req.body.$unset }
-            : undefined), { new: true })
+            : undefined), {
+            new: true,
+            arrayFilters: [
+                { 'screeningRoom.branchCode': screeningRoom.branchCode }
+            ]
+        })
             .exec();
         if (doc === null) {
             throw new chevre.factory.errors.NotFound(chevre.factory.placeType.ScreeningRoom);

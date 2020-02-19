@@ -140,6 +140,9 @@ screeningRoomRouter.put(
             .isEmpty()
             .withMessage(() => 'Required')
             .isString(),
+        body('additionalProperty')
+            .optional()
+            .isArray(),
         body('openSeatingAllowed')
             .optional()
             .isBoolean()
@@ -162,21 +165,26 @@ screeningRoomRouter.put(
                 },
                 // 限られた属性のみ更新する
                 {
-                    'containsPlace.$.name': screeningRoom.name,
+                    'containsPlace.$[screeningRoom].name': screeningRoom.name,
                     ...(screeningRoom.address !== undefined && screeningRoom.address !== null)
-                        ? { 'containsPlace.$.address': screeningRoom.address }
+                        ? { 'containsPlace.$[screeningRoom].address': screeningRoom.address }
                         : undefined,
                     ...(typeof screeningRoom.openSeatingAllowed === 'boolean')
-                        ? { 'containsPlace.$.openSeatingAllowed': screeningRoom.openSeatingAllowed }
+                        ? { 'containsPlace.$[screeningRoom].openSeatingAllowed': screeningRoom.openSeatingAllowed }
                         : undefined,
                     ...(Array.isArray(screeningRoom.additionalProperty))
-                        ? { 'containsPlace.$.additionalProperty': screeningRoom.additionalProperty }
+                        ? { 'containsPlace.$[screeningRoom].additionalProperty': screeningRoom.additionalProperty }
                         : undefined,
                     ...($unset !== undefined && $unset !== null)
                         ? { $unset: req.body.$unset }
                         : undefined
                 },
-                { new: true }
+                <any>{
+                    new: true,
+                    arrayFilters: [
+                        { 'screeningRoom.branchCode': screeningRoom.branchCode }
+                    ]
+                }
             )
                 .exec();
             if (doc === null) {

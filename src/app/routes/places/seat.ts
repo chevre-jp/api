@@ -124,8 +124,8 @@ seatRouter.get(
                                     name: '$name'
                                 }
                             }
-                        }
-                        // additionalProperty: '$hasCategoryCode.hasCategoryCode.additionalProperty'
+                        },
+                        additionalProperty: '$containsPlace.containsPlace.containsPlace.additionalProperty'
                     }
                 }
             ]);
@@ -175,7 +175,13 @@ seatRouter.put(
             .not()
             .isEmpty()
             .withMessage(() => 'Required')
-            .isString()
+            .isString(),
+        body('seatingType')
+            .optional()
+            .isArray(),
+        body('additionalProperty')
+            .optional()
+            .isArray()
     ],
     validator,
     async (req, res, next) => {
@@ -184,33 +190,50 @@ seatRouter.put(
             const $unset = req.body.$unset;
 
             debug('updating seat', seat, $unset);
-            // const placeRepo = new chevre.repository.Place(mongoose.connection);
-            // const screeningRoomSection = <chevre.factory.place.screeningRoomSection.IPlace>seat.containedInPlace;
-            // const screeningRoom = <chevre.factory.place.screeningRoom.IPlace>screeningRoomSection.containedInPlace;
-            // const movieTheater = <chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace;
-            // const doc = await placeRepo.placeModel.findOneAndUpdate(
-            //     {
-            //         branchCode: movieTheater.branchCode,
-            //         'containsPlace.branchCode': screeningRoom.branchCode,
-            //         'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
-            //         'containsPlace.containsPlace.containsPlace.branchCode': seat.branchCode
-            //     },
-            //     // 限られた属性のみ更新する
-            //     {
-            //         // 'containsPlace.$.name': screeningRoom.name,
-            //         ...(Array.isArray(screeningRoom.additionalProperty))
-            //             ? { 'containsPlace.$.additionalProperty': screeningRoom.additionalProperty }
-            //             : undefined,
-            //         ...($unset !== undefined && $unset !== null)
-            //             ? { $unset: req.body.$unset }
-            //             : undefined
-            //     },
-            //     { new: true }
-            // )
-            //     .exec();
-            // if (doc === null) {
-            //     throw new chevre.factory.errors.NotFound(chevre.factory.placeType.ScreeningRoom);
-            // }
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+            const screeningRoomSection = <chevre.factory.place.screeningRoomSection.IPlace>seat.containedInPlace;
+            const screeningRoom = <chevre.factory.place.screeningRoom.IPlace>screeningRoomSection.containedInPlace;
+            const movieTheater = <chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace;
+            const doc = await placeRepo.placeModel.findOneAndUpdate(
+                {
+                    branchCode: movieTheater.branchCode,
+                    'containsPlace.branchCode': screeningRoom.branchCode,
+                    'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
+                    'containsPlace.containsPlace.containsPlace.branchCode': seat.branchCode
+                },
+                // 限られた属性のみ更新する
+                {
+                    'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].branchCode':
+                        seat.branchCode,
+                    ...(Array.isArray(seat.seatingType))
+                        ? {
+                            'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType':
+                                seat.seatingType
+                        }
+                        : undefined,
+                    ...(Array.isArray(seat.additionalProperty))
+                        ? {
+                            'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].additionalProperty':
+                                seat.additionalProperty
+                        }
+                        : undefined,
+                    ...($unset !== undefined && $unset !== null)
+                        ? { $unset: req.body.$unset }
+                        : undefined
+                },
+                <any>{
+                    new: true,
+                    arrayFilters: [
+                        { 'screeningRoom.branchCode': screeningRoom.branchCode },
+                        { 'screeningRoomSection.branchCode': screeningRoomSection.branchCode },
+                        { 'seat.branchCode': seat.branchCode }
+                    ]
+                }
+            )
+                .exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound(chevre.factory.placeType.ScreeningRoom);
+            }
 
             res.status(NO_CONTENT)
                 .end();
