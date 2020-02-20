@@ -224,7 +224,6 @@ eventsRouter.get(
             const events = await eventRepo.search(
                 searchConditions,
                 {
-                    aggregateReservation: 0,
                     aggregateOffer: 0
                 }
             );

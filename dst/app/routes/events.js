@@ -201,7 +201,6 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const events = yield eventRepo.search(searchConditions, {
-            aggregateReservation: 0,
             aggregateOffer: 0
         });
         const totalCount = yield eventRepo.count(searchConditions);
