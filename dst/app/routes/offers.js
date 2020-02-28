@@ -46,26 +46,26 @@ offersRouter.post('', permitScopes_1.default(['admin']), ...[
     }
 }));
 offersRouter.get('', permitScopes_1.default(['admin']), ...[
-// query('priceSpecification.minPrice')
-//     .optional()
-//     .isInt()
-//     .toInt(),
-// query('priceSpecification.maxPrice')
-//     .optional()
-//     .isInt()
-//     .toInt(),
-// query('priceSpecification.accounting.minAccountsReceivable')
-//     .optional()
-//     .isInt()
-//     .toInt(),
-// query('priceSpecification.accounting.maxAccountsReceivable')
-//     .optional()
-//     .isInt()
-//     .toInt(),
-// query('priceSpecification.referenceQuantity.value')
-//     .optional()
-//     .isInt()
-//     .toInt()
+    check_1.query('priceSpecification.price.$gte')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.price.$lte')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.accounting.accountsReceivable.$gte')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.accounting.accountsReceivable.$lte')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.referenceQuantity.value.$eq')
+        .optional()
+        .isInt()
+        .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);

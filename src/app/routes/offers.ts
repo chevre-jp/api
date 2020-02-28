@@ -4,7 +4,7 @@
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
-import { body } from 'express-validator/check';
+import { body, query } from 'express-validator/check';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -49,26 +49,26 @@ offersRouter.get(
     '',
     permitScopes(['admin']),
     ...[
-        // query('priceSpecification.minPrice')
-        //     .optional()
-        //     .isInt()
-        //     .toInt(),
-        // query('priceSpecification.maxPrice')
-        //     .optional()
-        //     .isInt()
-        //     .toInt(),
-        // query('priceSpecification.accounting.minAccountsReceivable')
-        //     .optional()
-        //     .isInt()
-        //     .toInt(),
-        // query('priceSpecification.accounting.maxAccountsReceivable')
-        //     .optional()
-        //     .isInt()
-        //     .toInt(),
-        // query('priceSpecification.referenceQuantity.value')
-        //     .optional()
-        //     .isInt()
-        //     .toInt()
+        query('priceSpecification.price.$gte')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.price.$lte')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.accounting.accountsReceivable.$gte')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.accounting.accountsReceivable.$lte')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.referenceQuantity.value.$eq')
+            .optional()
+            .isInt()
+            .toInt()
     ],
     validator,
     async (req, res, next) => {
