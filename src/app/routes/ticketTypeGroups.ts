@@ -49,7 +49,7 @@ ticketTypeGroupsRouter.get(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const searchConditions: chevre.factory.ticketType.ITicketTypeGroupSearchConditions = {
+            const searchConditions: chevre.factory.offerCatalog.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
@@ -86,7 +86,7 @@ ticketTypeGroupsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
+            const ticketTypeGroup: chevre.factory.offerCatalog.IOfferCatalog = req.body;
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
             await offerRepo.saveTicketTypeGroup(ticketTypeGroup);
             res.status(NO_CONTENT)

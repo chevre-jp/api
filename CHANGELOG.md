@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - オファーレート制限リポジトリを追加
 - スクリーンルーターを追加
 - 座席ルーターを追加
+- オファーカタログリポジトリを追加
 
 ### Changed
 

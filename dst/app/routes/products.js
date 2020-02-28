@@ -106,6 +106,7 @@ productsRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.defaul
 productsRouter.get('/:id/offers', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
+        const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
         const productRepo = new chevre.repository.Product(mongoose.connection);
         // プロダクト検索
         const product = yield productRepo.productModel.findById({ _id: req.params.id })
@@ -117,15 +118,11 @@ productsRouter.get('/:id/offers', permitScopes_1.default(['admin']), validator_1
             return doc.toObject();
         });
         // オファーカタログ検索
-        const offerCatalog = yield offerRepo.findOfferCatalogById({ id: product.hasOfferCatalog.id });
+        const offerCatalog = yield offerCatalogRepo.findById({ id: product.hasOfferCatalog.id });
         // オファー検索
-        const offers = yield offerRepo.offerModel.find({ _id: { $in: offerCatalog.itemListElement.map((e) => e.id) } }, {
-            __v: 0,
-            createdAt: 0,
-            updatedAt: 0
-        })
-            .exec()
-            .then((docs) => docs.map((doc) => doc.toObject()));
+        const offers = yield offerRepo.search({
+            id: { $in: offerCatalog.itemListElement.map((e) => e.id) }
+        });
         const productOffers = offers
             .map((o) => {
             const unitSpec = o.priceSpecification;
@@ -135,7 +132,7 @@ productsRouter.get('/:id/offers', permitScopes_1.default(['admin']), validator_1
                 priceCurrency: chevre.factory.priceCurrency.JPY,
                 valueAddedTaxIncluded: true,
                 priceComponent: [
-                    unitSpec
+                    ...(unitSpec !== undefined) ? [unitSpec] : []
                 ]
             };
             return Object.assign(Object.assign({}, o), { priceSpecification: compoundPriceSpecification });

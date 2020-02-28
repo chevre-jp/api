@@ -132,6 +132,7 @@ productsRouter.get(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
             // プロダクト検索
@@ -146,19 +147,12 @@ productsRouter.get(
                 });
 
             // オファーカタログ検索
-            const offerCatalog = await offerRepo.findOfferCatalogById({ id: product.hasOfferCatalog.id });
+            const offerCatalog = await offerCatalogRepo.findById({ id: product.hasOfferCatalog.id });
 
             // オファー検索
-            const offers = await offerRepo.offerModel.find(
-                { _id: { $in: (<any[]>offerCatalog.itemListElement).map((e: any) => e.id) } },
-                {
-                    __v: 0,
-                    createdAt: 0,
-                    updatedAt: 0
-                }
-            )
-                .exec()
-                .then((docs) => docs.map((doc) => doc.toObject()));
+            const offers = await offerRepo.search({
+                id: { $in: offerCatalog.itemListElement.map((e) => e.id) }
+            });
 
             const productOffers = offers
                 .map((o) => {
@@ -170,7 +164,7 @@ productsRouter.get(
                         priceCurrency: chevre.factory.priceCurrency.JPY,
                         valueAddedTaxIncluded: true,
                         priceComponent: [
-                            unitSpec
+                            ...(unitSpec !== undefined) ? [unitSpec] : []
                         ]
                     };
 
