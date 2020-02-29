@@ -58,10 +58,13 @@ movieRouter.post(
 
             let movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,
+                ...(typeof req.body.duration === 'string' && req.body.duration.lenght > 0)
+                    ? {
+                        duration: moment.duration(req.body.duration)
+                            .toISOString()
+                    }
+                    : undefined,
                 id: '',
-                duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
-                    // tslint:disable-next-line:no-null-keyword
-                    .toISOString() : null,
                 project: project
             };
 
@@ -203,10 +206,13 @@ movieRouter.put(
 
             const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,
-                id: req.params.id,
-                duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
-                    // tslint:disable-next-line:no-null-keyword
-                    .toISOString() : null
+                ...(typeof req.body.duration === 'string' && req.body.duration.lenght > 0)
+                    ? {
+                        duration: moment.duration(req.body.duration)
+                            .toISOString()
+                    }
+                    : undefined,
+                id: req.params.id
             };
             await creativeWorkRepo.saveMovie(movie);
 
