@@ -321,7 +321,7 @@ eventsRouter.get(
 );
 
 /**
- * イベントに対するチケットオファー検索
+ * イベントオファー検索
  */
 eventsRouter.get(
     '/:id/offers/ticket',
@@ -332,13 +332,17 @@ eventsRouter.get(
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
             const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
+            const productRepo = new chevre.repository.Product(mongoose.connection);
 
             const offers = await chevre.service.offer.searchScreeningEventTicketOffers({ eventId: req.params.id })({
                 event: eventRepo,
                 offer: offerRepo,
+                offerCatalog: offerCatalogRepo,
                 offerRateLimit: offerRateLimitRepo,
-                priceSpecification: priceSpecificationRepo
+                priceSpecification: priceSpecificationRepo,
+                product: productRepo
             });
 
             res.json(offers);
