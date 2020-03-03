@@ -52,6 +52,18 @@ screeningRoomRouter.get(
                 }
             }
 
+            // 劇場ID
+            const containedInPlaceIdEq = searchConditions.containedInPlace?.id?.$eq;
+            if (typeof containedInPlaceIdEq === 'string') {
+                matchStages.push({
+                    $match: {
+                        _id: {
+                            $eq: containedInPlaceIdEq
+                        }
+                    }
+                });
+            }
+
             if (searchConditions.containedInPlace !== undefined) {
                 // 劇場コード
                 if (searchConditions.containedInPlace.branchCode !== undefined) {

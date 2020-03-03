@@ -31,6 +31,7 @@ screeningRoomRouter.use(authentication_1.default);
 screeningRoomRouter.get('', permitScopes_1.default(['admin']), validator_1.default, 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
@@ -50,6 +51,17 @@ screeningRoomRouter.get('', permitScopes_1.default(['admin']), validator_1.defau
                     });
                 }
             }
+        }
+        // 劇場ID
+        const containedInPlaceIdEq = (_b = (_a = searchConditions.containedInPlace) === null || _a === void 0 ? void 0 : _a.id) === null || _b === void 0 ? void 0 : _b.$eq;
+        if (typeof containedInPlaceIdEq === 'string') {
+            matchStages.push({
+                $match: {
+                    _id: {
+                        $eq: containedInPlaceIdEq
+                    }
+                }
+            });
         }
         if (searchConditions.containedInPlace !== undefined) {
             // 劇場コード
