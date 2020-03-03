@@ -83,7 +83,7 @@ productsRouter.get(
         try {
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
-            const product = await productRepo.findById({ id: req.params.id })
+            const product = await productRepo.findById({ id: req.params.id });
 
             res.json(product);
         } catch (error) {
@@ -106,7 +106,7 @@ productsRouter.get(
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
             // プロダクト検索
-            const product = await productRepo.findById({ id: req.params.id })
+            const product = await productRepo.findById({ id: req.params.id });
 
             // オファーカタログ検索
             const offerCatalog = await offerCatalogRepo.findById({ id: product.hasOfferCatalog.id });
