@@ -58,7 +58,7 @@ screeningRoomRouter.get('', permitScopes_1.default(['admin']), validator_1.defau
             matchStages.push({
                 $match: {
                     _id: {
-                        $eq: containedInPlaceIdEq
+                        $eq: mongoose.Types.ObjectId(containedInPlaceIdEq)
                     }
                 }
             });

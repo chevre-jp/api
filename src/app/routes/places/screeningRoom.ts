@@ -58,7 +58,7 @@ screeningRoomRouter.get(
                 matchStages.push({
                     $match: {
                         _id: {
-                            $eq: containedInPlaceIdEq
+                            $eq: mongoose.Types.ObjectId(containedInPlaceIdEq)
                         }
                     }
                 });
