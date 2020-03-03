@@ -50,46 +50,20 @@ productsRouter.post(
 productsRouter.get(
     '',
     permitScopes(['admin']),
-    ...[
-    ],
+    ...[],
     validator,
     async (req, res, next) => {
         try {
             const productRepo = new chevre.repository.Product(mongoose.connection);
-            // const searchConditions = {
-            //     ...req.query,
-            //     // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            //     limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-            //     page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
-            // };
 
-            // const totalCount = await productRepo.count(searchConditions);
-            // const products = await productRepo.search(searchConditions);
-
-            const searchConditions: any = {
-                ...(req.query.project !== undefined && req.query.project !== null
-                    && req.query.project.id !== undefined && req.query.project.id !== null
-                    && typeof req.query.project.id.$eq === 'string')
-                    ? {
-                        'project.id': {
-                            $exists: true,
-                            $eq: req.query.project.id.$eq
-                        }
-                    }
-                    : {},
-                ...(req.query.typeOf !== undefined && req.query.typeOf !== null
-                    && typeof req.query.typeOf.$eq === 'string')
-                    ? {
-                        typeOf: {
-                            $eq: req.query.typeOf.$eq
-                        }
-                    }
-                    : {}
+            const searchConditions = {
+                ...req.query,
+                // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const products = await productRepo.productModel.find(searchConditions)
-                .exec()
-                .then((docs) => docs.map((doc) => doc.toObject()));
+            const products = await productRepo.search(searchConditions);
 
             res.json(products);
         } catch (error) {
@@ -109,13 +83,9 @@ productsRouter.get(
         try {
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
-            const doc = await productRepo.productModel.findById({ _id: req.params.id })
-                .exec();
-            if (doc === null) {
-                throw new chevre.factory.errors.NotFound(productRepo.productModel.modelName);
-            }
+            const product = await productRepo.findById({ id: req.params.id })
 
-            res.json(doc.toObject());
+            res.json(product);
         } catch (error) {
             next(error);
         }
@@ -136,15 +106,7 @@ productsRouter.get(
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
             // プロダクト検索
-            const product = await productRepo.productModel.findById({ _id: req.params.id })
-                .exec()
-                .then((doc) => {
-                    if (doc === null) {
-                        throw new chevre.factory.errors.NotFound(productRepo.productModel.modelName);
-                    }
-
-                    return doc.toObject();
-                });
+            const product = await productRepo.findById({ id: req.params.id })
 
             // オファーカタログ検索
             const offerCatalog = await offerCatalogRepo.findById({ id: product.hasOfferCatalog.id });
@@ -224,8 +186,7 @@ productsRouter.delete(
         try {
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
-            await productRepo.productModel.findOneAndDelete({ _id: req.params.id })
-                .exec();
+            await productRepo.deleteById({ id: req.params.id });
 
             res.status(NO_CONTENT)
                 .end();

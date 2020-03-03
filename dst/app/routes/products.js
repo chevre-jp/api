@@ -49,34 +49,10 @@ productsRouter.post('', permitScopes_1.default(['admin']), ...[
 productsRouter.get('', permitScopes_1.default(['admin']), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productRepo = new chevre.repository.Product(mongoose.connection);
-        // const searchConditions = {
-        //     ...req.query,
-        //     // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-        //     limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-        //     page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
-        // };
-        // const totalCount = await productRepo.count(searchConditions);
-        // const products = await productRepo.search(searchConditions);
-        const searchConditions = Object.assign(Object.assign({}, (req.query.project !== undefined && req.query.project !== null
-            && req.query.project.id !== undefined && req.query.project.id !== null
-            && typeof req.query.project.id.$eq === 'string')
-            ? {
-                'project.id': {
-                    $exists: true,
-                    $eq: req.query.project.id.$eq
-                }
-            }
-            : {}), (req.query.typeOf !== undefined && req.query.typeOf !== null
-            && typeof req.query.typeOf.$eq === 'string')
-            ? {
-                typeOf: {
-                    $eq: req.query.typeOf.$eq
-                }
-            }
-            : {});
-        const products = yield productRepo.productModel.find(searchConditions)
-            .exec()
-            .then((docs) => docs.map((doc) => doc.toObject()));
+        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+            // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
+        const products = yield productRepo.search(searchConditions);
         res.json(products);
     }
     catch (error) {
@@ -89,12 +65,8 @@ productsRouter.get('', permitScopes_1.default(['admin']), ...[], validator_1.def
 productsRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productRepo = new chevre.repository.Product(mongoose.connection);
-        const doc = yield productRepo.productModel.findById({ _id: req.params.id })
-            .exec();
-        if (doc === null) {
-            throw new chevre.factory.errors.NotFound(productRepo.productModel.modelName);
-        }
-        res.json(doc.toObject());
+        const product = yield productRepo.findById({ id: req.params.id });
+        res.json(product);
     }
     catch (error) {
         next(error);
@@ -109,14 +81,7 @@ productsRouter.get('/:id/offers', permitScopes_1.default(['admin']), validator_1
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
         const productRepo = new chevre.repository.Product(mongoose.connection);
         // プロダクト検索
-        const product = yield productRepo.productModel.findById({ _id: req.params.id })
-            .exec()
-            .then((doc) => {
-            if (doc === null) {
-                throw new chevre.factory.errors.NotFound(productRepo.productModel.modelName);
-            }
-            return doc.toObject();
-        });
+        const product = yield productRepo.findById({ id: req.params.id });
         // オファーカタログ検索
         const offerCatalog = yield offerCatalogRepo.findById({ id: product.hasOfferCatalog.id });
         // オファー検索
@@ -167,8 +132,7 @@ productsRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.defaul
 productsRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productRepo = new chevre.repository.Product(mongoose.connection);
-        yield productRepo.productModel.findOneAndDelete({ _id: req.params.id })
-            .exec();
+        yield productRepo.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT)
             .end();
     }
