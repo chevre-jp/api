@@ -216,6 +216,12 @@ subjectRouter.get('', permitScopes_1.default(['admin', 'subjects', 'subjects.rea
                 }
             }
         ]);
+        // tslint:disable-next-line:no-single-line-block-comment
+        /* istanbul ignore else */
+        if (searchConditions.limit !== undefined && searchConditions.page !== undefined) {
+            aggregate.limit(searchConditions.limit * searchConditions.page)
+                .skip(searchConditions.limit * (searchConditions.page - 1));
+        }
         const accountTitles = yield aggregate.exec();
         subjects = accountTitles.map((accountTitle) => {
             var _a, _b, _c, _d, _e, _f;

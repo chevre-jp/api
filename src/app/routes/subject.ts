@@ -249,6 +249,13 @@ subjectRouter.get(
                 }
             ]);
 
+            // tslint:disable-next-line:no-single-line-block-comment
+            /* istanbul ignore else */
+            if (searchConditions.limit !== undefined && searchConditions.page !== undefined) {
+                aggregate.limit(searchConditions.limit * searchConditions.page)
+                    .skip(searchConditions.limit * (searchConditions.page - 1));
+            }
+
             const accountTitles = <chevre.factory.accountTitle.IAccountTitle[]>await aggregate.exec();
 
             subjects = accountTitles.map((accountTitle) => {
