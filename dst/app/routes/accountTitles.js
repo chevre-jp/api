@@ -360,27 +360,27 @@ accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
     check_1.body('codeValue')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required'),
+        .withMessage(() => 'Required'),
     check_1.body('name')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required'),
+        .withMessage(() => 'Required'),
     check_1.body('inCodeSet')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required'),
+        .withMessage(() => 'Required'),
     check_1.body('inCodeSet.codeValue')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required'),
+        .withMessage(() => 'Required'),
     check_1.body('inCodeSet.inCodeSet')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required'),
+        .withMessage(() => 'Required'),
     check_1.body('inCodeSet.inCodeSet.codeValue')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required')
+        .withMessage(() => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const accountTitleSet = req.body.inCodeSet;
@@ -401,7 +401,21 @@ accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
             codeValue: accountTitleCategory.codeValue,
             'hasCategoryCode.codeValue': accountTitleSet.codeValue,
             'hasCategoryCode.hasCategoryCode.codeValue': { $ne: accountTitle.codeValue }
-        }, { $push: { 'hasCategoryCode.$.hasCategoryCode': accountTitle } }, { new: true })
+        }, {
+            $push: {
+                'hasCategoryCode.$[accountTitleSet].hasCategoryCode': {
+                    typeOf: accountTitle.typeOf,
+                    codeValue: accountTitle.codeValue,
+                    name: accountTitle.name,
+                    additionalProperty: accountTitle.additionalProperty
+                }
+            }
+        }, {
+            new: true,
+            arrayFilters: [
+                { 'accountTitleSet.codeValue': accountTitleSet.codeValue }
+            ]
+        })
             .exec();
         // 存在しなければ細目コード重複
         if (doc === null) {
@@ -585,9 +599,11 @@ accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['admin']), ...[
             codeValue: accountTitleCategory.codeValue,
             'hasCategoryCode.codeValue': accountTitleSet.codeValue,
             'hasCategoryCode.hasCategoryCode.codeValue': accountTitle.codeValue
-        }, Object.assign({ 'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].codeValue': accountTitle }, (typeof accountTitle.name === 'string')
+        }, Object.assign(Object.assign({ 'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].codeValue': accountTitle.codeValue }, (typeof accountTitle.name === 'string')
+            ? { 'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].name': accountTitle.name }
+            : undefined), (Array.isArray(accountTitle.additionalProperty))
             ? {
-                'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].name': accountTitle.name
+                'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].additionalProperty': accountTitle.additionalProperty
             }
             : undefined), {
             new: true,

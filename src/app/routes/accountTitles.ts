@@ -439,27 +439,27 @@ accountTitlesRouter.post(
         body('codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('name')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet.codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet.inCodeSet')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet.inCodeSet.codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
@@ -487,8 +487,22 @@ accountTitlesRouter.post(
                     'hasCategoryCode.codeValue': accountTitleSet.codeValue,
                     'hasCategoryCode.hasCategoryCode.codeValue': { $ne: accountTitle.codeValue }
                 },
-                { $push: { 'hasCategoryCode.$.hasCategoryCode': accountTitle } },
-                { new: true }
+                {
+                    $push: {
+                        'hasCategoryCode.$[accountTitleSet].hasCategoryCode': {
+                            typeOf: accountTitle.typeOf,
+                            codeValue: accountTitle.codeValue,
+                            name: accountTitle.name,
+                            additionalProperty: accountTitle.additionalProperty
+                        }
+                    }
+                },
+                <any>{
+                    new: true,
+                    arrayFilters: [
+                        { 'accountTitleSet.codeValue': accountTitleSet.codeValue }
+                    ]
+                }
             )
                 .exec();
             // 存在しなければ細目コード重複
@@ -698,11 +712,14 @@ accountTitlesRouter.put(
                     'hasCategoryCode.hasCategoryCode.codeValue': accountTitle.codeValue
                 },
                 {
-                    'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].codeValue': accountTitle,
+                    'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].codeValue': accountTitle.codeValue,
                     ...(typeof accountTitle.name === 'string')
+                        ? { 'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].name': accountTitle.name }
+                        : undefined,
+                    ...(Array.isArray(accountTitle.additionalProperty))
                         ? {
-                            'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].name':
-                                accountTitle.name
+                            'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].additionalProperty'
+                                : accountTitle.additionalProperty
                         }
                         : undefined
                 },
