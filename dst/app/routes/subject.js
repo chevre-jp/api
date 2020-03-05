@@ -26,8 +26,6 @@ subjectRouter.get('/getSubjectList', permitScopes_1.default(['admin', 'subjects'
     var _a, _b;
     try {
         let subjects;
-        // const subjectRepo = new chevre.repository.Subject(mongoose.connection);
-        // subjects = await subjectRepo.getSubject();
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         const searchConditions = Object.assign({}, req.query);
         const matchStages = [];
@@ -83,19 +81,6 @@ subjectRouter.get('/getSubjectList', permitScopes_1.default(['admin', 'subjects'
 subjectRouter.post('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
     try {
-        // const subjectAttributes: chevre.factory.subject.ISubjectAttributes = req.body.attributes;
-        // // const subject: chevre.factory.subject.ISubjectAttributes = {
-        // //     subjectClassificationCd: req.body.subjectClassificationCd,
-        // //     subjectClassificationName: req.body.subjectClassificationName,
-        // //     subjectCd: req.body.subjectCd,
-        // //     subjectName: req.body.subjectName,
-        // //     detailCd: req.body.detailCd,
-        // //     detailName: req.body.detailName
-        // // };
-        // const subjectRepo = new chevre.repository.Subject(mongoose.connection);
-        // await subjectRepo.save({
-        //     attributes: subjectAttributes
-        // });
         const accountTitle = {
             project: req.body.attributes.project,
             typeOf: 'AccountTitle',
@@ -161,16 +146,6 @@ subjectRouter.get('', permitScopes_1.default(['admin', 'subjects', 'subjects.rea
     var _d, _e;
     try {
         let subjects;
-        // const subjectRepo = new chevre.repository.Subject(mongoose.connection);
-        // const searchConditions: chevre.factory.subject.ISubjectSearchConditions = {
-        //     // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-        //     limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-        //     page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
-        //     sort: req.query.sort,
-        //     detailCd: req.query.detailCd
-        // };
-        // subjects = await subjectRepo.searchSubject(searchConditions);
-        // res.json(subjects);
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
@@ -241,33 +216,9 @@ subjectRouter.get('', permitScopes_1.default(['admin', 'subjects', 'subjects.rea
         next(error);
     }
 }));
-/**
- * 使用していないので不要
- */
-// subjectRouter.get(
-//     '/:id',
-//     permitScopes(['admin', 'subjects', 'subjects.read-only']),
-//     validator,
-//     async (req, res, next) => {
-//         try {
-//             const subjectRepo = new chevre.repository.Subject(mongoose.connection);
-//             const subject = await subjectRepo.findSubjectById({
-//                 id: req.params.id
-//             });
-//             res.json(subject);
-//         } catch (error) {
-//             next(error);
-//         }
-//     }
-// );
 subjectRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _f;
     try {
-        // const subjectRepo = new chevre.repository.Subject(mongoose.connection);
-        // await subjectRepo.save({
-        //     id: req.params.id,
-        //     attributes: req.body.attributes
-        // });
         const accountTitle = {
             project: req.body.attributes.project,
             typeOf: 'AccountTitle',
