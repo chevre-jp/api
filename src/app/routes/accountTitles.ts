@@ -28,15 +28,15 @@ accountTitlesRouter.post(
         body('project')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('name')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
@@ -159,24 +159,28 @@ accountTitlesRouter.put(
         body('codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('name')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
         try {
-            const accountTitle: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
-            delete accountTitle.inCodeSet;
-            delete accountTitle.hasCategoryCode;
+            const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
             const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
-                { codeValue: accountTitle.codeValue },
-                accountTitle,
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitleCategory.project.id
+                    },
+                    codeValue: accountTitleCategory.codeValue
+                },
+                accountTitleCategory,
                 { new: true }
             )
                 .exec();
@@ -202,45 +206,63 @@ accountTitlesRouter.post(
         body('codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('name')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet.codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
         try {
             const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet;
-            const accountTitle: chevre.factory.accountTitle.IAccountTitle = req.body;
-            delete accountTitle.inCodeSet;
+            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = req.body;
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
             // 科目分類の存在確認
             let doc = await accountTitleRepo.accountTitleModel.findOne(
-                { codeValue: accountTitleCategory.codeValue }
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitleSet.project.id
+                    },
+                    codeValue: accountTitleCategory.codeValue
+                }
             )
                 .exec();
             if (doc === null) {
                 throw new chevre.factory.errors.NotFound('AccountTitleCategory');
             }
 
-            debug('creating accountTitleSet', accountTitle);
+            debug('creating accountTitleSet', accountTitleSet);
             doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitleSet.project.id
+                    },
                     codeValue: accountTitleCategory.codeValue,
-                    'hasCategoryCode.codeValue': { $ne: accountTitle.codeValue }
+                    'hasCategoryCode.codeValue': { $ne: accountTitleSet.codeValue }
                 },
-                { $push: { hasCategoryCode: accountTitle } },
+                {
+                    $push: {
+                        hasCategoryCode: {
+                            typeOf: accountTitleSet.typeOf,
+                            codeValue: accountTitleSet.codeValue,
+                            name: accountTitleSet.name,
+                            additionalProperty: accountTitleSet.additionalProperty
+                        }
+                    }
+                },
                 { new: true }
             )
                 .exec();
@@ -250,7 +272,7 @@ accountTitlesRouter.post(
             }
 
             res.status(CREATED)
-                .json(accountTitle);
+                .json(accountTitleSet);
         } catch (error) {
             next(error);
         }
@@ -390,31 +412,45 @@ accountTitlesRouter.put(
         body('codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('name')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
         try {
-            const accountTitle: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
-            delete accountTitle.inCodeSet;
-            delete accountTitle.hasCategoryCode;
+            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
+            const accountTitleCategory = <chevre.factory.accountTitle.IAccountTitle>accountTitleSet.inCodeSet;
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
-            debug('updating accountTitleSet', accountTitle);
+            debug('updating accountTitleSet', accountTitleSet);
             const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
-                { 'hasCategoryCode.codeValue': accountTitle.codeValue },
                 {
-                    'hasCategoryCode.$.name': accountTitle.name,
-                    'hasCategoryCode.$.description': accountTitle.description,
-                    'hasCategoryCode.$.inDefinedTermSet': accountTitle.inDefinedTermSet,
-                    'hasCategoryCode.$.additionalProperty': accountTitle.additionalProperty
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitleSet.project.id
+                    },
+                    codeValue: accountTitleCategory.codeValue,
+                    'hasCategoryCode.codeValue': accountTitleSet.codeValue
                 },
-                { new: true }
+                {
+                    'hasCategoryCode.$[accountTitleSet].name': accountTitleSet.name,
+                    ...(Array.isArray(accountTitleSet.additionalProperty))
+                        ? {
+                            'hasCategoryCode.$[accountTitleSet].additionalProperty'
+                                : accountTitleSet.additionalProperty
+                        }
+                        : undefined
+                },
+                <any>{
+                    new: true,
+                    arrayFilters: [
+                        { 'accountTitleSet.codeValue': accountTitleSet.codeValue }
+                    ]
+                }
             )
                 .exec();
             if (doc === null) {
@@ -467,12 +503,15 @@ accountTitlesRouter.post(
             const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet;
             const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet.inCodeSet;
             const accountTitle: chevre.factory.accountTitle.IAccountTitle = req.body;
-            delete accountTitle.inCodeSet;
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
             // 科目の存在確認
             let doc = await accountTitleRepo.accountTitleModel.findOne({
+                'project.id': {
+                    $exists: true,
+                    $eq: accountTitle.project.id
+                },
                 codeValue: accountTitleCategory.codeValue,
                 'hasCategoryCode.codeValue': accountTitleSet.codeValue
             })
@@ -483,6 +522,10 @@ accountTitlesRouter.post(
 
             doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitle.project.id
+                    },
                     codeValue: accountTitleCategory.codeValue,
                     'hasCategoryCode.codeValue': accountTitleSet.codeValue,
                     'hasCategoryCode.hasCategoryCode.codeValue': { $ne: accountTitle.codeValue }
@@ -707,6 +750,10 @@ accountTitlesRouter.put(
 
             const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitle.project.id
+                    },
                     codeValue: accountTitleCategory.codeValue,
                     'hasCategoryCode.codeValue': accountTitleSet.codeValue,
                     'hasCategoryCode.hasCategoryCode.codeValue': accountTitle.codeValue
