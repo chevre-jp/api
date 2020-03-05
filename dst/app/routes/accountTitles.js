@@ -561,30 +561,40 @@ accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['admin']), ...[
     check_1.body('codeValue')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required'),
+        .withMessage(() => 'Required'),
     check_1.body('name')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required'),
+        .withMessage(() => 'Required'),
     check_1.body('inCodeSet')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required'),
+        .withMessage(() => 'Required'),
     check_1.body('inCodeSet.codeValue')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required')
+        .withMessage(() => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const accountTitleSet = req.body.inCodeSet;
         const accountTitle = Object.assign(Object.assign({}, req.body), { codeValue: req.params.codeValue });
-        delete accountTitle.inCodeSet;
+        const accountTitleSet = accountTitle.inCodeSet;
+        const accountTitleCategory = (_a = accountTitle.inCodeSet) === null || _a === void 0 ? void 0 : _a.inCodeSet;
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         const doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
+            codeValue: accountTitleCategory.codeValue,
+            'hasCategoryCode.codeValue': accountTitleSet.codeValue,
             'hasCategoryCode.hasCategoryCode.codeValue': accountTitle.codeValue
-        }, { 'hasCategoryCode.$[element].hasCategoryCode.$': accountTitle }, {
+        }, Object.assign({ 'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].codeValue': accountTitle }, (typeof accountTitle.name === 'string')
+            ? {
+                'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].name': accountTitle.name
+            }
+            : undefined), {
             new: true,
-            arrayFilters: [{ 'element.codeValue': accountTitleSet.codeValue }]
+            arrayFilters: [
+                { 'accountTitleSet.codeValue': accountTitleSet.codeValue },
+                { 'accountTitle.codeValue': accountTitle.codeValue }
+            ]
         })
             .exec();
         if (doc === null) {
