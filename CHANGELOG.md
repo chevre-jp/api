@@ -48,10 +48,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - イベントのオファー検索結果をカタログの登録順にソート
 - 作品コレクションのインデックス調整
 - ticketTypeGroupsをofferCatalogsへ移行
+- subjectsをaccountTitlesへ移行
+- 配給ルーターをカテゴリーコードルーターへ移行
 
 ### Deprecated
-
-- 配給ルーターをカテゴリーコードルーターへ移行
 
 ### Removed
 
