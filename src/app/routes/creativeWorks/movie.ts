@@ -121,21 +121,7 @@ movieRouter.get(
             const movies = await creativeWorkRepo.searchMovies(searchConditions);
 
             res.set('X-Total-Count', totalCount.toString());
-            res.json(movies.map((movie) => {
-                return {
-                    ...movie,
-                    ...(movie.distributor !== undefined && movie.distributor !== null)
-                        ? {
-                            distributor: {
-                                ...movie.distributor,
-                                distributorType: (typeof movie.distributor.distributorType === 'string')
-                                    ? movie.distributor.distributorType
-                                    : movie.distributor.id
-                            }
-                        }
-                        : undefined
-                };
-            }));
+            res.json(movies);
         } catch (error) {
             next(error);
         }
@@ -151,19 +137,7 @@ movieRouter.get(
             const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             const movie = await creativeWorkRepo.findMovieById({ id: req.params.id });
 
-            res.json({
-                ...movie,
-                ...(movie.distributor !== undefined && movie.distributor !== null)
-                    ? {
-                        distributor: {
-                            ...movie.distributor,
-                            distributorType: (typeof movie.distributor.distributorType === 'string')
-                                ? movie.distributor.distributorType
-                                : movie.distributor.id
-                        }
-                    }
-                    : undefined
-            });
+            res.json(movie);
         } catch (error) {
             next(error);
         }
