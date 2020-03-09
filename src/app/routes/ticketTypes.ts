@@ -80,10 +80,6 @@ ticketTypesRouter.get(
             .optional()
             .isInt()
             .toInt(),
-        query('priceSpecification.referenceQuantity.value')
-            .optional()
-            .isInt()
-            .toInt(),
         query('priceSpecification.price.$gte')
             .optional()
             .isInt()

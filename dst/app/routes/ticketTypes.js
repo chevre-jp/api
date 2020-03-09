@@ -74,10 +74,6 @@ ticketTypesRouter.get('', permitScopes_1.default(['admin', 'ticketTypes', 'ticke
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('priceSpecification.referenceQuantity.value')
-        .optional()
-        .isInt()
-        .toInt(),
     check_1.query('priceSpecification.price.$gte')
         .optional()
         .isInt()
