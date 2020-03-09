@@ -83,6 +83,26 @@ ticketTypesRouter.get(
         query('priceSpecification.referenceQuantity.value')
             .optional()
             .isInt()
+            .toInt(),
+        query('priceSpecification.price.$gte')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.price.$lte')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.accounting.accountsReceivable.$gte')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.accounting.accountsReceivable.$lte')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('priceSpecification.referenceQuantity.value.$eq')
+            .optional()
+            .isInt()
             .toInt()
     ],
     validator,
