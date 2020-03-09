@@ -77,6 +77,26 @@ ticketTypesRouter.get('', permitScopes_1.default(['admin', 'ticketTypes', 'ticke
     check_1.query('priceSpecification.referenceQuantity.value')
         .optional()
         .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.price.$gte')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.price.$lte')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.accounting.accountsReceivable.$gte')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.accounting.accountsReceivable.$lte')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('priceSpecification.referenceQuantity.value.$eq')
+        .optional()
+        .isInt()
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
