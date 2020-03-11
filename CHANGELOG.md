@@ -51,6 +51,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - subjectsをaccountTitlesへ移行
 - 配給ルーターをカテゴリーコードルーターへ移行
 - 券種検索条件をオファー検索条件に統合
+- ticketTypesコレクションをoffersコレクションへ移行
 
 ### Deprecated
 
