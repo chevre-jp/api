@@ -21,7 +21,6 @@ const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
-const connectMongo_1 = require("../../connectMongo");
 const reservationsRouter = express_1.Router();
 reservationsRouter.use(authentication_1.default);
 /**
@@ -144,13 +143,8 @@ reservationsRouter.get('/download', permitScopes_1.default(['admin']), ...[
         .isBoolean()
         .toBoolean()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let connection;
     try {
-        connection = yield connectMongo_1.connectMongo({
-            defaultConnection: false,
-            disableCheck: true
-        });
-        const reservationRepo = new chevre.repository.Reservation(connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const searchConditions = Object.assign({}, req.query);
         const format = req.query.format;
         const stream = yield chevre.service.report.reservation.stream({
@@ -158,22 +152,9 @@ reservationsRouter.get('/download', permitScopes_1.default(['admin']), ...[
             format: format
         })({ reservation: reservationRepo });
         res.type(`${req.query.format}; charset=utf-8`);
-        stream.pipe(res)
-            .on('error', () => __awaiter(void 0, void 0, void 0, function* () {
-            if (connection !== undefined) {
-                yield connection.close();
-            }
-        }))
-            .on('finish', () => __awaiter(void 0, void 0, void 0, function* () {
-            if (connection !== undefined) {
-                yield connection.close();
-            }
-        }));
+        stream.pipe(res);
     }
     catch (error) {
-        if (connection !== undefined) {
-            yield connection.close();
-        }
         next(error);
     }
 }));

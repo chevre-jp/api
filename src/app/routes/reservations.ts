@@ -12,8 +12,6 @@ import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
-import { connectMongo } from '../../connectMongo';
-
 const reservationsRouter = Router();
 reservationsRouter.use(authentication);
 
@@ -154,14 +152,8 @@ reservationsRouter.get(
     ],
     validator,
     async (req, res, next) => {
-        let connection: mongoose.Connection | undefined;
-
         try {
-            connection = await connectMongo({
-                defaultConnection: false,
-                disableCheck: true
-            });
-            const reservationRepo = new chevre.repository.Reservation(connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
 
             const searchConditions: chevre.factory.reservation.ISearchConditions<any> = {
                 ...req.query
@@ -175,22 +167,8 @@ reservationsRouter.get(
             })({ reservation: reservationRepo });
 
             res.type(`${req.query.format}; charset=utf-8`);
-            stream.pipe(res)
-                .on('error', async () => {
-                    if (connection !== undefined) {
-                        await connection.close();
-                    }
-                })
-                .on('finish', async () => {
-                    if (connection !== undefined) {
-                        await connection.close();
-                    }
-                });
+            stream.pipe(res);
         } catch (error) {
-            if (connection !== undefined) {
-                await connection.close();
-            }
-
             next(error);
         }
     }
