@@ -49,7 +49,7 @@ ticketTypesRouter.post('', permitScopes_1.default(['admin']), ...[], ...validati
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
-        const ticketType = yield offerRepo.saveTicketType(Object.assign(Object.assign({}, req.body), { id: '', project: project }));
+        const ticketType = yield offerRepo.save(Object.assign(Object.assign({}, req.body), { id: '', project: project }));
         res.status(http_status_1.CREATED)
             .json(ticketType);
     }
@@ -110,7 +110,7 @@ ticketTypesRouter.get('', permitScopes_1.default(['admin', 'ticketTypes', 'ticke
 ticketTypesRouter.get('/:id', permitScopes_1.default(['admin', 'ticketTypes', 'ticketTypes.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const ticketType = yield offerRepo.findTicketTypeById({ id: req.params.id });
+        const ticketType = yield offerRepo.findById({ id: req.params.id });
         res.json(ticketType);
     }
     catch (error) {
@@ -120,7 +120,7 @@ ticketTypesRouter.get('/:id', permitScopes_1.default(['admin', 'ticketTypes', 't
 ticketTypesRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        yield offerRepo.saveTicketType(req.body);
+        yield offerRepo.save(req.body);
         res.status(http_status_1.NO_CONTENT)
             .end();
     }
@@ -131,7 +131,7 @@ ticketTypesRouter.put('/:id', permitScopes_1.default(['admin']), ...validations,
 ticketTypesRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        yield offerRepo.deleteTicketType({ id: req.params.id });
+        yield offerRepo.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT)
             .end();
     }

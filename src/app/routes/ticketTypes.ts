@@ -51,7 +51,7 @@ ticketTypesRouter.post(
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
-            const ticketType = await offerRepo.saveTicketType({ ...req.body, id: '', project: project });
+            const ticketType = await offerRepo.save({ ...req.body, id: '', project: project });
             res.status(CREATED)
                 .json(ticketType);
         } catch (error) {
@@ -128,7 +128,7 @@ ticketTypesRouter.get(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const ticketType = await offerRepo.findTicketTypeById({ id: req.params.id });
+            const ticketType = await offerRepo.findById({ id: req.params.id });
 
             res.json(ticketType);
         } catch (error) {
@@ -145,7 +145,7 @@ ticketTypesRouter.put(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.saveTicketType(req.body);
+            await offerRepo.save(req.body);
 
             res.status(NO_CONTENT)
                 .end();
@@ -162,7 +162,7 @@ ticketTypesRouter.delete(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.deleteTicketType({ id: req.params.id });
+            await offerRepo.deleteById({ id: req.params.id });
 
             res.status(NO_CONTENT)
                 .end();
