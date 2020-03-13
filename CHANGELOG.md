@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - スクリーンルーターを追加
 - 座席ルーターを追加
 - オファーカタログリポジトリを追加
+- 予約部分変更を追加
 
 ### Changed
 

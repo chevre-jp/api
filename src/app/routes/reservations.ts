@@ -192,6 +192,77 @@ reservationsRouter.get(
     }
 );
 
+/**
+ * 予約部分変更
+ */
+reservationsRouter.patch(
+    '/:id',
+    permitScopes(['admin', 'reservations.write']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const update: any = req.body;
+            delete update.id;
+
+            const actionRepo = new chevre.repository.Action(mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+
+            // 予約存在確認
+            const reservation = await reservationRepo.findById({ id: req.params.id });
+
+            const actionAttributes: chevre.factory.action.IAttributes<any, any, any> = {
+                project: reservation.project,
+                typeOf: 'ReplaceAction',
+                agent: {
+                    ...req.user,
+                    id: req.user.sub,
+                    typeOf: 'Person'
+                },
+                object: reservation,
+                ...{
+                    replacee: reservation,
+                    replacer: update,
+                    targetCollection: {
+                        typeOf: reservation.typeOf,
+                        id: reservation.id
+                    }
+                }
+            };
+            const action = await actionRepo.start<any>(actionAttributes);
+
+            try {
+
+                const doc = await reservationRepo.reservationModel.findOneAndUpdate(
+                    { _id: req.params.id },
+                    update
+                )
+                    .exec();
+                if (doc === null) {
+                    throw new chevre.factory.errors.NotFound(reservationRepo.reservationModel.modelName);
+                }
+            } catch (error) {
+                // actionにエラー結果を追加
+                try {
+                    const actionError = { ...error, message: error.message, name: error.name };
+                    await actionRepo.giveUp({ typeOf: action.typeOf, id: action.id, error: actionError });
+                } catch (__) {
+                    // 失敗したら仕方ない
+                }
+
+                throw error;
+            }
+
+            // アクション完了
+            await actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 reservationsRouter.get(
     '/eventReservation/screeningEvent',
     permitScopes(['admin', 'reservations', 'reservations.read-only']),

@@ -170,6 +170,53 @@ reservationsRouter.get('/:id', permitScopes_1.default(['admin', 'reservations', 
         next(error);
     }
 }));
+/**
+ * 予約部分変更
+ */
+reservationsRouter.patch('/:id', permitScopes_1.default(['admin', 'reservations.write']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const update = req.body;
+        delete update.id;
+        const actionRepo = new chevre.repository.Action(mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        // 予約存在確認
+        const reservation = yield reservationRepo.findById({ id: req.params.id });
+        const actionAttributes = Object.assign({ project: reservation.project, typeOf: 'ReplaceAction', agent: Object.assign(Object.assign({}, req.user), { id: req.user.sub, typeOf: 'Person' }), object: reservation }, {
+            replacee: reservation,
+            replacer: update,
+            targetCollection: {
+                typeOf: reservation.typeOf,
+                id: reservation.id
+            }
+        });
+        const action = yield actionRepo.start(actionAttributes);
+        try {
+            const doc = yield reservationRepo.reservationModel.findOneAndUpdate({ _id: req.params.id }, update)
+                .exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound(reservationRepo.reservationModel.modelName);
+            }
+        }
+        catch (error) {
+            // actionにエラー結果を追加
+            try {
+                const actionError = Object.assign(Object.assign({}, error), { message: error.message, name: error.name });
+                yield actionRepo.giveUp({ typeOf: action.typeOf, id: action.id, error: actionError });
+            }
+            catch (__) {
+                // 失敗したら仕方ない
+            }
+            throw error;
+        }
+        // アクション完了
+        yield actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
     check_1.query('limit')
         .optional()
