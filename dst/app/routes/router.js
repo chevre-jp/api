@@ -17,7 +17,6 @@ const products_1 = require("./products");
 const reservations_1 = require("./reservations");
 const stats_1 = require("./stats");
 const tasks_1 = require("./tasks");
-const ticketTypes_1 = require("./ticketTypes");
 const transactions_1 = require("./transactions");
 const router = express.Router();
 // middleware that is specific to this router
@@ -38,6 +37,5 @@ router.use('/products', products_1.default);
 router.use('/reservations', reservations_1.default);
 router.use('/stats', stats_1.default);
 router.use('/tasks', tasks_1.default);
-router.use('/ticketTypes', ticketTypes_1.default);
 router.use('/transactions', transactions_1.default);
 exports.default = router;

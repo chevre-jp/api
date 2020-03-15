@@ -16,7 +16,6 @@ import productsRouter from './products';
 import reservationsRouter from './reservations';
 import statsRouter from './stats';
 import tasksRouter from './tasks';
-import ticketTypesRouter from './ticketTypes';
 import transactionsRouter from './transactions';
 const router = express.Router();
 
@@ -39,7 +38,6 @@ router.use('/products', productsRouter);
 router.use('/reservations', reservationsRouter);
 router.use('/stats', statsRouter);
 router.use('/tasks', tasksRouter);
-router.use('/ticketTypes', ticketTypesRouter);
 router.use('/transactions', transactionsRouter);
 
 export default router;
