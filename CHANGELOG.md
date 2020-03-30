@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v7.0.0 - 2020-03-30
+
+### Added
+
 - メンバーシッププログラムルーターを追加
 - オファールーターを券種ルーターと分離
 - オファーカタログルーターを券種グループルーターと分離
@@ -55,17 +69,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ticketTypesコレクションをoffersコレクションへ移行
 - MongoDBコネクション監視調整
 
-### Deprecated
-
 ### Removed
 
 - 興行区分サービスを削除
 - 配給区分サービスを削除
 - オファーカテゴリーサービスを削除
-
-### Fixed
-
-### Security
 
 ## v6.7.0 - 2019-12-25
 
