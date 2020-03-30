@@ -78,7 +78,10 @@ reserveTransactionsRouter.post('/:transactionId/reservations', permitScopes_1.de
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
+        const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
         const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
+        const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
+        const productRepo = new chevre.repository.Product(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const transaction = yield chevre.service.transaction.reserve.addReservations({
             id: req.params.transactionId,
@@ -90,8 +93,11 @@ reserveTransactionsRouter.post('/:transactionId/reservations', permitScopes_1.de
             eventAvailability: eventAvailabilityRepo,
             event: eventRepo,
             offer: offerRepo,
+            offerCatalog: offerCatalogRepo,
+            offerRateLimit: offerRateLimitRepo,
             place: placeRepo,
             priceSpecification: priceSpecificationRepo,
+            product: productRepo,
             reservation: reservationRepo,
             task: taskRepo,
             transaction: transactionRepo
@@ -120,6 +126,7 @@ reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default([
     try {
         const actionRepo = new chevre.repository.Action(mongoose.connection);
         const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
+        const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
@@ -128,6 +135,7 @@ reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default([
         })({
             action: actionRepo,
             eventAvailability: eventAvailabilityRepo,
+            offerRateLimit: offerRateLimitRepo,
             reservation: reservationRepo,
             task: taskRepo,
             transaction: transactionRepo

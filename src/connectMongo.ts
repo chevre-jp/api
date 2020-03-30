@@ -22,6 +22,7 @@ const connectOptions: mongoose.ConnectionOptions = {
 
 export async function connectMongo(params: {
     defaultConnection: boolean;
+    disableCheck?: boolean;
 }) {
     let connection: mongoose.Connection;
     if (params === undefined || params.defaultConnection) {
@@ -35,44 +36,53 @@ export async function connectMongo(params: {
     // 定期的にコネクションチェック
     // tslint:disable-next-line:no-single-line-block-comment
     /* istanbul ignore next */
-    setInterval(
-        async () => {
-            // すでに接続済かどうか
-            if (connection.readyState === 1) {
-                // 接続済であれば疎通確認
-                let pingResult: any;
-                await new Promise(async (resolve) => {
-                    try {
-                        pingResult = await connection.db.admin()
-                            .ping();
-                        debug('pingResult:', pingResult);
-                    } catch (error) {
-                        // tslint:disable-next-line:no-console
-                        console.error('ping:', error);
+    if (params.disableCheck === undefined || params.disableCheck === false) {
+        setInterval(
+            async () => {
+                // すでに接続済かどうか
+                if (connection.readyState === 1) {
+                    // 接続済であれば疎通確認
+                    let pingResult: any;
+                    await new Promise((resolve) => {
+                        try {
+                            connection.db.admin()
+                                .ping()
+                                .then((result) => {
+                                    pingResult = result;
+                                    debug('pingResult:', pingResult);
+                                })
+                                .catch((error) => {
+                                    // tslint:disable-next-line:no-console
+                                    console.error('ping:', error);
+                                });
+                        } catch (error) {
+                            // tslint:disable-next-line:no-console
+                            console.error(error);
+                        }
+
+                        // tslint:disable-next-line:no-magic-numbers
+                        setTimeout(() => { resolve(); }, 5000);
+                    });
+
+                    // 疎通確認結果が適性であれば何もしない
+                    if (pingResult !== undefined && pingResult.ok === 1) {
+                        return;
                     }
-
-                    // tslint:disable-next-line:no-magic-numbers
-                    setTimeout(() => { resolve(); }, 5000);
-                });
-
-                // 疎通確認結果が適性であれば何もしない
-                if (pingResult !== undefined && pingResult.ok === 1) {
-                    return;
                 }
-            }
 
-            try {
-                // コネクション再確立
-                await connection.close();
-                await connection.openUri(MONGOLAB_URI, connectOptions);
-                debug('MongoDB reconnected!');
-            } catch (error) {
-                // tslint:disable-next-line:no-console
-                console.error('mongoose.connect:', error);
-            }
-        },
-        PING_INTERVAL
-    );
+                try {
+                    // コネクション再確立
+                    await connection.close();
+                    await connection.openUri(MONGOLAB_URI, connectOptions);
+                    debug('MongoDB reconnected!');
+                } catch (error) {
+                    // tslint:disable-next-line:no-console
+                    console.error('mongoose.connect:', error);
+                }
+            },
+            PING_INTERVAL
+        );
+    }
 
     return connection;
 }

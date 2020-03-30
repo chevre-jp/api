@@ -197,83 +197,15 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const events = yield eventRepo.search(searchCoinditions);
-        const totalCount = yield eventRepo.count(searchCoinditions);
+        const events = yield eventRepo.search(searchConditions, {
+            aggregateOffer: 0
+        });
+        const totalCount = yield eventRepo.count(searchConditions);
         res.set('X-Total-Count', totalCount.toString())
             .json(events);
-    }
-    catch (error) {
-        next(error);
-    }
-}));
-eventsRouter.get('/withAggregateReservation', permitScopes_1.default(['admin']), ...[
-    check_1.query('typeOf')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'Required'),
-    check_1.query('inSessionFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('inSessionThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('startFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('startThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('endFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('endThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('offers.availableFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('offers.availableThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('offers.validFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    check_1.query('offers.validThrough')
-        .optional()
-        .isISO8601()
-        .toDate()
-], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        // イベント検索
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.eventType.ScreeningEvent, 
-            // tslint:disable-next-line:no-magic-numbers
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const events = yield eventRepo.search(searchCoinditions);
-        const totalCount = yield eventRepo.count(searchCoinditions);
-        const eventsWithAggregation = yield Promise.all(events.map((e) => __awaiter(void 0, void 0, void 0, function* () {
-            const aggregation = yield chevre.service.aggregation.aggregateEventReservation({
-                id: e.id
-            })({
-                reservation: reservationRepo
-            });
-            return Object.assign(Object.assign(Object.assign({}, e), aggregation), { preSaleTicketCount: aggregation.advanceTicketCount });
-        })));
-        res.set('X-Total-Count', totalCount.toString())
-            .json(eventsWithAggregation);
     }
     catch (error) {
         next(error);
@@ -322,47 +254,18 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
     }
 }));
 /**
- * イベントに対する座席オファー検索
+ * 座席オファー検索
  */
 eventsRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let offers = [];
-        const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const event = yield eventRepo.findById({
-            id: req.params.id
+        const offers = yield chevre.service.offer.searchEventSeatOffers({
+            event: { id: req.params.id }
+        })({
+            event: new chevre.repository.Event(mongoose.connection),
+            priceSpecification: new chevre.repository.PriceSpecification(mongoose.connection),
+            eventAvailability: new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient()),
+            place: new chevre.repository.Place(mongoose.connection)
         });
-        // 座席指定利用可能かどうか
-        const reservedSeatsAvailable = !(event.offers !== undefined
-            && event.offers.itemOffered !== undefined
-            && event.offers.itemOffered.serviceOutput !== undefined
-            && event.offers.itemOffered.serviceOutput.reservedTicket !== undefined
-            && event.offers.itemOffered.serviceOutput.reservedTicket.ticketedSeat === undefined);
-        if (reservedSeatsAvailable) {
-            const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
-            const placeRepo = new chevre.repository.Place(mongoose.connection);
-            const unavailableOffers = yield eventAvailabilityRepo.findUnavailableOffersByEventId({ eventId: req.params.id });
-            const movieTheater = yield placeRepo.findById({ id: event.superEvent.location.id });
-            const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === event.location.branchCode);
-            if (screeningRoom === undefined) {
-                throw new chevre.factory.errors.NotFound('Screening Room');
-            }
-            offers = screeningRoom.containsPlace;
-            offers.forEach((offer) => {
-                const seats = offer.containsPlace;
-                const seatSection = offer.branchCode;
-                seats.forEach((seat) => {
-                    const seatNumber = seat.branchCode;
-                    const unavailableOffer = unavailableOffers.find((o) => o.seatSection === seatSection && o.seatNumber === seatNumber);
-                    seat.offers = [{
-                            typeOf: 'Offer',
-                            priceCurrency: chevre.factory.priceCurrency.JPY,
-                            availability: (unavailableOffer !== undefined)
-                                ? chevre.factory.itemAvailability.OutOfStock
-                                : chevre.factory.itemAvailability.InStock
-                        }];
-                });
-            });
-        }
         res.json(offers);
     }
     catch (error) {
@@ -370,17 +273,23 @@ eventsRouter.get('/:id/offers', permitScopes_1.default(['admin', 'events', 'even
     }
 }));
 /**
- * イベントに対するチケットオファー検索
+ * イベントオファー検索
  */
 eventsRouter.get('/:id/offers/ticket', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
+        const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
+        const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
+        const productRepo = new chevre.repository.Product(mongoose.connection);
         const offers = yield chevre.service.offer.searchScreeningEventTicketOffers({ eventId: req.params.id })({
             event: eventRepo,
             offer: offerRepo,
-            priceSpecification: priceSpecificationRepo
+            offerCatalog: offerCatalogRepo,
+            offerRateLimit: offerRateLimitRepo,
+            priceSpecification: priceSpecificationRepo,
+            product: productRepo
         });
         res.json(offers);
     }

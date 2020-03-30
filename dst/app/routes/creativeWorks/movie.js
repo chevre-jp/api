@@ -57,9 +57,12 @@ movieRouter.post('', permitScopes_1.default(['admin']), ...[
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
-        let movie = Object.assign(Object.assign({}, req.body), { id: '', duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
-                // tslint:disable-next-line:no-null-keyword
-                .toISOString() : null, project: project });
+        let movie = Object.assign(Object.assign(Object.assign({}, req.body), (typeof req.body.duration === 'string' && req.body.duration.lenght > 0)
+            ? {
+                duration: moment.duration(req.body.duration)
+                    .toISOString()
+            }
+            : undefined), { id: '', project: project });
         movie = yield creativeWorkRepo.saveMovie(movie);
         res.status(http_status_1.CREATED)
             .json(movie);
@@ -96,11 +99,11 @@ movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeW
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const totalCount = yield creativeWorkRepo.countMovies(searchCoinditions);
-        const movies = yield creativeWorkRepo.searchMovies(searchCoinditions);
+        const totalCount = yield creativeWorkRepo.countMovies(searchConditions);
+        const movies = yield creativeWorkRepo.searchMovies(searchConditions);
         res.set('X-Total-Count', totalCount.toString());
         res.json(movies);
     }
@@ -146,9 +149,12 @@ movieRouter.put('/:id', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
-        const movie = Object.assign(Object.assign({}, req.body), { id: req.params.id, duration: (typeof req.body.duration === 'string') ? moment.duration(req.body.duration)
-                // tslint:disable-next-line:no-null-keyword
-                .toISOString() : null });
+        const movie = Object.assign(Object.assign(Object.assign({}, req.body), (typeof req.body.duration === 'string' && req.body.duration.lenght > 0)
+            ? {
+                duration: moment.duration(req.body.duration)
+                    .toISOString()
+            }
+            : undefined), { id: req.params.id });
         yield creativeWorkRepo.saveMovie(movie);
         res.status(http_status_1.NO_CONTENT)
             .end();

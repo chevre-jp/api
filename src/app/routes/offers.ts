@@ -22,18 +22,23 @@ offersRouter.post(
         body('project')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required'),
+        body('project.id')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString()
     ],
     validator,
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: 'Project' };
 
-            const ticketType = await offerRepo.saveOffer({ ...req.body, id: '', project: project });
+            const offer = await offerRepo.save({ ...req.body, id: '', project: project });
             res.status(CREATED)
-                .json(ticketType);
+                .json(offer);
         } catch (error) {
             next(error);
         }
@@ -42,25 +47,25 @@ offersRouter.post(
 
 offersRouter.get(
     '',
-    permitScopes(['admin', 'ticketTypes', 'ticketTypes.read-only']),
+    permitScopes(['admin']),
     ...[
-        query('priceSpecification.minPrice')
+        query('priceSpecification.price.$gte')
             .optional()
             .isInt()
             .toInt(),
-        query('priceSpecification.maxPrice')
+        query('priceSpecification.price.$lte')
             .optional()
             .isInt()
             .toInt(),
-        query('priceSpecification.accounting.minAccountsReceivable')
+        query('priceSpecification.accounting.accountsReceivable.$gte')
             .optional()
             .isInt()
             .toInt(),
-        query('priceSpecification.accounting.maxAccountsReceivable')
+        query('priceSpecification.accounting.accountsReceivable.$lte')
             .optional()
             .isInt()
             .toInt(),
-        query('priceSpecification.referenceQuantity.value')
+        query('priceSpecification.referenceQuantity.value.$eq')
             .optional()
             .isInt()
             .toInt()
@@ -69,18 +74,16 @@ offersRouter.get(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const searchCoinditions = {
+            const searchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const totalCount = await offerRepo.countOffers(searchCoinditions);
-            const offers = await offerRepo.searchOffers(searchCoinditions);
+            const offers = await offerRepo.search(searchConditions);
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(offers);
+            res.json(offers);
         } catch (error) {
             next(error);
         }
@@ -89,14 +92,14 @@ offersRouter.get(
 
 offersRouter.get(
     '/:id',
-    permitScopes(['admin', 'ticketTypes', 'ticketTypes.read-only']),
+    permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const ticketType = await offerRepo.findOfferById({ id: req.params.id });
+            const offer = await offerRepo.findById({ id: req.params.id });
 
-            res.json(ticketType);
+            res.json(offer);
         } catch (error) {
             next(error);
         }
@@ -106,11 +109,22 @@ offersRouter.get(
 offersRouter.put(
     '/:id',
     permitScopes(['admin']),
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
+        body('project.id')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString()
+    ],
     validator,
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.saveOffer(req.body);
+            await offerRepo.save(req.body);
 
             res.status(NO_CONTENT)
                 .end();
@@ -127,7 +141,7 @@ offersRouter.delete(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.deleteOffer({ id: req.params.id });
+            await offerRepo.deleteById({ id: req.params.id });
 
             res.status(NO_CONTENT)
                 .end();

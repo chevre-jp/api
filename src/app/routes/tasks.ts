@@ -128,9 +128,9 @@ tasksRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
+
             const tasks = await taskRepo.search(searchConditions);
-            const totalCount = await taskRepo.count(searchConditions);
-            res.set('X-Total-Count', totalCount.toString());
+
             res.json(tasks);
         } catch (error) {
             next(error);

@@ -1,5 +1,5 @@
 /**
- * 券種グループルーター
+ * オファーカタログルーター
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
@@ -28,11 +28,11 @@ offerCatalogsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
-            const ticketTypeGroup = await offerRepo.saveOfferCatalog({ ...req.body, id: '', project: project });
+            const ticketTypeGroup = await offerCatalogRepo.save({ ...req.body, id: '', project: project });
 
             res.status(CREATED)
                 .json(ticketTypeGroup);
@@ -44,20 +44,19 @@ offerCatalogsRouter.post(
 
 offerCatalogsRouter.get(
     '',
-    permitScopes(['admin', 'ticketTypeGroups', 'ticketTypeGroups.read-only']),
+    permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
-            const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const searchCoinditions: chevre.factory.ticketType.ITicketTypeGroupSearchConditions = {
+            const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
+            const searchConditions: chevre.factory.offerCatalog.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const totalCount = await offerRepo.countOfferCatalogs(searchCoinditions);
-            const ticketTypeGroups = await offerRepo.searchOfferCatalogs(searchCoinditions);
-            res.set('X-Total-Count', totalCount.toString());
+
+            const ticketTypeGroups = await offerCatalogRepo.search(searchConditions);
             res.json(ticketTypeGroups);
         } catch (error) {
             next(error);
@@ -67,12 +66,12 @@ offerCatalogsRouter.get(
 
 offerCatalogsRouter.get(
     '/:id',
-    permitScopes(['admin', 'ticketTypeGroups', 'ticketTypeGroups.read-only']),
+    permitScopes(['admin']),
     validator,
     async (req, res, next) => {
         try {
-            const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const ticketTypeGroup = await offerRepo.findOfferCatalogById({ id: req.params.id });
+            const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
+            const ticketTypeGroup = await offerCatalogRepo.findById({ id: req.params.id });
             res.json(ticketTypeGroup);
         } catch (error) {
             next(error);
@@ -86,9 +85,9 @@ offerCatalogsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const ticketTypeGroup: chevre.factory.ticketType.ITicketTypeGroup = req.body;
-            const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.saveOfferCatalog(ticketTypeGroup);
+            const offerCatalog: chevre.factory.offerCatalog.IOfferCatalog = req.body;
+            const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
+            await offerCatalogRepo.save(offerCatalog);
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
@@ -103,8 +102,8 @@ offerCatalogsRouter.delete(
     validator,
     async (req, res, next) => {
         try {
-            const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            await offerRepo.deleteOfferCatalog({ id: req.params.id });
+            const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
+            await offerCatalogRepo.deleteById({ id: req.params.id });
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {

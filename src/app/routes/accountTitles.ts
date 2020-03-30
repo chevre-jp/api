@@ -28,15 +28,15 @@ accountTitlesRouter.post(
         body('project')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('name')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
@@ -69,44 +69,53 @@ accountTitlesRouter.get(
     async (req, res, next) => {
         try {
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-            const searchCoinditions: chevre.factory.accountTitle.ISearchConditions = {
+            const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            // const totalCount = await accountTitleRepo.count(searchCoinditions);
-            // const accountTitles = await accountTitleRepo.search(searchCoinditions);
-            // res.set('X-Total-Count', totalCount.toString());
+
+            // const accountTitles = await accountTitleRepo.search(searchConditions);
             // res.json(accountTitles);
 
             const conditions: any[] = [
                 { typeOf: 'AccountTitle' }
             ];
-            if (searchCoinditions.project !== undefined) {
-                if (Array.isArray(searchCoinditions.project.ids)) {
+            if (searchConditions.project !== undefined) {
+                if (Array.isArray(searchConditions.project.ids)) {
                     conditions.push({
                         'project.id': {
                             $exists: true,
-                            $in: searchCoinditions.project.ids
+                            $in: searchConditions.project.ids
                         }
                     });
                 }
             }
-            if (searchCoinditions.codeValue !== undefined) {
+
+            if (typeof searchConditions.codeValue === 'string') {
                 conditions.push({
                     codeValue: {
                         $exists: true,
-                        $regex: new RegExp(searchCoinditions.codeValue, 'i')
+                        $regex: new RegExp(searchConditions.codeValue)
                     }
                 });
+            } else if (searchConditions.codeValue !== undefined && searchConditions.codeValue !== null) {
+                if (typeof searchConditions.codeValue.$eq === 'string') {
+                    conditions.push({
+                        codeValue: {
+                            $exists: true,
+                            $eq: searchConditions.codeValue.$eq
+                        }
+                    });
+                }
             }
 
-            const totalCount = await accountTitleRepo.accountTitleModel.countDocuments(
-                { $and: conditions }
-            )
-                .setOptions({ maxTimeMS: 10000 })
-                .exec();
+            // const totalCount = await accountTitleRepo.accountTitleModel.countDocuments(
+            //     { $and: conditions }
+            // )
+            //     .setOptions({ maxTimeMS: 10000 })
+            //     .exec();
 
             const query = accountTitleRepo.accountTitleModel.find(
                 { $and: conditions },
@@ -119,21 +128,20 @@ accountTitlesRouter.get(
             );
             // tslint:disable-next-line:no-single-line-block-comment
             /* istanbul ignore else */
-            if (searchCoinditions.limit !== undefined && searchCoinditions.page !== undefined) {
-                query.limit(searchCoinditions.limit)
-                    .skip(searchCoinditions.limit * (searchCoinditions.page - 1));
+            if (searchConditions.limit !== undefined && searchConditions.page !== undefined) {
+                query.limit(searchConditions.limit)
+                    .skip(searchConditions.limit * (searchConditions.page - 1));
             }
             // tslint:disable-next-line:no-single-line-block-comment
             /* istanbul ignore else */
-            if (searchCoinditions.sort !== undefined) {
-                query.sort(searchCoinditions.sort);
+            if (searchConditions.sort !== undefined) {
+                query.sort(searchConditions.sort);
             }
 
             const accountTitles = await query.setOptions({ maxTimeMS: 10000 })
                 .exec()
                 .then((docs) => docs.map((doc) => doc.toObject()));
 
-            res.set('X-Total-Count', totalCount.toString());
             res.json(accountTitles);
         } catch (error) {
             next(error);
@@ -151,24 +159,28 @@ accountTitlesRouter.put(
         body('codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('name')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
         try {
-            const accountTitle: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
-            delete accountTitle.inCodeSet;
-            delete accountTitle.hasCategoryCode;
+            const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
             const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
-                { codeValue: accountTitle.codeValue },
-                accountTitle,
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitleCategory.project.id
+                    },
+                    codeValue: accountTitleCategory.codeValue
+                },
+                accountTitleCategory,
                 { new: true }
             )
                 .exec();
@@ -194,45 +206,63 @@ accountTitlesRouter.post(
         body('codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('name')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet.codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
         try {
             const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet;
-            const accountTitle: chevre.factory.accountTitle.IAccountTitle = req.body;
-            delete accountTitle.inCodeSet;
+            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = req.body;
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
             // 科目分類の存在確認
             let doc = await accountTitleRepo.accountTitleModel.findOne(
-                { codeValue: accountTitleCategory.codeValue }
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitleSet.project.id
+                    },
+                    codeValue: accountTitleCategory.codeValue
+                }
             )
                 .exec();
             if (doc === null) {
                 throw new chevre.factory.errors.NotFound('AccountTitleCategory');
             }
 
-            debug('creating accountTitleSet', accountTitle);
+            debug('creating accountTitleSet', accountTitleSet);
             doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitleSet.project.id
+                    },
                     codeValue: accountTitleCategory.codeValue,
-                    'hasCategoryCode.codeValue': { $ne: accountTitle.codeValue }
+                    'hasCategoryCode.codeValue': { $ne: accountTitleSet.codeValue }
                 },
-                { $push: { hasCategoryCode: accountTitle } },
+                {
+                    $push: {
+                        hasCategoryCode: {
+                            typeOf: accountTitleSet.typeOf,
+                            codeValue: accountTitleSet.codeValue,
+                            name: accountTitleSet.name,
+                            additionalProperty: accountTitleSet.additionalProperty
+                        }
+                    }
+                },
                 { new: true }
             )
                 .exec();
@@ -242,7 +272,7 @@ accountTitlesRouter.post(
             }
 
             res.status(CREATED)
-                .json(accountTitle);
+                .json(accountTitleSet);
         } catch (error) {
             next(error);
         }
@@ -260,60 +290,83 @@ accountTitlesRouter.get(
     async (req, res, next) => {
         try {
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-            const searchCoinditions: chevre.factory.accountTitle.ISearchConditions = {
+            const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            // const totalCount = await accountTitleRepo.count(searchCoinditions);
-            // const accountTitles = await accountTitleRepo.search(searchCoinditions);
-            // res.set('X-Total-Count', totalCount.toString());
+
+            // const accountTitles = await accountTitleRepo.search(searchConditions);
             // res.json(accountTitles);
 
             const matchStages: any[] = [];
-            if (searchCoinditions.project !== undefined) {
-                if (Array.isArray(searchCoinditions.project.ids)) {
+            if (searchConditions.project !== undefined) {
+                if (Array.isArray(searchConditions.project.ids)) {
                     matchStages.push({
                         $match: {
                             'project.id': {
                                 $exists: true,
-                                $in: searchCoinditions.project.ids
-                            }
-                        }
-                    });
-                }
-            }
-            if (searchCoinditions.codeValue !== undefined) {
-                matchStages.push({
-                    $match: {
-                        'hasCategoryCode.codeValue': {
-                            $exists: true,
-                            $regex: new RegExp(searchCoinditions.codeValue, 'i')
-                        }
-                    }
-                });
-            }
-            if (searchCoinditions.inCodeSet !== undefined) {
-                if (searchCoinditions.inCodeSet.codeValue !== undefined) {
-                    matchStages.push({
-                        $match: {
-                            codeValue: {
-                                $exists: true,
-                                $regex: new RegExp(searchCoinditions.inCodeSet.codeValue, 'i')
+                                $in: searchConditions.project.ids
                             }
                         }
                     });
                 }
             }
 
-            const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
-                { $unwind: '$hasCategoryCode' },
-                ...matchStages,
-                { $count: 'totalCount' }
-            ])
-                .exec();
-            const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
+            if (typeof searchConditions.codeValue === 'string') {
+                matchStages.push({
+                    $match: {
+                        'hasCategoryCode.codeValue': {
+                            $exists: true,
+                            $regex: new RegExp(searchConditions.codeValue)
+                        }
+                    }
+                });
+            } else if (searchConditions.codeValue !== undefined && searchConditions.codeValue !== null) {
+                if (typeof searchConditions.codeValue.$eq === 'string') {
+                    matchStages.push({
+                        $match: {
+                            'hasCategoryCode.codeValue': {
+                                $exists: true,
+                                $eq: searchConditions.codeValue.$eq
+                            }
+                        }
+                    });
+                }
+            }
+
+            if (searchConditions.inCodeSet !== undefined) {
+                if (typeof searchConditions.inCodeSet.codeValue === 'string') {
+                    matchStages.push({
+                        $match: {
+                            codeValue: {
+                                $exists: true,
+                                $regex: new RegExp(searchConditions.inCodeSet.codeValue)
+                            }
+                        }
+                    });
+                } else if (searchConditions.inCodeSet.codeValue !== undefined && searchConditions.inCodeSet.codeValue !== null) {
+                    if (typeof searchConditions.inCodeSet.codeValue.$eq === 'string') {
+                        matchStages.push({
+                            $match: {
+                                codeValue: {
+                                    $exists: true,
+                                    $eq: searchConditions.inCodeSet.codeValue.$eq
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            // const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
+            //     { $unwind: '$hasCategoryCode' },
+            //     ...matchStages,
+            //     { $count: 'totalCount' }
+            // ])
+            //     .exec();
+            // const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
 
             const aggregate = accountTitleRepo.accountTitleModel.aggregate([
                 { $unwind: '$hasCategoryCode' },
@@ -335,14 +388,13 @@ accountTitlesRouter.get(
 
             // tslint:disable-next-line:no-single-line-block-comment
             /* istanbul ignore else */
-            if (searchCoinditions.limit !== undefined && searchCoinditions.page !== undefined) {
-                aggregate.limit(searchCoinditions.limit * searchCoinditions.page)
-                    .skip(searchCoinditions.limit * (searchCoinditions.page - 1));
+            if (searchConditions.limit !== undefined && searchConditions.page !== undefined) {
+                aggregate.limit(searchConditions.limit * searchConditions.page)
+                    .skip(searchConditions.limit * (searchConditions.page - 1));
             }
 
             const accountTitles = await aggregate.exec();
 
-            res.set('X-Total-Count', totalCount.toString());
             res.json(accountTitles);
         } catch (error) {
             next(error);
@@ -360,31 +412,45 @@ accountTitlesRouter.put(
         body('codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('name')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
         try {
-            const accountTitle: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
-            delete accountTitle.inCodeSet;
-            delete accountTitle.hasCategoryCode;
+            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
+            const accountTitleCategory = <chevre.factory.accountTitle.IAccountTitle>accountTitleSet.inCodeSet;
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
-            debug('updating accountTitleSet', accountTitle);
+            debug('updating accountTitleSet', accountTitleSet);
             const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
-                { 'hasCategoryCode.codeValue': accountTitle.codeValue },
                 {
-                    'hasCategoryCode.$.name': accountTitle.name,
-                    'hasCategoryCode.$.description': accountTitle.description,
-                    'hasCategoryCode.$.inDefinedTermSet': accountTitle.inDefinedTermSet,
-                    'hasCategoryCode.$.additionalProperty': accountTitle.additionalProperty
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitleSet.project.id
+                    },
+                    codeValue: accountTitleCategory.codeValue,
+                    'hasCategoryCode.codeValue': accountTitleSet.codeValue
                 },
-                { new: true }
+                {
+                    'hasCategoryCode.$[accountTitleSet].name': accountTitleSet.name,
+                    ...(Array.isArray(accountTitleSet.additionalProperty))
+                        ? {
+                            'hasCategoryCode.$[accountTitleSet].additionalProperty'
+                                : accountTitleSet.additionalProperty
+                        }
+                        : undefined
+                },
+                <any>{
+                    new: true,
+                    arrayFilters: [
+                        { 'accountTitleSet.codeValue': accountTitleSet.codeValue }
+                    ]
+                }
             )
                 .exec();
             if (doc === null) {
@@ -409,27 +475,27 @@ accountTitlesRouter.post(
         body('codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('name')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet.codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet.inCodeSet')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet.inCodeSet.codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
@@ -437,12 +503,15 @@ accountTitlesRouter.post(
             const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet;
             const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet.inCodeSet;
             const accountTitle: chevre.factory.accountTitle.IAccountTitle = req.body;
-            delete accountTitle.inCodeSet;
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
             // 科目の存在確認
             let doc = await accountTitleRepo.accountTitleModel.findOne({
+                'project.id': {
+                    $exists: true,
+                    $eq: accountTitle.project.id
+                },
                 codeValue: accountTitleCategory.codeValue,
                 'hasCategoryCode.codeValue': accountTitleSet.codeValue
             })
@@ -453,12 +522,30 @@ accountTitlesRouter.post(
 
             doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitle.project.id
+                    },
                     codeValue: accountTitleCategory.codeValue,
                     'hasCategoryCode.codeValue': accountTitleSet.codeValue,
                     'hasCategoryCode.hasCategoryCode.codeValue': { $ne: accountTitle.codeValue }
                 },
-                { $push: { 'hasCategoryCode.$.hasCategoryCode': accountTitle } },
-                { new: true }
+                {
+                    $push: {
+                        'hasCategoryCode.$[accountTitleSet].hasCategoryCode': {
+                            typeOf: accountTitle.typeOf,
+                            codeValue: accountTitle.codeValue,
+                            name: accountTitle.name,
+                            additionalProperty: accountTitle.additionalProperty
+                        }
+                    }
+                },
+                <any>{
+                    new: true,
+                    arrayFilters: [
+                        { 'accountTitleSet.codeValue': accountTitleSet.codeValue }
+                    ]
+                }
             )
                 .exec();
             // 存在しなければ細目コード重複
@@ -481,78 +568,113 @@ accountTitlesRouter.get(
     '',
     permitScopes(['admin', 'accountTitles', 'accountTitles.read-only']),
     validator,
-    // tslint:disable-next-line:max-func-body-length
+    // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
         try {
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-            const searchCoinditions: chevre.factory.accountTitle.ISearchConditions = {
+            const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            // const totalCount = await accountTitleRepo.count(searchCoinditions);
-            // const accountTitles = await accountTitleRepo.search(searchCoinditions);
-            // res.set('X-Total-Count', totalCount.toString());
+
+            // const accountTitles = await accountTitleRepo.search(searchConditions);
             // res.json(accountTitles);
 
             const matchStages: any[] = [];
-            if (searchCoinditions.project !== undefined) {
-                if (Array.isArray(searchCoinditions.project.ids)) {
+            if (searchConditions.project !== undefined) {
+                if (Array.isArray(searchConditions.project.ids)) {
                     matchStages.push({
                         $match: {
                             'project.id': {
                                 $exists: true,
-                                $in: searchCoinditions.project.ids
+                                $in: searchConditions.project.ids
                             }
                         }
                     });
                 }
             }
-            if (searchCoinditions.codeValue !== undefined) {
+
+            if (typeof searchConditions.codeValue === 'string') {
                 matchStages.push({
                     $match: {
                         'hasCategoryCode.hasCategoryCode.codeValue': {
                             $exists: true,
-                            $regex: new RegExp(searchCoinditions.codeValue, 'i')
+                            $regex: new RegExp(searchConditions.codeValue)
                         }
                     }
                 });
-            }
-            if (searchCoinditions.inCodeSet !== undefined) {
-                if (searchCoinditions.inCodeSet.codeValue !== undefined) {
+            } else if (searchConditions.codeValue !== undefined && searchConditions.codeValue !== null) {
+                if (typeof searchConditions.codeValue.$eq === 'string') {
                     matchStages.push({
                         $match: {
-                            'hasCategoryCode.codeValue': {
+                            'hasCategoryCode.hasCategoryCode.codeValue': {
                                 $exists: true,
-                                $regex: new RegExp(searchCoinditions.inCodeSet.codeValue, 'i')
+                                $eq: searchConditions.codeValue.$eq
                             }
                         }
                     });
                 }
+            }
 
-                if (searchCoinditions.inCodeSet.inCodeSet !== undefined) {
-                    if (searchCoinditions.inCodeSet.inCodeSet.codeValue !== undefined) {
+            if (searchConditions.inCodeSet !== undefined) {
+                if (typeof searchConditions.inCodeSet.codeValue === 'string') {
+                    matchStages.push({
+                        $match: {
+                            'hasCategoryCode.codeValue': {
+                                $exists: true,
+                                $regex: new RegExp(searchConditions.inCodeSet.codeValue)
+                            }
+                        }
+                    });
+                } else if (searchConditions.inCodeSet.codeValue !== undefined && searchConditions.inCodeSet.codeValue !== null) {
+                    if (typeof searchConditions.inCodeSet.codeValue.$eq === 'string') {
                         matchStages.push({
                             $match: {
-                                codeValue: {
+                                'hasCategoryCode.codeValue': {
                                     $exists: true,
-                                    $regex: new RegExp(searchCoinditions.inCodeSet.inCodeSet.codeValue, 'i')
+                                    $eq: searchConditions.inCodeSet.codeValue.$eq
                                 }
                             }
                         });
                     }
                 }
+
+                if (searchConditions.inCodeSet.inCodeSet !== undefined) {
+                    if (typeof searchConditions.inCodeSet.inCodeSet.codeValue === 'string') {
+                        matchStages.push({
+                            $match: {
+                                codeValue: {
+                                    $exists: true,
+                                    $regex: new RegExp(searchConditions.inCodeSet.inCodeSet.codeValue)
+                                }
+                            }
+                        });
+                    } else if (searchConditions.inCodeSet.inCodeSet.codeValue !== undefined
+                        && searchConditions.inCodeSet.inCodeSet.codeValue !== null) {
+                        if (typeof searchConditions.inCodeSet.inCodeSet.codeValue.$eq === 'string') {
+                            matchStages.push({
+                                $match: {
+                                    codeValue: {
+                                        $exists: true,
+                                        $eq: searchConditions.inCodeSet.inCodeSet.codeValue.$eq
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
             }
 
-            const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
-                { $unwind: '$hasCategoryCode' },
-                { $unwind: '$hasCategoryCode.hasCategoryCode' },
-                ...matchStages,
-                { $count: 'totalCount' }
-            ])
-                .exec();
-            const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
+            // const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
+            //     { $unwind: '$hasCategoryCode' },
+            //     { $unwind: '$hasCategoryCode.hasCategoryCode' },
+            //     ...matchStages,
+            //     { $count: 'totalCount' }
+            // ])
+            //     .exec();
+            // const totalCount = (Array.isArray(totalCountResult) && totalCountResult.length > 0) ? totalCountResult[0].totalCount : 0;
 
             const aggregate = accountTitleRepo.accountTitleModel.aggregate([
                 { $unwind: '$hasCategoryCode' },
@@ -579,14 +701,13 @@ accountTitlesRouter.get(
 
             // tslint:disable-next-line:no-single-line-block-comment
             /* istanbul ignore else */
-            if (searchCoinditions.limit !== undefined && searchCoinditions.page !== undefined) {
-                aggregate.limit(searchCoinditions.limit * searchCoinditions.page)
-                    .skip(searchCoinditions.limit * (searchCoinditions.page - 1));
+            if (searchConditions.limit !== undefined && searchConditions.page !== undefined) {
+                aggregate.limit(searchConditions.limit * searchConditions.page)
+                    .skip(searchConditions.limit * (searchConditions.page - 1));
             }
 
             const accountTitles = await aggregate.exec();
 
-            res.set('X-Total-Count', totalCount.toString());
             res.json(accountTitles);
         } catch (error) {
             next(error);
@@ -604,37 +725,57 @@ accountTitlesRouter.put(
         body('codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('name')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required'),
+            .withMessage(() => 'Required'),
         body('inCodeSet.codeValue')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
         try {
-            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet;
             const accountTitle: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
-            delete accountTitle.inCodeSet;
+            const accountTitleSet = <chevre.factory.accountTitle.IAccountTitle>accountTitle.inCodeSet;
+            const accountTitleCategory = <chevre.factory.accountTitle.IAccountTitle>accountTitle.inCodeSet?.inCodeSet;
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
             const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitle.project.id
+                    },
+                    codeValue: accountTitleCategory.codeValue,
+                    'hasCategoryCode.codeValue': accountTitleSet.codeValue,
                     'hasCategoryCode.hasCategoryCode.codeValue': accountTitle.codeValue
                 },
-                { 'hasCategoryCode.$[element].hasCategoryCode.$': accountTitle },
+                {
+                    'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].codeValue': accountTitle.codeValue,
+                    ...(typeof accountTitle.name === 'string')
+                        ? { 'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].name': accountTitle.name }
+                        : undefined,
+                    ...(Array.isArray(accountTitle.additionalProperty))
+                        ? {
+                            'hasCategoryCode.$[accountTitleSet].hasCategoryCode.$[accountTitle].additionalProperty'
+                                : accountTitle.additionalProperty
+                        }
+                        : undefined
+                },
                 <any>{
                     new: true,
-                    arrayFilters: [{ 'element.codeValue': accountTitleSet.codeValue }]
+                    arrayFilters: [
+                        { 'accountTitleSet.codeValue': accountTitleSet.codeValue },
+                        { 'accountTitle.codeValue': accountTitle.codeValue }
+                    ]
                 }
             )
                 .exec();

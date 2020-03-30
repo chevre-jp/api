@@ -23,7 +23,7 @@ priceSpecificationsRouter.use(authentication);
 //     async (req, res, next) => {
 //         try {
 //             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
-//             const searchCoinditions: any = {
+//             const searchConditions: any = {
 //                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
 //                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
 //                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
@@ -31,9 +31,7 @@ priceSpecificationsRouter.use(authentication);
 //                 typeOf: chevre.factory.priceSpecificationType.CompoundPriceSpecification,
 //                 priceComponent: req.query.priceComponent
 //             };
-//             const totalCount = await priceSpecificationRepo.countCompoundPriceSpecifications(searchCoinditions);
-//             const priceSpecifications = await priceSpecificationRepo.searchCompoundPriceSpecifications(searchCoinditions);
-//             res.set('X-Total-Count', totalCount.toString());
+//             const priceSpecifications = await priceSpecificationRepo.searchCompoundPriceSpecifications(searchConditions);
 //             res.json(priceSpecifications);
 //         } catch (error) {
 //             next(error);
@@ -126,18 +124,16 @@ priceSpecificationsRouter.get(
     async (req, res, next) => {
         try {
             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
-            const searchCoinditions: chevre.factory.priceSpecification.ISearchConditions<any> = {
+            const searchConditions: chevre.factory.priceSpecification.ISearchConditions<any> = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const totalCount = await priceSpecificationRepo.count(searchCoinditions);
-            const priceSpecifications = await priceSpecificationRepo.search(searchCoinditions);
+            const priceSpecifications = await priceSpecificationRepo.search(searchConditions);
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(priceSpecifications);
+            res.json(priceSpecifications);
         } catch (error) {
             next(error);
         }

@@ -78,15 +78,79 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (req.query.sort !== undefined && req.query.sort.modifiedTime !== undefined)
-                ? { modifiedTime: req.query.sort.modifiedTime }
-                : undefined });
-        const totalCount = yield reservationRepo.count(searchCoinditions);
-        const reservations = yield reservationRepo.search(searchCoinditions);
-        res.set('X-Total-Count', totalCount.toString())
-            .json(reservations);
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: { bookingTime: chevre.factory.sortType.Descending } });
+        const reservations = yield reservationRepo.search(searchConditions);
+        res.json(reservations);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * ストリーミングダウンロード
+ */
+reservationsRouter.get('/download', permitScopes_1.default(['admin']), ...[
+    check_1.query('limit')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('page')
+        .optional()
+        .isInt()
+        .toInt(),
+    check_1.query('bookingFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('bookingThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('modifiedFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('modifiedThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.startFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.startThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.endFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('reservationFor.endThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    check_1.query('checkedIn')
+        .optional()
+        .isBoolean()
+        .toBoolean(),
+    check_1.query('attended')
+        .optional()
+        .isBoolean()
+        .toBoolean()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        const searchConditions = Object.assign({}, req.query);
+        const format = req.query.format;
+        const stream = yield chevre.service.report.reservation.stream({
+            conditions: searchConditions,
+            format: format
+        })({ reservation: reservationRepo });
+        res.type(`${req.query.format}; charset=utf-8`);
+        stream.pipe(res);
     }
     catch (error) {
         next(error);
@@ -99,6 +163,53 @@ reservationsRouter.get('/:id', permitScopes_1.default(['admin', 'reservations', 
             id: req.params.id
         });
         res.json(reservation);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * 予約部分変更
+ */
+reservationsRouter.patch('/:id', permitScopes_1.default(['admin', 'reservations.write']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const update = req.body;
+        delete update.id;
+        const actionRepo = new chevre.repository.Action(mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        // 予約存在確認
+        const reservation = yield reservationRepo.findById({ id: req.params.id });
+        const actionAttributes = Object.assign({ project: reservation.project, typeOf: 'ReplaceAction', agent: Object.assign(Object.assign({}, req.user), { id: req.user.sub, typeOf: 'Person' }), object: reservation }, {
+            replacee: reservation,
+            replacer: update,
+            targetCollection: {
+                typeOf: reservation.typeOf,
+                id: reservation.id
+            }
+        });
+        const action = yield actionRepo.start(actionAttributes);
+        try {
+            const doc = yield reservationRepo.reservationModel.findOneAndUpdate({ _id: req.params.id }, update)
+                .exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound(reservationRepo.reservationModel.modelName);
+            }
+        }
+        catch (error) {
+            // actionにエラー結果を追加
+            try {
+                const actionError = Object.assign(Object.assign({}, error), { message: error.message, name: error.name });
+                yield actionRepo.giveUp({ typeOf: action.typeOf, id: action.id, error: actionError });
+            }
+            catch (__) {
+                // 失敗したら仕方ない
+            }
+            throw error;
+        }
+        // アクション完了
+        yield actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
@@ -156,15 +267,11 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const searchCoinditions = Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.reservationType.EventReservation, 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.reservationType.EventReservation, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (req.query.sort !== undefined && req.query.sort.modifiedTime !== undefined)
-                ? { modifiedTime: req.query.sort.modifiedTime }
-                : undefined });
-        const totalCount = yield reservationRepo.count(searchCoinditions);
-        const reservations = yield reservationRepo.search(searchCoinditions);
-        res.set('X-Total-Count', totalCount.toString())
-            .json(reservations);
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: { bookingTime: chevre.factory.sortType.Descending } });
+        const reservations = yield reservationRepo.search(searchConditions);
+        res.json(reservations);
     }
     catch (error) {
         next(error);

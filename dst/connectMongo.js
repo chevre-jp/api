@@ -42,40 +42,49 @@ function connectMongo(params) {
         // 定期的にコネクションチェック
         // tslint:disable-next-line:no-single-line-block-comment
         /* istanbul ignore next */
-        setInterval(() => __awaiter(this, void 0, void 0, function* () {
-            // すでに接続済かどうか
-            if (connection.readyState === 1) {
-                // 接続済であれば疎通確認
-                let pingResult;
-                yield new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-                    try {
-                        pingResult = yield connection.db.admin()
-                            .ping();
-                        debug('pingResult:', pingResult);
+        if (params.disableCheck === undefined || params.disableCheck === false) {
+            setInterval(() => __awaiter(this, void 0, void 0, function* () {
+                // すでに接続済かどうか
+                if (connection.readyState === 1) {
+                    // 接続済であれば疎通確認
+                    let pingResult;
+                    yield new Promise((resolve) => {
+                        try {
+                            connection.db.admin()
+                                .ping()
+                                .then((result) => {
+                                pingResult = result;
+                                debug('pingResult:', pingResult);
+                            })
+                                .catch((error) => {
+                                // tslint:disable-next-line:no-console
+                                console.error('ping:', error);
+                            });
+                        }
+                        catch (error) {
+                            // tslint:disable-next-line:no-console
+                            console.error(error);
+                        }
+                        // tslint:disable-next-line:no-magic-numbers
+                        setTimeout(() => { resolve(); }, 5000);
+                    });
+                    // 疎通確認結果が適性であれば何もしない
+                    if (pingResult !== undefined && pingResult.ok === 1) {
+                        return;
                     }
-                    catch (error) {
-                        // tslint:disable-next-line:no-console
-                        console.error('ping:', error);
-                    }
-                    // tslint:disable-next-line:no-magic-numbers
-                    setTimeout(() => { resolve(); }, 5000);
-                }));
-                // 疎通確認結果が適性であれば何もしない
-                if (pingResult !== undefined && pingResult.ok === 1) {
-                    return;
                 }
-            }
-            try {
-                // コネクション再確立
-                yield connection.close();
-                yield connection.openUri(MONGOLAB_URI, connectOptions);
-                debug('MongoDB reconnected!');
-            }
-            catch (error) {
-                // tslint:disable-next-line:no-console
-                console.error('mongoose.connect:', error);
-            }
-        }), PING_INTERVAL);
+                try {
+                    // コネクション再確立
+                    yield connection.close();
+                    yield connection.openUri(MONGOLAB_URI, connectOptions);
+                    debug('MongoDB reconnected!');
+                }
+                catch (error) {
+                    // tslint:disable-next-line:no-console
+                    console.error('mongoose.connect:', error);
+                }
+            }), PING_INTERVAL);
+        }
         return connection;
     });
 }
