@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- スクリーン作成を追加
+- スクリーン削除を追加
+
 ### Changed
 
 ### Deprecated
