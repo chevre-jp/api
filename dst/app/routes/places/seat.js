@@ -26,6 +26,96 @@ const debug = createDebug('chevre-api:router');
 const seatRouter = express_1.Router();
 seatRouter.use(authentication_1.default);
 /**
+ * 作成
+ */
+seatRouter.post('', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
+    check_1.body('branchCode')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
+    // body('name')
+    //     .not()
+    //     .isEmpty()
+    //     .withMessage(() => 'Required'),
+    check_1.body('containedInPlace.branchCode')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString(),
+    check_1.body('containedInPlace.containedInPlace.branchCode')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString(),
+    check_1.body('containedInPlace.containedInPlace.containedInPlace.branchCode')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString(),
+    check_1.body('seatingType')
+        .optional()
+        .isArray(),
+    check_1.body('additionalProperty')
+        .optional()
+        .isArray()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const seat = Object.assign(Object.assign({}, req.body), { branchCode: req.params.branchCode });
+        const screeningRoomSection = seat.containedInPlace;
+        const screeningRoom = screeningRoomSection.containedInPlace;
+        const movieTheater = screeningRoom.containedInPlace;
+        const placeRepo = new chevre.repository.Place(mongoose.connection);
+        // 劇場の存在確認
+        let doc = yield placeRepo.placeModel.findOne({
+            'project.id': {
+                $exists: true,
+                $eq: seat.project.id
+            },
+            branchCode: movieTheater.branchCode,
+            'containsPlace.branchCode': screeningRoom.branchCode,
+            'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode
+        })
+            .exec();
+        if (doc === null) {
+            throw new chevre.factory.errors.NotFound('containedInPlace.containedInPlace.containedInPlace');
+        }
+        doc = yield placeRepo.placeModel.findOneAndUpdate({
+            'project.id': {
+                $exists: true,
+                $eq: seat.project.id
+            },
+            branchCode: movieTheater.branchCode,
+            'containsPlace.branchCode': screeningRoom.branchCode,
+            'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
+            'containsPlace.containsPlace.containsPlace.branchCode': { $ne: seat.branchCode }
+        }, {
+            $push: {
+                'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': seat
+            }
+        }, {
+            new: true,
+            arrayFilters: [
+                { 'screeningRoom.branchCode': screeningRoom.branchCode },
+                { 'screeningRoomSection.branchCode': screeningRoomSection.branchCode }
+            ]
+        })
+            .exec();
+        // 存在しなければコード重複
+        if (doc === null) {
+            throw new chevre.factory.errors.AlreadyInUse(chevre.factory.placeType.Seat, ['branchCode']);
+        }
+        res.status(http_status_1.CREATED)
+            .json(seat);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
  * 座席検索
  */
 seatRouter.get('', permitScopes_1.default(['admin']), validator_1.default, 
@@ -142,6 +232,10 @@ seatRouter.get('', permitScopes_1.default(['admin']), validator_1.default,
  * 更新
  */
 seatRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
     check_1.body('branchCode')
         .not()
         .isEmpty()
@@ -181,6 +275,10 @@ seatRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
         const screeningRoom = screeningRoomSection.containedInPlace;
         const movieTheater = screeningRoom.containedInPlace;
         const doc = yield placeRepo.placeModel.findOneAndUpdate({
+            'project.id': {
+                $exists: true,
+                $eq: seat.project.id
+            },
             branchCode: movieTheater.branchCode,
             'containsPlace.branchCode': screeningRoom.branchCode,
             'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
@@ -205,7 +303,70 @@ seatRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
         })
             .exec();
         if (doc === null) {
-            throw new chevre.factory.errors.NotFound(chevre.factory.placeType.ScreeningRoom);
+            throw new chevre.factory.errors.NotFound(chevre.factory.placeType.Seat);
+        }
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * 削除
+ */
+seatRouter.delete('/:branchCode', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
+    check_1.body('containedInPlace.branchCode')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString(),
+    check_1.body('containedInPlace.containedInPlace.branchCode')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString(),
+    check_1.body('containedInPlace.containedInPlace.containedInPlace.branchCode')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const seat = Object.assign(Object.assign({}, req.body), { branchCode: req.params.branchCode });
+        const screeningRoomSection = seat.containedInPlace;
+        const screeningRoom = screeningRoomSection.containedInPlace;
+        const movieTheater = screeningRoom.containedInPlace;
+        const placeRepo = new chevre.repository.Place(mongoose.connection);
+        const doc = yield placeRepo.placeModel.findOneAndUpdate({
+            'project.id': {
+                $exists: true,
+                $eq: seat.project.id
+            },
+            branchCode: movieTheater.branchCode,
+            'containsPlace.branchCode': screeningRoom.branchCode,
+            'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
+            'containsPlace.containsPlace.containsPlace.branchCode': seat.branchCode
+        }, {
+            $pull: {
+                'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': {
+                    branchCode: seat.branchCode
+                }
+            }
+        }, {
+            new: true,
+            arrayFilters: [
+                { 'screeningRoom.branchCode': screeningRoom.branchCode },
+                { 'screeningRoomSection.branchCode': screeningRoomSection.branchCode }
+            ]
+        })
+            .exec();
+        if (doc === null) {
+            throw new chevre.factory.errors.NotFound(chevre.factory.placeType.Seat);
         }
         res.status(http_status_1.NO_CONTENT)
             .end();

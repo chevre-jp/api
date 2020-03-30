@@ -6,7 +6,7 @@ import * as createDebug from 'debug';
 import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
 import { body } from 'express-validator/check';
-import { NO_CONTENT } from 'http-status';
+import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
 import authentication from '../../middlewares/authentication';
@@ -17,6 +17,113 @@ const debug = createDebug('chevre-api:router');
 
 const seatRouter = Router();
 seatRouter.use(authentication);
+
+/**
+ * 作成
+ */
+seatRouter.post(
+    '',
+    permitScopes(['admin']),
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
+        body('branchCode')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
+        // body('name')
+        //     .not()
+        //     .isEmpty()
+        //     .withMessage(() => 'Required'),
+        body('containedInPlace.branchCode')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString(),
+        body('containedInPlace.containedInPlace.branchCode')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString(),
+        body('containedInPlace.containedInPlace.containedInPlace.branchCode')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString(),
+        body('seatingType')
+            .optional()
+            .isArray(),
+        body('additionalProperty')
+            .optional()
+            .isArray()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const seat: chevre.factory.place.seat.IPlace = { ...req.body, branchCode: req.params.branchCode };
+
+            const screeningRoomSection = <chevre.factory.place.screeningRoomSection.IPlace>seat.containedInPlace;
+            const screeningRoom = <chevre.factory.place.screeningRoom.IPlace>screeningRoomSection.containedInPlace;
+            const movieTheater = <chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace;
+
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+
+            // 劇場の存在確認
+            let doc = await placeRepo.placeModel.findOne(
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: seat.project.id
+                    },
+                    branchCode: movieTheater.branchCode,
+                    'containsPlace.branchCode': screeningRoom.branchCode,
+                    'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode
+                }
+            )
+                .exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound('containedInPlace.containedInPlace.containedInPlace');
+            }
+
+            doc = await placeRepo.placeModel.findOneAndUpdate(
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: seat.project.id
+                    },
+                    branchCode: movieTheater.branchCode,
+                    'containsPlace.branchCode': screeningRoom.branchCode,
+                    'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
+                    'containsPlace.containsPlace.containsPlace.branchCode': { $ne: seat.branchCode }
+                },
+                {
+                    $push: {
+                        'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': seat
+                    }
+                },
+                <any>{
+                    new: true,
+                    arrayFilters: [
+                        { 'screeningRoom.branchCode': screeningRoom.branchCode },
+                        { 'screeningRoomSection.branchCode': screeningRoomSection.branchCode }
+                    ]
+                }
+            )
+                .exec();
+            // 存在しなければコード重複
+            if (doc === null) {
+                throw new chevre.factory.errors.AlreadyInUse(chevre.factory.placeType.Seat, ['branchCode']);
+            }
+
+            res.status(CREATED)
+                .json(seat);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 /**
  * 座席検索
@@ -153,6 +260,10 @@ seatRouter.put(
     '/:branchCode',
     permitScopes(['admin']),
     ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
         body('branchCode')
             .not()
             .isEmpty()
@@ -196,6 +307,10 @@ seatRouter.put(
             const movieTheater = <chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace;
             const doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
+                    'project.id': {
+                        $exists: true,
+                        $eq: seat.project.id
+                    },
                     branchCode: movieTheater.branchCode,
                     'containsPlace.branchCode': screeningRoom.branchCode,
                     'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
@@ -232,7 +347,84 @@ seatRouter.put(
             )
                 .exec();
             if (doc === null) {
-                throw new chevre.factory.errors.NotFound(chevre.factory.placeType.ScreeningRoom);
+                throw new chevre.factory.errors.NotFound(chevre.factory.placeType.Seat);
+            }
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * 削除
+ */
+seatRouter.delete(
+    '/:branchCode',
+    permitScopes(['admin']),
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
+        body('containedInPlace.branchCode')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString(),
+        body('containedInPlace.containedInPlace.branchCode')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString(),
+        body('containedInPlace.containedInPlace.containedInPlace.branchCode')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const seat: chevre.factory.place.seat.IPlace = { ...req.body, branchCode: req.params.branchCode };
+
+            const screeningRoomSection = <chevre.factory.place.screeningRoomSection.IPlace>seat.containedInPlace;
+            const screeningRoom = <chevre.factory.place.screeningRoom.IPlace>screeningRoomSection.containedInPlace;
+            const movieTheater = <chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace;
+
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+
+            const doc = await placeRepo.placeModel.findOneAndUpdate(
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: seat.project.id
+                    },
+                    branchCode: movieTheater.branchCode,
+                    'containsPlace.branchCode': screeningRoom.branchCode,
+                    'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
+                    'containsPlace.containsPlace.containsPlace.branchCode': seat.branchCode
+                },
+                {
+                    $pull: {
+                        'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': {
+                            branchCode: seat.branchCode
+                        }
+                    }
+                },
+                <any>{
+                    new: true,
+                    arrayFilters: [
+                        { 'screeningRoom.branchCode': screeningRoom.branchCode },
+                        { 'screeningRoomSection.branchCode': screeningRoomSection.branchCode }
+                    ]
+                }
+            )
+                .exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound(chevre.factory.placeType.Seat);
             }
 
             res.status(NO_CONTENT)
