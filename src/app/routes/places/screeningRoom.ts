@@ -190,6 +190,22 @@ screeningRoomRouter.get(
                 });
             }
 
+            const nameCodeRegex = searchConditions.name?.$regex;
+            if (typeof nameCodeRegex === 'string') {
+                matchStages.push({
+                    $match: {
+                        $or: [
+                            {
+                                'containsPlace.name.ja': {
+                                    $exists: true,
+                                    $regex: new RegExp(nameCodeRegex)
+                                }
+                            }
+                        ]
+                    }
+                });
+            }
+
             const aggregate = placeRepo.placeModel.aggregate([
                 { $unwind: '$containsPlace' },
                 ...matchStages,

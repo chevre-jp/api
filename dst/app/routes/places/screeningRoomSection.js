@@ -107,7 +107,7 @@ screeningRoomSectionRouter.post('', permitScopes_1.default(['admin']), ...[
 screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), validator_1.default, 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
@@ -164,7 +164,22 @@ screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), validator_
                 }
             });
         }
-        const branchCodeRegex = (_h = searchConditions.branchCode) === null || _h === void 0 ? void 0 : _h.$regex;
+        const nameCodeRegex = (_h = searchConditions.name) === null || _h === void 0 ? void 0 : _h.$regex;
+        if (typeof nameCodeRegex === 'string') {
+            matchStages.push({
+                $match: {
+                    $or: [
+                        {
+                            'containsPlace.containsPlace.name.ja': {
+                                $exists: true,
+                                $regex: new RegExp(nameCodeRegex)
+                            }
+                        }
+                    ]
+                }
+            });
+        }
+        const branchCodeRegex = (_j = searchConditions.branchCode) === null || _j === void 0 ? void 0 : _j.$regex;
         if (typeof branchCodeRegex === 'string') {
             matchStages.push({
                 $match: {

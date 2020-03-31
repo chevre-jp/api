@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - スクリーン検索条件拡張
 - 座席検索条件拡張
+- 場所コレクションインデックス調整
 
 ### Deprecated
 

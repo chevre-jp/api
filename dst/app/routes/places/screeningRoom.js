@@ -99,7 +99,7 @@ screeningRoomRouter.post('', permitScopes_1.default(['admin']), ...[
 screeningRoomRouter.get('', permitScopes_1.default(['admin']), validator_1.default, 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
@@ -167,6 +167,21 @@ screeningRoomRouter.get('', permitScopes_1.default(['admin']), validator_1.defau
                         $exists: true,
                         $regex: new RegExp(branchCodeRegex)
                     }
+                }
+            });
+        }
+        const nameCodeRegex = (_d = searchConditions.name) === null || _d === void 0 ? void 0 : _d.$regex;
+        if (typeof nameCodeRegex === 'string') {
+            matchStages.push({
+                $match: {
+                    $or: [
+                        {
+                            'containsPlace.name.ja': {
+                                $exists: true,
+                                $regex: new RegExp(nameCodeRegex)
+                            }
+                        }
+                    ]
                 }
             });
         }
