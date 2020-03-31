@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - スクリーン削除を追加
 - 座席作成を追加
 - 座席削除を追加
+- スクリーンセクション管理を追加
 
 ### Changed
 
