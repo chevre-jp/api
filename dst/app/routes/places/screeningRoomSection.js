@@ -257,7 +257,11 @@ screeningRoomSectionRouter.put('/:branchCode', permitScopes_1.default(['admin'])
             branchCode: movieTheater.branchCode,
             'containsPlace.branchCode': screeningRoom.branchCode,
             'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode
-        }, Object.assign(Object.assign({ 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].branchCode': screeningRoomSection.branchCode }, (Array.isArray(screeningRoomSection.additionalProperty))
+        }, Object.assign(Object.assign(Object.assign({ 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].branchCode': screeningRoomSection.branchCode }, (screeningRoomSection.name !== undefined && screeningRoomSection !== null)
+            ? {
+                'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].name': screeningRoomSection.name
+            }
+            : undefined), (Array.isArray(screeningRoomSection.additionalProperty))
             ? {
                 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].additionalProperty': screeningRoomSection.additionalProperty
             }
@@ -293,10 +297,6 @@ screeningRoomSectionRouter.delete('/:branchCode', permitScopes_1.default(['admin
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('name')
-        .not()
-        .isEmpty()
-        .withMessage(() => 'Required'),
     check_1.body('containedInPlace.branchCode')
         .not()
         .isEmpty()
@@ -306,10 +306,7 @@ screeningRoomSectionRouter.delete('/:branchCode', permitScopes_1.default(['admin
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
-        .isString(),
-    check_1.body('additionalProperty')
-        .optional()
-        .isArray()
+        .isString()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const screeningRoomSection = Object.assign(Object.assign({}, req.body), { branchCode: req.params.branchCode });

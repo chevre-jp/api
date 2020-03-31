@@ -295,6 +295,12 @@ screeningRoomSectionRouter.put(
                 {
                     'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].branchCode':
                         screeningRoomSection.branchCode,
+                    ...(screeningRoomSection.name !== undefined && screeningRoomSection !== null)
+                        ? {
+                            'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].name':
+                                screeningRoomSection.name
+                        }
+                        : undefined,
                     ...(Array.isArray(screeningRoomSection.additionalProperty))
                         ? {
                             'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].additionalProperty':
@@ -341,10 +347,6 @@ screeningRoomSectionRouter.delete(
             .not()
             .isEmpty()
             .withMessage(() => 'Required'),
-        body('name')
-            .not()
-            .isEmpty()
-            .withMessage(() => 'Required'),
         body('containedInPlace.branchCode')
             .not()
             .isEmpty()
@@ -354,10 +356,7 @@ screeningRoomSectionRouter.delete(
             .not()
             .isEmpty()
             .withMessage(() => 'Required')
-            .isString(),
-        body('additionalProperty')
-            .optional()
-            .isArray()
+            .isString()
     ],
     validator,
     async (req, res, next) => {
