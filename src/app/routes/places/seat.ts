@@ -159,6 +159,18 @@ seatRouter.get(
                 }
             }
 
+            const containedInPlaceBranchCodeEq = searchConditions.containedInPlace?.branchCode?.$eq;
+            if (typeof containedInPlaceBranchCodeEq === 'string') {
+                matchStages.push({
+                    $match: {
+                        'containsPlace.containsPlace.branchCode': {
+                            $exists: true,
+                            $eq: containedInPlaceBranchCodeEq
+                        }
+                    }
+                });
+            }
+
             if (searchConditions.containedInPlace !== undefined) {
                 if (searchConditions.containedInPlace.containedInPlace !== undefined) {
                     if (searchConditions.containedInPlace.containedInPlace.branchCode !== undefined) {
