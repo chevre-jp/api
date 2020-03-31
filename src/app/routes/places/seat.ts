@@ -205,6 +205,18 @@ seatRouter.get(
                 }
             }
 
+            const branchCodeRegex = searchConditions.branchCode?.$regex;
+            if (typeof branchCodeRegex === 'string') {
+                matchStages.push({
+                    $match: {
+                        'containsPlace.containsPlace.containsPlace.branchCode': {
+                            $exists: true,
+                            $regex: new RegExp(branchCodeRegex)
+                        }
+                    }
+                });
+            }
+
             const aggregate = placeRepo.placeModel.aggregate([
                 { $unwind: '$containsPlace' },
                 { $unwind: '$containsPlace.containsPlace' },
