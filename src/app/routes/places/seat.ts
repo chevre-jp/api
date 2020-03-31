@@ -62,7 +62,7 @@ seatRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const seat: chevre.factory.place.seat.IPlace = { ...req.body, branchCode: req.params.branchCode };
+            const seat: chevre.factory.place.seat.IPlace = { ...req.body };
 
             const screeningRoomSection = <chevre.factory.place.screeningRoomSection.IPlace>seat.containedInPlace;
             const screeningRoom = <chevre.factory.place.screeningRoom.IPlace>screeningRoomSection.containedInPlace;

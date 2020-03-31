@@ -64,7 +64,7 @@ seatRouter.post('', permitScopes_1.default(['admin']), ...[
         .isArray()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const seat = Object.assign(Object.assign({}, req.body), { branchCode: req.params.branchCode });
+        const seat = Object.assign({}, req.body);
         const screeningRoomSection = seat.containedInPlace;
         const screeningRoom = screeningRoomSection.containedInPlace;
         const movieTheater = screeningRoom.containedInPlace;
