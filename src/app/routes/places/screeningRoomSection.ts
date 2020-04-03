@@ -81,18 +81,26 @@ screeningRoomSectionRouter.post(
                         $eq: screeningRoomSection.project.id
                     },
                     branchCode: movieTheater.branchCode,
-                    'containsPlace.branchCode': screeningRoom.branchCode,
-                    'containsPlace.containsPlace.branchCode': { $ne: screeningRoomSection.branchCode }
+                    'containsPlace.branchCode': screeningRoom.branchCode
+                    // 'containsPlace.containsPlace.branchCode': { $ne: screeningRoomSection.branchCode }
                 },
                 {
                     $push: {
-                        'containsPlace.$[screeningRoom].containsPlace': screeningRoomSection
+                        'containsPlace.$[screeningRoom].containsPlace': {
+                            typeOf: screeningRoomSection.typeOf,
+                            branchCode: screeningRoomSection.branchCode,
+                            name: screeningRoomSection.name,
+                            additionalProperty: screeningRoomSection.additionalProperty
+                        }
                     }
                 },
                 <any>{
                     new: true,
                     arrayFilters: [
-                        { 'screeningRoom.branchCode': screeningRoom.branchCode }
+                        {
+                            'screeningRoom.branchCode': screeningRoom.branchCode,
+                            'screeningRoom.containsPlace.branchCode': { $ne: screeningRoomSection.branchCode }
+                        }
                     ]
                 }
             )
@@ -321,6 +329,12 @@ screeningRoomSectionRouter.put(
                         ? {
                             'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].additionalProperty':
                                 screeningRoomSection.additionalProperty
+                        }
+                        : undefined,
+                    ...(Array.isArray(screeningRoomSection.containsPlace) && screeningRoomSection.containsPlace.length > 0)
+                        ? {
+                            'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace':
+                                screeningRoomSection.containsPlace
                         }
                         : undefined,
                     ...($unset !== undefined && $unset !== null)

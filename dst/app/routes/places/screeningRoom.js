@@ -78,7 +78,13 @@ screeningRoomRouter.post('', permitScopes_1.default(['admin']), ...[
             'containsPlace.branchCode': { $ne: screeningRoom.branchCode }
         }, {
             $push: {
-                containsPlace: screeningRoom
+                containsPlace: {
+                    typeOf: screeningRoom.typeOf,
+                    branchCode: screeningRoom.branchCode,
+                    name: screeningRoom.name,
+                    address: screeningRoom.address,
+                    additionalProperty: screeningRoom.additionalProperty
+                }
             }
         }, { new: true })
             .exec();

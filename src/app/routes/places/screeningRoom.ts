@@ -83,7 +83,13 @@ screeningRoomRouter.post(
                 },
                 {
                     $push: {
-                        containsPlace: screeningRoom
+                        containsPlace: {
+                            typeOf: screeningRoom.typeOf,
+                            branchCode: screeningRoom.branchCode,
+                            name: screeningRoom.name,
+                            address: screeningRoom.address,
+                            additionalProperty: screeningRoom.additionalProperty
+                        }
                     }
                 },
                 { new: true }

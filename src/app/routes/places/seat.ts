@@ -100,7 +100,12 @@ seatRouter.post(
                 },
                 {
                     $push: {
-                        'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': seat
+                        'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': {
+                            typeOf: seat.typeOf,
+                            branchCode: seat.branchCode,
+                            seatingType: seat.seatingType,
+                            additionalProperty: seat.additionalProperty
+                        }
                     }
                 },
                 <any>{
