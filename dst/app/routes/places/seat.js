@@ -90,8 +90,7 @@ seatRouter.post('', permitScopes_1.default(['admin']), ...[
             },
             branchCode: movieTheater.branchCode,
             'containsPlace.branchCode': screeningRoom.branchCode,
-            'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
-            'containsPlace.containsPlace.containsPlace.branchCode': { $ne: seat.branchCode }
+            'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode
         }, {
             $push: {
                 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': {
@@ -105,7 +104,10 @@ seatRouter.post('', permitScopes_1.default(['admin']), ...[
             new: true,
             arrayFilters: [
                 { 'screeningRoom.branchCode': screeningRoom.branchCode },
-                { 'screeningRoomSection.branchCode': screeningRoomSection.branchCode }
+                {
+                    'screeningRoomSection.branchCode': screeningRoomSection.branchCode,
+                    'screeningRoomSection.containsPlace.branchCode': { $ne: seat.branchCode }
+                }
             ]
         })
             .exec();

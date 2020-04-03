@@ -290,7 +290,14 @@ screeningRoomSectionRouter.put('/:branchCode', permitScopes_1.default(['admin'])
             }
             : undefined), (Array.isArray(screeningRoomSection.containsPlace) && screeningRoomSection.containsPlace.length > 0)
             ? {
-                'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': screeningRoomSection.containsPlace
+                'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': screeningRoomSection.containsPlace.map((p) => {
+                    return {
+                        typeOf: p.typeOf,
+                        branchCode: p.branchCode,
+                        seatingType: p.seatingType,
+                        additionalProperty: p.additionalProperty
+                    };
+                })
             }
             : undefined), ($unset !== undefined && $unset !== null)
             ? { $unset: req.body.$unset }

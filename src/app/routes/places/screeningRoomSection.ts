@@ -334,7 +334,14 @@ screeningRoomSectionRouter.put(
                     ...(Array.isArray(screeningRoomSection.containsPlace) && screeningRoomSection.containsPlace.length > 0)
                         ? {
                             'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace':
-                                screeningRoomSection.containsPlace
+                                screeningRoomSection.containsPlace.map((p) => {
+                                    return {
+                                        typeOf: p.typeOf,
+                                        branchCode: p.branchCode,
+                                        seatingType: p.seatingType,
+                                        additionalProperty: p.additionalProperty
+                                    };
+                                })
                         }
                         : undefined,
                     ...($unset !== undefined && $unset !== null)
