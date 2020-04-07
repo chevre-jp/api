@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v7.1.0 - 2020-04-07
+
+### Added
+
 - スクリーン作成を追加
 - スクリーン削除を追加
 - 座席作成を追加
@@ -22,14 +36,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 場所コレクションインデックス調整
 - MongoDB接続オプション調整
 - Mongoose: the `safe` option -> writeConcerns
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## v7.0.0 - 2020-03-30
 
