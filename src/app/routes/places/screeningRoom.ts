@@ -6,7 +6,7 @@ import * as createDebug from 'debug';
 import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
 import { body } from 'express-validator/check';
-import { NO_CONTENT } from 'http-status';
+import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
 import authentication from '../../middlewares/authentication';
@@ -17,6 +17,96 @@ const debug = createDebug('chevre-api:router');
 
 const screeningRoomRouter = Router();
 screeningRoomRouter.use(authentication);
+
+/**
+ * 作成
+ */
+screeningRoomRouter.post(
+    '',
+    permitScopes(['admin']),
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
+        body('branchCode')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
+        body('name')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
+        body('containedInPlace.branchCode')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString(),
+        body('additionalProperty')
+            .optional()
+            .isArray(),
+        body('openSeatingAllowed')
+            .optional()
+            .isBoolean()
+            .toBoolean()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const screeningRoom: chevre.factory.place.screeningRoom.IPlace = { ...req.body };
+
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+
+            // 劇場の存在確認
+            let doc = await placeRepo.placeModel.findOne(
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: screeningRoom.project.id
+                    },
+                    branchCode: (<chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace).branchCode
+                }
+            )
+                .exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound('containedInPlace');
+            }
+
+            doc = await placeRepo.placeModel.findOneAndUpdate(
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: screeningRoom.project.id
+                    },
+                    branchCode: (<chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace).branchCode,
+                    'containsPlace.branchCode': { $ne: screeningRoom.branchCode }
+                },
+                {
+                    $push: {
+                        containsPlace: {
+                            typeOf: screeningRoom.typeOf,
+                            branchCode: screeningRoom.branchCode,
+                            name: screeningRoom.name,
+                            address: screeningRoom.address,
+                            additionalProperty: screeningRoom.additionalProperty
+                        }
+                    }
+                },
+                { new: true }
+            )
+                .exec();
+            // 存在しなければコード重複
+            if (doc === null) {
+                throw new chevre.factory.errors.AlreadyInUse(chevre.factory.placeType.ScreeningRoom, ['branchCode']);
+            }
+
+            res.status(CREATED)
+                .json(screeningRoom);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 /**
  * 検索
@@ -94,6 +184,34 @@ screeningRoomRouter.get(
                 }
             }
 
+            const branchCodeRegex = searchConditions.branchCode?.$regex;
+            if (typeof branchCodeRegex === 'string') {
+                matchStages.push({
+                    $match: {
+                        'containsPlace.branchCode': {
+                            $exists: true,
+                            $regex: new RegExp(branchCodeRegex)
+                        }
+                    }
+                });
+            }
+
+            const nameCodeRegex = searchConditions.name?.$regex;
+            if (typeof nameCodeRegex === 'string') {
+                matchStages.push({
+                    $match: {
+                        $or: [
+                            {
+                                'containsPlace.name.ja': {
+                                    $exists: true,
+                                    $regex: new RegExp(nameCodeRegex)
+                                }
+                            }
+                        ]
+                    }
+                });
+            }
+
             const aggregate = placeRepo.placeModel.aggregate([
                 { $unwind: '$containsPlace' },
                 ...matchStages,
@@ -139,6 +257,10 @@ screeningRoomRouter.put(
     '/:branchCode',
     permitScopes(['admin']),
     ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
         body('branchCode')
             .not()
             .isEmpty()
@@ -172,6 +294,10 @@ screeningRoomRouter.put(
             debug(typeof screeningRoom.openSeatingAllowed);
             const doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
+                    'project.id': {
+                        $exists: true,
+                        $eq: screeningRoom.project.id
+                    },
                     branchCode: (<chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace).branchCode,
                     'containsPlace.branchCode': screeningRoom.branchCode
                 },
@@ -196,6 +322,58 @@ screeningRoomRouter.put(
                     arrayFilters: [
                         { 'screeningRoom.branchCode': screeningRoom.branchCode }
                     ]
+                }
+            )
+                .exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound(chevre.factory.placeType.ScreeningRoom);
+            }
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * 削除
+ */
+screeningRoomRouter.delete(
+    '/:branchCode',
+    permitScopes(['admin']),
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
+        body('containedInPlace.branchCode')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+            .isString()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const screeningRoom: chevre.factory.place.screeningRoom.IPlace = { ...req.body, branchCode: req.params.branchCode };
+
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+
+            const doc = await placeRepo.placeModel.findOneAndUpdate(
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: screeningRoom.project.id
+                    },
+                    branchCode: (<chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace).branchCode,
+                    'containsPlace.branchCode': screeningRoom.branchCode
+                },
+                {
+                    $pull: {
+                        containsPlace: { branchCode: screeningRoom.branchCode }
+                    }
                 }
             )
                 .exec();

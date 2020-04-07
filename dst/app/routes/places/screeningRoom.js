@@ -26,12 +26,86 @@ const debug = createDebug('chevre-api:router');
 const screeningRoomRouter = express_1.Router();
 screeningRoomRouter.use(authentication_1.default);
 /**
+ * 作成
+ */
+screeningRoomRouter.post('', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
+    check_1.body('branchCode')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
+    check_1.body('containedInPlace.branchCode')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString(),
+    check_1.body('additionalProperty')
+        .optional()
+        .isArray(),
+    check_1.body('openSeatingAllowed')
+        .optional()
+        .isBoolean()
+        .toBoolean()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const screeningRoom = Object.assign({}, req.body);
+        const placeRepo = new chevre.repository.Place(mongoose.connection);
+        // 劇場の存在確認
+        let doc = yield placeRepo.placeModel.findOne({
+            'project.id': {
+                $exists: true,
+                $eq: screeningRoom.project.id
+            },
+            branchCode: screeningRoom.containedInPlace.branchCode
+        })
+            .exec();
+        if (doc === null) {
+            throw new chevre.factory.errors.NotFound('containedInPlace');
+        }
+        doc = yield placeRepo.placeModel.findOneAndUpdate({
+            'project.id': {
+                $exists: true,
+                $eq: screeningRoom.project.id
+            },
+            branchCode: screeningRoom.containedInPlace.branchCode,
+            'containsPlace.branchCode': { $ne: screeningRoom.branchCode }
+        }, {
+            $push: {
+                containsPlace: {
+                    typeOf: screeningRoom.typeOf,
+                    branchCode: screeningRoom.branchCode,
+                    name: screeningRoom.name,
+                    address: screeningRoom.address,
+                    additionalProperty: screeningRoom.additionalProperty
+                }
+            }
+        }, { new: true })
+            .exec();
+        // 存在しなければコード重複
+        if (doc === null) {
+            throw new chevre.factory.errors.AlreadyInUse(chevre.factory.placeType.ScreeningRoom, ['branchCode']);
+        }
+        res.status(http_status_1.CREATED)
+            .json(screeningRoom);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
  * 検索
  */
 screeningRoomRouter.get('', permitScopes_1.default(['admin']), validator_1.default, 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c, _d;
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
@@ -91,6 +165,32 @@ screeningRoomRouter.get('', permitScopes_1.default(['admin']), validator_1.defau
                 });
             }
         }
+        const branchCodeRegex = (_c = searchConditions.branchCode) === null || _c === void 0 ? void 0 : _c.$regex;
+        if (typeof branchCodeRegex === 'string') {
+            matchStages.push({
+                $match: {
+                    'containsPlace.branchCode': {
+                        $exists: true,
+                        $regex: new RegExp(branchCodeRegex)
+                    }
+                }
+            });
+        }
+        const nameCodeRegex = (_d = searchConditions.name) === null || _d === void 0 ? void 0 : _d.$regex;
+        if (typeof nameCodeRegex === 'string') {
+            matchStages.push({
+                $match: {
+                    $or: [
+                        {
+                            'containsPlace.name.ja': {
+                                $exists: true,
+                                $regex: new RegExp(nameCodeRegex)
+                            }
+                        }
+                    ]
+                }
+            });
+        }
         const aggregate = placeRepo.placeModel.aggregate([
             { $unwind: '$containsPlace' },
             ...matchStages,
@@ -129,6 +229,10 @@ screeningRoomRouter.get('', permitScopes_1.default(['admin']), validator_1.defau
  * 更新
  */
 screeningRoomRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
     check_1.body('branchCode')
         .not()
         .isEmpty()
@@ -157,6 +261,10 @@ screeningRoomRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
         debug('updating screeningRoom', screeningRoom);
         debug(typeof screeningRoom.openSeatingAllowed);
         const doc = yield placeRepo.placeModel.findOneAndUpdate({
+            'project.id': {
+                $exists: true,
+                $eq: screeningRoom.project.id
+            },
             branchCode: screeningRoom.containedInPlace.branchCode,
             'containsPlace.branchCode': screeningRoom.branchCode
         }, Object.assign(Object.assign(Object.assign(Object.assign({ 'containsPlace.$[screeningRoom].name': screeningRoom.name }, (screeningRoom.address !== undefined && screeningRoom.address !== null)
@@ -172,6 +280,46 @@ screeningRoomRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
             arrayFilters: [
                 { 'screeningRoom.branchCode': screeningRoom.branchCode }
             ]
+        })
+            .exec();
+        if (doc === null) {
+            throw new chevre.factory.errors.NotFound(chevre.factory.placeType.ScreeningRoom);
+        }
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * 削除
+ */
+screeningRoomRouter.delete('/:branchCode', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
+    check_1.body('containedInPlace.branchCode')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+        .isString()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const screeningRoom = Object.assign(Object.assign({}, req.body), { branchCode: req.params.branchCode });
+        const placeRepo = new chevre.repository.Place(mongoose.connection);
+        const doc = yield placeRepo.placeModel.findOneAndUpdate({
+            'project.id': {
+                $exists: true,
+                $eq: screeningRoom.project.id
+            },
+            branchCode: screeningRoom.containedInPlace.branchCode,
+            'containsPlace.branchCode': screeningRoom.branchCode
+        }, {
+            $pull: {
+                containsPlace: { branchCode: screeningRoom.branchCode }
+            }
         })
             .exec();
         if (doc === null) {

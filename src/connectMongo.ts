@@ -5,19 +5,27 @@ import * as createDebug from 'debug';
 import * as mongoose from 'mongoose';
 
 const debug = createDebug('chevre-api:connectMongo');
-const PING_INTERVAL = 10000;
 const MONGOLAB_URI = <string>process.env.MONGOLAB_URI;
 const AUTO_INDEX = process.env.MONGO_AUTO_INDEX_DISABLED !== '1';
+const MONGO_PING_INTERVAL_MS = (typeof process.env.MONGO_PING_INTERVAL_MS === 'string')
+    ? Number(process.env.MONGO_PING_INTERVAL_MS)
+    // tslint:disable-next-line:no-magic-numbers
+    : 30000;
+// tslint:disable-next-line:no-magic-numbers
+const MONGO_PING_TIMEOUT_MS = (typeof process.env.MONGO_PING_TIMEOUT_MS === 'string') ? Number(process.env.MONGO_PING_TIMEOUT_MS) : 10000;
 
 const connectOptions: mongoose.ConnectionOptions = {
     autoIndex: AUTO_INDEX,
-    autoReconnect: true,
+    // autoReconnect: true,
     keepAlive: true,
     connectTimeoutMS: 30000,
-    socketTimeoutMS: 0,
-    reconnectTries: 30,
-    reconnectInterval: 1000,
-    useNewUrlParser: true
+    socketTimeoutMS: 45000,
+    // reconnectTries: 30,
+    // reconnectInterval: 1000,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 };
 
 export async function connectMongo(params: {
@@ -53,15 +61,15 @@ export async function connectMongo(params: {
                                 })
                                 .catch((error) => {
                                     // tslint:disable-next-line:no-console
-                                    console.error('ping:', error);
+                                    console.error('ping error:', error);
                                 });
                         } catch (error) {
                             // tslint:disable-next-line:no-console
-                            console.error(error);
+                            console.error('connection.db.admin() error:', error);
                         }
 
                         // tslint:disable-next-line:no-magic-numbers
-                        setTimeout(() => { resolve(); }, 5000);
+                        setTimeout(() => { resolve(); }, MONGO_PING_TIMEOUT_MS);
                     });
 
                     // 疎通確認結果が適性であれば何もしない
@@ -80,7 +88,7 @@ export async function connectMongo(params: {
                     console.error('mongoose.connect:', error);
                 }
             },
-            PING_INTERVAL
+            MONGO_PING_INTERVAL_MS
         );
     }
 

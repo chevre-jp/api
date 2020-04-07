@@ -18,6 +18,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.1.0 - 2020-04-07
+
+### Added
+
+- スクリーン作成を追加
+- スクリーン削除を追加
+- 座席作成を追加
+- 座席削除を追加
+- スクリーンセクション管理を追加
+- イベント固有のキャパシティ設定による在庫管理を実装
+
+### Changed
+
+- スクリーン検索条件拡張
+- 座席検索条件拡張
+- 場所コレクションインデックス調整
+- MongoDB接続オプション調整
+- Mongoose: the `safe` option -> writeConcerns
+
 ## v7.0.0 - 2020-03-30
 
 ### Added

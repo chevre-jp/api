@@ -1,8 +1,7 @@
 /**
- * 座席ルーター
+ * スクリーンセクションルーター
  */
 import * as chevre from '@chevre/domain';
-import * as createDebug from 'debug';
 import { Router } from 'express';
 // tslint:disable-next-line:no-submodule-imports
 import { body } from 'express-validator/check';
@@ -13,15 +12,13 @@ import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
-const debug = createDebug('chevre-api:router');
-
-const seatRouter = Router();
-seatRouter.use(authentication);
+const screeningRoomSectionRouter = Router();
+screeningRoomSectionRouter.use(authentication);
 
 /**
  * 作成
  */
-seatRouter.post(
+screeningRoomSectionRouter.post(
     '',
     permitScopes(['admin']),
     ...[
@@ -33,10 +30,10 @@ seatRouter.post(
             .not()
             .isEmpty()
             .withMessage(() => 'Required'),
-        // body('name')
-        //     .not()
-        //     .isEmpty()
-        //     .withMessage(() => 'Required'),
+        body('name')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
         body('containedInPlace.branchCode')
             .not()
             .isEmpty()
@@ -47,14 +44,6 @@ seatRouter.post(
             .isEmpty()
             .withMessage(() => 'Required')
             .isString(),
-        body('containedInPlace.containedInPlace.containedInPlace.branchCode')
-            .not()
-            .isEmpty()
-            .withMessage(() => 'Required')
-            .isString(),
-        body('seatingType')
-            .optional()
-            .isArray(),
         body('additionalProperty')
             .optional()
             .isArray()
@@ -62,9 +51,8 @@ seatRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const seat: chevre.factory.place.seat.IPlace = { ...req.body };
+            const screeningRoomSection: chevre.factory.place.screeningRoomSection.IPlace = { ...req.body };
 
-            const screeningRoomSection = <chevre.factory.place.screeningRoomSection.IPlace>seat.containedInPlace;
             const screeningRoom = <chevre.factory.place.screeningRoom.IPlace>screeningRoomSection.containedInPlace;
             const movieTheater = <chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace;
 
@@ -75,45 +63,43 @@ seatRouter.post(
                 {
                     'project.id': {
                         $exists: true,
-                        $eq: seat.project.id
+                        $eq: screeningRoomSection.project.id
                     },
                     branchCode: movieTheater.branchCode,
-                    'containsPlace.branchCode': screeningRoom.branchCode,
-                    'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode
+                    'containsPlace.branchCode': screeningRoom.branchCode
                 }
             )
                 .exec();
             if (doc === null) {
-                throw new chevre.factory.errors.NotFound('containedInPlace.containedInPlace.containedInPlace');
+                throw new chevre.factory.errors.NotFound('containedInPlace.containedInPlace');
             }
 
             doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
                     'project.id': {
                         $exists: true,
-                        $eq: seat.project.id
+                        $eq: screeningRoomSection.project.id
                     },
                     branchCode: movieTheater.branchCode,
-                    'containsPlace.branchCode': screeningRoom.branchCode,
-                    'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode
+                    'containsPlace.branchCode': screeningRoom.branchCode
+                    // 'containsPlace.containsPlace.branchCode': { $ne: screeningRoomSection.branchCode }
                 },
                 {
                     $push: {
-                        'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': {
-                            typeOf: seat.typeOf,
-                            branchCode: seat.branchCode,
-                            seatingType: seat.seatingType,
-                            additionalProperty: seat.additionalProperty
+                        'containsPlace.$[screeningRoom].containsPlace': {
+                            typeOf: screeningRoomSection.typeOf,
+                            branchCode: screeningRoomSection.branchCode,
+                            name: screeningRoomSection.name,
+                            additionalProperty: screeningRoomSection.additionalProperty
                         }
                     }
                 },
                 <any>{
                     new: true,
                     arrayFilters: [
-                        { 'screeningRoom.branchCode': screeningRoom.branchCode },
                         {
-                            'screeningRoomSection.branchCode': screeningRoomSection.branchCode,
-                            'screeningRoomSection.containsPlace.branchCode': { $ne: seat.branchCode }
+                            'screeningRoom.branchCode': screeningRoom.branchCode,
+                            'screeningRoom.containsPlace.branchCode': { $ne: screeningRoomSection.branchCode }
                         }
                     ]
                 }
@@ -121,11 +107,11 @@ seatRouter.post(
                 .exec();
             // 存在しなければコード重複
             if (doc === null) {
-                throw new chevre.factory.errors.AlreadyInUse(chevre.factory.placeType.Seat, ['branchCode']);
+                throw new chevre.factory.errors.AlreadyInUse(chevre.factory.placeType.ScreeningRoomSection, ['branchCode']);
             }
 
             res.status(CREATED)
-                .json(seat);
+                .json(screeningRoomSection);
         } catch (error) {
             next(error);
         }
@@ -133,9 +119,9 @@ seatRouter.post(
 );
 
 /**
- * 座席検索
+ * 検索
  */
-seatRouter.get(
+screeningRoomSectionRouter.get(
     '',
     permitScopes(['admin']),
     validator,
@@ -166,11 +152,25 @@ seatRouter.get(
                 }
             }
 
+            // 劇場コード
+            const movieTheaterBranchCodeEq = searchConditions.containedInPlace?.containedInPlace?.branchCode?.$eq;
+            if (typeof movieTheaterBranchCodeEq === 'string') {
+                matchStages.push({
+                    $match: {
+                        branchCode: {
+                            $exists: true,
+                            $eq: movieTheaterBranchCodeEq
+                        }
+                    }
+                });
+            }
+
+            // スクリーンコード
             const containedInPlaceBranchCodeEq = searchConditions.containedInPlace?.branchCode?.$eq;
             if (typeof containedInPlaceBranchCodeEq === 'string') {
                 matchStages.push({
                     $match: {
-                        'containsPlace.containsPlace.branchCode': {
+                        'containsPlace.branchCode': {
                             $exists: true,
                             $eq: containedInPlaceBranchCodeEq
                         }
@@ -178,59 +178,14 @@ seatRouter.get(
                 });
             }
 
-            if (searchConditions.containedInPlace !== undefined) {
-                if (searchConditions.containedInPlace.containedInPlace !== undefined) {
-                    if (searchConditions.containedInPlace.containedInPlace.branchCode !== undefined) {
-                        if (typeof searchConditions.containedInPlace.containedInPlace.branchCode.$eq === 'string') {
-                            matchStages.push({
-                                $match: {
-                                    'containsPlace.branchCode': {
-                                        $exists: true,
-                                        $eq: searchConditions.containedInPlace.containedInPlace.branchCode.$eq
-                                    }
-                                }
-                            });
-                        }
-                    }
-
-                    if (searchConditions.containedInPlace.containedInPlace.containedInPlace !== undefined) {
-                        if (searchConditions.containedInPlace.containedInPlace.containedInPlace.branchCode !== undefined) {
-                            if (typeof searchConditions.containedInPlace.containedInPlace.containedInPlace.branchCode.$eq === 'string') {
-                                matchStages.push({
-                                    $match: {
-                                        branchCode: {
-                                            $exists: true,
-                                            $eq: searchConditions.containedInPlace.containedInPlace.containedInPlace.branchCode.$eq
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-
-            // 座席コード
-            if (searchConditions.branchCode !== undefined) {
-                if (typeof searchConditions.branchCode.$eq === 'string') {
-                    matchStages.push({
-                        $match: {
-                            'containsPlace.containsPlace.containsPlace.branchCode': {
-                                $exists: true,
-                                $eq: searchConditions.branchCode.$eq
-                            }
-                        }
-                    });
-                }
-            }
-
-            const branchCodeRegex = searchConditions.branchCode?.$regex;
-            if (typeof branchCodeRegex === 'string') {
+            // セクションコード
+            const sectionBranchCodeEq = searchConditions?.branchCode?.$eq;
+            if (typeof sectionBranchCodeEq === 'string') {
                 matchStages.push({
                     $match: {
-                        'containsPlace.containsPlace.containsPlace.branchCode': {
+                        'containsPlace.containsPlace.branchCode': {
                             $exists: true,
-                            $regex: new RegExp(branchCodeRegex)
+                            $eq: sectionBranchCodeEq
                         }
                     }
                 });
@@ -242,7 +197,7 @@ seatRouter.get(
                     $match: {
                         $or: [
                             {
-                                'containsPlace.containsPlace.containsPlace.name.ja': {
+                                'containsPlace.containsPlace.name.ja': {
                                     $exists: true,
                                     $regex: new RegExp(nameCodeRegex)
                                 }
@@ -252,34 +207,40 @@ seatRouter.get(
                 });
             }
 
+            const branchCodeRegex = searchConditions.branchCode?.$regex;
+            if (typeof branchCodeRegex === 'string') {
+                matchStages.push({
+                    $match: {
+                        'containsPlace.containsPlace.branchCode': {
+                            $exists: true,
+                            $regex: new RegExp(branchCodeRegex)
+                        }
+                    }
+                });
+            }
+
             const aggregate = placeRepo.placeModel.aggregate([
                 { $unwind: '$containsPlace' },
                 { $unwind: '$containsPlace.containsPlace' },
-                { $unwind: '$containsPlace.containsPlace.containsPlace' },
                 ...matchStages,
                 {
                     $project: {
                         _id: 0,
-                        typeOf: '$containsPlace.containsPlace.containsPlace.typeOf',
-                        branchCode: '$containsPlace.containsPlace.containsPlace.branchCode',
-                        seatingType: '$containsPlace.containsPlace.containsPlace.seatingType',
+                        typeOf: '$containsPlace.containsPlace.typeOf',
+                        branchCode: '$containsPlace.containsPlace.branchCode',
+                        name: '$containsPlace.containsPlace.name',
                         containedInPlace: {
-                            typeOf: '$containsPlace.containsPlace.typeOf',
-                            branchCode: '$containsPlace.containsPlace.branchCode',
-                            name: '$containsPlace.containsPlace.name',
+                            typeOf: '$containsPlace.typeOf',
+                            branchCode: '$containsPlace.branchCode',
+                            name: '$containsPlace.name',
                             containedInPlace: {
-                                typeOf: '$containsPlace.typeOf',
-                                branchCode: '$containsPlace.branchCode',
-                                name: '$containsPlace.name',
-                                containedInPlace: {
-                                    id: '$_id',
-                                    typeOf: '$typeOf',
-                                    branchCode: '$branchCode',
-                                    name: '$name'
-                                }
+                                id: '$_id',
+                                typeOf: '$typeOf',
+                                branchCode: '$branchCode',
+                                name: '$name'
                             }
                         },
-                        additionalProperty: '$containsPlace.containsPlace.containsPlace.additionalProperty'
+                        additionalProperty: '$containsPlace.containsPlace.additionalProperty'
                     }
                 }
             ]);
@@ -291,9 +252,9 @@ seatRouter.get(
                     .skip(searchConditions.limit * (searchConditions.page - 1));
             }
 
-            const seats = await aggregate.exec();
+            const screeningRoomSections = await aggregate.exec();
 
-            res.json(seats);
+            res.json(screeningRoomSections);
         } catch (error) {
             next(error);
         }
@@ -303,7 +264,7 @@ seatRouter.get(
 /**
  * 更新
  */
-seatRouter.put(
+screeningRoomSectionRouter.put(
     '/:branchCode',
     permitScopes(['admin']),
     ...[
@@ -315,10 +276,10 @@ seatRouter.put(
             .not()
             .isEmpty()
             .withMessage(() => 'Required'),
-        // body('name')
-        //     .not()
-        //     .isEmpty()
-        //     .withMessage(() => 'Required'),
+        body('name')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
         body('containedInPlace.branchCode')
             .not()
             .isEmpty()
@@ -329,14 +290,6 @@ seatRouter.put(
             .isEmpty()
             .withMessage(() => 'Required')
             .isString(),
-        body('containedInPlace.containedInPlace.containedInPlace.branchCode')
-            .not()
-            .isEmpty()
-            .withMessage(() => 'Required')
-            .isString(),
-        body('seatingType')
-            .optional()
-            .isArray(),
         body('additionalProperty')
             .optional()
             .isArray()
@@ -344,39 +297,51 @@ seatRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const seat: chevre.factory.place.seat.IPlace = { ...req.body, branchCode: req.params.branchCode };
+            const screeningRoomSection: chevre.factory.place.screeningRoomSection.IPlace
+                = { ...req.body, branchCode: req.params.branchCode };
             const $unset = req.body.$unset;
 
-            debug('updating seat', seat, $unset);
             const placeRepo = new chevre.repository.Place(mongoose.connection);
-            const screeningRoomSection = <chevre.factory.place.screeningRoomSection.IPlace>seat.containedInPlace;
+
             const screeningRoom = <chevre.factory.place.screeningRoom.IPlace>screeningRoomSection.containedInPlace;
             const movieTheater = <chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace;
             const doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
                     'project.id': {
                         $exists: true,
-                        $eq: seat.project.id
+                        $eq: screeningRoomSection.project.id
                     },
                     branchCode: movieTheater.branchCode,
                     'containsPlace.branchCode': screeningRoom.branchCode,
-                    'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
-                    'containsPlace.containsPlace.containsPlace.branchCode': seat.branchCode
+                    'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode
                 },
                 // 限られた属性のみ更新する
                 {
-                    'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].branchCode':
-                        seat.branchCode,
-                    ...(Array.isArray(seat.seatingType))
+                    'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].branchCode':
+                        screeningRoomSection.branchCode,
+                    ...(screeningRoomSection.name !== undefined && screeningRoomSection !== null)
                         ? {
-                            'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType':
-                                seat.seatingType
+                            'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].name':
+                                screeningRoomSection.name
                         }
                         : undefined,
-                    ...(Array.isArray(seat.additionalProperty))
+                    ...(Array.isArray(screeningRoomSection.additionalProperty))
                         ? {
-                            'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].additionalProperty':
-                                seat.additionalProperty
+                            'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].additionalProperty':
+                                screeningRoomSection.additionalProperty
+                        }
+                        : undefined,
+                    ...(Array.isArray(screeningRoomSection.containsPlace) && screeningRoomSection.containsPlace.length > 0)
+                        ? {
+                            'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace':
+                                screeningRoomSection.containsPlace.map((p) => {
+                                    return {
+                                        typeOf: p.typeOf,
+                                        branchCode: p.branchCode,
+                                        seatingType: p.seatingType,
+                                        additionalProperty: p.additionalProperty
+                                    };
+                                })
                         }
                         : undefined,
                     ...($unset !== undefined && $unset !== null)
@@ -387,14 +352,13 @@ seatRouter.put(
                     new: true,
                     arrayFilters: [
                         { 'screeningRoom.branchCode': screeningRoom.branchCode },
-                        { 'screeningRoomSection.branchCode': screeningRoomSection.branchCode },
-                        { 'seat.branchCode': seat.branchCode }
+                        { 'screeningRoomSection.branchCode': screeningRoomSection.branchCode }
                     ]
                 }
             )
                 .exec();
             if (doc === null) {
-                throw new chevre.factory.errors.NotFound(chevre.factory.placeType.Seat);
+                throw new chevre.factory.errors.NotFound(chevre.factory.placeType.ScreeningRoomSection);
             }
 
             res.status(NO_CONTENT)
@@ -408,11 +372,15 @@ seatRouter.put(
 /**
  * 削除
  */
-seatRouter.delete(
+screeningRoomSectionRouter.delete(
     '/:branchCode',
     permitScopes(['admin']),
     ...[
         body('project')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required'),
+        body('branchCode')
             .not()
             .isEmpty()
             .withMessage(() => 'Required'),
@@ -425,19 +393,14 @@ seatRouter.delete(
             .not()
             .isEmpty()
             .withMessage(() => 'Required')
-            .isString(),
-        body('containedInPlace.containedInPlace.containedInPlace.branchCode')
-            .not()
-            .isEmpty()
-            .withMessage(() => 'Required')
             .isString()
     ],
     validator,
     async (req, res, next) => {
         try {
-            const seat: chevre.factory.place.seat.IPlace = { ...req.body, branchCode: req.params.branchCode };
+            const screeningRoomSection: chevre.factory.place.screeningRoomSection.IPlace
+                = { ...req.body, branchCode: req.params.branchCode };
 
-            const screeningRoomSection = <chevre.factory.place.screeningRoomSection.IPlace>seat.containedInPlace;
             const screeningRoom = <chevre.factory.place.screeningRoom.IPlace>screeningRoomSection.containedInPlace;
             const movieTheater = <chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace;
 
@@ -447,31 +410,29 @@ seatRouter.delete(
                 {
                     'project.id': {
                         $exists: true,
-                        $eq: seat.project.id
+                        $eq: screeningRoomSection.project.id
                     },
                     branchCode: movieTheater.branchCode,
                     'containsPlace.branchCode': screeningRoom.branchCode,
-                    'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
-                    'containsPlace.containsPlace.containsPlace.branchCode': seat.branchCode
+                    'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode
                 },
                 {
                     $pull: {
-                        'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': {
-                            branchCode: seat.branchCode
+                        'containsPlace.$[screeningRoom].containsPlace': {
+                            branchCode: screeningRoomSection.branchCode
                         }
                     }
                 },
                 <any>{
                     new: true,
                     arrayFilters: [
-                        { 'screeningRoom.branchCode': screeningRoom.branchCode },
-                        { 'screeningRoomSection.branchCode': screeningRoomSection.branchCode }
+                        { 'screeningRoom.branchCode': screeningRoom.branchCode }
                     ]
                 }
             )
                 .exec();
             if (doc === null) {
-                throw new chevre.factory.errors.NotFound(chevre.factory.placeType.Seat);
+                throw new chevre.factory.errors.NotFound(chevre.factory.placeType.ScreeningRoomSection);
             }
 
             res.status(NO_CONTENT)
@@ -482,4 +443,4 @@ seatRouter.delete(
     }
 );
 
-export default seatRouter;
+export default screeningRoomSectionRouter;
