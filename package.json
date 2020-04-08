@@ -9,7 +9,7 @@
     }
   ],
   "dependencies": {
-    "@chevre/domain": "^14.1.0",
+    "@chevre/domain": "14.2.0-alpha.0",
     "@motionpicture/express-middleware": "^0.1.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
