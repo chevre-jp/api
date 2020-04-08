@@ -113,7 +113,13 @@ reserveTransactionsRouter.post(
                 transaction: transactionRepo
             });
 
-            res.json(transaction);
+            // レスポンスデータ量が大きくて不要な場合、受け取らない選択ができるように
+            if (req.query.expectsNoContent === '1') {
+                res.status(NO_CONTENT)
+                    .end();
+            } else {
+                res.json(transaction);
+            }
         } catch (error) {
             next(error);
         }

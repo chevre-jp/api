@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.2.0 - 2020-04-08
+
+### Added
+
+- 予約取引に予約追加時に、レスポンスデータを受け取らない選択ができるように調整
+
 ## v7.1.0 - 2020-04-07
 
 ### Added
