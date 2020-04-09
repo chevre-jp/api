@@ -352,4 +352,37 @@ eventsRouter.get(
     }
 );
 
+/**
+ * 座席検索
+ */
+eventsRouter.get(
+    '/:id/seats',
+    permitScopes(['admin', 'events', 'events.read-only']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const searchConditions: any = {
+                ...req.query,
+                // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+            };
+
+            const offers = await chevre.service.offer.searchEventSeatOffersWithPaging({
+                ...searchConditions,
+                event: { id: req.params.id }
+            })({
+                event: new chevre.repository.Event(mongoose.connection),
+                priceSpecification: new chevre.repository.PriceSpecification(mongoose.connection),
+                eventAvailability: new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient()),
+                place: new chevre.repository.Place(mongoose.connection)
+            });
+
+            res.json(offers);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 export default eventsRouter;
