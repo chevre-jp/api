@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- イベントの座席オファーのページング検索機能を追加
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.3.0 - 2020-04-09
+
+### Changed
+
+- イベントの座席オファーのページング検索機能を追加
 
 ## v7.2.0 - 2020-04-08
 
