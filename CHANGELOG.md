@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.4.0 - 2020-04-10
+
+### Changed
+
+- 座席有イベントかどうかの判断を最適化
+
 ## v7.3.0 - 2020-04-09
 
 ### Changed
