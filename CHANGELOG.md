@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 座席有イベントかどうかの判断を最適化
+
 ### Deprecated
 
 ### Removed
