@@ -8,7 +8,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- 劇場にPOS属性を追加
+
 ### Changed
+
+- DeprecationWarning: collection.update is deprecated. -> updateMany
 
 ### Deprecated
 
