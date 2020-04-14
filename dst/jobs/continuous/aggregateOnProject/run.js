@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * イベント集計タスク実行
+ * プロジェクト集計タスク実行
  */
 const chevre = require("@chevre/domain");
 const redis = require("redis");
@@ -33,7 +33,7 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
         count += 1;
         try {
             yield chevre.service.task.executeByName({
-                name: chevre.factory.taskName.AggregateScreeningEvent
+                name: 'aggregateOnProject'
             })({ connection: connection, redisClient: redisClient });
         }
         catch (error) {

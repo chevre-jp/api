@@ -7,7 +7,6 @@ const redis = require("redis");
 let client;
 function createClient() {
     const c = redis.createClient({
-        // tslint:disable-next-line:no-magic-numbers
         port: Number(process.env.REDIS_PORT),
         host: process.env.REDIS_HOST,
         password: process.env.REDIS_KEY,
