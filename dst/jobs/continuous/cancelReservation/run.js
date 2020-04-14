@@ -16,7 +16,6 @@ const chevre = require("@chevre/domain");
 const redis = require("redis");
 const connectMongo_1 = require("../../../connectMongo");
 const redisClient = redis.createClient({
-    // tslint:disable-next-line:no-magic-numbers
     port: Number(process.env.REDIS_PORT),
     host: process.env.REDIS_HOST,
     password: process.env.REDIS_KEY,

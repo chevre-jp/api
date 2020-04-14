@@ -1,5 +1,5 @@
 /**
- * 予約キャンセルタスク実行
+ * プロジェクト集計タスク実行
  */
 import * as chevre from '@chevre/domain';
 import * as redis from 'redis';
@@ -19,7 +19,7 @@ export default async () => {
     let count = 0;
 
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
-    const INTERVAL_MILLISECONDS = 500;
+    const INTERVAL_MILLISECONDS = 100;
 
     setInterval(
         async () => {
@@ -31,7 +31,7 @@ export default async () => {
 
             try {
                 await chevre.service.task.executeByName({
-                    name: chevre.factory.taskName.CancelReservation
+                    name: <any>'aggregateOnProject'
                 })({ connection: connection, redisClient: redisClient });
             } catch (error) {
                 console.error(error);

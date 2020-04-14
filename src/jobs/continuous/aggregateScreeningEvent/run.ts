@@ -7,7 +7,6 @@ import * as redis from 'redis';
 import { connectMongo } from '../../../connectMongo';
 
 const redisClient = redis.createClient({
-    // tslint:disable-next-line:no-magic-numbers
     port: Number(<string>process.env.REDIS_PORT),
     host: <string>process.env.REDIS_HOST,
     password: <string>process.env.REDIS_KEY,

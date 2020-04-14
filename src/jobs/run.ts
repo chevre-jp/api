@@ -2,6 +2,7 @@
  * 非同期ジョブ
  */
 import abortTasks from './continuous/abortTasks/run';
+import aggregateOnProject from './continuous/aggregateOnProject/run';
 import aggregateScreeningEvent from './continuous/aggregateScreeningEvent/run';
 import cancelPendingReservation from './continuous/cancelPendingReservation/run';
 import cancelPoincancelReservationtAward from './continuous/cancelReservation/run';
@@ -21,6 +22,7 @@ import triggerWebhook from './continuous/triggerWebhook/run';
 
 export default async () => {
     await abortTasks();
+    await aggregateOnProject();
     await aggregateScreeningEvent();
     await cancelPendingReservation();
     await cancelPoincancelReservationtAward();
