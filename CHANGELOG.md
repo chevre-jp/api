@@ -8,9 +8,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- プロジェクトごとの集計タスクを追加
-- プロジェクトルーターを追加
-
 ### Changed
 
 ### Deprecated
@@ -19,9 +16,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 
-- 座席のないイベントに対する座席を検索できないバグ対応
-
 ### Security
+
+## v7.6.0 - 2020-04-14
+
+### Added
+
+- プロジェクトごとの集計タスクを追加
+- プロジェクトルーターを追加
+
+### Fixed
+
+- 座席のないイベントに対する座席を検索できないバグ対応
 
 ## v7.5.0 - 2020-04-13
 
