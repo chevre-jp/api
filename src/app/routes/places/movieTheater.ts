@@ -123,4 +123,30 @@ movieTheaterRouter.put(
     }
 );
 
+movieTheaterRouter.delete(
+    '/:id',
+    permitScopes(['admin']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+
+            await placeRepo.placeModel.findOneAndDelete({
+                _id: req.params.id
+            })
+                .exec()
+                .then((doc) => {
+                    if (doc === null) {
+                        throw new chevre.factory.errors.NotFound(placeRepo.placeModel.modelName);
+                    }
+                });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 export default movieTheaterRouter;

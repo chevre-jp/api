@@ -89,4 +89,23 @@ movieTheaterRouter.put('/:id', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
+movieTheaterRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const placeRepo = new chevre.repository.Place(mongoose.connection);
+        yield placeRepo.placeModel.findOneAndDelete({
+            _id: req.params.id
+        })
+            .exec()
+            .then((doc) => {
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound(placeRepo.placeModel.modelName);
+            }
+        });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 exports.default = movieTheaterRouter;
