@@ -20,7 +20,6 @@
 | `LINE_NOTIFY_URL`             | true     |              | LINE Notify URL          |
 | `LINE_NOTIFY_ACCESS_TOKEN`    | true     |              | LINE Notify access token |
 | `MONGOLAB_URI`                | true     |              | MongoDB Connection URI   |
-| `NODE_ENV`                    | true     |              | Environment name         |
 | `REDIS_PORT`                  | true     |              | Redis Cache Connection   |
 | `REDIS_HOST`                  | true     |              | Redis Cache Connection   |
 | `REDIS_KEY`                   | true     |              | Redis Cache Connection   |

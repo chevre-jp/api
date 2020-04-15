@@ -18,6 +18,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.7.0 - 2020-04-15
+
+### Added
+
+- 予約にpreviousReservationStatusを追加
+
+### Changed
+
+- 発券カウントと入場カウント時に予約ステータスを条件に含めないように変更
+
 ## v7.6.0 - 2020-04-14
 
 ### Added
