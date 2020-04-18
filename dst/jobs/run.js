@@ -30,6 +30,10 @@ const run_15 = require("./continuous/reexportTransactionTasks/run");
 const run_16 = require("./continuous/reserve/run");
 const run_17 = require("./continuous/retryTasks/run");
 const run_18 = require("./continuous/triggerWebhook/run");
+const run_19 = require("./triggered/createImportEventsTask/run");
+const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'string')
+    ? process.env.IMPORT_EVENTS_PROJECTS.split(',')
+    : [];
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     yield run_1.default();
     yield run_2.default();
@@ -49,4 +53,7 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     yield run_16.default();
     yield run_17.default();
     yield run_18.default();
+    yield Promise.all(importEventsProjects.map((projectId) => __awaiter(void 0, void 0, void 0, function* () {
+        yield run_19.default({ project: { typeOf: 'Project', id: projectId } });
+    })));
 });

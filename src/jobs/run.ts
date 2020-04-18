@@ -20,6 +20,12 @@ import reserve from './continuous/reserve/run';
 import retryTasks from './continuous/retryTasks/run';
 import triggerWebhook from './continuous/triggerWebhook/run';
 
+import createImportEventsTask from './triggered/createImportEventsTask/run';
+
+const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'string')
+    ? process.env.IMPORT_EVENTS_PROJECTS.split(',')
+    : [];
+
 export default async () => {
     await abortTasks();
     await aggregateOnProject();
@@ -39,4 +45,8 @@ export default async () => {
     await reserve();
     await retryTasks();
     await triggerWebhook();
+
+    await Promise.all(importEventsProjects.map(async (projectId) => {
+        await createImportEventsTask({ project: { typeOf: 'Project', id: projectId } });
+    }));
 };
