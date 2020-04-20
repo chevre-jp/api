@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * COAイベントインポートタスク実行
+ * COAイベントキャパシティインポートタスク実行
  */
 const chevre = require("@chevre/domain");
 const connectMongo_1 = require("../../../connectMongo");
