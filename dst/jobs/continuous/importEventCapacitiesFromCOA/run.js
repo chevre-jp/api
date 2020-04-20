@@ -26,7 +26,7 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
         count += 1;
         try {
             yield chevre.service.task.executeByName({
-                name: chevre.factory.taskName.ImportEventsFromCOA
+                name: 'importEventCapacitiesFromCOA'
             })({ connection: connection });
         }
         catch (error) {
