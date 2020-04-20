@@ -20,6 +20,7 @@ import reserve from './continuous/reserve/run';
 import retryTasks from './continuous/retryTasks/run';
 import triggerWebhook from './continuous/triggerWebhook/run';
 
+import createImportEventCapacitiesTask from './triggered/createImportEventCapacitiesTask/run';
 import createImportEventsTask from './triggered/createImportEventsTask/run';
 
 const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'string')
@@ -48,5 +49,6 @@ export default async () => {
 
     await Promise.all(importEventsProjects.map(async (projectId) => {
         await createImportEventsTask({ project: { typeOf: 'Project', id: projectId } });
+        await createImportEventCapacitiesTask({ project: { typeOf: 'Project', id: projectId } });
     }));
 };

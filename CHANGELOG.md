@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - COAイベントインポートタスクを追加
+- COAイベントキャパシティインポートタスクを追加
 
 ### Changed
 
