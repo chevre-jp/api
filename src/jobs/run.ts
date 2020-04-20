@@ -6,6 +6,7 @@ import aggregateOnProject from './continuous/aggregateOnProject/run';
 import aggregateScreeningEvent from './continuous/aggregateScreeningEvent/run';
 import cancelPendingReservation from './continuous/cancelPendingReservation/run';
 import cancelPoincancelReservationtAward from './continuous/cancelReservation/run';
+import importEventCapacitiesFromCOA from './continuous/importEventCapacitiesFromCOA/run';
 import importEventsFromCOA from './continuous/importEventsFromCOA/run';
 import importOffersFromCOA from './continuous/importOffersFromCOA/run';
 import makeTransactionExpired from './continuous/makeTransactionExpired/run';
@@ -33,6 +34,7 @@ export default async () => {
     await aggregateScreeningEvent();
     await cancelPendingReservation();
     await cancelPoincancelReservationtAward();
+    await importEventCapacitiesFromCOA();
     await importEventsFromCOA();
     await importOffersFromCOA();
     await makeTransactionExpired();
