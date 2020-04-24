@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - COAイベントインポートタスクを追加
 - COAイベントキャパシティインポートタスクを追加
+- プロジェクトにイベントインポート期間設定を追加
 
 ### Changed
 
