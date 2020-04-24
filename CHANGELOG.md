@@ -18,6 +18,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.9.0 - 2020-04-24
+
+### Added
+
+- COAイベントインポートタスクを追加
+- COAイベントキャパシティインポートタスクを追加
+- プロジェクトにイベントインポート期間設定を追加
+
+### Changed
+
+- COAイベントインポート処理を調整
+- タスク中止時の通知メッセージを調整
+
 ## v7.8.0 - 2020-04-16
 
 ### Added

@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * COAイベントインポートタスク実行
+ * COAイベントキャパシティインポートタスク実行
  */
 const chevre = require("@chevre/domain");
 const connectMongo_1 = require("../../../connectMongo");
@@ -26,7 +26,7 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
         count += 1;
         try {
             yield chevre.service.task.executeByName({
-                name: chevre.factory.taskName.ImportEventsFromCOA
+                name: 'importEventCapacitiesFromCOA'
             })({ connection: connection });
         }
         catch (error) {

@@ -1,5 +1,5 @@
 /**
- * COAイベントインポートタスク実行
+ * COAイベントキャパシティインポートタスク実行
  */
 import * as chevre from '@chevre/domain';
 
@@ -23,7 +23,7 @@ export default async () => {
 
             try {
                 await chevre.service.task.executeByName({
-                    name: chevre.factory.taskName.ImportEventsFromCOA
+                    name: <any>'importEventCapacitiesFromCOA'
                 })({ connection: connection });
             } catch (error) {
                 console.error(error);
