@@ -23,6 +23,7 @@ import triggerWebhook from './continuous/triggerWebhook/run';
 
 import createImportEventCapacitiesTask from './triggered/createImportEventCapacitiesTask/run';
 import createImportEventsTask from './triggered/createImportEventsTask/run';
+import createImportOffersTask from './triggered/createImportOffersTask/run';
 
 const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'string')
     ? process.env.IMPORT_EVENTS_PROJECTS.split(',')
@@ -52,5 +53,6 @@ export default async () => {
     await Promise.all(importEventsProjects.map(async (projectId) => {
         await createImportEventsTask({ project: { typeOf: 'Project', id: projectId } });
         await createImportEventCapacitiesTask({ project: { typeOf: 'Project', id: projectId } });
+        await createImportOffersTask({ project: { typeOf: 'Project', id: projectId } });
     }));
 };
