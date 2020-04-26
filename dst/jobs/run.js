@@ -33,6 +33,7 @@ const run_18 = require("./continuous/retryTasks/run");
 const run_19 = require("./continuous/triggerWebhook/run");
 const run_20 = require("./triggered/createImportEventCapacitiesTask/run");
 const run_21 = require("./triggered/createImportEventsTask/run");
+const run_22 = require("./triggered/createImportOffersTask/run");
 const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'string')
     ? process.env.IMPORT_EVENTS_PROJECTS.split(',')
     : [];
@@ -59,5 +60,6 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     yield Promise.all(importEventsProjects.map((projectId) => __awaiter(void 0, void 0, void 0, function* () {
         yield run_21.default({ project: { typeOf: 'Project', id: projectId } });
         yield run_20.default({ project: { typeOf: 'Project', id: projectId } });
+        yield run_22.default({ project: { typeOf: 'Project', id: projectId } });
     })));
 });

@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.10.0 - 2020-04-26
+
+### Added
+
+- 定期COAオファーインポートタスクを追加
+
 ## v7.9.0 - 2020-04-24
 
 ### Added
