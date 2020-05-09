@@ -51,13 +51,14 @@ serviceOutputsRouter.get(
             // };
 
             const serviceOutputs = await serviceOutputRepo.serviceOutputModel.find({
-                ...(req.query.project !== undefined) ? { project: req.query.project } : undefined,
+                ...(req.query.project?.id !== undefined) ? { 'project.id': req.query.project?.id } : undefined,
                 ...(req.query.typeOf !== undefined) ? { typeOf: req.query.typeOf } : undefined,
                 ...(req.query.identifier !== undefined) ? { identifier: req.query.identifier } : undefined,
                 ...(req.query.accessCode !== undefined) ? { accessCode: req.query.accessCode } : undefined
             })
                 .limit(req.query.limit)
                 .skip(req.query.limit * (req.query.page - 1))
+                .select({ __v: 0, createdAt: 0, updatedAt: 0 })
                 .exec()
                 .then((docs) => docs.map((doc) => doc.toObject()));
 

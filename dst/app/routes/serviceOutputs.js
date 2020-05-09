@@ -43,6 +43,7 @@ serviceOutputsRouter.get('', permitScopes_1.default(['admin', 'serviceOutputs', 
     //     .isISO8601()
     //     .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
         const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         // const searchConditions: chevre.factory.reservation.ISearchConditions<any> = {
@@ -52,9 +53,10 @@ serviceOutputsRouter.get('', permitScopes_1.default(['admin', 'serviceOutputs', 
         //     page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
         //     sort: { bookingTime: chevre.factory.sortType.Descending }
         // };
-        const serviceOutputs = yield serviceOutputRepo.serviceOutputModel.find(Object.assign(Object.assign(Object.assign(Object.assign({}, (req.query.project !== undefined) ? { project: req.query.project } : undefined), (req.query.typeOf !== undefined) ? { typeOf: req.query.typeOf } : undefined), (req.query.identifier !== undefined) ? { identifier: req.query.identifier } : undefined), (req.query.accessCode !== undefined) ? { accessCode: req.query.accessCode } : undefined))
+        const serviceOutputs = yield serviceOutputRepo.serviceOutputModel.find(Object.assign(Object.assign(Object.assign(Object.assign({}, (((_a = req.query.project) === null || _a === void 0 ? void 0 : _a.id) !== undefined) ? { 'project.id': (_b = req.query.project) === null || _b === void 0 ? void 0 : _b.id } : undefined), (req.query.typeOf !== undefined) ? { typeOf: req.query.typeOf } : undefined), (req.query.identifier !== undefined) ? { identifier: req.query.identifier } : undefined), (req.query.accessCode !== undefined) ? { accessCode: req.query.accessCode } : undefined))
             .limit(req.query.limit)
             .skip(req.query.limit * (req.query.page - 1))
+            .select({ __v: 0, createdAt: 0, updatedAt: 0 })
             .exec()
             .then((docs) => docs.map((doc) => doc.toObject()));
         res.json(serviceOutputs);
