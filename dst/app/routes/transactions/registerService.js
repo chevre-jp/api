@@ -43,6 +43,7 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin'
 }, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
+        const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
         const productRepo = new chevre.repository.Product(mongoose.connection);
         const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
@@ -54,11 +55,12 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin'
             agent: Object.assign({}, req.body.agent
             // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
             ),
-            object: Object.assign({}, req.body.object),
+            object: req.body.object,
             expires: moment(req.body.expires)
                 .toDate()
         })({
             offer: offerRepo,
+            offerCatalog: offerCatalogRepo,
             product: productRepo,
             serviceOutput: serviceOutputRepo,
             project: projectRepo,

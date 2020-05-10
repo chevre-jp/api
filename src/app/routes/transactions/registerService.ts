@@ -42,6 +42,7 @@ registerServiceTransactionsRouter.post(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
             const productRepo = new chevre.repository.Product(mongoose.connection);
             const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
@@ -56,13 +57,12 @@ registerServiceTransactionsRouter.post(
                     ...req.body.agent
                     // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
                 },
-                object: {
-                    ...req.body.object
-                },
+                object: req.body.object,
                 expires: moment(req.body.expires)
                     .toDate()
             })({
                 offer: offerRepo,
+                offerCatalog: offerCatalogRepo,
                 product: productRepo,
                 serviceOutput: serviceOutputRepo,
                 project: projectRepo,
