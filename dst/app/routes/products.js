@@ -80,29 +80,14 @@ productsRouter.get('/:id/offers', permitScopes_1.default(['admin']), validator_1
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
         const productRepo = new chevre.repository.Product(mongoose.connection);
-        // プロダクト検索
-        const product = yield productRepo.findById({ id: req.params.id });
-        // オファーカタログ検索
-        const offerCatalog = yield offerCatalogRepo.findById({ id: product.hasOfferCatalog.id });
-        // オファー検索
-        const offers = yield offerRepo.search({
-            id: { $in: offerCatalog.itemListElement.map((e) => e.id) }
+        const offers = yield chevre.service.offer.searchProductOffers({
+            itemOffered: { id: req.params.id }
+        })({
+            offer: offerRepo,
+            offerCatalog: offerCatalogRepo,
+            product: productRepo
         });
-        const productOffers = offers
-            .map((o) => {
-            const unitSpec = o.priceSpecification;
-            const compoundPriceSpecification = {
-                project: product.project,
-                typeOf: chevre.factory.priceSpecificationType.CompoundPriceSpecification,
-                priceCurrency: chevre.factory.priceCurrency.JPY,
-                valueAddedTaxIncluded: true,
-                priceComponent: [
-                    ...(unitSpec !== undefined) ? [unitSpec] : []
-                ]
-            };
-            return Object.assign(Object.assign({}, o), { priceSpecification: compoundPriceSpecification });
-        });
-        res.json(productOffers);
+        res.json(offers);
     }
     catch (error) {
         next(error);
