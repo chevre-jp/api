@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * ルーター
  */
 const express = require("express");
+const _ah_1 = require("./_ah");
 const accountTitles_1 = require("./accountTitles");
 const categoryCode_1 = require("./categoryCode");
 const creativeWorks_1 = require("./creativeWorks");
@@ -26,6 +27,7 @@ const router = express.Router();
 //   debug('Time: ', Date.now())
 //   next()
 // })
+router.use('/_ah', _ah_1.default);
 router.use('/health', health_1.default);
 router.use('/accountTitles', accountTitles_1.default);
 router.use('/categoryCodes', categoryCode_1.default);
