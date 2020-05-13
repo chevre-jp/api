@@ -20,6 +20,7 @@ const http_status_1 = require("http-status");
 const moment = require("moment");
 const mongoose = require("mongoose");
 const moneyTransferTransactionsRouter = express_1.Router();
+const redis = require("../../../redis");
 const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
@@ -53,6 +54,7 @@ moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['admin'])
         .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const moneyTransferTransactionNumberRepo = new chevre.repository.MoneyTransferTransactionNumber(redis.getClient());
         const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
@@ -65,6 +67,7 @@ moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['admin'])
             expires: moment(req.body.expires)
                 .toDate()
         })({
+            moneyTransferTransactionNumber: moneyTransferTransactionNumberRepo,
             project: projectRepo,
             serviceOutput: serviceOutputRepo,
             transaction: transactionRepo

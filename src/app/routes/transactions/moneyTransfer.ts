@@ -11,6 +11,8 @@ import * as mongoose from 'mongoose';
 
 const moneyTransferTransactionsRouter = Router();
 
+import * as redis from '../../../redis';
+
 import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
@@ -51,6 +53,7 @@ moneyTransferTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const moneyTransferTransactionNumberRepo = new chevre.repository.MoneyTransferTransactionNumber(redis.getClient());
             const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
@@ -71,6 +74,7 @@ moneyTransferTransactionsRouter.post(
                 expires: moment(req.body.expires)
                     .toDate()
             })({
+                moneyTransferTransactionNumber: moneyTransferTransactionNumberRepo,
                 project: projectRepo,
                 serviceOutput: serviceOutputRepo,
                 transaction: transactionRepo
