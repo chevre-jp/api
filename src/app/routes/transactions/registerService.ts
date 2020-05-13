@@ -59,7 +59,8 @@ registerServiceTransactionsRouter.post(
                 },
                 object: req.body.object,
                 expires: moment(req.body.expires)
-                    .toDate()
+                    .toDate(),
+                ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
                 offer: offerRepo,
                 offerCatalog: offerCatalogRepo,
