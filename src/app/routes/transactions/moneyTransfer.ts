@@ -63,15 +63,9 @@ moneyTransferTransactionsRouter.post(
             const transaction = await chevre.service.transaction.moneyTransfer.start({
                 typeOf: chevre.factory.transactionType.MoneyTransfer,
                 project: project,
-                agent: {
-                    ...req.body.agent
-                },
-                object: {
-                    ...req.body.object
-                },
-                recipient: {
-                    ...req.body.recipient
-                },
+                agent: req.body.agent,
+                object: req.body.object,
+                recipient: req.body.recipient,
                 expires: moment(req.body.expires)
                     .toDate(),
                 ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
@@ -98,10 +92,12 @@ moneyTransferTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
+            const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
+
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.moneyTransfer.confirm({
                 ...req.body,
-                id: req.params.transactionId
+                ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({ transaction: transactionRepo });
 
             res.status(NO_CONTENT)
@@ -118,10 +114,12 @@ moneyTransferTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
+            const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
+
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.moneyTransfer.cancel({
                 ...req.body,
-                id: req.params.transactionId
+                ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({
                 transaction: transactionRepo
             });
