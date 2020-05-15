@@ -61,6 +61,7 @@ moneyTransferTransactionsRouter.post(
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
             const transaction = await chevre.service.transaction.moneyTransfer.start({
+                typeOf: chevre.factory.transactionType.MoneyTransfer,
                 project: project,
                 agent: {
                     ...req.body.agent
@@ -72,7 +73,8 @@ moneyTransferTransactionsRouter.post(
                     ...req.body.recipient
                 },
                 expires: moment(req.body.expires)
-                    .toDate()
+                    .toDate(),
+                ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
                 moneyTransferTransactionNumber: moneyTransferTransactionNumberRepo,
                 project: projectRepo,
