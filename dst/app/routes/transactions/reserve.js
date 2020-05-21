@@ -47,16 +47,10 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
-        const transaction = yield chevre.service.transaction.reserve.start({
-            project: project,
-            typeOf: chevre.factory.transactionType.Reserve,
-            agent: Object.assign({}, req.body.agent
+        const transaction = yield chevre.service.transaction.reserve.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.Reserve, agent: Object.assign({}, req.body.agent
             // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
-            ),
-            object: Object.assign({}, req.body.object),
-            expires: moment(req.body.expires)
-                .toDate()
-        })({
+            ), object: Object.assign({}, req.body.object), expires: moment(req.body.expires)
+                .toDate() }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
             project: projectRepo,
             transaction: transactionRepo,
             transactionNumber: transactionNumberRepo

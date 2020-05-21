@@ -59,7 +59,8 @@ cancelReservationTransactionsRouter.post(
                     ...req.body.object
                 },
                 expires: moment(req.body.expires)
-                    .toDate()
+                    .toDate(),
+                ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
                 project: projectRepo,
                 reservation: reservationRepo,
