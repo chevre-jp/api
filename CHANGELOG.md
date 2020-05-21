@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 通貨転送取引番号リポジトリを追加
 - DepositServiceを追加
 - イベントにhasOfferCatalogを追加
+- 取引番号発行サービスを追加
 
 ### Changed
 
