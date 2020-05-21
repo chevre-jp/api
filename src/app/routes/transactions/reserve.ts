@@ -135,10 +135,12 @@ reserveTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
+            const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
+
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.reserve.confirm({
                 ...req.body,
-                id: req.params.transactionId
+                ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({ transaction: transactionRepo });
 
             res.status(NO_CONTENT)
@@ -155,6 +157,8 @@ reserveTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
+            const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
+
             const actionRepo = new chevre.repository.Action(mongoose.connection);
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
             const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
@@ -163,7 +167,8 @@ reserveTransactionsRouter.put(
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
 
             await chevre.service.transaction.reserve.cancel({
-                id: req.params.transactionId
+                ...req.body,
+                ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({
                 action: actionRepo,
                 eventAvailability: eventAvailabilityRepo,

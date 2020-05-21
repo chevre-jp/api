@@ -120,8 +120,9 @@ reserveTransactionsRouter.post('/:transactionId/reservations', permitScopes_1.de
  */
 reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        yield chevre.service.transaction.reserve.confirm(Object.assign(Object.assign({}, req.body), { id: req.params.transactionId }))({ transaction: transactionRepo });
+        yield chevre.service.transaction.reserve.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
         res.status(http_status_1.NO_CONTENT)
             .end();
     }
@@ -131,15 +132,14 @@ reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(
 }));
 reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const actionRepo = new chevre.repository.Action(mongoose.connection);
         const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
         const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        yield chevre.service.transaction.reserve.cancel({
-            id: req.params.transactionId
-        })({
+        yield chevre.service.transaction.reserve.cancel(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({
             action: actionRepo,
             eventAvailability: eventAvailabilityRepo,
             offerRateLimit: offerRateLimitRepo,
