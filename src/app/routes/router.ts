@@ -19,6 +19,7 @@ import reservationsRouter from './reservations';
 import serviceOutputsRouter from './serviceOutputs';
 import statsRouter from './stats';
 import tasksRouter from './tasks';
+import transactionNumbersRouter from './transactionNumbers';
 import transactionsRouter from './transactions';
 const router = express.Router();
 
@@ -45,5 +46,6 @@ router.use('/serviceOutputs', serviceOutputsRouter);
 router.use('/stats', statsRouter);
 router.use('/tasks', tasksRouter);
 router.use('/transactions', transactionsRouter);
+router.use('/transactionNumbers', transactionNumbersRouter);
 
 export default router;

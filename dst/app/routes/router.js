@@ -20,6 +20,7 @@ const reservations_1 = require("./reservations");
 const serviceOutputs_1 = require("./serviceOutputs");
 const stats_1 = require("./stats");
 const tasks_1 = require("./tasks");
+const transactionNumbers_1 = require("./transactionNumbers");
 const transactions_1 = require("./transactions");
 const router = express.Router();
 // middleware that is specific to this router
@@ -44,4 +45,5 @@ router.use('/serviceOutputs', serviceOutputs_1.default);
 router.use('/stats', stats_1.default);
 router.use('/tasks', tasks_1.default);
 router.use('/transactions', transactions_1.default);
+router.use('/transactionNumbers', transactionNumbers_1.default);
 exports.default = router;
