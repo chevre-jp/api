@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - DepositServiceを追加
 - イベントにhasOfferCatalogを追加
 - 取引番号発行サービスを追加
+- トップデッキイベント作成タスクを追加
 
 ### Changed
 

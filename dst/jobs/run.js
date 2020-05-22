@@ -43,9 +43,12 @@ const run_28 = require("./continuous/triggerWebhook/run");
 const run_29 = require("./triggered/createImportEventCapacitiesTask/run");
 const run_30 = require("./triggered/createImportEventsTask/run");
 const run_31 = require("./triggered/createImportOffersTask/run");
+const run_32 = require("./triggered/createTopDeckEvents/run");
 const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'string')
     ? process.env.IMPORT_EVENTS_PROJECTS.split(',')
     : [];
+const TOPDECK_PROJECT = process.env.TOPDECK_PROJECT;
+const TOPDECK_SELLER = process.env.TOPDECK_SELLER;
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     yield run_1.default();
     yield run_2.default();
@@ -80,4 +83,10 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
         yield run_29.default({ project: { typeOf: 'Project', id: projectId } });
         yield run_31.default({ project: { typeOf: 'Project', id: projectId } });
     })));
+    if (typeof TOPDECK_PROJECT === 'string' && typeof TOPDECK_SELLER === 'string') {
+        yield run_32.default({
+            project: { typeOf: 'Project', id: TOPDECK_PROJECT },
+            seller: { id: TOPDECK_SELLER }
+        });
+    }
 });
