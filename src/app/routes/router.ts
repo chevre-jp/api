@@ -3,6 +3,7 @@
  */
 import * as express from 'express';
 
+import ahRouter from './_ah';
 import accountTitlesRouter from './accountTitles';
 import categoryCodesRouter from './categoryCode';
 import creativeWorksRouter from './creativeWorks';
@@ -15,8 +16,10 @@ import priceSpecificationsRouter from './priceSpecifications';
 import productsRouter from './products';
 import projectsRouter from './projects';
 import reservationsRouter from './reservations';
+import serviceOutputsRouter from './serviceOutputs';
 import statsRouter from './stats';
 import tasksRouter from './tasks';
+import transactionNumbersRouter from './transactionNumbers';
 import transactionsRouter from './transactions';
 const router = express.Router();
 
@@ -26,6 +29,7 @@ const router = express.Router();
 //   next()
 // })
 
+router.use('/_ah', ahRouter);
 router.use('/health', healthRouter);
 router.use('/accountTitles', accountTitlesRouter);
 router.use('/categoryCodes', categoryCodesRouter);
@@ -38,8 +42,10 @@ router.use('/priceSpecifications', priceSpecificationsRouter);
 router.use('/products', productsRouter);
 router.use('/projects', projectsRouter);
 router.use('/reservations', reservationsRouter);
+router.use('/serviceOutputs', serviceOutputsRouter);
 router.use('/stats', statsRouter);
 router.use('/tasks', tasksRouter);
 router.use('/transactions', transactionsRouter);
+router.use('/transactionNumbers', transactionNumbersRouter);
 
 export default router;

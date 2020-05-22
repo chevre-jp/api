@@ -64,7 +64,7 @@ exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
                 }
             })));
         }), undefined, true);
-        debug('job started', job);
+        debug('job started', job.nextDate);
     }
     catch (error) {
         console.error('createImportOffersTask:', error);

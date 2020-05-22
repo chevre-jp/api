@@ -105,38 +105,15 @@ productsRouter.get(
             const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
-            // プロダクト検索
-            const product = await productRepo.findById({ id: req.params.id });
-
-            // オファーカタログ検索
-            const offerCatalog = await offerCatalogRepo.findById({ id: product.hasOfferCatalog.id });
-
-            // オファー検索
-            const offers = await offerRepo.search({
-                id: { $in: offerCatalog.itemListElement.map((e) => e.id) }
+            const offers = await chevre.service.offer.searchProductOffers({
+                itemOffered: { id: req.params.id }
+            })({
+                offer: offerRepo,
+                offerCatalog: offerCatalogRepo,
+                product: productRepo
             });
 
-            const productOffers = offers
-                .map((o) => {
-                    const unitSpec = o.priceSpecification;
-
-                    const compoundPriceSpecification: chevre.factory.compoundPriceSpecification.IPriceSpecification<any> = {
-                        project: product.project,
-                        typeOf: chevre.factory.priceSpecificationType.CompoundPriceSpecification,
-                        priceCurrency: chevre.factory.priceCurrency.JPY,
-                        valueAddedTaxIncluded: true,
-                        priceComponent: [
-                            ...(unitSpec !== undefined) ? [unitSpec] : []
-                        ]
-                    };
-
-                    return {
-                        ...o,
-                        priceSpecification: compoundPriceSpecification
-                    };
-                });
-
-            res.json(productOffers);
+            res.json(offers);
         } catch (error) {
             next(error);
         }

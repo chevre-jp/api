@@ -43,29 +43,52 @@ reserveTransactionsRouter.post(
     async (req, res, next) => {
         try {
             const projectRepo = new chevre.repository.Project(mongoose.connection);
+            const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
+            const placeRepo = new chevre.repository.Place(mongoose.connection);
+            const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-            const reservationNumberRepo = new chevre.repository.ReservationNumber(redis.getClient());
+            const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
+            const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
+            const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
+            const productRepo = new chevre.repository.Product(mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
             const transaction = await chevre.service.transaction.reserve.start({
                 project: project,
                 typeOf: chevre.factory.transactionType.Reserve,
-                agent: {
-                    ...req.body.agent
-                    // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
-                },
-                object: {
-                    ...req.body.object
-                },
+                agent: req.body.agent,
+                object: req.body.object,
                 expires: moment(req.body.expires)
-                    .toDate()
+                    .toDate(),
+                ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
                 project: projectRepo,
-                reservationNumber: reservationNumberRepo,
-                transaction: transactionRepo
+                eventAvailability: eventAvailabilityRepo,
+                event: eventRepo,
+                offer: offerRepo,
+                offerCatalog: offerCatalogRepo,
+                offerRateLimit: offerRateLimitRepo,
+                place: placeRepo,
+                priceSpecification: priceSpecificationRepo,
+                product: productRepo,
+                reservation: reservationRepo,
+                task: taskRepo,
+                transaction: transactionRepo,
+                transactionNumber: transactionNumberRepo
             });
-            res.json(transaction);
+
+            // レスポンスデータ量が大きくて不要な場合、受け取らない選択ができるように
+            if (req.query.expectsNoContent === '1') {
+                res.status(NO_CONTENT)
+                    .end();
+            } else {
+                res.json(transaction);
+            }
         } catch (error) {
             next(error);
         }
@@ -135,10 +158,12 @@ reserveTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
+            const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
+
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.reserve.confirm({
                 ...req.body,
-                id: req.params.transactionId
+                ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({ transaction: transactionRepo });
 
             res.status(NO_CONTENT)
@@ -155,6 +180,8 @@ reserveTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
+            const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
+
             const actionRepo = new chevre.repository.Action(mongoose.connection);
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
             const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
@@ -163,7 +190,8 @@ reserveTransactionsRouter.put(
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
 
             await chevre.service.transaction.reserve.cancel({
-                id: req.params.transactionId
+                ...req.body,
+                ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({
                 action: actionRepo,
                 eventAvailability: eventAvailabilityRepo,

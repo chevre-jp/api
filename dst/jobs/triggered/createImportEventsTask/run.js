@@ -19,7 +19,8 @@ const moment = require("moment");
 const connectMongo_1 = require("../../../connectMongo");
 const singletonProcess = require("../../../singletonProcess");
 const debug = createDebug('chevre-api:jobs');
-const IMPORT_EVENTS_PER_WEEKS = 1;
+const IMPORT_EVENTS_PER_DAYS = 3;
+const DAYS_WEEK = 7;
 const MAX_IMPORT_EVENTS_INTERVAL_IN_MINUTES = 60;
 exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d;
@@ -56,14 +57,14 @@ exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
             });
             const now = new Date();
             const runsAt = now;
-            // 1週間ずつインポート
+            // IMPORT_EVENTS_PER_DAYSずつインポート
             // tslint:disable-next-line:prefer-array-literal
-            yield Promise.all([...Array(Math.ceil(importEventsInWeeks / IMPORT_EVENTS_PER_WEEKS))].map((_, i) => __awaiter(void 0, void 0, void 0, function* () {
+            yield Promise.all([...Array(Math.ceil(importEventsInWeeks * DAYS_WEEK / IMPORT_EVENTS_PER_DAYS))].map((_, i) => __awaiter(void 0, void 0, void 0, function* () {
                 const importFrom = moment(now)
-                    .add(i, 'weeks')
+                    .add(i * IMPORT_EVENTS_PER_DAYS, 'days')
                     .toDate();
                 const importThrough = moment(importFrom)
-                    .add(IMPORT_EVENTS_PER_WEEKS, 'weeks')
+                    .add(IMPORT_EVENTS_PER_DAYS, 'days')
                     .toDate();
                 yield Promise.all(movieTheaters.map((movieTheater) => __awaiter(void 0, void 0, void 0, function* () {
                     try {
@@ -90,7 +91,7 @@ exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
                 })));
             })));
         }), undefined, true);
-        debug('job started', job);
+        debug('job started', job.nextDate);
     }
     catch (error) {
         console.error('createImportEventsTask:', error);

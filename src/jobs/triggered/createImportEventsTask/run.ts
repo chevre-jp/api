@@ -11,7 +11,8 @@ import * as singletonProcess from '../../../singletonProcess';
 
 const debug = createDebug('chevre-api:jobs');
 
-const IMPORT_EVENTS_PER_WEEKS = 1;
+const IMPORT_EVENTS_PER_DAYS = 3;
+const DAYS_WEEK = 7;
 
 const MAX_IMPORT_EVENTS_INTERVAL_IN_MINUTES = 60;
 
@@ -60,14 +61,14 @@ export default async (params: {
                 const now = new Date();
                 const runsAt = now;
 
-                // 1週間ずつインポート
+                // IMPORT_EVENTS_PER_DAYSずつインポート
                 // tslint:disable-next-line:prefer-array-literal
-                await Promise.all([...Array(Math.ceil(importEventsInWeeks / IMPORT_EVENTS_PER_WEEKS))].map(async (_, i) => {
+                await Promise.all([...Array(Math.ceil(importEventsInWeeks * DAYS_WEEK / IMPORT_EVENTS_PER_DAYS))].map(async (_, i) => {
                     const importFrom = moment(now)
-                        .add(i, 'weeks')
+                        .add(i * IMPORT_EVENTS_PER_DAYS, 'days')
                         .toDate();
                     const importThrough = moment(importFrom)
-                        .add(IMPORT_EVENTS_PER_WEEKS, 'weeks')
+                        .add(IMPORT_EVENTS_PER_DAYS, 'days')
                         .toDate();
 
                     await Promise.all(movieTheaters.map(async (movieTheater) => {
@@ -97,7 +98,7 @@ export default async (params: {
             undefined,
             true
         );
-        debug('job started', job);
+        debug('job started', job.nextDate);
     } catch (error) {
         console.error('createImportEventsTask:', error);
     }
