@@ -36,7 +36,7 @@ exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         // tslint:disable-next-line:no-floating-promises
-        main(connection, params.project, params.seller)
+        main(connection, params.project)
             .then(() => {
             // tslint:disable-next-line:no-console
             console.log('success!');
@@ -64,14 +64,17 @@ const setting = {
  * 設定からイベントを作成する
  */
 // tslint:disable-next-line:max-func-body-length
-function main(connection, project, seller) {
+function main(connection, project) {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         // 引数情報取得
         const targetInfo = getTargetInfoForCreateFromSetting(setting.performance_duration, setting.no_performance_times);
         debug('targetInfo:', targetInfo);
+        const eventRepo = new chevre.repository.Event(connection);
         const offerCatalogRepo = new chevre.repository.OfferCatalog(connection);
         const placeRepo = new chevre.repository.Place(connection);
-        const eventRepo = new chevre.repository.Event(connection);
+        const projectRepo = new chevre.repository.Project(connection);
+        const taskRepo = new chevre.repository.Task(connection);
         // 劇場検索
         const movieTheaters = yield placeRepo.searchMovieTheaters({
             project: { ids: [project.id] }
@@ -82,6 +85,7 @@ function main(connection, project, seller) {
         }
         const movieTheater = yield placeRepo.findById({ id: movieTheaterWithoutScreeningRoom.id });
         debug('movieTheater:', movieTheater);
+        const seller = movieTheater.parentOrganization;
         const screeningRoom = movieTheater.containsPlace[0];
         // 劇場作品検索
         const workPerformedIdentifier = setting.film;
@@ -143,8 +147,8 @@ function main(connection, project, seller) {
                     }
                 },
                 seller: {
-                    typeOf: chevre.factory.organizationType.Corporation,
-                    id: seller.id
+                    typeOf: (_a = seller) === null || _a === void 0 ? void 0 : _a.typeOf,
+                    id: (_b = seller) === null || _b === void 0 ? void 0 : _b.id
                 },
                 validThrough: moment(performanceInfo.end_date)
                     .tz('Asia/Tokyo')
@@ -162,8 +166,8 @@ function main(connection, project, seller) {
                     chevre.factory.paymentMethodType.Others
                 ]
             };
-            // パフォーマンス登録
-            const event = Object.assign({ project: project, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatus: chevre.factory.eventStatusType.EventScheduled, name: screeningEventSeries.name, doorTime: performanceInfo.door_time, startDate: performanceInfo.start_date, endDate: performanceInfo.end_date, workPerformed: screeningEventSeries.workPerformed, superEvent: screeningEventSeries, location: {
+            // イベント作成
+            const eventAttributes = Object.assign({ project: project, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatus: chevre.factory.eventStatusType.EventScheduled, name: screeningEventSeries.name, doorTime: performanceInfo.door_time, startDate: performanceInfo.start_date, endDate: performanceInfo.end_date, workPerformed: screeningEventSeries.workPerformed, superEvent: screeningEventSeries, location: {
                     project: project,
                     typeOf: screeningRoom.typeOf,
                     branchCode: screeningRoom.branchCode,
@@ -176,13 +180,17 @@ function main(connection, project, seller) {
                     id: offerCatalog.id
                 }
             });
-            debug('upserting event...', id);
-            yield eventRepo.save({
+            const event = yield eventRepo.save({
                 id: id,
-                attributes: event,
+                attributes: eventAttributes,
                 upsert: true
             });
-            debug('upserted', id);
+            debug('upserted', event.id);
+            yield chevre.service.offer.onEventChanged(event)({
+                event: eventRepo,
+                project: projectRepo,
+                task: taskRepo
+            });
         }
     });
 }
