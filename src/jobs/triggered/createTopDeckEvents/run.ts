@@ -14,7 +14,6 @@ const debug = createDebug('chevre-api:jobs');
 
 export default async (params: {
     project: chevre.factory.project.IProject;
-    seller: { id: string };
 }) => {
     let holdSingletonProcess = false;
     setInterval(
@@ -39,7 +38,7 @@ export default async (params: {
             }
 
             // tslint:disable-next-line:no-floating-promises
-            main(connection, params.project, params.seller)
+            main(connection, params.project)
                 .then(() => {
                     // tslint:disable-next-line:no-console
                     console.log('success!');
@@ -74,16 +73,17 @@ const setting = {
 // tslint:disable-next-line:max-func-body-length
 export async function main(
     connection: mongoose.Connection,
-    project: chevre.factory.project.IProject,
-    seller: { id: string }
+    project: chevre.factory.project.IProject
 ): Promise<void> {
     // 引数情報取得
     const targetInfo = getTargetInfoForCreateFromSetting(setting.performance_duration, setting.no_performance_times);
     debug('targetInfo:', targetInfo);
 
+    const eventRepo = new chevre.repository.Event(connection);
     const offerCatalogRepo = new chevre.repository.OfferCatalog(connection);
     const placeRepo = new chevre.repository.Place(connection);
-    const eventRepo = new chevre.repository.Event(connection);
+    const projectRepo = new chevre.repository.Project(connection);
+    const taskRepo = new chevre.repository.Task(connection);
 
     // 劇場検索
     const movieTheaters = await placeRepo.searchMovieTheaters({
@@ -95,6 +95,8 @@ export async function main(
     }
     const movieTheater = await placeRepo.findById({ id: movieTheaterWithoutScreeningRoom.id });
     debug('movieTheater:', movieTheater);
+
+    const seller = movieTheater.parentOrganization;
 
     const screeningRoom = movieTheater.containsPlace[0];
 
@@ -161,8 +163,8 @@ export async function main(
                 }
             },
             seller: {
-                typeOf: chevre.factory.organizationType.Corporation,
-                id: seller.id
+                typeOf: seller?.typeOf,
+                id: seller?.id
             },
             validThrough: moment(performanceInfo.end_date)
                 .tz('Asia/Tokyo')
@@ -181,8 +183,8 @@ export async function main(
             ]
         };
 
-        // パフォーマンス登録
-        const event: chevre.factory.event.screeningEvent.IAttributes = {
+        // イベント作成
+        const eventAttributes: chevre.factory.event.screeningEvent.IAttributes = {
             project: project,
             typeOf: chevre.factory.eventType.ScreeningEvent,
             eventStatus: chevre.factory.eventStatusType.EventScheduled,
@@ -212,13 +214,18 @@ export async function main(
             }
         };
 
-        debug('upserting event...', id);
-        await eventRepo.save({
+        const event = await eventRepo.save({
             id: id,
-            attributes: event,
+            attributes: eventAttributes,
             upsert: true
         });
-        debug('upserted', id);
+        debug('upserted', event.id);
+
+        await chevre.service.offer.onEventChanged(event)({
+            event: eventRepo,
+            project: projectRepo,
+            task: taskRepo
+        });
     }
 }
 

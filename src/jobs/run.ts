@@ -40,7 +40,6 @@ const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'str
     : [];
 
 const TOPDECK_PROJECT = process.env.TOPDECK_PROJECT;
-const TOPDECK_SELLER = process.env.TOPDECK_SELLER;
 
 export default async () => {
     await abortTasks();
@@ -78,10 +77,9 @@ export default async () => {
         await createImportOffersTask({ project: { typeOf: 'Project', id: projectId } });
     }));
 
-    if (typeof TOPDECK_PROJECT === 'string' && typeof TOPDECK_SELLER === 'string') {
+    if (typeof TOPDECK_PROJECT === 'string') {
         await createTopDeckEvents({
-            project: { typeOf: 'Project', id: TOPDECK_PROJECT },
-            seller: { id: TOPDECK_SELLER }
+            project: { typeOf: 'Project', id: TOPDECK_PROJECT }
         });
     }
 };

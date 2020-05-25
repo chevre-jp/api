@@ -48,7 +48,6 @@ const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'str
     ? process.env.IMPORT_EVENTS_PROJECTS.split(',')
     : [];
 const TOPDECK_PROJECT = process.env.TOPDECK_PROJECT;
-const TOPDECK_SELLER = process.env.TOPDECK_SELLER;
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     yield run_1.default();
     yield run_2.default();
@@ -83,10 +82,9 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
         yield run_29.default({ project: { typeOf: 'Project', id: projectId } });
         yield run_31.default({ project: { typeOf: 'Project', id: projectId } });
     })));
-    if (typeof TOPDECK_PROJECT === 'string' && typeof TOPDECK_SELLER === 'string') {
+    if (typeof TOPDECK_PROJECT === 'string') {
         yield run_32.default({
-            project: { typeOf: 'Project', id: TOPDECK_PROJECT },
-            seller: { id: TOPDECK_SELLER }
+            project: { typeOf: 'Project', id: TOPDECK_PROJECT }
         });
     }
 });
