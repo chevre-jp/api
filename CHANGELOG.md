@@ -8,8 +8,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- トップデッキイベント作成後に集計処理追加
-
 ### Changed
 
 ### Deprecated
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.13.0 - 2020-05-25
+
+### Added
+
+- トップデッキイベント作成後に集計処理追加
 
 ## v7.12.1 - 2020-05-25
 
