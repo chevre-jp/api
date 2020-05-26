@@ -25,20 +25,20 @@ cancelReservationTransactionsRouter.use(authentication_1.default);
 cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), (req, _, next) => {
     req.checkBody('project')
         .notEmpty()
-        .withMessage('Required');
-    req.checkBody('expires', 'invalid expires')
+        .withMessage('required');
+    req.checkBody('expires')
         .notEmpty()
-        .withMessage('Required')
+        .withMessage('required')
         .isISO8601();
-    req.checkBody('agent', 'invalid agent')
+    req.checkBody('agent')
         .notEmpty()
-        .withMessage('Required');
-    req.checkBody('agent.typeOf', 'invalid agent.typeOf')
+        .withMessage('required');
+    req.checkBody('agent.typeOf')
         .notEmpty()
-        .withMessage('Required');
-    req.checkBody('agent.name', 'invalid agent.name')
+        .withMessage('required');
+    req.checkBody('agent.name')
         .notEmpty()
-        .withMessage('Required');
+        .withMessage('required');
     next();
 }, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -55,6 +55,45 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
             transaction: transactionRepo
         });
         res.json(transaction);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['admin', 'transactions']), (req, _, next) => {
+    req.checkBody('project')
+        .notEmpty()
+        .withMessage('required');
+    req.checkBody('expires')
+        .notEmpty()
+        .withMessage('required')
+        .isISO8601();
+    req.checkBody('agent')
+        .notEmpty()
+        .withMessage('required');
+    req.checkBody('agent.typeOf')
+        .notEmpty()
+        .withMessage('required');
+    req.checkBody('agent.name')
+        .notEmpty()
+        .withMessage('required');
+    next();
+}, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
+        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        yield chevre.service.transaction.cancelReservation.startAndConfirm(Object.assign({ project: project, typeOf: chevre.factory.transactionType.CancelReservation, agent: Object.assign({}, req.body.agent
+            // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
+            ), object: Object.assign({ clientUser: req.user }, req.body.object), expires: moment(req.body.expires)
+                .toDate(), potentialActions: Object.assign({}, req.body.potentialActions) }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
+            project: projectRepo,
+            reservation: reservationRepo,
+            transaction: transactionRepo
+        });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);

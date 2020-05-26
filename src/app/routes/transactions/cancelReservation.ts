@@ -21,20 +21,20 @@ cancelReservationTransactionsRouter.post(
     (req, _, next) => {
         req.checkBody('project')
             .notEmpty()
-            .withMessage('Required');
-        req.checkBody('expires', 'invalid expires')
+            .withMessage('required');
+        req.checkBody('expires')
             .notEmpty()
-            .withMessage('Required')
+            .withMessage('required')
             .isISO8601();
-        req.checkBody('agent', 'invalid agent')
+        req.checkBody('agent')
             .notEmpty()
-            .withMessage('Required');
-        req.checkBody('agent.typeOf', 'invalid agent.typeOf')
+            .withMessage('required');
+        req.checkBody('agent.typeOf')
             .notEmpty()
-            .withMessage('Required');
-        req.checkBody('agent.name', 'invalid agent.name')
+            .withMessage('required');
+        req.checkBody('agent.name')
             .notEmpty()
-            .withMessage('Required');
+            .withMessage('required');
 
         next();
     },
@@ -67,6 +67,69 @@ cancelReservationTransactionsRouter.post(
                 transaction: transactionRepo
             });
             res.json(transaction);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+cancelReservationTransactionsRouter.post(
+    '/confirm',
+    permitScopes(['admin', 'transactions']),
+    (req, _, next) => {
+        req.checkBody('project')
+            .notEmpty()
+            .withMessage('required');
+        req.checkBody('expires')
+            .notEmpty()
+            .withMessage('required')
+            .isISO8601();
+        req.checkBody('agent')
+            .notEmpty()
+            .withMessage('required');
+        req.checkBody('agent.typeOf')
+            .notEmpty()
+            .withMessage('required');
+        req.checkBody('agent.name')
+            .notEmpty()
+            .withMessage('required');
+
+        next();
+    },
+    validator,
+    async (req, res, next) => {
+        try {
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
+            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+
+            await chevre.service.transaction.cancelReservation.startAndConfirm({
+                project: project,
+                typeOf: chevre.factory.transactionType.CancelReservation,
+                agent: {
+                    ...req.body.agent
+                    // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
+                },
+                object: {
+                    clientUser: req.user,
+                    ...req.body.object
+                },
+                expires: moment(req.body.expires)
+                    .toDate(),
+                potentialActions: {
+                    ...req.body.potentialActions
+                },
+                ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
+            })({
+                project: projectRepo,
+                reservation: reservationRepo,
+                transaction: transactionRepo
+            });
+
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }
