@@ -167,19 +167,33 @@ function main(connection, project) {
                 ]
             };
             // イベント作成
-            const eventAttributes = Object.assign({ project: project, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatus: chevre.factory.eventStatusType.EventScheduled, name: screeningEventSeries.name, doorTime: performanceInfo.door_time, startDate: performanceInfo.start_date, endDate: performanceInfo.end_date, workPerformed: screeningEventSeries.workPerformed, superEvent: screeningEventSeries, location: {
+            const eventAttributes = {
+                project: project,
+                typeOf: chevre.factory.eventType.ScreeningEvent,
+                eventStatus: chevre.factory.eventStatusType.EventScheduled,
+                name: screeningEventSeries.name,
+                doorTime: performanceInfo.door_time,
+                startDate: performanceInfo.start_date,
+                endDate: performanceInfo.end_date,
+                workPerformed: screeningEventSeries.workPerformed,
+                superEvent: screeningEventSeries,
+                location: {
                     project: project,
                     typeOf: screeningRoom.typeOf,
                     branchCode: screeningRoom.branchCode,
                     name: screeningRoom.name,
                     alternateName: screeningRoom.alternateName,
                     address: screeningRoom.address
-                }, offers: offers, checkInCount: undefined, attendeeCount: undefined, additionalProperty: [{ name: 'tourNumber', value: String(performanceInfo.tour_number) }] }, {
+                },
+                offers: offers,
+                checkInCount: undefined,
+                attendeeCount: undefined,
+                additionalProperty: [{ name: 'tourNumber', value: String(performanceInfo.tour_number) }],
                 hasOfferCatalog: {
                     typeOf: 'OfferCatalog',
                     id: offerCatalog.id
                 }
-            });
+            };
             const event = yield eventRepo.save({
                 id: id,
                 attributes: eventAttributes,
