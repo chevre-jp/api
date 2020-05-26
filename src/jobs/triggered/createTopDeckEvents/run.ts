@@ -206,11 +206,9 @@ export async function main(
             checkInCount: undefined,
             attendeeCount: undefined,
             additionalProperty: [{ name: 'tourNumber', value: String(performanceInfo.tour_number) }],
-            ...{
-                hasOfferCatalog: {
-                    typeOf: 'OfferCatalog',
-                    id: offerCatalog.id
-                }
+            hasOfferCatalog: {
+                typeOf: 'OfferCatalog',
+                id: offerCatalog.id
             }
         };
 
