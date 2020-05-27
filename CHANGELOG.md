@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- COAイベントインポート処理をbulkWriteへ変更
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.16.0 - 2020-05-27
+
+### Changed
+
+- COAイベントインポート処理をbulkWriteへ変更
 
 ## v7.15.0 - 2020-05-26
 
