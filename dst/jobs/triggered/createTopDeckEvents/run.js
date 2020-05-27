@@ -234,7 +234,8 @@ function getTargetInfoForCreateFromSetting(duration, noPerformanceTimes) {
             minutes.forEach((minute, minuteIndex) => {
                 // ツアー情報作成
                 const tourNumber = `${hour}${tours[minuteIndex]}`;
-                const startDate = moment(`${now.format('YYYYMMDD')} ${hour}:${minute}:00+09:00`, 'YYYYMMDD HH:mm:ssZ');
+                const startDate = moment(`${now.tz('Asia/Tokyo')
+                    .format('YYYYMMDD')} ${hour}:${minute}:00+09:00`, 'YYYYMMDD HH:mm:ssZ');
                 const endDate = moment(startDate)
                     .add(duration, 'minutes');
                 const day = moment(startDate)
