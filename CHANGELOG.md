@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.16.1 - 2020-05-27
+
+### Changed
+
+- トップデッキイベント作成処理調整
+
 ## v7.16.0 - 2020-05-27
 
 ### Changed
