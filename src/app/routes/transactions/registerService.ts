@@ -86,10 +86,12 @@ registerServiceTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
+            const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
+
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.registerService.confirm({
                 ...req.body,
-                id: req.params.transactionId
+                ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({ transaction: transactionRepo });
 
             res.status(NO_CONTENT)

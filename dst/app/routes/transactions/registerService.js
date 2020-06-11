@@ -71,8 +71,9 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin'
  */
 registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        yield chevre.service.transaction.registerService.confirm(Object.assign(Object.assign({}, req.body), { id: req.params.transactionId }))({ transaction: transactionRepo });
+        yield chevre.service.transaction.registerService.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
         res.status(http_status_1.NO_CONTENT)
             .end();
     }
