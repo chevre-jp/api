@@ -3,8 +3,9 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
+// tslint:disable-next-line:no-submodule-imports
+import { body } from 'express-validator/check';
 import { NO_CONTENT } from 'http-status';
-import * as moment from 'moment';
 import * as mongoose from 'mongoose';
 
 const registerServiceTransactionsRouter = Router();
@@ -18,26 +19,30 @@ registerServiceTransactionsRouter.use(authentication);
 registerServiceTransactionsRouter.post(
     '/start',
     permitScopes(['admin']),
-    (req, _, next) => {
-        req.checkBody('project')
-            .notEmpty()
-            .withMessage('Required');
-        req.checkBody('expires', 'invalid expires')
-            .notEmpty()
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage('Required'),
+        body('expires')
+            .not()
+            .isEmpty()
             .withMessage('Required')
-            .isISO8601();
-        req.checkBody('agent', 'invalid agent')
-            .notEmpty()
-            .withMessage('Required');
-        req.checkBody('agent.typeOf', 'invalid agent.typeOf')
-            .notEmpty()
-            .withMessage('Required');
-        req.checkBody('agent.name', 'invalid agent.name')
-            .notEmpty()
-            .withMessage('Required');
-
-        next();
-    },
+            .isISO8601()
+            .toDate(),
+        body('agent')
+            .not()
+            .isEmpty()
+            .withMessage('Required'),
+        body('agent.typeOf')
+            .not()
+            .isEmpty()
+            .withMessage('Required'),
+        body('agent.name')
+            .not()
+            .isEmpty()
+            .withMessage('Required')
+    ],
     validator,
     async (req, res, next) => {
         try {
@@ -58,8 +63,7 @@ registerServiceTransactionsRouter.post(
                     // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
                 },
                 object: req.body.object,
-                expires: moment(req.body.expires)
-                    .toDate(),
+                expires: req.body.expires,
                 ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
                 offer: offerRepo,
@@ -83,6 +87,12 @@ registerServiceTransactionsRouter.post(
 registerServiceTransactionsRouter.put(
     '/:transactionId/confirm',
     permitScopes(['admin', 'transactions']),
+    ...[
+        body('endDate')
+            .optional()
+            .isISO8601()
+            .toDate()
+    ],
     validator,
     async (req, res, next) => {
         try {

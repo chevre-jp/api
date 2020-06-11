@@ -14,33 +14,39 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
+// tslint:disable-next-line:no-submodule-imports
+const check_1 = require("express-validator/check");
 const http_status_1 = require("http-status");
-const moment = require("moment");
 const mongoose = require("mongoose");
 const registerServiceTransactionsRouter = express_1.Router();
 const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 registerServiceTransactionsRouter.use(authentication_1.default);
-registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin']), (req, _, next) => {
-    req.checkBody('project')
-        .notEmpty()
-        .withMessage('Required');
-    req.checkBody('expires', 'invalid expires')
-        .notEmpty()
+registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
+    check_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage('Required'),
+    check_1.body('expires')
+        .not()
+        .isEmpty()
         .withMessage('Required')
-        .isISO8601();
-    req.checkBody('agent', 'invalid agent')
-        .notEmpty()
-        .withMessage('Required');
-    req.checkBody('agent.typeOf', 'invalid agent.typeOf')
-        .notEmpty()
-        .withMessage('Required');
-    req.checkBody('agent.name', 'invalid agent.name')
-        .notEmpty()
-        .withMessage('Required');
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        .isISO8601()
+        .toDate(),
+    check_1.body('agent')
+        .not()
+        .isEmpty()
+        .withMessage('Required'),
+    check_1.body('agent.typeOf')
+        .not()
+        .isEmpty()
+        .withMessage('Required'),
+    check_1.body('agent.name')
+        .not()
+        .isEmpty()
+        .withMessage('Required')
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
@@ -51,8 +57,7 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin'
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
         const transaction = yield chevre.service.transaction.registerService.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.RegisterService, agent: Object.assign({}, req.body.agent
             // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
-            ), object: req.body.object, expires: moment(req.body.expires)
-                .toDate() }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
+            ), object: req.body.object, expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
             offer: offerRepo,
             offerCatalog: offerCatalogRepo,
             product: productRepo,
@@ -69,7 +74,12 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin'
 /**
  * 取引確定
  */
-registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), ...[
+    check_1.body('endDate')
+        .optional()
+        .isISO8601()
+        .toDate()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
