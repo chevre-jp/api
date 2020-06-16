@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - サービス登録時にオファーのポイント特典を適用するように調整
+- プロジェクト作成を追加
 
 ### Changed
 

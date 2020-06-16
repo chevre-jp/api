@@ -14,12 +14,66 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
+// tslint:disable-next-line:no-submodule-imports
+const check_1 = require("express-validator/check");
+const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const projectsRouter = express_1.Router();
 projectsRouter.use(authentication_1.default);
+/**
+ * プロジェクト作成
+ */
+projectsRouter.post('', permitScopes_1.default(['admin']), ...[
+    check_1.body('typeOf')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required')
+        .isString(),
+    check_1.body('name')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required')
+        .isString(),
+    check_1.body('id')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required')
+        .isString(),
+    check_1.body('logo')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required')
+        .isURL()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
+        let project = createFromBody(req.body);
+        // プロジェクト作成
+        project = yield projectRepo.projectModel.create(Object.assign(Object.assign({}, project), { _id: project.id }))
+            .then((doc) => doc.toObject());
+        res.status(http_status_1.CREATED)
+            .json(project);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+function createFromBody(params) {
+    return {
+        id: params.id,
+        typeOf: params.typeOf,
+        logo: params.logo,
+        name: params.name,
+        settings: {
+            onReservationStatusChanged: {
+                informReservation: []
+            }
+        }
+    };
+}
 /**
  * プロジェクト取得
  */
