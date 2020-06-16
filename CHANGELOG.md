@@ -18,6 +18,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.19.0 - 2020-06-16
+
+### Added
+
+- サービス登録時にオファーのポイント特典を適用するように調整
+- プロジェクト作成を追加
+
 ## v7.18.0 - 2020-06-11
 
 ### Changed
