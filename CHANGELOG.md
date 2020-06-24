@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.21.0 - 2020-06-24
+
+### Changed
+
+- サービス登録時のサービスアウトプット識別子の指定を、プロダクトタイプに関わらず必須に変更
+
 ## v7.20.0 - 2020-06-24
 
 ### Added
