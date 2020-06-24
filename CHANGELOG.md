@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.20.0 - 2020-06-24
+
+### Added
+
+- サービスアウトプット識別子ルーターを追加
+
 ## v7.19.0 - 2020-06-16
 
 ### Added
