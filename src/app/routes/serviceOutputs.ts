@@ -54,7 +54,10 @@ serviceOutputsRouter.get(
                 ...(req.query.project?.id !== undefined) ? { 'project.id': req.query.project?.id } : undefined,
                 ...(req.query.typeOf !== undefined) ? { typeOf: req.query.typeOf } : undefined,
                 ...(req.query.identifier !== undefined) ? { identifier: req.query.identifier } : undefined,
-                ...(req.query.accessCode !== undefined) ? { accessCode: req.query.accessCode } : undefined
+                ...(req.query.accessCode !== undefined) ? { accessCode: req.query.accessCode } : undefined,
+                ...(req.query.issuedBy?.id !== undefined) ? { 'issuedBy.id': req.query.issuedBy?.id } : undefined,
+                ...(req.query.issuedThrough?.id !== undefined) ? { 'issuedThrough.id': req.query.issuedThrough?.id } : undefined,
+                ...(req.query.issuedThrough?.typeOf !== undefined) ? { 'issuedThrough.typeOf': req.query.issuedThrough?.typeOf } : undefined
             })
                 .limit(req.query.limit)
                 .skip(req.query.limit * (req.query.page - 1))
