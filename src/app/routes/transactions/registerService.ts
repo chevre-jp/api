@@ -118,13 +118,15 @@ registerServiceTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
+            const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
+
             const actionRepo = new chevre.repository.Action(mongoose.connection);
             const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             await chevre.service.transaction.registerService.cancel({
                 ...req.body,
-                id: req.params.transactionId
+                ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({
                 action: actionRepo,
                 serviceOutput: serviceOutputRepo,
