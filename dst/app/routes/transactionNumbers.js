@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const redis = require("../../redis");
 const authentication_1 = require("../middlewares/authentication");
@@ -27,7 +26,7 @@ transactionNumbersRouter.use(authentication_1.default);
  * 取引番号発行
  */
 transactionNumbersRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('project.id')
+    express_validator_1.body('project.id')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')

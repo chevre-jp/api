@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - update @chevre/domain
 - update mongoose
+- update express-validator
 
 ### Deprecated
 

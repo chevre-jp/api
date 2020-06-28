@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const mongoose = require("mongoose");
@@ -23,25 +24,29 @@ const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 reserveTransactionsRouter.use(authentication_1.default);
-reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), (req, _, next) => {
-    req.checkBody('project')
-        .notEmpty()
-        .withMessage('Required');
-    req.checkBody('expires', 'invalid expires')
-        .notEmpty()
+reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), ...[
+    express_validator_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage('Required'),
+    express_validator_1.body('expires', 'invalid expires')
+        .not()
+        .isEmpty()
         .withMessage('Required')
-        .isISO8601();
-    req.checkBody('agent', 'invalid agent')
-        .notEmpty()
-        .withMessage('Required');
-    req.checkBody('agent.typeOf', 'invalid agent.typeOf')
-        .notEmpty()
-        .withMessage('Required');
-    req.checkBody('agent.name', 'invalid agent.name')
-        .notEmpty()
-        .withMessage('Required');
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        .isISO8601(),
+    express_validator_1.body('agent', 'invalid agent')
+        .not()
+        .isEmpty()
+        .withMessage('Required'),
+    express_validator_1.body('agent.typeOf', 'invalid agent.typeOf')
+        .not()
+        .isEmpty()
+        .withMessage('Required'),
+    express_validator_1.body('agent.name', 'invalid agent.name')
+        .not()
+        .isEmpty()
+        .withMessage('Required')
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());

@@ -14,78 +14,77 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const screeningEventRouter = express_1.Router();
 screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ...[
-    check_1.body('attributes.*.project')
+    express_validator_1.body('attributes.*.project')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('attributes.*.typeOf')
+    express_validator_1.body('attributes.*.typeOf')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('attributes.*.doorTime')
+    express_validator_1.body('attributes.*.doorTime')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('attributes.*.startDate')
+    express_validator_1.body('attributes.*.startDate')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required')
         .isISO8601()
         .toDate(),
-    check_1.body('attributes.*.endDate')
+    express_validator_1.body('attributes.*.endDate')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required')
         .isISO8601()
         .toDate(),
-    check_1.body('attributes.*.workPerformed')
+    express_validator_1.body('attributes.*.workPerformed')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('attributes.*.location')
+    express_validator_1.body('attributes.*.location')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('attributes.*.superEvent')
+    express_validator_1.body('attributes.*.superEvent')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('attributes.*.name')
+    express_validator_1.body('attributes.*.name')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('attributes.*.eventStatus')
+    express_validator_1.body('attributes.*.eventStatus')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('attributes.*.offers')
+    express_validator_1.body('attributes.*.offers')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('attributes.*.offers.availabilityStarts')
+    express_validator_1.body('attributes.*.offers.availabilityStarts')
         .not()
         .isEmpty()
         .isISO8601()
         .toDate(),
-    check_1.body('attributes.*.offers.availabilityEnds')
+    express_validator_1.body('attributes.*.offers.availabilityEnds')
         .not()
         .isEmpty()
         .isISO8601()
         .toDate(),
-    check_1.body('attributes.*.offers.validFrom')
+    express_validator_1.body('attributes.*.offers.validFrom')
         .not()
         .isEmpty()
         .isISO8601()
         .toDate(),
-    check_1.body('attributes.*.offers.validThrough')
+    express_validator_1.body('attributes.*.offers.validThrough')
         .not()
         .isEmpty()
         .isISO8601()

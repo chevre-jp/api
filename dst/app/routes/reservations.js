@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
@@ -27,51 +26,51 @@ reservationsRouter.use(authentication_1.default);
  * 予約検索
  */
 reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
-    check_1.query('limit')
+    express_validator_1.query('limit')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('page')
+    express_validator_1.query('page')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('bookingFrom')
+    express_validator_1.query('bookingFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('bookingThrough')
+    express_validator_1.query('bookingThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('modifiedFrom')
+    express_validator_1.query('modifiedFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('modifiedThrough')
+    express_validator_1.query('modifiedThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.startFrom')
+    express_validator_1.query('reservationFor.startFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.startThrough')
+    express_validator_1.query('reservationFor.startThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.endFrom')
+    express_validator_1.query('reservationFor.endFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.endThrough')
+    express_validator_1.query('reservationFor.endThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('checkedIn')
+    express_validator_1.query('checkedIn')
         .optional()
         .isBoolean()
         .toBoolean(),
-    check_1.query('attended')
+    express_validator_1.query('attended')
         .optional()
         .isBoolean()
         .toBoolean()
@@ -92,51 +91,51 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
  * ストリーミングダウンロード
  */
 reservationsRouter.get('/download', permitScopes_1.default(['admin']), ...[
-    check_1.query('limit')
+    express_validator_1.query('limit')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('page')
+    express_validator_1.query('page')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('bookingFrom')
+    express_validator_1.query('bookingFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('bookingThrough')
+    express_validator_1.query('bookingThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('modifiedFrom')
+    express_validator_1.query('modifiedFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('modifiedThrough')
+    express_validator_1.query('modifiedThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.startFrom')
+    express_validator_1.query('reservationFor.startFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.startThrough')
+    express_validator_1.query('reservationFor.startThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.endFrom')
+    express_validator_1.query('reservationFor.endFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.endThrough')
+    express_validator_1.query('reservationFor.endThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('checkedIn')
+    express_validator_1.query('checkedIn')
         .optional()
         .isBoolean()
         .toBoolean(),
-    check_1.query('attended')
+    express_validator_1.query('attended')
         .optional()
         .isBoolean()
         .toBoolean()
@@ -216,51 +215,51 @@ reservationsRouter.patch('/:id', permitScopes_1.default(['admin', 'reservations.
     }
 }));
 reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
-    check_1.query('limit')
+    express_validator_1.query('limit')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('page')
+    express_validator_1.query('page')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('bookingFrom')
+    express_validator_1.query('bookingFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('bookingThrough')
+    express_validator_1.query('bookingThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('modifiedFrom')
+    express_validator_1.query('modifiedFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('modifiedThrough')
+    express_validator_1.query('modifiedThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.startFrom')
+    express_validator_1.query('reservationFor.startFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.startThrough')
+    express_validator_1.query('reservationFor.startThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.endFrom')
+    express_validator_1.query('reservationFor.endFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('reservationFor.endThrough')
+    express_validator_1.query('reservationFor.endThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('checkedIn')
+    express_validator_1.query('checkedIn')
         .optional()
         .isBoolean()
         .toBoolean(),
-    check_1.query('attended')
+    express_validator_1.query('attended')
         .optional()
         .isBoolean()
         .toBoolean()

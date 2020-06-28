@@ -6,7 +6,6 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 // import * as createDebug from 'debug';
 import * as express from 'express';
-import * as expressValidator from 'express-validator';
 import * as helmet from 'helmet';
 import * as qs from 'qs';
 
@@ -64,7 +63,6 @@ app.use((__, res, next) => {
 
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
-app.use(expressValidator({})); // this line must be immediately after any of the bodyParser middlewares!
 
 connectMongo({ defaultConnection: true })
     .then()

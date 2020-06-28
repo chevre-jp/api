@@ -7,7 +7,6 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 // import * as createDebug from 'debug';
 const express = require("express");
-const expressValidator = require("express-validator");
 const helmet = require("helmet");
 const qs = require("qs");
 const connectMongo_1 = require("../connectMongo");
@@ -57,7 +56,6 @@ app.use((__, res, next) => {
 // app.set('view engine', 'ejs');
 app.use(bodyParser.json({ limit: '1mb' }));
 app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
-app.use(expressValidator({})); // this line must be immediately after any of the bodyParser middlewares!
 connectMongo_1.connectMongo({ defaultConnection: true })
     .then()
     .catch((err) => {

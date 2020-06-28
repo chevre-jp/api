@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const mongoose = require("mongoose");
@@ -25,31 +24,31 @@ const validator_1 = require("../../middlewares/validator");
 const movieRouter = express_1.Router();
 movieRouter.use(authentication_1.default);
 movieRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('datePublished')
+    express_validator_1.body('datePublished')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('datePublished')
+    express_validator_1.body('datePublished')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('offers.availabilityStarts')
+    express_validator_1.body('offers.availabilityStarts')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('offers.availabilityEnds')
+    express_validator_1.body('offers.availabilityEnds')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('offers.validFrom')
+    express_validator_1.body('offers.validFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('offers.validThrough')
+    express_validator_1.body('offers.validThrough')
         .optional()
         .isISO8601()
         .toDate()
@@ -72,27 +71,27 @@ movieRouter.post('', permitScopes_1.default(['admin']), ...[
     }
 }));
 movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), ...[
-    check_1.query('datePublishedFrom')
+    express_validator_1.query('datePublishedFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('datePublishedThrough')
+    express_validator_1.query('datePublishedThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('offers.availableFrom')
+    express_validator_1.query('offers.availableFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('offers.availableThrough')
+    express_validator_1.query('offers.availableThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('offers.validFrom')
+    express_validator_1.query('offers.validFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('offers.validThrough')
+    express_validator_1.query('offers.validThrough')
         .optional()
         .isISO8601()
         .toDate()
@@ -121,28 +120,29 @@ movieRouter.get('/:id', permitScopes_1.default(['admin', 'creativeWorks', 'creat
         next(error);
     }
 }));
+// tslint:disable-next-line:use-default-type-parameter
 movieRouter.put('/:id', permitScopes_1.default(['admin']), ...[
-    check_1.body('datePublished')
+    express_validator_1.body('datePublished')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('datePublished')
+    express_validator_1.body('datePublished')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('offers.availabilityStarts')
+    express_validator_1.body('offers.availabilityStarts')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('offers.availabilityEnds')
+    express_validator_1.body('offers.availabilityEnds')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('offers.validFrom')
+    express_validator_1.body('offers.validFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('offers.validThrough')
+    express_validator_1.body('offers.validThrough')
         .optional()
         .isISO8601()
         .toDate()

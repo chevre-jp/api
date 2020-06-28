@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../../middlewares/authentication");
@@ -27,29 +26,29 @@ screeningRoomSectionRouter.use(authentication_1.default);
  * 作成
  */
 screeningRoomSectionRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('branchCode')
+    express_validator_1.body('branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('name')
+    express_validator_1.body('name')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('containedInPlace.containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('additionalProperty')
+    express_validator_1.body('additionalProperty')
         .optional()
         .isArray()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -239,30 +238,31 @@ screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), validator_
 /**
  * 更新
  */
+// tslint:disable-next-line:use-default-type-parameter
 screeningRoomSectionRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('branchCode')
+    express_validator_1.body('branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('name')
+    express_validator_1.body('name')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('containedInPlace.containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('additionalProperty')
+    express_validator_1.body('additionalProperty')
         .optional()
         .isArray()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -322,21 +322,22 @@ screeningRoomSectionRouter.put('/:branchCode', permitScopes_1.default(['admin'])
 /**
  * 削除
  */
+// tslint:disable-next-line:use-default-type-parameter
 screeningRoomSectionRouter.delete('/:branchCode', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('branchCode')
+    express_validator_1.body('branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('containedInPlace.containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')

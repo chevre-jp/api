@@ -4,8 +4,9 @@
 import * as chevre from '@chevre/domain';
 import * as createDebug from 'debug';
 import { Router } from 'express';
-// tslint:disable-next-line:no-submodule-imports
-import { body } from 'express-validator/check';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
+import { body } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -152,7 +153,8 @@ accountTitlesRouter.get(
 /**
  * 科目分類更新
  */
-accountTitlesRouter.put(
+// tslint:disable-next-line:use-default-type-parameter
+accountTitlesRouter.put<ParamsDictionary>(
     '/accountTitleCategory/:codeValue',
     permitScopes(['admin']),
     ...[
@@ -405,7 +407,8 @@ accountTitlesRouter.get(
 /**
  * 科目更新
  */
-accountTitlesRouter.put(
+// tslint:disable-next-line:use-default-type-parameter
+accountTitlesRouter.put<ParamsDictionary>(
     '/accountTitleSet/:codeValue',
     permitScopes(['admin']),
     ...[
@@ -718,7 +721,9 @@ accountTitlesRouter.get(
 /**
  * 細目更新
  */
-accountTitlesRouter.put(
+
+// tslint:disable-next-line:use-default-type-parameter
+accountTitlesRouter.put<ParamsDictionary>(
     '/:codeValue',
     permitScopes(['admin']),
     ...[

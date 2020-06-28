@@ -3,6 +3,7 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
+import { body } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
 import * as mongoose from 'mongoose';
@@ -18,26 +19,29 @@ cancelReservationTransactionsRouter.use(authentication);
 cancelReservationTransactionsRouter.post(
     '/start',
     permitScopes(['admin', 'transactions']),
-    (req, _, next) => {
-        req.checkBody('project')
-            .notEmpty()
-            .withMessage('required');
-        req.checkBody('expires')
-            .notEmpty()
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage('required'),
+        body('expires')
+            .not()
+            .isEmpty()
             .withMessage('required')
-            .isISO8601();
-        req.checkBody('agent')
-            .notEmpty()
-            .withMessage('required');
-        req.checkBody('agent.typeOf')
-            .notEmpty()
-            .withMessage('required');
-        req.checkBody('agent.name')
-            .notEmpty()
-            .withMessage('required');
-
-        next();
-    },
+            .isISO8601(),
+        body('agent')
+            .not()
+            .isEmpty()
+            .withMessage('required'),
+        body('agent.typeOf')
+            .not()
+            .isEmpty()
+            .withMessage('required'),
+        body('agent.name')
+            .not()
+            .isEmpty()
+            .withMessage('required')
+    ],
     validator,
     async (req, res, next) => {
         try {
@@ -76,26 +80,29 @@ cancelReservationTransactionsRouter.post(
 cancelReservationTransactionsRouter.post(
     '/confirm',
     permitScopes(['admin', 'transactions']),
-    (req, _, next) => {
-        req.checkBody('project')
-            .notEmpty()
-            .withMessage('required');
-        req.checkBody('expires')
-            .notEmpty()
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage('required'),
+        body('expires')
+            .not()
+            .isEmpty()
             .withMessage('required')
-            .isISO8601();
-        req.checkBody('agent')
-            .notEmpty()
-            .withMessage('required');
-        req.checkBody('agent.typeOf')
-            .notEmpty()
-            .withMessage('required');
-        req.checkBody('agent.name')
-            .notEmpty()
-            .withMessage('required');
-
-        next();
-    },
+            .isISO8601(),
+        body('agent')
+            .not()
+            .isEmpty()
+            .withMessage('required'),
+        body('agent.typeOf')
+            .not()
+            .isEmpty()
+            .withMessage('required'),
+        body('agent.name')
+            .not()
+            .isEmpty()
+            .withMessage('required')
+    ],
     validator,
     async (req, res, next) => {
         try {

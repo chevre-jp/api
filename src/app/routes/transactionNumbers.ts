@@ -3,8 +3,7 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
-// tslint:disable-next-line:no-submodule-imports
-import { body } from 'express-validator/check';
+import { body } from 'express-validator';
 import { CREATED } from 'http-status';
 
 import * as redis from '../../redis';

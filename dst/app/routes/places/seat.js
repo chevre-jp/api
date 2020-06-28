@@ -15,8 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/domain");
 const createDebug = require("debug");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../../middlewares/authentication");
@@ -29,11 +28,11 @@ seatRouter.use(authentication_1.default);
  * 作成
  */
 seatRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('branchCode')
+    express_validator_1.body('branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
@@ -41,25 +40,25 @@ seatRouter.post('', permitScopes_1.default(['admin']), ...[
     //     .not()
     //     .isEmpty()
     //     .withMessage(() => 'Required'),
-    check_1.body('containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('containedInPlace.containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('containedInPlace.containedInPlace.containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.containedInPlace.containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('seatingType')
+    express_validator_1.body('seatingType')
         .optional()
         .isArray(),
-    check_1.body('additionalProperty')
+    express_validator_1.body('additionalProperty')
         .optional()
         .isArray()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -141,12 +140,13 @@ seatRouter.get('', permitScopes_1.default(['admin']), validator_1.default, (req,
 /**
  * 更新
  */
+// tslint:disable-next-line:use-default-type-parameter
 seatRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('branchCode')
+    express_validator_1.body('branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
@@ -154,25 +154,25 @@ seatRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
     //     .not()
     //     .isEmpty()
     //     .withMessage(() => 'Required'),
-    check_1.body('containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('containedInPlace.containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('containedInPlace.containedInPlace.containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.containedInPlace.containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('seatingType')
+    express_validator_1.body('seatingType')
         .optional()
         .isArray(),
-    check_1.body('additionalProperty')
+    express_validator_1.body('additionalProperty')
         .optional()
         .isArray()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -225,22 +225,23 @@ seatRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
 /**
  * 削除
  */
+// tslint:disable-next-line:use-default-type-parameter
 seatRouter.delete('/:branchCode', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('containedInPlace.containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('containedInPlace.containedInPlace.containedInPlace.branchCode')
+    express_validator_1.body('containedInPlace.containedInPlace.containedInPlace.branchCode')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
