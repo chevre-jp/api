@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - update @chevre/domain
 - update mongoose
 - update express-validator
+- COAイベントキャパシティインポート処理の実行間隔を調整
 
 ### Deprecated
 
