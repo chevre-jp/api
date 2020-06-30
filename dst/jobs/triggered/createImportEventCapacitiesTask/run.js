@@ -51,6 +51,13 @@ exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
             });
             const now = new Date();
             const runsAt = now;
+            // 過去のタスクでいまだに実行されていないものを中止
+            yield taskRepo.taskModel.updateMany({
+                name: chevre.factory.taskName.ImportEventCapacitiesFromCOA,
+                status: chevre.factory.taskStatus.Ready,
+                runsAt: { $lt: runsAt }
+            }, { status: chevre.factory.taskStatus.Aborted })
+                .exec();
             // IMPORT_EVENTS_PER_DAYSずつインポート
             // tslint:disable-next-line:prefer-array-literal
             yield Promise.all([...Array(Math.ceil(importEventsInWeeks * DAYS_WEEK / IMPORT_EVENTS_PER_DAYS))].map((_, i) => __awaiter(void 0, void 0, void 0, function* () {
@@ -63,7 +70,7 @@ exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
                 yield Promise.all(movieTheaters.map((movieTheater) => __awaiter(void 0, void 0, void 0, function* () {
                     try {
                         const taskAttributes = {
-                            name: 'importEventCapacitiesFromCOA',
+                            name: chevre.factory.taskName.ImportEventCapacitiesFromCOA,
                             status: chevre.factory.taskStatus.Ready,
                             runsAt: runsAt,
                             remainingNumberOfTries: 1,
