@@ -14,11 +14,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const connectMongo_1 = require("../../../connectMongo");
+const COA_MAXIMUM_CONCURRENT_TASKS = (typeof process.env.COA_MAXIMUM_CONCURRENT_TASKS === 'string')
+    ? Number(process.env.COA_MAXIMUM_CONCURRENT_TASKS)
+    : 0;
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
     let count = 0;
-    const MAX_NUBMER_OF_PARALLEL_TASKS = 0;
-    const INTERVAL_MILLISECONDS = 500;
+    const MAX_NUBMER_OF_PARALLEL_TASKS = COA_MAXIMUM_CONCURRENT_TASKS;
+    const INTERVAL_MILLISECONDS = 100;
     setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
         if (count > MAX_NUBMER_OF_PARALLEL_TASKS) {
             return;

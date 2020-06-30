@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- COA_MAXIMUM_CONCURRENT_TASKS設定を追加
+
 ### Changed
 
 - update @chevre/domain
