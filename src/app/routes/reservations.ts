@@ -3,8 +3,7 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
-// tslint:disable-next-line:no-submodule-imports
-import { query } from 'express-validator/check';
+import { query } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 

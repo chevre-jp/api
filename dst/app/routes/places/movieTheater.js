@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../../middlewares/authentication");
@@ -24,14 +23,14 @@ const validator_1 = require("../../middlewares/validator");
 const movieTheaterRouter = express_1.Router();
 movieTheaterRouter.use(authentication_1.default);
 movieTheaterRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('branchCode')
+    express_validator_1.body('branchCode')
         .not()
         .isEmpty(),
-    check_1.body('name')
+    express_validator_1.body('name')
         .not()
         .isEmpty()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -70,11 +69,12 @@ movieTheaterRouter.get('/:id', permitScopes_1.default(['admin', 'places', 'place
         next(error);
     }
 }));
+// tslint:disable-next-line:use-default-type-parameter
 movieTheaterRouter.put('/:id', permitScopes_1.default(['admin']), ...[
-    check_1.body('branchCode')
+    express_validator_1.body('branchCode')
         .not()
         .isEmpty(),
-    check_1.body('name')
+    express_validator_1.body('name')
         .not()
         .isEmpty()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

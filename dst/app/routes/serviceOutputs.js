@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
@@ -26,11 +25,11 @@ serviceOutputsRouter.use(authentication_1.default);
  * 検索
  */
 serviceOutputsRouter.get('', permitScopes_1.default(['admin', 'serviceOutputs', 'serviceOutputs.read-only']), ...[
-    check_1.query('limit')
+    express_validator_1.query('limit')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('page')
+    express_validator_1.query('page')
         .optional()
         .isInt()
         .toInt()

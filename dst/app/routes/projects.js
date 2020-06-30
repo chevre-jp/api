@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
@@ -27,22 +26,22 @@ projectsRouter.use(authentication_1.default);
  * プロジェクト作成
  */
 projectsRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('typeOf')
+    express_validator_1.body('typeOf')
         .not()
         .isEmpty()
         .withMessage(() => 'required')
         .isString(),
-    check_1.body('name')
+    express_validator_1.body('name')
         .not()
         .isEmpty()
         .withMessage(() => 'required')
         .isString(),
-    check_1.body('id')
+    express_validator_1.body('id')
         .not()
         .isEmpty()
         .withMessage(() => 'required')
         .isString(),
-    check_1.body('logo')
+    express_validator_1.body('logo')
         .not()
         .isEmpty()
         .withMessage(() => 'required')

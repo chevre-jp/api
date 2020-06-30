@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const registerServiceTransactionsRouter = express_1.Router();
@@ -24,25 +23,25 @@ const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 registerServiceTransactionsRouter.use(authentication_1.default);
 registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage('Required'),
-    check_1.body('expires')
+    express_validator_1.body('expires')
         .not()
         .isEmpty()
         .withMessage('Required')
         .isISO8601()
         .toDate(),
-    check_1.body('agent')
+    express_validator_1.body('agent')
         .not()
         .isEmpty()
         .withMessage('Required'),
-    check_1.body('agent.typeOf')
+    express_validator_1.body('agent.typeOf')
         .not()
         .isEmpty()
         .withMessage('Required'),
-    check_1.body('agent.name')
+    express_validator_1.body('agent.name')
         .not()
         .isEmpty()
         .withMessage('Required')
@@ -74,8 +73,9 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin'
 /**
  * 取引確定
  */
+// tslint:disable-next-line:use-default-type-parameter
 registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), ...[
-    check_1.body('endDate')
+    express_validator_1.body('endDate')
         .optional()
         .isISO8601()
         .toDate()

@@ -3,8 +3,9 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
-// tslint:disable-next-line:no-submodule-imports
-import { body, query } from 'express-validator/check';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
+import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
 import * as mongoose from 'mongoose';
@@ -144,7 +145,8 @@ movieRouter.get(
     }
 );
 
-movieRouter.put(
+// tslint:disable-next-line:use-default-type-parameter
+movieRouter.put<ParamsDictionary>(
     '/:id',
     permitScopes(['admin']),
     ...[

@@ -4,8 +4,9 @@
 import * as chevre from '@chevre/domain';
 import * as createDebug from 'debug';
 import { Router } from 'express';
-// tslint:disable-next-line:no-submodule-imports
-import { body } from 'express-validator/check';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
+import { body } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -253,7 +254,9 @@ screeningRoomRouter.get(
 /**
  * 更新
  */
-screeningRoomRouter.put(
+// tslint:disable-next-line:use-default-type-parameter
+screeningRoomRouter.put<ParamsDictionary>(
+
     '/:branchCode',
     permitScopes(['admin']),
     ...[
@@ -340,7 +343,8 @@ screeningRoomRouter.put(
 /**
  * 削除
  */
-screeningRoomRouter.delete(
+// tslint:disable-next-line:use-default-type-parameter
+screeningRoomRouter.delete<ParamsDictionary>(
     '/:branchCode',
     permitScopes(['admin']),
     ...[

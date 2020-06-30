@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
@@ -26,25 +25,25 @@ const categoryCodesRouter = express_1.Router();
  * カテゴリーコードに対するバリデーション
  */
 const validations = [
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('project.id')
+    express_validator_1.body('project.id')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('codeValue')
+    express_validator_1.body('codeValue')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
         .isString(),
-    check_1.body('inCodeSet')
+    express_validator_1.body('inCodeSet')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('inCodeSet.identifier')
+    express_validator_1.body('inCodeSet.identifier')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
@@ -66,11 +65,11 @@ categoryCodesRouter.post('', permitScopes_1.default(['admin']), ...validations, 
     }
 }));
 categoryCodesRouter.get('', permitScopes_1.default(['admin']), ...[
-    check_1.query('limit')
+    express_validator_1.query('limit')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('page')
+    express_validator_1.query('page')
         .optional()
         .isInt()
         .toInt()

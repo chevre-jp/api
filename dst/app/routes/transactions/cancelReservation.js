@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const mongoose = require("mongoose");
@@ -22,25 +23,29 @@ const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 cancelReservationTransactionsRouter.use(authentication_1.default);
-cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), (req, _, next) => {
-    req.checkBody('project')
-        .notEmpty()
-        .withMessage('required');
-    req.checkBody('expires')
-        .notEmpty()
+cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), ...[
+    express_validator_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage('required'),
+    express_validator_1.body('expires')
+        .not()
+        .isEmpty()
         .withMessage('required')
-        .isISO8601();
-    req.checkBody('agent')
-        .notEmpty()
-        .withMessage('required');
-    req.checkBody('agent.typeOf')
-        .notEmpty()
-        .withMessage('required');
-    req.checkBody('agent.name')
-        .notEmpty()
-        .withMessage('required');
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        .isISO8601(),
+    express_validator_1.body('agent')
+        .not()
+        .isEmpty()
+        .withMessage('required'),
+    express_validator_1.body('agent.typeOf')
+        .not()
+        .isEmpty()
+        .withMessage('required'),
+    express_validator_1.body('agent.name')
+        .not()
+        .isEmpty()
+        .withMessage('required')
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
@@ -60,25 +65,29 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
         next(error);
     }
 }));
-cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['admin', 'transactions']), (req, _, next) => {
-    req.checkBody('project')
-        .notEmpty()
-        .withMessage('required');
-    req.checkBody('expires')
-        .notEmpty()
+cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['admin', 'transactions']), ...[
+    express_validator_1.body('project')
+        .not()
+        .isEmpty()
+        .withMessage('required'),
+    express_validator_1.body('expires')
+        .not()
+        .isEmpty()
         .withMessage('required')
-        .isISO8601();
-    req.checkBody('agent')
-        .notEmpty()
-        .withMessage('required');
-    req.checkBody('agent.typeOf')
-        .notEmpty()
-        .withMessage('required');
-    req.checkBody('agent.name')
-        .notEmpty()
-        .withMessage('required');
-    next();
-}, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        .isISO8601(),
+    express_validator_1.body('agent')
+        .not()
+        .isEmpty()
+        .withMessage('required'),
+    express_validator_1.body('agent.typeOf')
+        .not()
+        .isEmpty()
+        .withMessage('required'),
+    express_validator_1.body('agent.name')
+        .not()
+        .isEmpty()
+        .withMessage('required')
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);

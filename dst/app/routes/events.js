@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const screeningEvent_1 = require("./events/screeningEvent");
@@ -36,85 +35,85 @@ const validations = [
         req.body = (Array.isArray(req.body)) ? req.body : [req.body];
         next();
     },
-    check_1.body()
+    express_validator_1.body()
         .isArray()
         .custom((value) => value.length <= MAX_NUM_EVENTS_CREATED)
         .withMessage(() => 'Array length max exceeded'),
-    check_1.body('*.project')
+    express_validator_1.body('*.project')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('*.typeOf')
+    express_validator_1.body('*.typeOf')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('*.eventStatus')
+    express_validator_1.body('*.eventStatus')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('*.name')
+    express_validator_1.body('*.name')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('*.doorTime')
+    express_validator_1.body('*.doorTime')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.body('*.startDate')
+    express_validator_1.body('*.startDate')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required')
         .isISO8601()
         .toDate(),
-    check_1.body('*.endDate')
+    express_validator_1.body('*.endDate')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required')
         .isISO8601()
         .toDate(),
-    check_1.body('*.workPerformed')
+    express_validator_1.body('*.workPerformed')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('*.location')
+    express_validator_1.body('*.location')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.oneOf([
+    express_validator_1.oneOf([
         [
-            check_1.body('*.typeOf')
+            express_validator_1.body('*.typeOf')
                 .equals(chevre.factory.eventType.ScreeningEvent),
-            check_1.body('*.superEvent')
+            express_validator_1.body('*.superEvent')
                 .not()
                 .isEmpty()
                 .withMessage((_, __) => 'Required'),
-            check_1.body('*.offers')
+            express_validator_1.body('*.offers')
                 .not()
                 .isEmpty()
                 .withMessage((_, __) => 'Required'),
-            check_1.body('*.offers.availabilityStarts')
+            express_validator_1.body('*.offers.availabilityStarts')
                 .not()
                 .isEmpty()
                 .isISO8601()
                 .toDate(),
-            check_1.body('*.offers.availabilityEnds')
+            express_validator_1.body('*.offers.availabilityEnds')
                 .not()
                 .isEmpty()
                 .isISO8601()
                 .toDate(),
-            check_1.body('*.offers.validFrom')
+            express_validator_1.body('*.offers.validFrom')
                 .not()
                 .isEmpty()
                 .isISO8601()
                 .toDate(),
-            check_1.body('*.offers.validThrough')
+            express_validator_1.body('*.offers.validThrough')
                 .not()
                 .isEmpty()
                 .isISO8601()
                 .toDate()
         ],
         [
-            check_1.body('*.typeOf')
+            express_validator_1.body('*.typeOf')
                 .equals(chevre.factory.eventType.ScreeningEventSeries)
         ]
     ])
@@ -150,47 +149,47 @@ eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validat
  * イベント検索
  */
 eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-only']), ...[
-    check_1.query('typeOf')
+    express_validator_1.query('typeOf')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.query('inSessionFrom')
+    express_validator_1.query('inSessionFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('inSessionThrough')
+    express_validator_1.query('inSessionThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('startFrom')
+    express_validator_1.query('startFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('startThrough')
+    express_validator_1.query('startThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('endFrom')
+    express_validator_1.query('endFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('endThrough')
+    express_validator_1.query('endThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('offers.availableFrom')
+    express_validator_1.query('offers.availableFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('offers.availableThrough')
+    express_validator_1.query('offers.availableThrough')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('offers.validFrom')
+    express_validator_1.query('offers.validFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    check_1.query('offers.validThrough')
+    express_validator_1.query('offers.validThrough')
         .optional()
         .isISO8601()
         .toDate()

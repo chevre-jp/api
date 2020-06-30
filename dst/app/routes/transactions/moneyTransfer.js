@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const mongoose = require("mongoose");
@@ -26,29 +25,29 @@ const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 moneyTransferTransactionsRouter.use(authentication_1.default);
 moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('expires')
+    express_validator_1.body('expires')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required')
         .isISO8601()
         .toDate(),
-    check_1.body('agent.typeOf')
+    express_validator_1.body('agent.typeOf')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('agent.name')
+    express_validator_1.body('agent.name')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('recipient.typeOf')
+    express_validator_1.body('recipient.typeOf')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required'),
-    check_1.body('recipient.name')
+    express_validator_1.body('recipient.name')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required')

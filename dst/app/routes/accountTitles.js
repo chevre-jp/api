@@ -15,8 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/domain");
 const createDebug = require("debug");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
@@ -29,15 +28,15 @@ accountTitlesRouter.use(authentication_1.default);
  * 科目分類追加
  */
 accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('codeValue')
+    express_validator_1.body('codeValue')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('name')
+    express_validator_1.body('name')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
@@ -132,12 +131,13 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin'
 /**
  * 科目分類更新
  */
+// tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.put('/accountTitleCategory/:codeValue', permitScopes_1.default(['admin']), ...[
-    check_1.body('codeValue')
+    express_validator_1.body('codeValue')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('name')
+    express_validator_1.body('name')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
@@ -167,19 +167,19 @@ accountTitlesRouter.put('/accountTitleCategory/:codeValue', permitScopes_1.defau
  * 科目追加
  */
 accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), ...[
-    check_1.body('codeValue')
+    express_validator_1.body('codeValue')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('name')
+    express_validator_1.body('name')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('inCodeSet')
+    express_validator_1.body('inCodeSet')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('inCodeSet.codeValue')
+    express_validator_1.body('inCodeSet.codeValue')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
@@ -342,12 +342,13 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['admin', 'ac
 /**
  * 科目更新
  */
+// tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default(['admin']), ...[
-    check_1.body('codeValue')
+    express_validator_1.body('codeValue')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('name')
+    express_validator_1.body('name')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
@@ -389,27 +390,27 @@ accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default(['
  * 細目追加
  */
 accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('codeValue')
+    express_validator_1.body('codeValue')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('name')
+    express_validator_1.body('name')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('inCodeSet')
+    express_validator_1.body('inCodeSet')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('inCodeSet.codeValue')
+    express_validator_1.body('inCodeSet.codeValue')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('inCodeSet.inCodeSet')
+    express_validator_1.body('inCodeSet.inCodeSet')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('inCodeSet.inCodeSet.codeValue')
+    express_validator_1.body('inCodeSet.inCodeSet.codeValue')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
@@ -610,20 +611,21 @@ accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'a
 /**
  * 細目更新
  */
+// tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['admin']), ...[
-    check_1.body('codeValue')
+    express_validator_1.body('codeValue')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('name')
+    express_validator_1.body('name')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('inCodeSet')
+    express_validator_1.body('inCodeSet')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('inCodeSet.codeValue')
+    express_validator_1.body('inCodeSet.codeValue')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')

@@ -3,8 +3,9 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
-// tslint:disable-next-line:no-submodule-imports
-import { body } from 'express-validator/check';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
+import { body } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -93,7 +94,8 @@ movieTheaterRouter.get(
     }
 );
 
-movieTheaterRouter.put(
+// tslint:disable-next-line:use-default-type-parameter
+movieTheaterRouter.put<ParamsDictionary>(
     '/:id',
     permitScopes(['admin']),
     ...[

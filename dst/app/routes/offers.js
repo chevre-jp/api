@@ -14,8 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
-// tslint:disable-next-line:no-submodule-imports
-const check_1 = require("express-validator/check");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
@@ -24,11 +23,11 @@ const validator_1 = require("../middlewares/validator");
 const offersRouter = express_1.Router();
 offersRouter.use(authentication_1.default);
 offersRouter.post('', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('project.id')
+    express_validator_1.body('project.id')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
@@ -46,23 +45,23 @@ offersRouter.post('', permitScopes_1.default(['admin']), ...[
     }
 }));
 offersRouter.get('', permitScopes_1.default(['admin']), ...[
-    check_1.query('priceSpecification.price.$gte')
+    express_validator_1.query('priceSpecification.price.$gte')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('priceSpecification.price.$lte')
+    express_validator_1.query('priceSpecification.price.$lte')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('priceSpecification.accounting.accountsReceivable.$gte')
+    express_validator_1.query('priceSpecification.accounting.accountsReceivable.$gte')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('priceSpecification.accounting.accountsReceivable.$lte')
+    express_validator_1.query('priceSpecification.accounting.accountsReceivable.$lte')
         .optional()
         .isInt()
         .toInt(),
-    check_1.query('priceSpecification.referenceQuantity.value.$eq')
+    express_validator_1.query('priceSpecification.referenceQuantity.value.$eq')
         .optional()
         .isInt()
         .toInt()
@@ -90,11 +89,11 @@ offersRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default,
     }
 }));
 offersRouter.put('/:id', permitScopes_1.default(['admin']), ...[
-    check_1.body('project')
+    express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage(() => 'Required'),
-    check_1.body('project.id')
+    express_validator_1.body('project.id')
         .not()
         .isEmpty()
         .withMessage(() => 'Required')

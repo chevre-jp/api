@@ -3,8 +3,9 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
-// tslint:disable-next-line:no-submodule-imports
-import { body } from 'express-validator/check';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
+import { body } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -84,7 +85,8 @@ registerServiceTransactionsRouter.post(
 /**
  * 取引確定
  */
-registerServiceTransactionsRouter.put(
+// tslint:disable-next-line:use-default-type-parameter
+registerServiceTransactionsRouter.put<ParamsDictionary>(
     '/:transactionId/confirm',
     permitScopes(['admin', 'transactions']),
     ...[

@@ -3,6 +3,7 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
+import { body } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
 import * as mongoose from 'mongoose';
@@ -19,26 +20,29 @@ reserveTransactionsRouter.use(authentication);
 reserveTransactionsRouter.post(
     '/start',
     permitScopes(['admin', 'transactions']),
-    (req, _, next) => {
-        req.checkBody('project')
-            .notEmpty()
-            .withMessage('Required');
-        req.checkBody('expires', 'invalid expires')
-            .notEmpty()
+    ...[
+        body('project')
+            .not()
+            .isEmpty()
+            .withMessage('Required'),
+        body('expires', 'invalid expires')
+            .not()
+            .isEmpty()
             .withMessage('Required')
-            .isISO8601();
-        req.checkBody('agent', 'invalid agent')
-            .notEmpty()
-            .withMessage('Required');
-        req.checkBody('agent.typeOf', 'invalid agent.typeOf')
-            .notEmpty()
-            .withMessage('Required');
-        req.checkBody('agent.name', 'invalid agent.name')
-            .notEmpty()
-            .withMessage('Required');
-
-        next();
-    },
+            .isISO8601(),
+        body('agent', 'invalid agent')
+            .not()
+            .isEmpty()
+            .withMessage('Required'),
+        body('agent.typeOf', 'invalid agent.typeOf')
+            .not()
+            .isEmpty()
+            .withMessage('Required'),
+        body('agent.name', 'invalid agent.name')
+            .not()
+            .isEmpty()
+            .withMessage('Required')
+    ],
     validator,
     async (req, res, next) => {
         try {
