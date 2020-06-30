@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- COAイベントキャパシティインポートタスク作成時に、未実行の古いタスクを中止するように調整
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.24.2 - 2020-06-30
+
+### Changed
+
+- COAイベントキャパシティインポートタスク作成時に、未実行の古いタスクを中止するように調整
 
 ## v7.24.1 - 2020-06-30
 
