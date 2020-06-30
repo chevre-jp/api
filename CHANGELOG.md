@@ -8,14 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- COA_MAXIMUM_CONCURRENT_TASKS設定を追加
-
 ### Changed
-
-- update @chevre/domain
-- update mongoose
-- update express-validator
-- COAイベントキャパシティインポート処理の実行間隔を調整
 
 ### Deprecated
 
@@ -24,6 +17,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.24.1 - 2020-06-30
+
+### Added
+
+- COA_MAXIMUM_CONCURRENT_TASKS設定を追加
+
+### Changed
+
+- update @chevre/domain
+- update mongoose
+- update express-validator
+- COAイベントキャパシティインポート処理の実行間隔を調整
 
 ## v7.24.0 - 2020-06-27
 
