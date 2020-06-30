@@ -21,7 +21,7 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
     let count = 0;
     const MAX_NUBMER_OF_PARALLEL_TASKS = COA_MAXIMUM_CONCURRENT_TASKS;
-    const INTERVAL_MILLISECONDS = 100;
+    const INTERVAL_MILLISECONDS = 1000;
     setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
         if (count > MAX_NUBMER_OF_PARALLEL_TASKS) {
             return;

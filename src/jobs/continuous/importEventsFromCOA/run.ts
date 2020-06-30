@@ -15,7 +15,7 @@ export default async () => {
     let count = 0;
 
     const MAX_NUBMER_OF_PARALLEL_TASKS = COA_MAXIMUM_CONCURRENT_TASKS;
-    const INTERVAL_MILLISECONDS = 100;
+    const INTERVAL_MILLISECONDS = 1000;
 
     setInterval(
         async () => {
