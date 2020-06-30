@@ -55,6 +55,17 @@ export default async (params: {
                 const now = new Date();
                 const runsAt = now;
 
+                // 過去のタスクでいまだに実行されていないものを中止
+                await taskRepo.taskModel.updateMany(
+                    {
+                        name: chevre.factory.taskName.ImportEventCapacitiesFromCOA,
+                        status: chevre.factory.taskStatus.Ready,
+                        runsAt: { $lt: runsAt }
+                    },
+                    { status: chevre.factory.taskStatus.Aborted }
+                )
+                    .exec();
+
                 // IMPORT_EVENTS_PER_DAYSずつインポート
                 // tslint:disable-next-line:prefer-array-literal
                 await Promise.all([...Array(Math.ceil(importEventsInWeeks * DAYS_WEEK / IMPORT_EVENTS_PER_DAYS))].map(async (_, i) => {
@@ -68,7 +79,7 @@ export default async (params: {
                     await Promise.all(movieTheaters.map(async (movieTheater) => {
                         try {
                             const taskAttributes: chevre.factory.task.IAttributes = {
-                                name: <any>'importEventCapacitiesFromCOA',
+                                name: chevre.factory.taskName.ImportEventCapacitiesFromCOA,
                                 status: chevre.factory.taskStatus.Ready,
                                 runsAt: runsAt,
                                 remainingNumberOfTries: 1,
