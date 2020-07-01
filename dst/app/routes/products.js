@@ -45,7 +45,40 @@ productsRouter.post('', permitScopes_1.default(['admin']), ...[
 /**
  * プロダクト検索
  */
-productsRouter.get('', permitScopes_1.default(['admin']), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+productsRouter.get('', permitScopes_1.default(['admin']), ...[
+    express_validator_1.body('offers.$elemMatch.validFrom.$gte')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.$elemMatch.validFrom.$lte')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.$elemMatch.validThrough.$gte')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.$elemMatch.validThrough.$lte')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.$elemMatch.availabilityEnds.$gte')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.$elemMatch.availabilityEnds.$lte')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.$elemMatch.availabilityStarts.$gte')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.$elemMatch.availabilityStarts.$lte')
+        .optional()
+        .isISO8601()
+        .toDate()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productRepo = new chevre.repository.Product(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
