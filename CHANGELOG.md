@@ -8,8 +8,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- プロダクト検索条件拡張
-
 ### Changed
 
 ### Deprecated
@@ -18,9 +16,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 
-- イベント保管メソッドがパラメータ変数を上書きしてしまうバグ対応
-
 ### Security
+
+## v7.25.0 - 2020-07-01
+
+### Added
+
+- プロダクト検索条件拡張
+
+### Fixed
+
+- イベント保管メソッドがパラメータ変数を上書きしてしまうバグ対応
 
 ## v7.24.2 - 2020-06-30
 
