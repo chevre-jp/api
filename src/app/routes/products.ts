@@ -49,7 +49,40 @@ productsRouter.post(
 productsRouter.get(
     '',
     permitScopes(['admin']),
-    ...[],
+    ...[
+        body('offers.$elemMatch.validFrom.$gte')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.$elemMatch.validFrom.$lte')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.$elemMatch.validThrough.$gte')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.$elemMatch.validThrough.$lte')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.$elemMatch.availabilityEnds.$gte')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.$elemMatch.availabilityEnds.$lte')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.$elemMatch.availabilityStarts.$gte')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.$elemMatch.availabilityStarts.$lte')
+            .optional()
+            .isISO8601()
+            .toDate()
+    ],
     validator,
     async (req, res, next) => {
         try {
