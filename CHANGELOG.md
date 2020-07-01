@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 
+- イベント保管メソッドがパラメータ変数を上書きしてしまうバグ対応
+
 ### Security
 
 ## v7.24.2 - 2020-06-30
