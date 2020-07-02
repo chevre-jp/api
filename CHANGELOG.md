@@ -8,19 +8,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- 最大予約猶予期間設定を追加
-
 ### Changed
 
 ### Deprecated
 
 ### Removed
 
-- 予約取引の予約追加エンドポイントを削除
-
 ### Fixed
 
 ### Security
+
+## v7.26.0 - 2020-07-02
+
+### Added
+
+- 最大予約猶予期間設定を追加
+
+### Removed
+
+- 予約取引の予約追加エンドポイントを削除
 
 ## v7.25.0 - 2020-07-01
 
