@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Removed
 
+- 予約取引の予約追加エンドポイントを削除
+
 ### Fixed
 
 ### Security
