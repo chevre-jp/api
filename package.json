@@ -9,13 +9,12 @@
     }
   ],
   "dependencies": {
-    "@chevre/domain": "^15.16.0",
+    "@chevre/domain": "^15.17.0",
     "@motionpicture/express-middleware": "^0.1.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "cron": "^1.7.2",
     "debug": "^3.2.6",
-    "ejs": "^2.7.1",
     "express": "^4.17.1",
     "express-validator": "^6.6.0",
     "helmet": "^3.21.0",
@@ -50,10 +49,10 @@
     "rimraf": "^2.7.1",
     "sinon": "^6.3.5",
     "supertest": "^3.4.2",
-    "ts-node": "^6.2.0",
-    "tslint": "^5.20.0",
+    "ts-node": "^8.10.2",
+    "tslint": "^6.1.2",
     "tslint-microsoft-contrib": "^6.2.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.9.6"
   },
   "engines": {
     "node": ">=8.0.0",

@@ -1,9 +1,7 @@
 /**
- * middlewares/authenticationにて、expressのrequestオブジェクトにAPIユーザー情報を追加している。
- * ユーザーの型をここで定義しています。
+ * アプリケーション固有の型
  */
 import * as chevre from '@chevre/domain';
-import * as express from 'express';
 
 declare global {
     namespace Express {
