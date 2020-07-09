@@ -114,7 +114,7 @@ screeningRoomSectionRouter.post('', permitScopes_1.default(['admin']), ...[
 screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), validator_1.default, 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
@@ -160,7 +160,7 @@ screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), validator_
             });
         }
         // セクションコード
-        const sectionBranchCodeEq = (_g = (_f = searchConditions) === null || _f === void 0 ? void 0 : _f.branchCode) === null || _g === void 0 ? void 0 : _g.$eq;
+        const sectionBranchCodeEq = (_f = searchConditions === null || searchConditions === void 0 ? void 0 : searchConditions.branchCode) === null || _f === void 0 ? void 0 : _f.$eq;
         if (typeof sectionBranchCodeEq === 'string') {
             matchStages.push({
                 $match: {
@@ -171,7 +171,7 @@ screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), validator_
                 }
             });
         }
-        const nameCodeRegex = (_h = searchConditions.name) === null || _h === void 0 ? void 0 : _h.$regex;
+        const nameCodeRegex = (_g = searchConditions.name) === null || _g === void 0 ? void 0 : _g.$regex;
         if (typeof nameCodeRegex === 'string') {
             matchStages.push({
                 $match: {
@@ -186,7 +186,7 @@ screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), validator_
                 }
             });
         }
-        const branchCodeRegex = (_j = searchConditions.branchCode) === null || _j === void 0 ? void 0 : _j.$regex;
+        const branchCodeRegex = (_h = searchConditions.branchCode) === null || _h === void 0 ? void 0 : _h.$regex;
         if (typeof branchCodeRegex === 'string') {
             matchStages.push({
                 $match: {

@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.main = void 0;
 /**
  * Chevreにトップデッキイベントを作成する
  */
@@ -65,7 +66,6 @@ const setting = {
  */
 // tslint:disable-next-line:max-func-body-length
 function main(connection, project) {
-    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         // 引数情報取得
         const targetInfo = getTargetInfoForCreateFromSetting(setting.performance_duration, setting.no_performance_times);
@@ -147,8 +147,8 @@ function main(connection, project) {
                     }
                 },
                 seller: {
-                    typeOf: (_a = seller) === null || _a === void 0 ? void 0 : _a.typeOf,
-                    id: (_b = seller) === null || _b === void 0 ? void 0 : _b.id
+                    typeOf: seller === null || seller === void 0 ? void 0 : seller.typeOf,
+                    id: seller === null || seller === void 0 ? void 0 : seller.id
                 },
                 validThrough: moment(performanceInfo.end_date)
                     .tz('Asia/Tokyo')

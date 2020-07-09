@@ -5,6 +5,8 @@ import * as chevre from '@chevre/domain';
 import * as createDebug from 'debug';
 import { NextFunction, Request, Response } from 'express';
 
+import { } from '../../@types/index';
+
 const debug = createDebug('chevre-api:middlewares');
 
 /**
