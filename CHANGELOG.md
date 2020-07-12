@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.27.1 - 2020-07-12
+
+### Changed
+
+- イベントオファー検索処理を最適化
+
 ## v7.27.0 - 2020-07-09
 
 ### Changed
