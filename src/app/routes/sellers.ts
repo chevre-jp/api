@@ -5,14 +5,17 @@ import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
+import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const sellersRouter = Router();
+
+sellersRouter.use(authentication);
 
 /**
  * 販売者作成
@@ -95,6 +98,10 @@ sellersRouter.post(
 sellersRouter.get(
     '',
     permitScopes(['admin']),
+    ...[
+        query('$projection.*')
+            .toInt()
+    ],
     validator,
     async (req, res, next) => {
         try {
@@ -108,7 +115,7 @@ sellersRouter.get(
             const sellerRepo = new chevre.repository.Seller(mongoose.connection);
             const sellers = await sellerRepo.search(
                 searchConditions,
-                (req.query.$projection !== undefined && req.query.$projection !== null) ? req.query.$projection : undefined
+                (req.query.$projection !== undefined && req.query.$projection !== null) ? { ...req.query.$projection } : undefined
                 // 管理者以外にセキュアな情報を露出しないように
                 // (!req.isAdmin) ? { 'paymentAccepted.gmoInfo.shopPass': 0 } : undefined
             );
@@ -124,19 +131,25 @@ sellersRouter.get(
 /**
  * IDで販売者検索
  */
-sellersRouter.get(
+// tslint:disable-next-line:use-default-type-parameter
+sellersRouter.get<ParamsDictionary>(
     '/:id',
     permitScopes(['admin']),
+    ...[
+        query('$projection.*')
+            .toInt()
+    ],
     validator,
     async (req, res, next) => {
         try {
             const sellerRepo = new chevre.repository.Seller(mongoose.connection);
             const seller = await sellerRepo.findById(
                 { id: req.params.id },
-                (req.query.$projection !== undefined && req.query.$projection !== null) ? req.query.$projection : undefined
+                (req.query.$projection !== undefined && req.query.$projection !== null) ? { ...req.query.$projection } : undefined
                 // 管理者以外にセキュアな情報を露出しないように
                 // (!req.isAdmin) ? { 'paymentAccepted.gmoInfo.shopPass': 0 } : undefined
             );
+
             res.json(seller);
         } catch (error) {
             next(error);
