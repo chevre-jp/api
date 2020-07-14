@@ -23,7 +23,8 @@
     "moment-timezone": "^0.5.31",
     "mongoose": "^5.9.20",
     "qs": "^6.9.4",
-    "redis": "^2.8.0"
+    "redis": "^2.8.0",
+    "snyk": "^1.361.3"
   },
   "description": "Chevre API Web Application",
   "devDependencies": {
@@ -76,7 +77,10 @@
     "tslint": "tslint --project tsconfig.json -c tslint.json --exclude \"**/*.spec.ts\" \"src/**/*.ts\"",
     "preversion": "npm run clean && npm run build && npm test && npm run doc",
     "version": "git add -A",
-    "postversion": "git push origin --tags"
+    "postversion": "git push origin --tags",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
-  "version": "7.28.0"
+  "version": "7.28.0",
+  "snyk": true
 }
