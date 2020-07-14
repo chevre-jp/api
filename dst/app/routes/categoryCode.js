@@ -52,7 +52,7 @@ const validations = [
 categoryCodesRouter.use(authentication_1.default);
 categoryCodesRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = { id: req.body.project.id, typeOf: 'Project' };
+        const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
         let categoryCode = Object.assign(Object.assign({}, req.body), { project: project });
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
         const doc = yield categoryCodeRepo.categoryCodeModel.create(categoryCode);
@@ -98,7 +98,7 @@ categoryCodesRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.d
 }));
 categoryCodesRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = { id: req.body.project.id, typeOf: 'Project' };
+        const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
         const categoryCode = Object.assign(Object.assign({}, req.body), { project: project });
         delete categoryCode.id;
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);

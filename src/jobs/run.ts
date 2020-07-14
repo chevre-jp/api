@@ -1,6 +1,8 @@
 /**
  * 非同期ジョブ
  */
+import * as chevre from '@chevre/domain';
+
 import abortTasks from './continuous/abortTasks/run';
 import aggregateOnProject from './continuous/aggregateOnProject/run';
 import aggregateScreeningEvent from './continuous/aggregateScreeningEvent/run';
@@ -72,14 +74,14 @@ export default async () => {
     await triggerWebhook();
 
     await Promise.all(importEventsProjects.map(async (projectId) => {
-        await createImportEventsTask({ project: { typeOf: 'Project', id: projectId } });
-        await createImportEventCapacitiesTask({ project: { typeOf: 'Project', id: projectId } });
-        await createImportOffersTask({ project: { typeOf: 'Project', id: projectId } });
+        await createImportEventsTask({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        await createImportEventCapacitiesTask({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        await createImportOffersTask({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
     }));
 
     if (typeof TOPDECK_PROJECT === 'string') {
         await createTopDeckEvents({
-            project: { typeOf: 'Project', id: TOPDECK_PROJECT }
+            project: { typeOf: chevre.factory.organizationType.Project, id: TOPDECK_PROJECT }
         });
     }
 };

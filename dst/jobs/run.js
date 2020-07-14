@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 非同期ジョブ
  */
+const chevre = require("@chevre/domain");
 const run_1 = require("./continuous/abortTasks/run");
 const run_2 = require("./continuous/aggregateOnProject/run");
 const run_3 = require("./continuous/aggregateScreeningEvent/run");
@@ -78,13 +79,13 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     yield run_27.default();
     yield run_28.default();
     yield Promise.all(importEventsProjects.map((projectId) => __awaiter(void 0, void 0, void 0, function* () {
-        yield run_30.default({ project: { typeOf: 'Project', id: projectId } });
-        yield run_29.default({ project: { typeOf: 'Project', id: projectId } });
-        yield run_31.default({ project: { typeOf: 'Project', id: projectId } });
+        yield run_30.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        yield run_29.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        yield run_31.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
     })));
     if (typeof TOPDECK_PROJECT === 'string') {
         yield run_32.default({
-            project: { typeOf: 'Project', id: TOPDECK_PROJECT }
+            project: { typeOf: chevre.factory.organizationType.Project, id: TOPDECK_PROJECT }
         });
     }
 });

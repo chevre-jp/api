@@ -130,7 +130,7 @@ productsRouter.get('/:id/offers', permitScopes_1.default(['admin']), validator_1
  */
 productsRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = { id: req.body.project.id, typeOf: 'Project' };
+        const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
         const product = Object.assign(Object.assign({}, req.body), { project: project });
         delete product.id;
         const productRepo = new chevre.repository.Product(mongoose.connection);
