@@ -10,19 +10,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * サービス登録取引ルーター
+ * 決済取引ルーター
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const registerServiceTransactionsRouter = express_1.Router();
+const payTransactionsRouter = express_1.Router();
 const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-registerServiceTransactionsRouter.use(authentication_1.default);
-registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
+payTransactionsRouter.use(authentication_1.default);
+payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -47,21 +47,15 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin'
         .withMessage('Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
-        const productRepo = new chevre.repository.Product(mongoose.connection);
-        const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
+        const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
-        const transaction = yield chevre.service.transaction.registerService.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.RegisterService, agent: Object.assign({}, req.body.agent
-            // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
-            ), object: req.body.object, expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
-            offer: offerRepo,
-            offerCatalog: offerCatalogRepo,
-            product: productRepo,
-            serviceOutput: serviceOutputRepo,
+        const transaction = yield chevre.service.transaction.pay.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.Pay, agent: Object.assign({}, req.body.agent), object: req.body.object, recipient: Object.assign({}, req.body.recipient), expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
+            event: eventRepo,
             project: projectRepo,
+            seller: sellerRepo,
             transaction: transactionRepo
         });
         res.json(transaction);
@@ -74,7 +68,7 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin'
  * 取引確定
  */
 // tslint:disable-next-line:use-default-type-parameter
-registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), ...[
+payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), ...[
     express_validator_1.body('endDate')
         .optional()
         .isISO8601()
@@ -83,7 +77,7 @@ registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        yield chevre.service.transaction.registerService.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
+        yield chevre.service.transaction.pay.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
         res.status(http_status_1.NO_CONTENT)
             .end();
     }
@@ -91,11 +85,11 @@ registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.
         next(error);
     }
 }));
-registerServiceTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+payTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        yield chevre.service.transaction.registerService.cancel(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({
+        yield chevre.service.transaction.pay.cancel(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({
             transaction: transactionRepo
         });
         res.status(http_status_1.NO_CONTENT)
@@ -105,4 +99,4 @@ registerServiceTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.d
         next(error);
     }
 }));
-exports.default = registerServiceTransactionsRouter;
+exports.default = payTransactionsRouter;

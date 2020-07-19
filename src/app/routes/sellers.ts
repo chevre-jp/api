@@ -76,7 +76,7 @@ sellersRouter.post(
         try {
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
-            const attributes: chevre.factory.seller.IAttributes<typeof req.body.typeOf> = {
+            const attributes: chevre.factory.seller.ISeller = {
                 ...req.body,
                 project: project
             };
@@ -215,7 +215,7 @@ sellersRouter.put<ParamsDictionary>(
     validator,
     async (req, res, next) => {
         try {
-            const attributes: chevre.factory.seller.IAttributes<typeof req.body.typeOf> = {
+            const attributes: chevre.factory.seller.ISeller = {
                 ...req.body
             };
 

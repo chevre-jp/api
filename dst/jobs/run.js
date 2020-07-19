@@ -26,25 +26,30 @@ const run_10 = require("./continuous/makeTransactionExpired/run");
 const run_11 = require("./continuous/moneyTransfer/run");
 const run_12 = require("./continuous/onCanceledCancelReservation/run");
 const run_13 = require("./continuous/onCanceledMoneyTransfer/run");
-const run_14 = require("./continuous/onCanceledRegisterService/run");
-const run_15 = require("./continuous/onCanceledReserve/run");
-const run_16 = require("./continuous/onConfirmedCancelReservation/run");
-const run_17 = require("./continuous/onConfirmedMoneyTransfer/run");
-const run_18 = require("./continuous/onConfirmedRegisterService/run");
-const run_19 = require("./continuous/onConfirmedReserve/run");
-const run_20 = require("./continuous/onExpiredCancelReservation/run");
-const run_21 = require("./continuous/onExpiredMoneyTransfer/run");
-const run_22 = require("./continuous/onExpiredRegisterService/run");
-const run_23 = require("./continuous/onExpiredReserve/run");
-const run_24 = require("./continuous/reexportTransactionTasks/run");
-const run_25 = require("./continuous/registerService/run");
-const run_26 = require("./continuous/reserve/run");
-const run_27 = require("./continuous/retryTasks/run");
-const run_28 = require("./continuous/triggerWebhook/run");
-const run_29 = require("./triggered/createImportEventCapacitiesTask/run");
-const run_30 = require("./triggered/createImportEventsTask/run");
-const run_31 = require("./triggered/createImportOffersTask/run");
-const run_32 = require("./triggered/createTopDeckEvents/run");
+const run_14 = require("./continuous/onCanceledPay/run");
+const run_15 = require("./continuous/onCanceledRegisterService/run");
+const run_16 = require("./continuous/onCanceledReserve/run");
+const run_17 = require("./continuous/onConfirmedCancelReservation/run");
+const run_18 = require("./continuous/onConfirmedMoneyTransfer/run");
+const run_19 = require("./continuous/onConfirmedPay/run");
+const run_20 = require("./continuous/onConfirmedRegisterService/run");
+const run_21 = require("./continuous/onConfirmedReserve/run");
+const run_22 = require("./continuous/onExpiredCancelReservation/run");
+const run_23 = require("./continuous/onExpiredMoneyTransfer/run");
+const run_24 = require("./continuous/onExpiredPay/run");
+const run_25 = require("./continuous/onExpiredRegisterService/run");
+const run_26 = require("./continuous/onExpiredReserve/run");
+const run_27 = require("./continuous/pay/run");
+const run_28 = require("./continuous/reexportTransactionTasks/run");
+const run_29 = require("./continuous/registerService/run");
+const run_30 = require("./continuous/reserve/run");
+const run_31 = require("./continuous/retryTasks/run");
+const run_32 = require("./continuous/triggerWebhook/run");
+const run_33 = require("./continuous/voidPayment/run");
+const run_34 = require("./triggered/createImportEventCapacitiesTask/run");
+const run_35 = require("./triggered/createImportEventsTask/run");
+const run_36 = require("./triggered/createImportOffersTask/run");
+const run_37 = require("./triggered/createTopDeckEvents/run");
 const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'string')
     ? process.env.IMPORT_EVENTS_PROJECTS.split(',')
     : [];
@@ -78,13 +83,18 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     yield run_26.default();
     yield run_27.default();
     yield run_28.default();
+    yield run_29.default();
+    yield run_30.default();
+    yield run_31.default();
+    yield run_32.default();
+    yield run_33.default();
     yield Promise.all(importEventsProjects.map((projectId) => __awaiter(void 0, void 0, void 0, function* () {
-        yield run_30.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
-        yield run_29.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
-        yield run_31.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        yield run_35.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        yield run_34.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        yield run_36.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
     })));
     if (typeof TOPDECK_PROJECT === 'string') {
-        yield run_32.default({
+        yield run_37.default({
             project: { typeOf: chevre.factory.organizationType.Project, id: TOPDECK_PROJECT }
         });
     }

@@ -1,5 +1,5 @@
 /**
- * サービス登録取引ルーター
+ * 決済取引ルーター
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
@@ -9,15 +9,15 @@ import { body } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-const registerServiceTransactionsRouter = Router();
+const payTransactionsRouter = Router();
 
 import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
-registerServiceTransactionsRouter.use(authentication);
+payTransactionsRouter.use(authentication);
 
-registerServiceTransactionsRouter.post(
+payTransactionsRouter.post(
     '/start',
     permitScopes(['admin']),
     ...[
@@ -47,31 +47,29 @@ registerServiceTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
-            const productRepo = new chevre.repository.Product(mongoose.connection);
-            const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
+            const sellerRepo = new chevre.repository.Seller(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
-            const transaction = await chevre.service.transaction.registerService.start({
+            const transaction = await chevre.service.transaction.pay.start({
                 project: project,
-                typeOf: chevre.factory.transactionType.RegisterService,
+                typeOf: chevre.factory.transactionType.Pay,
                 agent: {
                     ...req.body.agent
-                    // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
                 },
                 object: req.body.object,
+                recipient: {
+                    ...req.body.recipient
+                },
                 expires: req.body.expires,
                 ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
-                offer: offerRepo,
-                offerCatalog: offerCatalogRepo,
-                product: productRepo,
-                serviceOutput: serviceOutputRepo,
+                event: eventRepo,
                 project: projectRepo,
+                seller: sellerRepo,
                 transaction: transactionRepo
             });
 
@@ -86,7 +84,7 @@ registerServiceTransactionsRouter.post(
  * 取引確定
  */
 // tslint:disable-next-line:use-default-type-parameter
-registerServiceTransactionsRouter.put<ParamsDictionary>(
+payTransactionsRouter.put<ParamsDictionary>(
     '/:transactionId/confirm',
     permitScopes(['admin', 'transactions']),
     ...[
@@ -101,7 +99,7 @@ registerServiceTransactionsRouter.put<ParamsDictionary>(
             const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
 
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-            await chevre.service.transaction.registerService.confirm({
+            await chevre.service.transaction.pay.confirm({
                 ...req.body,
                 ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({ transaction: transactionRepo });
@@ -114,7 +112,7 @@ registerServiceTransactionsRouter.put<ParamsDictionary>(
     }
 );
 
-registerServiceTransactionsRouter.put(
+payTransactionsRouter.put(
     '/:transactionId/cancel',
     permitScopes(['admin', 'transactions']),
     validator,
@@ -123,7 +121,7 @@ registerServiceTransactionsRouter.put(
             const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
 
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-            await chevre.service.transaction.registerService.cancel({
+            await chevre.service.transaction.pay.cancel({
                 ...req.body,
                 ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({
@@ -138,4 +136,4 @@ registerServiceTransactionsRouter.put(
     }
 );
 
-export default registerServiceTransactionsRouter;
+export default payTransactionsRouter;
