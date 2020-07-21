@@ -9,6 +9,7 @@ export default async () => {
 
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
     const INTERVAL_MILLISECONDS = 200;
+    const projectRepo = new chevre.repository.Project(connection);
     const taskRepo = new chevre.repository.Task(connection);
     const transactionRepo = new chevre.repository.Transaction(connection);
 
@@ -21,9 +22,14 @@ export default async () => {
             countExecute += 1;
 
             try {
-                await chevre.service.transaction.moneyTransfer.exportTasks(
-                    chevre.factory.transactionStatusType.Confirmed
-                )({ task: taskRepo, transaction: transactionRepo });
+                await chevre.service.transaction.exportTasks({
+                    status: chevre.factory.transactionStatusType.Confirmed,
+                    typeOf: chevre.factory.transactionType.MoneyTransfer
+                })({
+                    project: projectRepo,
+                    task: taskRepo,
+                    transaction: transactionRepo
+                });
             } catch (error) {
                 console.error(error);
             }
