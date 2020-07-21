@@ -77,8 +77,31 @@ moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['admin'])
 moneyTransferTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
+        const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         yield chevre.service.transaction.moneyTransfer.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
+        // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
+        // tslint:disable-next-line:no-floating-promises
+        chevre.service.transaction.exportTasks({
+            status: chevre.factory.transactionStatusType.Confirmed,
+            typeOf: chevre.factory.transactionType.MoneyTransfer
+        })({
+            project: projectRepo,
+            task: taskRepo,
+            transaction: transactionRepo
+        })
+            .then((tasks) => __awaiter(void 0, void 0, void 0, function* () {
+            // タスクがあればすべて実行
+            if (Array.isArray(tasks)) {
+                yield Promise.all(tasks.map((task) => __awaiter(void 0, void 0, void 0, function* () {
+                    yield chevre.service.task.executeByName({ name: task.name })({
+                        connection: mongoose.connection,
+                        redisClient: redis.getClient()
+                    });
+                })));
+            }
+        }));
         res.status(http_status_1.NO_CONTENT)
             .end();
     }

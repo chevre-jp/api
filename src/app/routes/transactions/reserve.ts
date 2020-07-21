@@ -11,6 +11,7 @@ import * as mongoose from 'mongoose';
 const reserveTransactionsRouter = Router();
 
 import * as redis from '../../../redis';
+
 import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
@@ -164,11 +165,36 @@ reserveTransactionsRouter.put(
         try {
             const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
 
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+
             await chevre.service.transaction.reserve.confirm({
                 ...req.body,
                 ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({ transaction: transactionRepo });
+
+            // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
+            // tslint:disable-next-line:no-floating-promises
+            chevre.service.transaction.exportTasks({
+                status: chevre.factory.transactionStatusType.Confirmed,
+                typeOf: chevre.factory.transactionType.Reserve
+            })({
+                project: projectRepo,
+                task: taskRepo,
+                transaction: transactionRepo
+            })
+                .then(async (tasks) => {
+                    // タスクがあればすべて実行
+                    if (Array.isArray(tasks)) {
+                        await Promise.all(tasks.map(async (task) => {
+                            await chevre.service.task.executeByName({ name: task.name })({
+                                connection: mongoose.connection,
+                                redisClient: redis.getClient()
+                            });
+                        }));
+                    }
+                });
 
             res.status(NO_CONTENT)
                 .end();
