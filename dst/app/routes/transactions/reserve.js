@@ -156,7 +156,7 @@ reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(
         // tslint:disable-next-line:no-floating-promises
         chevre.service.transaction.exportTasks({
             status: chevre.factory.transactionStatusType.Confirmed,
-            typeOf: chevre.factory.transactionType.Reserve
+            typeOf: { $in: [chevre.factory.transactionType.Reserve] }
         })({
             project: projectRepo,
             task: taskRepo,

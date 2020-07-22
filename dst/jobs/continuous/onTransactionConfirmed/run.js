@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 期限切れサービス登録取引監視
+ * 確定取引監視
  */
 const chevre = require("@chevre/domain");
 const connectMongo_1 = require("../../../connectMongo");
@@ -18,7 +18,7 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
     let countExecute = 0;
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
-    const INTERVAL_MILLISECONDS = 500;
+    const INTERVAL_MILLISECONDS = 200;
     const projectRepo = new chevre.repository.Project(connection);
     const taskRepo = new chevre.repository.Task(connection);
     const transactionRepo = new chevre.repository.Transaction(connection);
@@ -29,8 +29,16 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
         countExecute += 1;
         try {
             yield chevre.service.transaction.exportTasks({
-                status: chevre.factory.transactionStatusType.Expired,
-                typeOf: chevre.factory.transactionType.RegisterService
+                status: chevre.factory.transactionStatusType.Confirmed,
+                typeOf: {
+                    $in: [
+                        chevre.factory.transactionType.CancelReservation,
+                        chevre.factory.transactionType.MoneyTransfer,
+                        chevre.factory.transactionType.Pay,
+                        chevre.factory.transactionType.RegisterService,
+                        chevre.factory.transactionType.Reserve
+                    ]
+                }
             })({
                 project: projectRepo,
                 task: taskRepo,

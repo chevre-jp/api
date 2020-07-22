@@ -1,5 +1,5 @@
 /**
- * 期限切れ決済取引監視
+ * 中止取引監視
  */
 import * as chevre from '@chevre/domain';
 
@@ -11,7 +11,8 @@ export default async () => {
     let countExecute = 0;
 
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
-    const INTERVAL_MILLISECONDS = 500;
+    const INTERVAL_MILLISECONDS = 200;
+
     const projectRepo = new chevre.repository.Project(connection);
     const taskRepo = new chevre.repository.Task(connection);
     const transactionRepo = new chevre.repository.Transaction(connection);
@@ -26,8 +27,16 @@ export default async () => {
 
             try {
                 await chevre.service.transaction.exportTasks({
-                    status: chevre.factory.transactionStatusType.Expired,
-                    typeOf: chevre.factory.transactionType.Pay
+                    status: chevre.factory.transactionStatusType.Canceled,
+                    typeOf: {
+                        $in: [
+                            chevre.factory.transactionType.CancelReservation,
+                            chevre.factory.transactionType.MoneyTransfer,
+                            chevre.factory.transactionType.Pay,
+                            chevre.factory.transactionType.RegisterService,
+                            chevre.factory.transactionType.Reserve
+                        ]
+                    }
                 })({
                     project: projectRepo,
                     task: taskRepo,

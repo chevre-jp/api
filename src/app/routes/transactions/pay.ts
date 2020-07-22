@@ -113,7 +113,7 @@ payTransactionsRouter.put<ParamsDictionary>(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: chevre.factory.transactionType.Pay
+                typeOf: { $in: [chevre.factory.transactionType.Pay] }
             })({
                 project: projectRepo,
                 task: taskRepo,

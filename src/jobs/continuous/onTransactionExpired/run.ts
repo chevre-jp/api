@@ -1,6 +1,11 @@
+/**
+ * 期限切れ取引監視
+ */
 import * as chevre from '@chevre/domain';
 
 import { connectMongo } from '../../../connectMongo';
+
+const RUNS_TASKS_AFTER_IN_SECONDS = 120;
 
 export default async () => {
     const connection = await connectMongo({ defaultConnection: false });
@@ -8,7 +13,8 @@ export default async () => {
     let countExecute = 0;
 
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
-    const INTERVAL_MILLISECONDS = 500;
+    const INTERVAL_MILLISECONDS = 200;
+
     const projectRepo = new chevre.repository.Project(connection);
     const taskRepo = new chevre.repository.Task(connection);
     const transactionRepo = new chevre.repository.Transaction(connection);
@@ -24,7 +30,16 @@ export default async () => {
             try {
                 await chevre.service.transaction.exportTasks({
                     status: chevre.factory.transactionStatusType.Expired,
-                    typeOf: chevre.factory.transactionType.MoneyTransfer
+                    typeOf: {
+                        $in: [
+                            chevre.factory.transactionType.CancelReservation,
+                            chevre.factory.transactionType.MoneyTransfer,
+                            chevre.factory.transactionType.Pay,
+                            chevre.factory.transactionType.RegisterService,
+                            chevre.factory.transactionType.Reserve
+                        ]
+                    },
+                    runsTasksAfterInSeconds: RUNS_TASKS_AFTER_IN_SECONDS
                 })({
                     project: projectRepo,
                     task: taskRepo,

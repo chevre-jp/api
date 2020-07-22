@@ -85,7 +85,7 @@ moneyTransferTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.de
         // tslint:disable-next-line:no-floating-promises
         chevre.service.transaction.exportTasks({
             status: chevre.factory.transactionStatusType.Confirmed,
-            typeOf: chevre.factory.transactionType.MoneyTransfer
+            typeOf: { $in: [chevre.factory.transactionType.MoneyTransfer] }
         })({
             project: projectRepo,
             task: taskRepo,

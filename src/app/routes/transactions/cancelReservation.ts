@@ -142,7 +142,7 @@ cancelReservationTransactionsRouter.post(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: chevre.factory.transactionType.CancelReservation
+                typeOf: { $in: [chevre.factory.transactionType.CancelReservation] }
             })({
                 project: projectRepo,
                 task: taskRepo,
@@ -187,7 +187,7 @@ cancelReservationTransactionsRouter.put(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: chevre.factory.transactionType.CancelReservation
+                typeOf: { $in: [chevre.factory.transactionType.CancelReservation] }
             })({
                 project: projectRepo,
                 task: taskRepo,
