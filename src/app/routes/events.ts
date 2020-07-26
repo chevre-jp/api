@@ -223,7 +223,9 @@ eventsRouter.get(
             const events = await eventRepo.search(
                 searchConditions,
                 {
-                    aggregateOffer: 0
+                    aggregateOffer: 0,
+                    // 古いデータについて不要な情報が含まれていたため対処
+                    'offers.project.settings': 0
                 }
             );
             const totalCount = await eventRepo.count(searchConditions);
@@ -246,9 +248,15 @@ eventsRouter.get(
     async (req, res, next) => {
         try {
             const eventRepo = new chevre.repository.Event(mongoose.connection);
-            const event = await eventRepo.findById({
-                id: req.params.id
-            });
+            const event = await eventRepo.findById(
+                {
+                    id: req.params.id
+                },
+                {
+                    // 古いデータについて不要な情報が含まれていたため対処
+                    'offers.project.settings': 0
+                }
+            );
 
             res.json(event);
         } catch (error) {

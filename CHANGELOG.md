@@ -22,6 +22,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 
+- イベントに含まれる不要な情報を検索結果から除外するように対応
+
 ### Security
 
 ## v7.28.1 - 2020-07-14

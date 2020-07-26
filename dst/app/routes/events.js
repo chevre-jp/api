@@ -200,7 +200,9 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const events = yield eventRepo.search(searchConditions, {
-            aggregateOffer: 0
+            aggregateOffer: 0,
+            // 古いデータについて不要な情報が含まれていたため対処
+            'offers.project.settings': 0
         });
         const totalCount = yield eventRepo.count(searchConditions);
         res.set('X-Total-Count', totalCount.toString())
@@ -218,6 +220,9 @@ eventsRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const event = yield eventRepo.findById({
             id: req.params.id
+        }, {
+            // 古いデータについて不要な情報が含まれていたため対処
+            'offers.project.settings': 0
         });
         res.json(event);
     }
