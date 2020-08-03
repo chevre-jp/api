@@ -233,6 +233,33 @@ eventsRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read
 /**
  * イベント更新
  */
+eventsRouter.patch('/:id', permitScopes_1.default(['admin']), 
+// ...validations,
+validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
+        const taskRepo = new chevre.repository.Task(mongoose.connection);
+        const event = yield eventRepo.save({
+            id: req.params.id,
+            attributes: req.body,
+            upsert: false
+        });
+        yield chevre.service.offer.onEventChanged(event)({
+            event: eventRepo,
+            project: projectRepo,
+            task: taskRepo
+        });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * イベント更新
+ */
 eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body[0];

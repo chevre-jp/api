@@ -268,6 +268,40 @@ eventsRouter.get(
 /**
  * イベント更新
  */
+eventsRouter.patch(
+    '/:id',
+    permitScopes(['admin']),
+    // ...validations,
+    validator,
+    async (req, res, next) => {
+        try {
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
+
+            const event = await eventRepo.save<chevre.factory.eventType>({
+                id: req.params.id,
+                attributes: req.body,
+                upsert: false
+            });
+
+            await chevre.service.offer.onEventChanged(event)({
+                event: eventRepo,
+                project: projectRepo,
+                task: taskRepo
+            });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * イベント更新
+ */
 eventsRouter.put(
     '/:id',
     permitScopes(['admin']),

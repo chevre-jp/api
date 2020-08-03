@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - 決済取引をCreditCardとMovieTicketに対応
 - 劇場インターフェースにhasEntranceGateを追加
+- イベントの部分更新エンドポイントを追加
 
 ### Changed
 
