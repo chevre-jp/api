@@ -199,11 +199,15 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const events = yield eventRepo.search(searchConditions, {
-            aggregateOffer: 0,
-            // 古いデータについて不要な情報が含まれていたため対処
-            'offers.project.settings': 0
-        });
+        // projectionの指定があれば適用する
+        const projection = (req.query.projection !== undefined && req.query.projection !== null)
+            ? req.query.projection
+            : {
+                aggregateOffer: 0,
+                // 古いデータについて不要な情報が含まれていたため対処
+                'offers.project.settings': 0
+            };
+        const events = yield eventRepo.search(searchConditions, projection);
         const totalCount = yield eventRepo.count(searchConditions);
         res.set('X-Total-Count', totalCount.toString())
             .json(events);

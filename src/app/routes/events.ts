@@ -220,13 +220,19 @@ eventsRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const events = await eventRepo.search(
-                searchConditions,
-                {
+
+            // projectionの指定があれば適用する
+            const projection: any = (req.query.projection !== undefined && req.query.projection !== null)
+                ? req.query.projection
+                : {
                     aggregateOffer: 0,
                     // 古いデータについて不要な情報が含まれていたため対処
                     'offers.project.settings': 0
-                }
+                };
+
+            const events = await eventRepo.search(
+                searchConditions,
+                projection
             );
             const totalCount = await eventRepo.count(searchConditions);
 
