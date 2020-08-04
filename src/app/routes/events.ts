@@ -165,6 +165,8 @@ eventsRouter.get(
     '',
     permitScopes(['admin', 'events', 'events.read-only']),
     ...[
+        query('$projection.*')
+            .toInt(),
         query('typeOf')
             .not()
             .isEmpty()
@@ -222,8 +224,8 @@ eventsRouter.get(
             };
 
             // projectionの指定があれば適用する
-            const projection: any = (req.query.projection !== undefined && req.query.projection !== null)
-                ? req.query.projection
+            const projection: any = (req.query.$projection !== undefined && req.query.$projection !== null)
+                ? { ...req.query.$projection }
                 : {
                     aggregateOffer: 0,
                     // 古いデータについて不要な情報が含まれていたため対処
