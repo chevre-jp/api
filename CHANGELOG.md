@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 取引タイプごとのタスクエクスポート処理を共通化
 - 取引確定時のタスクエクスポート処理を追加
 - イベント検索にprojectionを指定できるように調整
+- 余分確保分座席が残席数に反映されるように集計処理を調整
 
 ### Deprecated
 
