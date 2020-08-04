@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 取引確定時のタスクエクスポート処理を追加
 - イベント検索にprojectionを指定できるように調整
 - 余分確保分座席が残席数に反映されるように集計処理を調整
+- 予約作成時にイベントに対する予約集計処理を追加
 
 ### Deprecated
 
