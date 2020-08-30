@@ -20,6 +20,7 @@ import makeTransactionExpired from './continuous/makeTransactionExpired/run';
 import moneyTransfer from './continuous/moneyTransfer/run';
 import pay from './continuous/pay/run';
 import reexportTransactionTasks from './continuous/reexportTransactionTasks/run';
+import refund from './continuous/refund/run';
 import registerService from './continuous/registerService/run';
 import reserve from './continuous/reserve/run';
 import retryTasks from './continuous/retryTasks/run';
@@ -55,6 +56,7 @@ export default async () => {
     await moneyTransfer();
     await pay();
     await reexportTransactionTasks();
+    await refund();
     await registerService();
     await reserve();
     await retryTasks();

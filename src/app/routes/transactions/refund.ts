@@ -1,5 +1,5 @@
 /**
- * 決済取引ルーター
+ * 返金取引ルーター
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
@@ -9,7 +9,7 @@ import { body } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-const payTransactionsRouter = Router();
+const refundTransactionsRouter = Router();
 
 import * as redis from '../../../redis';
 
@@ -17,9 +17,9 @@ import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
-payTransactionsRouter.use(authentication);
+refundTransactionsRouter.use(authentication);
 
-payTransactionsRouter.post(
+refundTransactionsRouter.post(
     '/start',
     permitScopes(['admin']),
     ...[
@@ -54,16 +54,15 @@ payTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const eventRepo = new chevre.repository.Event(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const sellerRepo = new chevre.repository.Seller(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
 
-            const transaction = await chevre.service.transaction.pay.start({
+            const transaction = await chevre.service.transaction.refund.start({
                 project: project,
-                typeOf: chevre.factory.transactionType.Pay,
+                typeOf: chevre.factory.transactionType.Refund,
                 agent: {
                     ...req.body.agent
                 },
@@ -72,9 +71,8 @@ payTransactionsRouter.post(
                     ...req.body.recipient
                 },
                 expires: req.body.expires,
-                ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
+                transactionNumber: req.body.transactionNumber
             })({
-                event: eventRepo,
                 project: projectRepo,
                 seller: sellerRepo,
                 transaction: transactionRepo
@@ -91,7 +89,7 @@ payTransactionsRouter.post(
  * 取引確定
  */
 // tslint:disable-next-line:use-default-type-parameter
-payTransactionsRouter.put<ParamsDictionary>(
+refundTransactionsRouter.put<ParamsDictionary>(
     '/:transactionId/confirm',
     permitScopes(['admin', 'transactions']),
     ...[
@@ -109,7 +107,7 @@ payTransactionsRouter.put<ParamsDictionary>(
             const taskRepo = new chevre.repository.Task(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
 
-            await chevre.service.transaction.pay.confirm({
+            await chevre.service.transaction.refund.confirm({
                 ...req.body,
                 ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({ transaction: transactionRepo });
@@ -118,7 +116,7 @@ payTransactionsRouter.put<ParamsDictionary>(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.Pay] }
+                typeOf: { $in: [chevre.factory.transactionType.Refund] }
             })({
                 project: projectRepo,
                 task: taskRepo,
@@ -144,7 +142,7 @@ payTransactionsRouter.put<ParamsDictionary>(
     }
 );
 
-payTransactionsRouter.put(
+refundTransactionsRouter.put(
     '/:transactionId/cancel',
     permitScopes(['admin', 'transactions']),
     validator,
@@ -153,7 +151,7 @@ payTransactionsRouter.put(
             const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
 
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-            await chevre.service.transaction.pay.cancel({
+            await chevre.service.transaction.refund.cancel({
                 ...req.body,
                 ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({
@@ -168,4 +166,4 @@ payTransactionsRouter.put(
     }
 );
 
-export default payTransactionsRouter;
+export default refundTransactionsRouter;

@@ -36,6 +36,7 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
                         chevre.factory.transactionType.CancelReservation,
                         chevre.factory.transactionType.MoneyTransfer,
                         chevre.factory.transactionType.Pay,
+                        chevre.factory.transactionType.Refund,
                         chevre.factory.transactionType.RegisterService,
                         chevre.factory.transactionType.Reserve
                     ]

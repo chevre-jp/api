@@ -10,20 +10,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 決済取引ルーター
+ * 返金取引ルーター
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const payTransactionsRouter = express_1.Router();
+const refundTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
 const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-payTransactionsRouter.use(authentication_1.default);
-payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
+refundTransactionsRouter.use(authentication_1.default);
+refundTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -53,13 +53,19 @@ payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
         .withMessage('Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventRepo = new chevre.repository.Event(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
-        const transaction = yield chevre.service.transaction.pay.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.Pay, agent: Object.assign({}, req.body.agent), object: req.body.object, recipient: Object.assign({}, req.body.recipient), expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
-            event: eventRepo,
+        const transaction = yield chevre.service.transaction.refund.start({
+            project: project,
+            typeOf: chevre.factory.transactionType.Refund,
+            agent: Object.assign({}, req.body.agent),
+            object: req.body.object,
+            recipient: Object.assign({}, req.body.recipient),
+            expires: req.body.expires,
+            transactionNumber: req.body.transactionNumber
+        })({
             project: projectRepo,
             seller: sellerRepo,
             transaction: transactionRepo
@@ -74,7 +80,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
  * 取引確定
  */
 // tslint:disable-next-line:use-default-type-parameter
-payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), ...[
+refundTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), ...[
     express_validator_1.body('endDate')
         .optional()
         .isISO8601()
@@ -85,12 +91,12 @@ payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['ad
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        yield chevre.service.transaction.pay.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
+        yield chevre.service.transaction.refund.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
         // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
         // tslint:disable-next-line:no-floating-promises
         chevre.service.transaction.exportTasks({
             status: chevre.factory.transactionStatusType.Confirmed,
-            typeOf: { $in: [chevre.factory.transactionType.Pay] }
+            typeOf: { $in: [chevre.factory.transactionType.Refund] }
         })({
             project: projectRepo,
             task: taskRepo,
@@ -114,11 +120,11 @@ payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['ad
         next(error);
     }
 }));
-payTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+refundTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        yield chevre.service.transaction.pay.cancel(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({
+        yield chevre.service.transaction.refund.cancel(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({
             transaction: transactionRepo
         });
         res.status(http_status_1.NO_CONTENT)
@@ -128,4 +134,4 @@ payTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['adm
         next(error);
     }
 }));
-exports.default = payTransactionsRouter;
+exports.default = refundTransactionsRouter;

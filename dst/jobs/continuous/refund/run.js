@@ -10,45 +10,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 中止取引監視
+ * 返金タスク実行
  */
 const chevre = require("@chevre/domain");
 const connectMongo_1 = require("../../../connectMongo");
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
-    let countExecute = 0;
+    let count = 0;
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
-    const INTERVAL_MILLISECONDS = 200;
-    const projectRepo = new chevre.repository.Project(connection);
-    const taskRepo = new chevre.repository.Task(connection);
-    const transactionRepo = new chevre.repository.Transaction(connection);
+    const INTERVAL_MILLISECONDS = 500;
     setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
-        if (countExecute > MAX_NUBMER_OF_PARALLEL_TASKS) {
+        if (count > MAX_NUBMER_OF_PARALLEL_TASKS) {
             return;
         }
-        countExecute += 1;
+        count += 1;
         try {
-            yield chevre.service.transaction.exportTasks({
-                status: chevre.factory.transactionStatusType.Canceled,
-                typeOf: {
-                    $in: [
-                        chevre.factory.transactionType.CancelReservation,
-                        chevre.factory.transactionType.MoneyTransfer,
-                        chevre.factory.transactionType.Pay,
-                        chevre.factory.transactionType.Refund,
-                        chevre.factory.transactionType.RegisterService,
-                        chevre.factory.transactionType.Reserve
-                    ]
-                }
-            })({
-                project: projectRepo,
-                task: taskRepo,
-                transaction: transactionRepo
-            });
+            yield chevre.service.task.executeByName({
+                name: chevre.factory.taskName.Refund
+            })({ connection: connection });
         }
         catch (error) {
             console.error(error);
         }
-        countExecute -= 1;
+        count -= 1;
     }), INTERVAL_MILLISECONDS);
 });
