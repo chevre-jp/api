@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - USE_AGGREGATE_ON_PROJECT設定を追加
 - 返金取引を追加
 - 返金タスクを追加
+- 中止を報告しないタスク設定を追加
 
 ### Changed
 
