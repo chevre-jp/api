@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 予約作成時にイベントに対する予約集計処理を追加
 - ttts対応として同時間帯のイベントについても同時に予約集計するように調整
 - 作品検索のX-Total-Countヘッダーを削除
+- 販売者インターフェースを最適化
 
 ### Deprecated
 
