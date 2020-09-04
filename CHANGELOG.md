@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v7.29.0 - 2020-09-04
+
+### Added
+
 - 決済取引をCreditCardとMovieTicketに対応
 - 劇場インターフェースにhasEntranceGateを追加
 - イベントの部分更新エンドポイントを追加
@@ -29,15 +43,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 作品検索のX-Total-Countヘッダーを削除
 - 販売者インターフェースを最適化
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - イベントに含まれる不要な情報を検索結果から除外するように対応
-
-### Security
 
 ## v7.28.1 - 2020-07-14
 
