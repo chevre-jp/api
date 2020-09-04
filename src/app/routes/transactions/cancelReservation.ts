@@ -10,6 +10,8 @@ import * as mongoose from 'mongoose';
 
 const cancelReservationTransactionsRouter = Router();
 
+import * as redis from '../../../redis';
+
 import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
@@ -107,6 +109,7 @@ cancelReservationTransactionsRouter.post(
     async (req, res, next) => {
         try {
             const projectRepo = new chevre.repository.Project(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
 
@@ -135,6 +138,28 @@ cancelReservationTransactionsRouter.post(
                 transaction: transactionRepo
             });
 
+            // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
+            // tslint:disable-next-line:no-floating-promises
+            chevre.service.transaction.exportTasks({
+                status: chevre.factory.transactionStatusType.Confirmed,
+                typeOf: { $in: [chevre.factory.transactionType.CancelReservation] }
+            })({
+                project: projectRepo,
+                task: taskRepo,
+                transaction: transactionRepo
+            })
+                .then(async (tasks) => {
+                    // タスクがあればすべて実行
+                    if (Array.isArray(tasks)) {
+                        await Promise.all(tasks.map(async (task) => {
+                            await chevre.service.task.executeByName({ name: task.name })({
+                                connection: mongoose.connection,
+                                redisClient: redis.getClient()
+                            });
+                        }));
+                    }
+                });
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
@@ -149,11 +174,36 @@ cancelReservationTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+
             await chevre.service.transaction.cancelReservation.confirm({
                 ...req.body,
                 id: req.params.transactionId
             })({ transaction: transactionRepo });
+
+            // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
+            // tslint:disable-next-line:no-floating-promises
+            chevre.service.transaction.exportTasks({
+                status: chevre.factory.transactionStatusType.Confirmed,
+                typeOf: { $in: [chevre.factory.transactionType.CancelReservation] }
+            })({
+                project: projectRepo,
+                task: taskRepo,
+                transaction: transactionRepo
+            })
+                .then(async (tasks) => {
+                    // タスクがあればすべて実行
+                    if (Array.isArray(tasks)) {
+                        await Promise.all(tasks.map(async (task) => {
+                            await chevre.service.task.executeByName({ name: task.name })({
+                                connection: mongoose.connection,
+                                redisClient: redis.getClient()
+                            });
+                        }));
+                    }
+                });
 
             res.status(NO_CONTENT)
                 .end();

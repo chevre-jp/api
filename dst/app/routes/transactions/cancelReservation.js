@@ -19,6 +19,7 @@ const http_status_1 = require("http-status");
 const moment = require("moment");
 const mongoose = require("mongoose");
 const cancelReservationTransactionsRouter = express_1.Router();
+const redis = require("../../../redis");
 const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
@@ -90,6 +91,7 @@ cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['ad
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
+        const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
@@ -101,6 +103,27 @@ cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['ad
             reservation: reservationRepo,
             transaction: transactionRepo
         });
+        // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
+        // tslint:disable-next-line:no-floating-promises
+        chevre.service.transaction.exportTasks({
+            status: chevre.factory.transactionStatusType.Confirmed,
+            typeOf: { $in: [chevre.factory.transactionType.CancelReservation] }
+        })({
+            project: projectRepo,
+            task: taskRepo,
+            transaction: transactionRepo
+        })
+            .then((tasks) => __awaiter(void 0, void 0, void 0, function* () {
+            // タスクがあればすべて実行
+            if (Array.isArray(tasks)) {
+                yield Promise.all(tasks.map((task) => __awaiter(void 0, void 0, void 0, function* () {
+                    yield chevre.service.task.executeByName({ name: task.name })({
+                        connection: mongoose.connection,
+                        redisClient: redis.getClient()
+                    });
+                })));
+            }
+        }));
         res.status(http_status_1.NO_CONTENT)
             .end();
     }
@@ -110,8 +133,31 @@ cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['ad
 }));
 cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
+        const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         yield chevre.service.transaction.cancelReservation.confirm(Object.assign(Object.assign({}, req.body), { id: req.params.transactionId }))({ transaction: transactionRepo });
+        // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
+        // tslint:disable-next-line:no-floating-promises
+        chevre.service.transaction.exportTasks({
+            status: chevre.factory.transactionStatusType.Confirmed,
+            typeOf: { $in: [chevre.factory.transactionType.CancelReservation] }
+        })({
+            project: projectRepo,
+            task: taskRepo,
+            transaction: transactionRepo
+        })
+            .then((tasks) => __awaiter(void 0, void 0, void 0, function* () {
+            // タスクがあればすべて実行
+            if (Array.isArray(tasks)) {
+                yield Promise.all(tasks.map((task) => __awaiter(void 0, void 0, void 0, function* () {
+                    yield chevre.service.task.executeByName({ name: task.name })({
+                        connection: mongoose.connection,
+                        redisClient: redis.getClient()
+                    });
+                })));
+            }
+        }));
         res.status(http_status_1.NO_CONTENT)
             .end();
     }

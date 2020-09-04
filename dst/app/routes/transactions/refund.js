@@ -10,60 +10,65 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 通貨転送取引ルーター
+ * 返金取引ルーター
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
-const moment = require("moment");
 const mongoose = require("mongoose");
-const moneyTransferTransactionsRouter = express_1.Router();
+const refundTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
 const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-moneyTransferTransactionsRouter.use(authentication_1.default);
-moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
+refundTransactionsRouter.use(authentication_1.default);
+refundTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required'),
+        .withMessage('Required'),
     express_validator_1.body('expires')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required')
+        .withMessage('Required')
         .isISO8601()
         .toDate(),
+    express_validator_1.body('transactionNumber')
+        .not()
+        .isEmpty()
+        .withMessage('Required')
+        .isString(),
+    express_validator_1.body('agent')
+        .not()
+        .isEmpty()
+        .withMessage('Required'),
     express_validator_1.body('agent.typeOf')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required'),
+        .withMessage('Required'),
     express_validator_1.body('agent.name')
         .not()
         .isEmpty()
-        .withMessage((_, __) => 'Required'),
-    express_validator_1.body('recipient.typeOf')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'Required'),
-    express_validator_1.body('recipient.name')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'Required')
+        .withMessage('Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
+        const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
-        const transaction = yield chevre.service.transaction.moneyTransfer.start(Object.assign({ typeOf: chevre.factory.transactionType.MoneyTransfer, project: project, agent: req.body.agent, object: req.body.object, recipient: req.body.recipient, expires: moment(req.body.expires)
-                .toDate() }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
+        const transaction = yield chevre.service.transaction.refund.start({
+            project: project,
+            typeOf: chevre.factory.transactionType.Refund,
+            agent: Object.assign({}, req.body.agent),
+            object: req.body.object,
+            recipient: Object.assign({}, req.body.recipient),
+            expires: req.body.expires,
+            transactionNumber: req.body.transactionNumber
+        })({
             project: projectRepo,
-            serviceOutput: serviceOutputRepo,
-            transaction: transactionRepo,
-            transactionNumber: transactionNumberRepo
+            seller: sellerRepo,
+            transaction: transactionRepo
         });
         res.json(transaction);
     }
@@ -74,18 +79,24 @@ moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['admin'])
 /**
  * 取引確定
  */
-moneyTransferTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+// tslint:disable-next-line:use-default-type-parameter
+refundTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), ...[
+    express_validator_1.body('endDate')
+        .optional()
+        .isISO8601()
+        .toDate()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        yield chevre.service.transaction.moneyTransfer.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
+        yield chevre.service.transaction.refund.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
         // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
         // tslint:disable-next-line:no-floating-promises
         chevre.service.transaction.exportTasks({
             status: chevre.factory.transactionStatusType.Confirmed,
-            typeOf: { $in: [chevre.factory.transactionType.MoneyTransfer] }
+            typeOf: { $in: [chevre.factory.transactionType.Refund] }
         })({
             project: projectRepo,
             task: taskRepo,
@@ -109,11 +120,11 @@ moneyTransferTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.de
         next(error);
     }
 }));
-moneyTransferTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+refundTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        yield chevre.service.transaction.moneyTransfer.cancel(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({
+        yield chevre.service.transaction.refund.cancel(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({
             transaction: transactionRepo
         });
         res.status(http_status_1.NO_CONTENT)
@@ -123,4 +134,4 @@ moneyTransferTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.def
         next(error);
     }
 }));
-exports.default = moneyTransferTransactionsRouter;
+exports.default = refundTransactionsRouter;

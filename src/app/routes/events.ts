@@ -165,6 +165,8 @@ eventsRouter.get(
     '',
     permitScopes(['admin', 'events', 'events.read-only']),
     ...[
+        query('$projection.*')
+            .toInt(),
         query('typeOf')
             .not()
             .isEmpty()
@@ -220,11 +222,19 @@ eventsRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
+
+            // projectionの指定があれば適用する
+            const projection: any = (req.query.$projection !== undefined && req.query.$projection !== null)
+                ? { ...req.query.$projection }
+                : {
+                    aggregateOffer: 0,
+                    // 古いデータについて不要な情報が含まれていたため対処
+                    'offers.project.settings': 0
+                };
+
             const events = await eventRepo.search(
                 searchConditions,
-                {
-                    aggregateOffer: 0
-                }
+                projection
             );
             const totalCount = await eventRepo.count(searchConditions);
 
@@ -246,11 +256,51 @@ eventsRouter.get(
     async (req, res, next) => {
         try {
             const eventRepo = new chevre.repository.Event(mongoose.connection);
-            const event = await eventRepo.findById({
-                id: req.params.id
-            });
+            const event = await eventRepo.findById(
+                {
+                    id: req.params.id
+                },
+                {
+                    // 古いデータについて不要な情報が含まれていたため対処
+                    'offers.project.settings': 0
+                }
+            );
 
             res.json(event);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * イベント更新
+ */
+eventsRouter.patch(
+    '/:id',
+    permitScopes(['admin']),
+    // ...validations,
+    validator,
+    async (req, res, next) => {
+        try {
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
+
+            const event = await eventRepo.save<chevre.factory.eventType>({
+                id: req.params.id,
+                attributes: req.body,
+                upsert: false
+            });
+
+            await chevre.service.offer.onEventChanged(event)({
+                event: eventRepo,
+                project: projectRepo,
+                task: taskRepo
+            });
+
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

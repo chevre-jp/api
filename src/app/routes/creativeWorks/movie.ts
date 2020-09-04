@@ -118,10 +118,8 @@ movieRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const totalCount = await creativeWorkRepo.countMovies(searchConditions);
             const movies = await creativeWorkRepo.searchMovies(searchConditions);
 
-            res.set('X-Total-Count', totalCount.toString());
             res.json(movies);
         } catch (error) {
             next(error);

@@ -149,6 +149,8 @@ eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validat
  * イベント検索
  */
 eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-only']), ...[
+    express_validator_1.query('$projection.*')
+        .toInt(),
     express_validator_1.query('typeOf')
         .not()
         .isEmpty()
@@ -199,9 +201,14 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const events = yield eventRepo.search(searchConditions, {
-            aggregateOffer: 0
-        });
+        // projectionの指定があれば適用する
+        const projection = (req.query.$projection !== undefined && req.query.$projection !== null)
+            ? Object.assign({}, req.query.$projection) : {
+            aggregateOffer: 0,
+            // 古いデータについて不要な情報が含まれていたため対処
+            'offers.project.settings': 0
+        };
+        const events = yield eventRepo.search(searchConditions, projection);
         const totalCount = yield eventRepo.count(searchConditions);
         res.set('X-Total-Count', totalCount.toString())
             .json(events);
@@ -218,8 +225,38 @@ eventsRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const event = yield eventRepo.findById({
             id: req.params.id
+        }, {
+            // 古いデータについて不要な情報が含まれていたため対処
+            'offers.project.settings': 0
         });
         res.json(event);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * イベント更新
+ */
+eventsRouter.patch('/:id', permitScopes_1.default(['admin']), 
+// ...validations,
+validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
+        const taskRepo = new chevre.repository.Task(mongoose.connection);
+        const event = yield eventRepo.save({
+            id: req.params.id,
+            attributes: req.body,
+            upsert: false
+        });
+        yield chevre.service.offer.onEventChanged(event)({
+            event: eventRepo,
+            project: projectRepo,
+            task: taskRepo
+        });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
