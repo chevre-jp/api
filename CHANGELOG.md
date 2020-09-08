@@ -10,9 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- イベントのacceptedPaymentMethodをunacceptedPaymentMethodとして再管理
-- オファーの適用ムビチケ条件の決済方法として、appliesToMovieTicket.serviceOutput.typeOfを参照するように変更
-
 ### Deprecated
 
 ### Removed
@@ -20,6 +17,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.30.0 - 2020-09-08
+
+### Changed
+
+- イベントのacceptedPaymentMethodをunacceptedPaymentMethodとして再管理
+- オファーの適用ムビチケ条件の決済方法として、appliesToMovieTicket.serviceOutput.typeOfを参照するように変更
 
 ## v7.29.0 - 2020-09-04
 
