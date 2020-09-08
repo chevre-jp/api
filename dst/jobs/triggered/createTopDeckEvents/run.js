@@ -159,12 +159,7 @@ function main(connection, project) {
                     .startOf('date')
                     // tslint:disable-next-line:no-magic-numbers
                     .add(-3, 'months')
-                    .toDate(),
-                acceptedPaymentMethod: [
-                    chevre.factory.paymentMethodType.Cash,
-                    chevre.factory.paymentMethodType.CreditCard,
-                    chevre.factory.paymentMethodType.Others
-                ]
+                    .toDate()
             };
             // イベント作成
             const eventAttributes = {
