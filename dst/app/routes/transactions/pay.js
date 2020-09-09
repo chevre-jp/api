@@ -23,6 +23,31 @@ const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 payTransactionsRouter.use(authentication_1.default);
+/**
+ * 決済認証(ムビチケ購入番号確認)
+ */
+payTransactionsRouter.post('/check', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const action = yield chevre.service.transaction.pay.check({
+            project: project,
+            typeOf: chevre.factory.actionType.CheckAction,
+            agent: Object.assign({}, req.body.agent),
+            object: req.body.object,
+            recipient: Object.assign({}, req.body.recipient)
+        })({
+            action: new chevre.repository.Action(mongoose.connection),
+            event: new chevre.repository.Event(mongoose.connection),
+            project: new chevre.repository.Project(mongoose.connection),
+            seller: new chevre.repository.Seller(mongoose.connection)
+        });
+        res.status(http_status_1.CREATED)
+            .json(action);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
     express_validator_1.body('project')
         .not()
