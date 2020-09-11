@@ -6,7 +6,7 @@ import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body } from 'express-validator';
-import { NO_CONTENT } from 'http-status';
+import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
 const payTransactionsRouter = Router();
@@ -18,6 +18,42 @@ import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
 payTransactionsRouter.use(authentication);
+
+/**
+ * 決済認証(ムビチケ購入番号確認)
+ */
+payTransactionsRouter.post(
+    '/check',
+    permitScopes(['admin']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+
+            const action = await chevre.service.transaction.pay.check({
+                project: project,
+                typeOf: chevre.factory.actionType.CheckAction,
+                agent: {
+                    ...req.body.agent
+                },
+                object: req.body.object,
+                recipient: {
+                    ...req.body.recipient
+                }
+            })({
+                action: new chevre.repository.Action(mongoose.connection),
+                event: new chevre.repository.Event(mongoose.connection),
+                project: new chevre.repository.Project(mongoose.connection),
+                seller: new chevre.repository.Seller(mongoose.connection)
+            });
+
+            res.status(CREATED)
+                .json(action);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 payTransactionsRouter.post(
     '/start',
