@@ -8,11 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- 決済取引に決済方法認証サービスを追加
-
 ### Changed
-
-- プロダクトタイプ管理を@chevre/factoryへ移行
 
 ### Deprecated
 
@@ -21,6 +17,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.31.0 - 2020-09-11
+
+### Added
+
+- 決済取引に決済方法認証サービスを追加
+
+### Changed
+
+- プロダクトタイプ管理を@chevre/factoryへ移行
 
 ## v7.30.0 - 2020-09-08
 
