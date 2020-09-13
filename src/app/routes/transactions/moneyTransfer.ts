@@ -52,6 +52,7 @@ moneyTransferTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const productRepo = new chevre.repository.Product(mongoose.connection);
             const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
@@ -69,6 +70,7 @@ moneyTransferTransactionsRouter.post(
                     .toDate(),
                 ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
+                product: productRepo,
                 project: projectRepo,
                 serviceOutput: serviceOutputRepo,
                 transaction: transactionRepo,
