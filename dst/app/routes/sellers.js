@@ -56,9 +56,7 @@ const validations = [
         .optional()
         .isURL(),
     express_validator_1.body('paymentAccepted')
-        .not()
-        .isEmpty()
-        .withMessage(() => 'required')
+        .optional()
         .isArray(),
     express_validator_1.body('areaServed')
         .optional()
