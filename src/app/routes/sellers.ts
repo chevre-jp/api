@@ -49,9 +49,7 @@ const validations: RequestHandler[] = [
         .optional()
         .isURL(),
     body('paymentAccepted')
-        .not()
-        .isEmpty()
-        .withMessage(() => 'required')
+        .optional()
         .isArray(),
     body('areaServed')
         .optional()
