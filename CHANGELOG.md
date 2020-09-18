@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- イベント検索からX-Total-Countを削除
+- イベント検索条件にcountDocumentsパラメータを追加
 - 販売者検索からX-Total-Countを削除
 
 ### Deprecated

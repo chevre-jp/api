@@ -197,6 +197,7 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
         .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const countDocuments = req.query.countDocuments === '1';
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers
@@ -209,7 +210,7 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
             'offers.project.settings': 0
         };
         const events = yield eventRepo.search(searchConditions, projection);
-        if (process.env.USE_EVENTS_X_TOTAL_COUNTS === '1') {
+        if (process.env.USE_EVENTS_X_TOTAL_COUNTS === '1' || countDocuments) {
             const totalCount = yield eventRepo.count(searchConditions);
             res.set('X-Total-Count', totalCount.toString());
         }
