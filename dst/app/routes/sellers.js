@@ -20,59 +20,63 @@ const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
+/**
+ * 販売者に対するバリデーション
+ */
+const validations = [
+    express_validator_1.body('project.id')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
+    express_validator_1.body('typeOf')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    express_validator_1.body('name.ja')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    express_validator_1.body('name.en')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    express_validator_1.body('parentOrganization.typeOf')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    express_validator_1.body('parentOrganization.name.ja')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    express_validator_1.body('parentOrganization.name.en')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    express_validator_1.body('url')
+        .optional()
+        .isURL(),
+    express_validator_1.body('paymentAccepted')
+        .optional()
+        .isArray(),
+    express_validator_1.body('areaServed')
+        .optional()
+        .isArray(),
+    express_validator_1.body('hasMerchantReturnPolicy')
+        .optional()
+        .isArray(),
+    express_validator_1.body('paymentAccepted')
+        .optional()
+        .isArray(),
+    express_validator_1.body('additionalProperty')
+        .optional()
+        .isArray()
+];
 const sellersRouter = express_1.Router();
 sellersRouter.use(authentication_1.default);
 /**
  * 販売者作成
  */
-sellersRouter.post('', permitScopes_1.default(['admin']), ...[
-    express_validator_1.body('project')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'Required'),
-    express_validator_1.body('typeOf')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('name.ja')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('name.en')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('parentOrganization.typeOf')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('parentOrganization.name.ja')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('parentOrganization.name.en')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('telephone')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('url')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required')
-        .isURL(),
-    express_validator_1.body('paymentAccepted')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required')
-        .isArray(),
-    express_validator_1.body('hasPOS')
-        .isArray(),
-    express_validator_1.body('areaServed')
-        .isArray()
-], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+sellersRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const attributes = Object.assign(Object.assign({}, req.body), { project: project });
@@ -132,54 +136,7 @@ sellersRouter.get('/:id', permitScopes_1.default(['admin']), ...[
  * 販売者更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-sellersRouter.put('/:id', permitScopes_1.default(['admin']), ...[
-    express_validator_1.body('project')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'Required'),
-    express_validator_1.body('typeOf')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('name.ja')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('name.en')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('parentOrganization.typeOf')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('parentOrganization.name.ja')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('parentOrganization.name.en')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('telephone')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required'),
-    express_validator_1.body('url')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required')
-        .isURL(),
-    express_validator_1.body('paymentAccepted')
-        .not()
-        .isEmpty()
-        .withMessage((_, __) => 'required')
-        .isArray(),
-    express_validator_1.body('hasPOS')
-        .isArray(),
-    express_validator_1.body('areaServed')
-        .isArray()
-], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+sellersRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const attributes = Object.assign({}, req.body);
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);

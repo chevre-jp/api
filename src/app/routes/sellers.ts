@@ -2,7 +2,7 @@
  * 販売者ルーター
  */
 import * as chevre from '@chevre/domain';
-import { Router } from 'express';
+import { RequestHandler, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, query } from 'express-validator';
@@ -12,6 +12,58 @@ import * as mongoose from 'mongoose';
 import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
+
+/**
+ * 販売者に対するバリデーション
+ */
+const validations: RequestHandler[] = [
+    body('project.id')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required'),
+    body('typeOf')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    body('name.ja')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    body('name.en')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    body('parentOrganization.typeOf')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    body('parentOrganization.name.ja')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    body('parentOrganization.name.en')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required'),
+    body('url')
+        .optional()
+        .isURL(),
+    body('paymentAccepted')
+        .optional()
+        .isArray(),
+    body('areaServed')
+        .optional()
+        .isArray(),
+    body('hasMerchantReturnPolicy')
+        .optional()
+        .isArray(),
+    body('paymentAccepted')
+        .optional()
+        .isArray(),
+    body('additionalProperty')
+        .optional()
+        .isArray()
+];
 
 const sellersRouter = Router();
 
@@ -23,54 +75,7 @@ sellersRouter.use(authentication);
 sellersRouter.post(
     '',
     permitScopes(['admin']),
-    ...[
-        body('project')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'Required'),
-        body('typeOf')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('name.ja')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('name.en')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('parentOrganization.typeOf')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('parentOrganization.name.ja')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('parentOrganization.name.en')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('telephone')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('url')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required')
-            .isURL(),
-        body('paymentAccepted')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required')
-            .isArray(),
-        body('hasPOS')
-            .isArray(),
-        body('areaServed')
-            .isArray()
-    ],
+    ...validations,
     validator,
     async (req, res, next) => {
         try {
@@ -164,54 +169,7 @@ sellersRouter.get<ParamsDictionary>(
 sellersRouter.put<ParamsDictionary>(
     '/:id',
     permitScopes(['admin']),
-    ...[
-        body('project')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'Required'),
-        body('typeOf')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('name.ja')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('name.en')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('parentOrganization.typeOf')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('parentOrganization.name.ja')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('parentOrganization.name.en')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('telephone')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required'),
-        body('url')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required')
-            .isURL(),
-        body('paymentAccepted')
-            .not()
-            .isEmpty()
-            .withMessage((_, __) => 'required')
-            .isArray(),
-        body('hasPOS')
-            .isArray(),
-        body('areaServed')
-            .isArray()
-    ],
+    ...validations,
     validator,
     async (req, res, next) => {
         try {
