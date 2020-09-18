@@ -209,9 +209,11 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
             'offers.project.settings': 0
         };
         const events = yield eventRepo.search(searchConditions, projection);
-        const totalCount = yield eventRepo.count(searchConditions);
-        res.set('X-Total-Count', totalCount.toString())
-            .json(events);
+        if (process.env.USE_EVENTS_X_TOTAL_COUNTS === '1') {
+            const totalCount = yield eventRepo.count(searchConditions);
+            res.set('X-Total-Count', totalCount.toString());
+        }
+        res.json(events);
     }
     catch (error) {
         next(error);

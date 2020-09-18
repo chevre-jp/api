@@ -105,7 +105,6 @@ sellersRouter.get('', permitScopes_1.default(['admin']), ...[
         // 管理者以外にセキュアな情報を露出しないように
         // (!req.isAdmin) ? { 'paymentAccepted.gmoInfo.shopPass': 0 } : undefined
         );
-        res.set('X-Total-Count', sellers.length.toString());
         res.json(sellers);
     }
     catch (error) {

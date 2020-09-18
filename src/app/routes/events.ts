@@ -236,10 +236,13 @@ eventsRouter.get(
                 searchConditions,
                 projection
             );
-            const totalCount = await eventRepo.count(searchConditions);
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(events);
+            if (process.env.USE_EVENTS_X_TOTAL_COUNTS === '1') {
+                const totalCount = await eventRepo.count(searchConditions);
+                res.set('X-Total-Count', totalCount.toString());
+            }
+
+            res.json(events);
         } catch (error) {
             next(error);
         }
