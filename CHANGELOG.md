@@ -10,11 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 転送取引開始時にプロダクトタイプによって処理を調整するように対応
-- MoneyTransfer取引のオブジェクトを定義
-- 販売者スキーマから不要な属性を削除
-- 販売者編集のバリデーション調整
-
 ### Deprecated
 
 ### Removed
@@ -22,6 +17,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.32.0 - 2020-09-18
+
+### Changed
+
+- 転送取引開始時にプロダクトタイプによって処理を調整するように対応
+- MoneyTransfer取引のオブジェクトを定義
+- 販売者スキーマから不要な属性を削除
+- 販売者編集のバリデーション調整
 
 ## v7.31.0 - 2020-09-11
 
