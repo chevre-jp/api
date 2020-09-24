@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 販売者検索からX-Total-Countを削除
 - イベント予約集計時に、同location、かつ同時間帯、のイベントに関しても集計するように調整
 - イベントの予約集計処理において、オファーカタログが見つからない場合に対応
+- update @motionpicture/coa-service
+- update @pecorino/api-nodejs-client
 
 ### Deprecated
 

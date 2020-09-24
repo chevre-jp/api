@@ -30,11 +30,10 @@ serviceOutputIdentifiersRouter.post('', permitScopes_1.default(['admin']), ...[
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
-], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+], validator_1.default, (__, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const identifierRepo = new chevre.repository.ServiceOutputIdentifier(redis.getClient());
         const identifier = yield identifierRepo.publishByTimestamp({
-            project: { id: req.body.project.id },
             startDate: new Date()
         });
         res.status(http_status_1.CREATED)

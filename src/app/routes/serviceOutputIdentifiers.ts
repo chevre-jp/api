@@ -29,12 +29,11 @@ serviceOutputIdentifiersRouter.post(
             .withMessage(() => 'Required')
     ],
     validator,
-    async (req, res, next) => {
+    async (__, res, next) => {
         try {
             const identifierRepo = new chevre.repository.ServiceOutputIdentifier(redis.getClient());
 
             const identifier = await identifierRepo.publishByTimestamp({
-                project: { id: req.body.project.id },
                 startDate: new Date()
             });
 
