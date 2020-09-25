@@ -215,6 +215,8 @@ eventsRouter.get(
     validator,
     async (req, res, next) => {
         try {
+            const countDocuments = req.query.countDocuments === '1';
+
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             const searchConditions: chevre.factory.event.ISearchConditions<typeof req.query.typeOf> = {
                 ...req.query,
@@ -236,10 +238,13 @@ eventsRouter.get(
                 searchConditions,
                 projection
             );
-            const totalCount = await eventRepo.count(searchConditions);
 
-            res.set('X-Total-Count', totalCount.toString())
-                .json(events);
+            if (process.env.USE_EVENTS_X_TOTAL_COUNTS === '1' || countDocuments) {
+                const totalCount = await eventRepo.count(searchConditions);
+                res.set('X-Total-Count', totalCount.toString());
+            }
+
+            res.json(events);
         } catch (error) {
             next(error);
         }
