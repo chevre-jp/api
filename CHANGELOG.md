@@ -10,6 +10,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v7.33.0 - 2020-09-25
+
+### Changed
+
 - イベント検索条件にcountDocumentsパラメータを追加
 - 販売者検索からX-Total-Countを削除
 - イベント予約集計時に、同location、かつ同時間帯、のイベントに関しても集計するように調整
@@ -17,15 +29,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - update @motionpicture/coa-service
 - update @pecorino/api-nodejs-client
 
-### Deprecated
-
 ### Removed
 
 - 通貨転送取引において決済方法タイプ:PointをAccountへ自動変換する互換性維持対応を削除
-
-### Fixed
-
-### Security
 
 ## v7.32.0 - 2020-09-18
 
