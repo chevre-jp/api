@@ -2,8 +2,16 @@
  * 返金タスク実行
  */
 import * as chevre from '@chevre/domain';
+import * as redis from 'redis';
 
 import { connectMongo } from '../../../connectMongo';
+
+const redisClient = redis.createClient({
+    port: Number(<string>process.env.REDIS_PORT),
+    host: <string>process.env.REDIS_HOST,
+    password: <string>process.env.REDIS_KEY,
+    tls: (process.env.REDIS_TLS_SERVERNAME !== undefined) ? { servername: process.env.REDIS_TLS_SERVERNAME } : undefined
+});
 
 export default async () => {
     const connection = await connectMongo({ defaultConnection: false });
@@ -24,7 +32,7 @@ export default async () => {
             try {
                 await chevre.service.task.executeByName({
                     name: chevre.factory.taskName.Refund
-                })({ connection: connection });
+                })({ connection: connection, redisClient: redisClient });
             } catch (error) {
                 console.error(error);
             }

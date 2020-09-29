@@ -13,7 +13,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 返金タスク実行
  */
 const chevre = require("@chevre/domain");
+const redis = require("redis");
 const connectMongo_1 = require("../../../connectMongo");
+const redisClient = redis.createClient({
+    port: Number(process.env.REDIS_PORT),
+    host: process.env.REDIS_HOST,
+    password: process.env.REDIS_KEY,
+    tls: (process.env.REDIS_TLS_SERVERNAME !== undefined) ? { servername: process.env.REDIS_TLS_SERVERNAME } : undefined
+});
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
     let count = 0;
@@ -27,7 +34,7 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
         try {
             yield chevre.service.task.executeByName({
                 name: chevre.factory.taskName.Refund
-            })({ connection: connection });
+            })({ connection: connection, redisClient: redisClient });
         }
         catch (error) {
             console.error(error);
