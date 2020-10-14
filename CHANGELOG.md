@@ -18,6 +18,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.36.2 - 2020-10-14
+
+### Changed
+
+- 販売者コレクションのインデックスを最適化
+- イベントオファーごとのキャパシティ算出時に適用サブ予約条件を考慮するように調整
+
 ## v7.36.1 - 2020-10-12
 
 ### Changed
