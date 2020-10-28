@@ -200,6 +200,14 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), 
         if (doc === null) {
             throw new chevre.factory.errors.NotFound('AccountTitleCategory');
         }
+        const newAccountTitleSet = {
+            project: { id: accountTitleSet.project.id, typeOf: chevre.factory.organizationType.Project },
+            typeOf: accountTitleSet.typeOf,
+            codeValue: accountTitleSet.codeValue,
+            name: accountTitleSet.name,
+            additionalProperty: (Array.isArray(accountTitleSet.additionalProperty)) ? accountTitleSet.additionalProperty : [],
+            hasCategoryCode: []
+        };
         debug('creating accountTitleSet', accountTitleSet);
         doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
@@ -210,12 +218,7 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), 
             'hasCategoryCode.codeValue': { $ne: accountTitleSet.codeValue }
         }, {
             $push: {
-                hasCategoryCode: {
-                    typeOf: accountTitleSet.typeOf,
-                    codeValue: accountTitleSet.codeValue,
-                    name: accountTitleSet.name,
-                    additionalProperty: accountTitleSet.additionalProperty
-                }
+                hasCategoryCode: newAccountTitleSet
             }
         }, { new: true })
             .exec();
@@ -433,6 +436,13 @@ accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
         if (doc === null) {
             throw new chevre.factory.errors.NotFound('AccountTitleSet');
         }
+        const newAccountTitle = {
+            project: { id: accountTitle.project.id, typeOf: chevre.factory.organizationType.Project },
+            typeOf: accountTitle.typeOf,
+            codeValue: accountTitle.codeValue,
+            name: accountTitle.name,
+            additionalProperty: (Array.isArray(accountTitle.additionalProperty)) ? accountTitle.additionalProperty : []
+        };
         doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
                 $exists: true,
@@ -443,12 +453,7 @@ accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
             'hasCategoryCode.hasCategoryCode.codeValue': { $ne: accountTitle.codeValue }
         }, {
             $push: {
-                'hasCategoryCode.$[accountTitleSet].hasCategoryCode': {
-                    typeOf: accountTitle.typeOf,
-                    codeValue: accountTitle.codeValue,
-                    name: accountTitle.name,
-                    additionalProperty: accountTitle.additionalProperty
-                }
+                'hasCategoryCode.$[accountTitleSet].hasCategoryCode': newAccountTitle
             }
         }, {
             new: true,
