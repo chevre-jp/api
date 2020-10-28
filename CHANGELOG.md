@@ -10,9 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 科目追加時の科目の型を調整
-- 細目追加時の細目の型を調整
-
 ### Deprecated
 
 ### Removed
@@ -20,6 +17,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.36.4 - 2020-10-28
+
+### Changed
+
+- 科目追加時の科目の型を調整
+- 細目追加時の細目の型を調整
 
 ## v7.36.3 - 2020-10-18
 
