@@ -245,6 +245,15 @@ accountTitlesRouter.post(
                 throw new chevre.factory.errors.NotFound('AccountTitleCategory');
             }
 
+            const newAccountTitleSet: chevre.factory.accountTitle.IAccountTitle = {
+                project: { id: accountTitleSet.project.id, typeOf: chevre.factory.organizationType.Project },
+                typeOf: accountTitleSet.typeOf,
+                codeValue: accountTitleSet.codeValue,
+                name: accountTitleSet.name,
+                additionalProperty: (Array.isArray(accountTitleSet.additionalProperty)) ? accountTitleSet.additionalProperty : [],
+                hasCategoryCode: []
+            };
+
             debug('creating accountTitleSet', accountTitleSet);
             doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
@@ -257,12 +266,7 @@ accountTitlesRouter.post(
                 },
                 {
                     $push: {
-                        hasCategoryCode: {
-                            typeOf: accountTitleSet.typeOf,
-                            codeValue: accountTitleSet.codeValue,
-                            name: accountTitleSet.name,
-                            additionalProperty: accountTitleSet.additionalProperty
-                        }
+                        hasCategoryCode: newAccountTitleSet
                     }
                 },
                 { new: true }
@@ -523,6 +527,14 @@ accountTitlesRouter.post(
                 throw new chevre.factory.errors.NotFound('AccountTitleSet');
             }
 
+            const newAccountTitle: chevre.factory.accountTitle.IAccountTitle = {
+                project: { id: accountTitle.project.id, typeOf: chevre.factory.organizationType.Project },
+                typeOf: accountTitle.typeOf,
+                codeValue: accountTitle.codeValue,
+                name: accountTitle.name,
+                additionalProperty: (Array.isArray(accountTitle.additionalProperty)) ? accountTitle.additionalProperty : []
+            };
+
             doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
                     'project.id': {
@@ -535,12 +547,7 @@ accountTitlesRouter.post(
                 },
                 {
                     $push: {
-                        'hasCategoryCode.$[accountTitleSet].hasCategoryCode': {
-                            typeOf: accountTitle.typeOf,
-                            codeValue: accountTitle.codeValue,
-                            name: accountTitle.name,
-                            additionalProperty: accountTitle.additionalProperty
-                        }
+                        'hasCategoryCode.$[accountTitleSet].hasCategoryCode': newAccountTitle
                     }
                 },
                 <any>{

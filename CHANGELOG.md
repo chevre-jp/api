@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 科目追加時の科目の型を調整
+- 細目追加時の細目の型を調整
+
 ### Deprecated
 
 ### Removed
