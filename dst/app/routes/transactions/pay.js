@@ -38,6 +38,7 @@ payTransactionsRouter.post('/check', permitScopes_1.default(['admin']), validato
         })({
             action: new chevre.repository.Action(mongoose.connection),
             event: new chevre.repository.Event(mongoose.connection),
+            product: new chevre.repository.Product(mongoose.connection),
             project: new chevre.repository.Project(mongoose.connection),
             seller: new chevre.repository.Seller(mongoose.connection)
         });
@@ -79,12 +80,14 @@ payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
+        const productRepo = new chevre.repository.Product(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
         const transaction = yield chevre.service.transaction.pay.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.Pay, agent: Object.assign({}, req.body.agent), object: req.body.object, recipient: Object.assign({}, req.body.recipient), expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
             event: eventRepo,
+            product: productRepo,
             project: projectRepo,
             seller: sellerRepo,
             transaction: transactionRepo
