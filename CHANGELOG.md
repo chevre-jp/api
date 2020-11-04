@@ -10,10 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- プロダクトインターフェースを決済サービスにも拡張
-- 外部決済サービス認証情報をproductsコレクションから取得するように調整
-- ペイメントカードの通貨をPecorinoに反映するように調整
-
 ### Deprecated
 
 ### Removed
@@ -21,6 +17,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.38.0 - 2020-11-04
+
+### Changed
+
+- プロダクトインターフェースを決済サービスにも拡張
+- 外部決済サービス認証情報をproductsコレクションから取得するように調整
+- ペイメントカードの通貨をPecorinoに反映するように調整
 
 ## v7.37.1 - 2020-10-29
 
