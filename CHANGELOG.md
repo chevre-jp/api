@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- 複数対応のサービスアウトプット識別子発行を追加
+
 ### Changed
 
 ### Deprecated
