@@ -3,12 +3,17 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
-import { query } from 'express-validator';
+import { body, query } from 'express-validator';
+import { CREATED } from 'http-status';
 import * as mongoose from 'mongoose';
 
 import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
+
+import * as redis from '../../redis';
+
+const MAX_NUM_IDENTIFIERS_CREATED = 100;
 
 const serviceOutputsRouter = Router();
 serviceOutputsRouter.use(authentication);
@@ -65,6 +70,40 @@ serviceOutputsRouter.get(
                 .then((docs) => docs.map((doc) => doc.toObject()));
 
             res.json(serviceOutputs);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * サービスアウトプット識別子発行
+ */
+serviceOutputsRouter.post(
+    '/identifier',
+    permitScopes(['admin']),
+    ...[
+        body()
+            .isArray({ min: 1, max: MAX_NUM_IDENTIFIERS_CREATED })
+            .withMessage(() => `must be an array <= ${MAX_NUM_IDENTIFIERS_CREATED}`),
+        body('*.project.id')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'Required')
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const identifierRepo = new chevre.repository.ServiceOutputIdentifier(redis.getClient());
+
+            const identifiers = await Promise.all((<any[]>req.body).map(async () => {
+                const identifier = await identifierRepo.publishByTimestamp({ startDate: new Date() });
+
+                return { identifier };
+            }));
+
+            res.status(CREATED)
+                .json(identifiers);
         } catch (error) {
             next(error);
         }

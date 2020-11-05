@@ -15,10 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
+const redis = require("../../redis");
+const MAX_NUM_IDENTIFIERS_CREATED = 100;
 const serviceOutputsRouter = express_1.Router();
 serviceOutputsRouter.use(authentication_1.default);
 /**
@@ -59,6 +62,31 @@ serviceOutputsRouter.get('', permitScopes_1.default(['admin', 'serviceOutputs', 
             .exec()
             .then((docs) => docs.map((doc) => doc.toObject()));
         res.json(serviceOutputs);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * サービスアウトプット識別子発行
+ */
+serviceOutputsRouter.post('/identifier', permitScopes_1.default(['admin']), ...[
+    express_validator_1.body()
+        .isArray({ min: 1, max: MAX_NUM_IDENTIFIERS_CREATED })
+        .withMessage(() => `must be an array <= ${MAX_NUM_IDENTIFIERS_CREATED}`),
+    express_validator_1.body('*.project.id')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'Required')
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const identifierRepo = new chevre.repository.ServiceOutputIdentifier(redis.getClient());
+        const identifiers = yield Promise.all(req.body.map(() => __awaiter(void 0, void 0, void 0, function* () {
+            const identifier = yield identifierRepo.publishByTimestamp({ startDate: new Date() });
+            return { identifier };
+        })));
+        res.status(http_status_1.CREATED)
+            .json(identifiers);
     }
     catch (error) {
         next(error);
