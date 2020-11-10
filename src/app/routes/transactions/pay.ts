@@ -111,7 +111,8 @@ payTransactionsRouter.post(
                     ...req.body.recipient
                 },
                 expires: req.body.expires,
-                ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
+                ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined,
+                ...(req.body.purpose !== undefined && req.body.purpose !== null) ? { purpose: req.body.purpose } : undefined
             })({
                 action: actionRepo,
                 event: eventRepo,
