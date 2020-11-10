@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Removed
 
+- 非推奨のサービスアウトプット識別子発行を削除
+
 ### Fixed
 
 ### Security
