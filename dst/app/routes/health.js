@@ -17,7 +17,6 @@ const mongoose = require("mongoose");
 const healthRouter = express.Router();
 const createDebug = require("debug");
 const http_status_1 = require("http-status");
-// import { connectMongo } from '../../connectMongo';
 const redis = require("../../redis");
 const debug = createDebug('chevre-api:router');
 // 接続確認をあきらめる時間(ミリ秒)
