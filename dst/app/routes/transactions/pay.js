@@ -79,6 +79,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
         .withMessage('Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const actionRepo = new chevre.repository.Action(mongoose.connection);
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const productRepo = new chevre.repository.Product(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
@@ -86,6 +87,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
         const transaction = yield chevre.service.transaction.pay.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.Pay, agent: Object.assign({}, req.body.agent), object: req.body.object, recipient: Object.assign({}, req.body.recipient), expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
+            action: actionRepo,
             event: eventRepo,
             product: productRepo,
             project: projectRepo,

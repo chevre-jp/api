@@ -91,6 +91,7 @@ payTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const actionRepo = new chevre.repository.Action(mongoose.connection);
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             const productRepo = new chevre.repository.Product(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
@@ -112,6 +113,7 @@ payTransactionsRouter.post(
                 expires: req.body.expires,
                 ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
+                action: actionRepo,
                 event: eventRepo,
                 product: productRepo,
                 project: projectRepo,
