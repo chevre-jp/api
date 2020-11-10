@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - Redisクライアントのretry_strategyを調整
+- ヘルスチェックを調整
 
 ### Deprecated
 
