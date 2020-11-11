@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v7.40.0 - 2020-11-11
+
+### Added
+
 - USE_MOVIETICKET_AUTHORIZE設定を追加
 
 ### Changed
@@ -15,15 +29,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - Redisクライアントのretry_strategyを調整
 - ヘルスチェックを調整
 
-### Deprecated
-
 ### Removed
 
 - 非推奨のサービスアウトプット識別子発行を削除
-
-### Fixed
-
-### Security
 
 ## v7.39.0 - 2020-11-05
 
