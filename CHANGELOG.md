@@ -18,6 +18,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.40.0 - 2020-11-11
+
+### Added
+
+- USE_MOVIETICKET_AUTHORIZE設定を追加
+
+### Changed
+
+- Redisクライアントのretry_strategyを調整
+- ヘルスチェックを調整
+
+### Removed
+
+- 非推奨のサービスアウトプット識別子発行を削除
+
 ## v7.39.0 - 2020-11-05
 
 ### Added
