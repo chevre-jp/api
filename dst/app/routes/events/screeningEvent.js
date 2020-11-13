@@ -95,7 +95,7 @@ screeningEventRouter.post('/saveMultiple', permitScopes_1.default(['admin']), ..
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const eventAttributes = req.body.attributes.map((a) => {
-            const project = Object.assign(Object.assign({}, a.project), { typeOf: 'Project' });
+            const project = Object.assign(Object.assign({}, a.project), { typeOf: chevre.factory.organizationType.Project });
             return Object.assign(Object.assign({}, a), { project: project });
         });
         const events = yield eventRepo.createMany(eventAttributes);

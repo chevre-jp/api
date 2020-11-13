@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.41.0 - 2020-11-13
+
+### Changed
+
+- 決済取引をPaymentCardサービスに対応
+
 ## v7.40.0 - 2020-11-11
 
 ### Added

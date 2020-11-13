@@ -51,7 +51,7 @@ cancelReservationTransactionsRouter.post(
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
             const transaction = await chevre.service.transaction.cancelReservation.start({
                 project: project,
@@ -113,7 +113,7 @@ cancelReservationTransactionsRouter.post(
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
             await chevre.service.transaction.cancelReservation.startAndConfirm({
                 project: project,

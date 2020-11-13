@@ -55,7 +55,7 @@ movieRouter.post('', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         let movie = Object.assign(Object.assign(Object.assign({}, req.body), (typeof req.body.duration === 'string' && req.body.duration.lenght > 0)
             ? {
                 duration: moment.duration(req.body.duration)

@@ -28,7 +28,7 @@ payTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
             const action = await chevre.service.transaction.pay.check({
                 project: project,
@@ -98,7 +98,7 @@ payTransactionsRouter.post(
             const sellerRepo = new chevre.repository.Seller(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
             const transaction = await chevre.service.transaction.pay.start({
                 project: project,

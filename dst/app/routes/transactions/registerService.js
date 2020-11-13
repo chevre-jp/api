@@ -54,7 +54,7 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin'
         const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const transaction = yield chevre.service.transaction.registerService.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.RegisterService, agent: Object.assign({}, req.body.agent
             // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
             ), object: req.body.object, expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({

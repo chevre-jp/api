@@ -51,7 +51,7 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const transaction = yield chevre.service.transaction.cancelReservation.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.CancelReservation, agent: Object.assign({}, req.body.agent
             // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
             ), object: Object.assign({ clientUser: req.user }, req.body.object), expires: moment(req.body.expires)
@@ -94,7 +94,7 @@ cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['ad
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         yield chevre.service.transaction.cancelReservation.startAndConfirm(Object.assign({ project: project, typeOf: chevre.factory.transactionType.CancelReservation, agent: Object.assign({}, req.body.agent
             // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
             ), object: Object.assign({ clientUser: req.user }, req.body.object), expires: moment(req.body.expires)

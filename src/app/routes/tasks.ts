@@ -49,7 +49,7 @@ tasksRouter.post<ParamsDictionary>(
         try {
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
             const attributes: chevre.factory.task.IAttributes = {
                 project: project,

@@ -29,7 +29,7 @@ offerCatalogsRouter.post(
         try {
             const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
             const ticketTypeGroup = await offerCatalogRepo.save({ ...req.body, id: '', project: project });
 

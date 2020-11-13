@@ -56,7 +56,7 @@ refundTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const transaction = yield chevre.service.transaction.refund.start({
             project: project,
             typeOf: chevre.factory.transactionType.Refund,
