@@ -93,7 +93,7 @@ screeningEventRouter.post(
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
             const eventAttributes: chevre.factory.event.screeningEvent.IAttributes[] = req.body.attributes.map((a: any) => {
-                const project: chevre.factory.project.IProject = { ...a.project, typeOf: 'Project' };
+                const project: chevre.factory.project.IProject = { ...a.project, typeOf: chevre.factory.organizationType.Project };
 
                 return {
                     ...a,

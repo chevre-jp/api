@@ -42,7 +42,7 @@ accountTitlesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
             const accountTitle: chevre.factory.accountTitle.IAccountTitle = {
                 ...req.body,

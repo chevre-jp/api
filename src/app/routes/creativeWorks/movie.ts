@@ -55,7 +55,7 @@ movieRouter.post(
         try {
             const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: 'Project' };
+            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
             let movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,

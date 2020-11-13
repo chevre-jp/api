@@ -42,7 +42,7 @@ accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['admin
         .withMessage(() => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const accountTitle = Object.assign(Object.assign({}, req.body), { project: project });
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         yield accountTitleRepo.accountTitleModel.create(accountTitle);

@@ -49,7 +49,7 @@ tasksRouter.post('/:name', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const attributes = {
             project: project,
             name: req.params.name,

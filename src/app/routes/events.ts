@@ -128,7 +128,7 @@ eventsRouter.post(
     async (req, res, next) => {
         try {
             const params = req.body.map((a: any) => {
-                const project: chevre.factory.project.IProject = { ...a.project, typeOf: 'Project' };
+                const project: chevre.factory.project.IProject = { ...a.project, typeOf: chevre.factory.organizationType.Project };
 
                 return {
                     ...a,

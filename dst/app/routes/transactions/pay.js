@@ -28,7 +28,7 @@ payTransactionsRouter.use(authentication_1.default);
  */
 payTransactionsRouter.post('/check', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const action = yield chevre.service.transaction.pay.check({
             project: project,
             typeOf: chevre.factory.actionType.CheckAction,
@@ -85,7 +85,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const transaction = yield chevre.service.transaction.pay.start(Object.assign(Object.assign({ project: project, typeOf: chevre.factory.transactionType.Pay, agent: Object.assign({}, req.body.agent), object: req.body.object, recipient: Object.assign({}, req.body.recipient), expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined), (req.body.purpose !== undefined && req.body.purpose !== null) ? { purpose: req.body.purpose } : undefined))({
             action: actionRepo,
             event: eventRepo,

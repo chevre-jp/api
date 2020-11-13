@@ -61,7 +61,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
         const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
         const productRepo = new chevre.repository.Product(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: 'Project' });
+        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const transaction = yield chevre.service.transaction.reserve.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.Reserve, agent: req.body.agent, object: req.body.object, expires: moment(req.body.expires)
                 .toDate() }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
             project: projectRepo,
