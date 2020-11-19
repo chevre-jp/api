@@ -349,6 +349,26 @@ eventsRouter.put(
     }
 );
 
+eventsRouter.delete(
+    '/:id',
+    permitScopes(['admin']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const eventRepo = new chevre.repository.Event(mongoose.connection);
+            await eventRepo.eventModel.findOneAndDelete(
+                { _id: req.params.id }
+            )
+                .exec();
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 /**
  * 座席オファー検索
  */

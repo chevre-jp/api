@@ -292,6 +292,18 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
         next(error);
     }
 }));
+eventsRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const eventRepo = new chevre.repository.Event(mongoose.connection);
+        yield eventRepo.eventModel.findOneAndDelete({ _id: req.params.id })
+            .exec();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 /**
  * 座席オファー検索
  */
