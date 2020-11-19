@@ -116,6 +116,26 @@ priceSpecificationsRouter.put(
     }
 );
 
+priceSpecificationsRouter.delete(
+    '/:id',
+    permitScopes(['admin']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
+            await priceSpecificationRepo.priceSpecificationModel.findOneAndDelete(
+                { _id: req.params.id }
+            )
+                .exec();
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 priceSpecificationsRouter.get(
     '',
     permitScopes(['admin']),

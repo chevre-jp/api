@@ -91,6 +91,18 @@ priceSpecificationsRouter.put('/:id', permitScopes_1.default(['admin']), validat
         next(error);
     }
 }));
+priceSpecificationsRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
+        yield priceSpecificationRepo.priceSpecificationModel.findOneAndDelete({ _id: req.params.id })
+            .exec();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 priceSpecificationsRouter.get('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
