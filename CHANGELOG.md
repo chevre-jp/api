@@ -10,9 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- update @chevre/factory
-- サービス登録時に、オファーのポイント特典のtypeOf設定を反映するように調整
-
 ### Deprecated
 
 ### Removed
@@ -20,6 +17,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.43.0 - 2020-11-19
+
+### Changed
+
+- update @chevre/factory
+- サービス登録時に、オファーのポイント特典のtypeOf設定を反映するように調整
 
 ## v7.42.0 - 2020-11-17
 
