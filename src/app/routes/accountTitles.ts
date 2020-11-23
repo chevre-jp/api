@@ -606,6 +606,18 @@ accountTitlesRouter.get(
                 }
             }
 
+            const nameRegex = searchConditions.name;
+            if (typeof nameRegex === 'string') {
+                matchStages.push({
+                    $match: {
+                        'hasCategoryCode.hasCategoryCode.name': {
+                            $exists: true,
+                            $regex: new RegExp(nameRegex)
+                        }
+                    }
+                });
+            }
+
             if (typeof searchConditions.codeValue === 'string') {
                 matchStages.push({
                     $match: {

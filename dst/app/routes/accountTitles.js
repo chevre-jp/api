@@ -499,6 +499,17 @@ accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'a
                 });
             }
         }
+        const nameRegex = searchConditions.name;
+        if (typeof nameRegex === 'string') {
+            matchStages.push({
+                $match: {
+                    'hasCategoryCode.hasCategoryCode.name': {
+                        $exists: true,
+                        $regex: new RegExp(nameRegex)
+                    }
+                }
+            });
+        }
         if (typeof searchConditions.codeValue === 'string') {
             matchStages.push({
                 $match: {
