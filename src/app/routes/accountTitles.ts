@@ -197,8 +197,52 @@ accountTitlesRouter.put<ParamsDictionary>(
             )
                 .exec();
             if (doc === null) {
-                throw new chevre.factory.errors.NotFound('AccountTitle');
+                throw new chevre.factory.errors.NotFound(accountTitleRepo.accountTitleModel.modelName);
             }
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * 科目分類削除
+ */
+// tslint:disable-next-line:use-default-type-parameter
+accountTitlesRouter.delete<ParamsDictionary>(
+    '/accountTitleCategory/:codeValue',
+    permitScopes(['admin']),
+    ...[
+        body('project.id')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'required')
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
+
+            const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
+
+            await accountTitleRepo.accountTitleModel.findOneAndDelete(
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitleCategory.project.id
+                    },
+                    codeValue: accountTitleCategory.codeValue
+                }
+            )
+                .exec()
+                .then((doc) => {
+                    if (doc === null) {
+                        throw new chevre.factory.errors.NotFound(accountTitleRepo.accountTitleModel.modelName);
+                    }
+                });
 
             res.status(NO_CONTENT)
                 .end();
@@ -483,7 +527,64 @@ accountTitlesRouter.put<ParamsDictionary>(
             )
                 .exec();
             if (doc === null) {
-                throw new chevre.factory.errors.NotFound('AccountTitle');
+                throw new chevre.factory.errors.NotFound(accountTitleRepo.accountTitleModel.modelName);
+            }
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * 科目削除
+ */
+// tslint:disable-next-line:use-default-type-parameter
+accountTitlesRouter.delete<ParamsDictionary>(
+    '/accountTitleSet/:codeValue',
+    permitScopes(['admin']),
+    ...[
+        body('project.id')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'required'),
+        body('inCodeSet.codeValue')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'required')
+            .isString()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
+            const accountTitleCategory = <chevre.factory.accountTitle.IAccountTitle>accountTitleSet.inCodeSet;
+
+            const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
+
+            const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitleSet.project.id
+                    },
+                    codeValue: accountTitleCategory.codeValue,
+                    'hasCategoryCode.codeValue': {
+                        $exists: true,
+                        $eq: accountTitleSet.codeValue
+                    }
+                },
+                {
+                    $pull: {
+                        hasCategoryCode: { codeValue: accountTitleSet.codeValue }
+                    }
+                }
+            )
+                .exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound(accountTitleRepo.accountTitleModel.modelName);
             }
 
             res.status(NO_CONTENT)
@@ -826,7 +927,82 @@ accountTitlesRouter.put<ParamsDictionary>(
             )
                 .exec();
             if (doc === null) {
-                throw new chevre.factory.errors.NotFound('AccountTitle');
+                throw new chevre.factory.errors.NotFound(accountTitleRepo.accountTitleModel.modelName);
+            }
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * 削除
+ */
+// tslint:disable-next-line:use-default-type-parameter
+accountTitlesRouter.delete<ParamsDictionary>(
+    '/:codeValue',
+    permitScopes(['admin']),
+    ...[
+        body('project.id')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'required'),
+        body('inCodeSet.codeValue')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'required')
+            .isString(),
+        body('inCodeSet.inCodeSet.codeValue')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'required')
+            .isString()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const accountTitle: chevre.factory.accountTitle.IAccountTitle = { ...req.body, codeValue: req.params.codeValue };
+            const accountTitleSet = <chevre.factory.accountTitle.IAccountTitle>accountTitle.inCodeSet;
+            const accountTitleCategory = <chevre.factory.accountTitle.IAccountTitle>accountTitle.inCodeSet?.inCodeSet;
+
+            const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
+
+            const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
+                {
+                    'project.id': {
+                        $exists: true,
+                        $eq: accountTitle.project.id
+                    },
+                    codeValue: accountTitleCategory.codeValue,
+                    'hasCategoryCode.codeValue': {
+                        $exists: true,
+                        $eq: accountTitleSet.codeValue
+                    },
+                    'hasCategoryCode.hasCategoryCode.codeValue': {
+                        $exists: true,
+                        $eq: accountTitle.codeValue
+                    }
+                },
+                {
+                    $pull: {
+                        'hasCategoryCode.$[accountTitleSet].hasCategoryCode': {
+                            codeValue: accountTitle.codeValue
+                        }
+                    }
+                },
+                <any>{
+                    new: true,
+                    arrayFilters: [
+                        { 'accountTitleSet.codeValue': accountTitleSet.codeValue }
+                    ]
+                }
+            )
+                .exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound(accountTitleRepo.accountTitleModel.modelName);
             }
 
             res.status(NO_CONTENT)

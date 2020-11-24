@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.50.0 - 2020-11-24
+
+### Added
+
+- 勘定科目削除を追加
+
 ## v7.49.0 - 2020-11-24
 
 ### Changed
