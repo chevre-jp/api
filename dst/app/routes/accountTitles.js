@@ -97,6 +97,15 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin'
                 });
             }
         }
+        const nameRegex = searchConditions.name;
+        if (typeof nameRegex === 'string') {
+            conditions.push({
+                name: {
+                    $exists: true,
+                    $regex: new RegExp(nameRegex)
+                }
+            });
+        }
         // const totalCount = await accountTitleRepo.accountTitleModel.countDocuments(
         //     { $and: conditions }
         // )
@@ -304,6 +313,17 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['admin', 'ac
                     });
                 }
             }
+        }
+        const nameRegex = searchConditions.name;
+        if (typeof nameRegex === 'string') {
+            matchStages.push({
+                $match: {
+                    'hasCategoryCode.name': {
+                        $exists: true,
+                        $regex: new RegExp(nameRegex)
+                    }
+                }
+            });
         }
         // const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
         //     { $unwind: '$hasCategoryCode' },

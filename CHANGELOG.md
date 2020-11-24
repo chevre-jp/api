@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- カテゴリーコード検索条件拡張
+- 勘定科目検索条件拡張
+- 勘定科目コレクションにインデックス追加
+
 ### Deprecated
 
 ### Removed

@@ -112,6 +112,16 @@ accountTitlesRouter.get(
                 }
             }
 
+            const nameRegex = searchConditions.name;
+            if (typeof nameRegex === 'string') {
+                conditions.push({
+                    name: {
+                        $exists: true,
+                        $regex: new RegExp(nameRegex)
+                    }
+                });
+            }
+
             // const totalCount = await accountTitleRepo.accountTitleModel.countDocuments(
             //     { $and: conditions }
             // )
@@ -364,6 +374,18 @@ accountTitlesRouter.get(
                         });
                     }
                 }
+            }
+
+            const nameRegex = searchConditions.name;
+            if (typeof nameRegex === 'string') {
+                matchStages.push({
+                    $match: {
+                        'hasCategoryCode.name': {
+                            $exists: true,
+                            $regex: new RegExp(nameRegex)
+                        }
+                    }
+                });
             }
 
             // const totalCountResult = await accountTitleRepo.accountTitleModel.aggregate([
