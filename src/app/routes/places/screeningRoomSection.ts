@@ -346,6 +346,7 @@ screeningRoomSectionRouter.put<ParamsDictionary>(
                                     return {
                                         typeOf: p.typeOf,
                                         branchCode: p.branchCode,
+                                        ...(p.name !== undefined && p.name !== null) ? { name: p.name } : undefined,
                                         seatingType: p.seatingType,
                                         additionalProperty: p.additionalProperty
                                     };
