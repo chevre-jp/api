@@ -92,12 +92,7 @@ seatRouter.post('', permitScopes_1.default(['admin']), ...[
             'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode
         }, {
             $push: {
-                'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': {
-                    typeOf: seat.typeOf,
-                    branchCode: seat.branchCode,
-                    seatingType: seat.seatingType,
-                    additionalProperty: seat.additionalProperty
-                }
+                'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace': Object.assign({ typeOf: seat.typeOf, branchCode: seat.branchCode, seatingType: seat.seatingType, additionalProperty: seat.additionalProperty }, (seat.name !== undefined && seat.name !== null) ? { name: seat.name } : undefined)
             }
         }, {
             new: true,
@@ -193,7 +188,11 @@ seatRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
             'containsPlace.branchCode': screeningRoom.branchCode,
             'containsPlace.containsPlace.branchCode': screeningRoomSection.branchCode,
             'containsPlace.containsPlace.containsPlace.branchCode': seat.branchCode
-        }, Object.assign(Object.assign(Object.assign({ 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].branchCode': seat.branchCode }, (Array.isArray(seat.seatingType))
+        }, Object.assign(Object.assign(Object.assign(Object.assign({ 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].branchCode': seat.branchCode }, (seat.name !== undefined && seat.name !== null)
+            ? {
+                'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].name': seat.name
+            }
+            : undefined), (Array.isArray(seat.seatingType))
             ? {
                 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType': seat.seatingType
             }

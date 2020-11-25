@@ -6,7 +6,7 @@ import * as createDebug from 'debug';
 import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -115,12 +115,18 @@ screeningRoomRouter.post(
 screeningRoomRouter.get(
     '',
     permitScopes(['admin']),
+    ...[
+        query('openSeatingAllowed')
+            .optional()
+            .isBoolean()
+            .toBoolean()
+    ],
     validator,
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
         try {
             const placeRepo = new chevre.repository.Place(mongoose.connection);
-            const searchConditions: any = {
+            const searchConditions: chevre.factory.place.screeningRoom.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
@@ -207,8 +213,26 @@ screeningRoomRouter.get(
                                     $exists: true,
                                     $regex: new RegExp(nameCodeRegex)
                                 }
+                            },
+                            {
+                                'containsPlace.name.en': {
+                                    $exists: true,
+                                    $regex: new RegExp(nameCodeRegex)
+                                }
                             }
                         ]
+                    }
+                });
+            }
+
+            const openSeatingAllowed = searchConditions.openSeatingAllowed;
+            if (typeof openSeatingAllowed === 'boolean') {
+                matchStages.push({
+                    $match: {
+                        'containsPlace.openSeatingAllowed': {
+                            $exists: true,
+                            $eq: openSeatingAllowed
+                        }
                     }
                 });
             }
