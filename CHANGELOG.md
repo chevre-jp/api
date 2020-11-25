@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.51.1 - 2020-11-25
+
+### Changed
+
+- 座席に名称を追加
+
 ## v7.51.0 - 2020-11-25
 
 ### Changed
