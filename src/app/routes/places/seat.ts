@@ -104,7 +104,8 @@ seatRouter.post(
                             typeOf: seat.typeOf,
                             branchCode: seat.branchCode,
                             seatingType: seat.seatingType,
-                            additionalProperty: seat.additionalProperty
+                            additionalProperty: seat.additionalProperty,
+                            ...(seat.name !== undefined && seat.name !== null) ? { name: seat.name } : undefined
                         }
                     }
                 },
@@ -227,6 +228,12 @@ seatRouter.put<ParamsDictionary>(
                 {
                     'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].branchCode':
                         seat.branchCode,
+                    ...(seat.name !== undefined && seat.name !== null)
+                        ? {
+                            'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].name':
+                                seat.name
+                        }
+                        : undefined,
                     ...(Array.isArray(seat.seatingType))
                         ? {
                             'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType':

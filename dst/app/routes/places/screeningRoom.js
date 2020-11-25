@@ -101,7 +101,12 @@ screeningRoomRouter.post('', permitScopes_1.default(['admin']), ...[
 /**
  * 検索
  */
-screeningRoomRouter.get('', permitScopes_1.default(['admin']), validator_1.default, 
+screeningRoomRouter.get('', permitScopes_1.default(['admin']), ...[
+    express_validator_1.query('openSeatingAllowed')
+        .optional()
+        .isBoolean()
+        .toBoolean()
+], validator_1.default, 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d;
@@ -185,8 +190,25 @@ screeningRoomRouter.get('', permitScopes_1.default(['admin']), validator_1.defau
                                 $exists: true,
                                 $regex: new RegExp(nameCodeRegex)
                             }
+                        },
+                        {
+                            'containsPlace.name.en': {
+                                $exists: true,
+                                $regex: new RegExp(nameCodeRegex)
+                            }
                         }
                     ]
+                }
+            });
+        }
+        const openSeatingAllowed = searchConditions.openSeatingAllowed;
+        if (typeof openSeatingAllowed === 'boolean') {
+            matchStages.push({
+                $match: {
+                    'containsPlace.openSeatingAllowed': {
+                        $exists: true,
+                        $eq: openSeatingAllowed
+                    }
                 }
             });
         }

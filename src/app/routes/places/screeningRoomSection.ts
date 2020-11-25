@@ -130,7 +130,7 @@ screeningRoomSectionRouter.get(
     async (req, res, next) => {
         try {
             const placeRepo = new chevre.repository.Place(mongoose.connection);
-            const searchConditions: any = {
+            const searchConditions: chevre.factory.place.screeningRoomSection.ISearchConditions = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
@@ -199,6 +199,12 @@ screeningRoomSectionRouter.get(
                         $or: [
                             {
                                 'containsPlace.containsPlace.name.ja': {
+                                    $exists: true,
+                                    $regex: new RegExp(nameCodeRegex)
+                                }
+                            },
+                            {
+                                'containsPlace.containsPlace.name.en': {
                                     $exists: true,
                                     $regex: new RegExp(nameCodeRegex)
                                 }

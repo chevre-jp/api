@@ -181,6 +181,12 @@ screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), validator_
                                 $exists: true,
                                 $regex: new RegExp(nameCodeRegex)
                             }
+                        },
+                        {
+                            'containsPlace.containsPlace.name.en': {
+                                $exists: true,
+                                $regex: new RegExp(nameCodeRegex)
+                            }
                         }
                     ]
                 }
