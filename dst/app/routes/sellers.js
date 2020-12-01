@@ -101,10 +101,37 @@ sellersRouter.get('', permitScopes_1.default(['admin']), ...[
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
-        const sellers = yield sellerRepo.search(searchConditions, (req.query.$projection !== undefined && req.query.$projection !== null) ? Object.assign({}, req.query.$projection) : undefined
-        // 管理者以外にセキュアな情報を露出しないように
-        // (!req.isAdmin) ? { 'paymentAccepted.gmoInfo.shopPass': 0 } : undefined
-        );
+        let sellers = yield sellerRepo.search(searchConditions, (req.query.$projection !== undefined && req.query.$projection !== null) ? Object.assign({}, req.query.$projection) : undefined);
+        // GMOのショップIDだけ補完する(互換性維持対応として)
+        const checkingPaymentMethodType = chevre.factory.paymentMethodType.CreditCard;
+        if (sellers.length > 0) {
+            // クレジットカード決済サービスを取得
+            const productRepo = new chevre.repository.Product(mongoose.connection);
+            const paymentServices = yield productRepo.search({
+                limit: 1,
+                project: { id: { $eq: sellers[0].project.id } },
+                typeOf: { $eq: chevre.factory.service.paymentService.PaymentServiceType.CreditCard },
+                serviceOutput: { typeOf: { $eq: checkingPaymentMethodType } }
+            });
+            // 存在すれば、ショップIDをpaymentAcceptedに追加
+            if (paymentServices.length > 0) {
+                const paymentService = paymentServices[0];
+                sellers = sellers.map((seller) => {
+                    var _a, _b, _c;
+                    if (Array.isArray(seller.paymentAccepted)) {
+                        const shopId = (_c = (_b = (_a = paymentService.provider) === null || _a === void 0 ? void 0 : _a.find((p) => p.id === seller.id)) === null || _b === void 0 ? void 0 : _b.credentials) === null || _c === void 0 ? void 0 : _c.shopId;
+                        if (typeof shopId === 'string') {
+                            seller.paymentAccepted.forEach((payment) => {
+                                if (payment.paymentMethodType === checkingPaymentMethodType) {
+                                    payment.gmoInfo = { shopId };
+                                }
+                            });
+                        }
+                    }
+                    return seller;
+                });
+            }
+        }
         res.json(sellers);
     }
     catch (error) {
@@ -119,12 +146,34 @@ sellersRouter.get('/:id', permitScopes_1.default(['admin']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     try {
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
-        const seller = yield sellerRepo.findById({ id: req.params.id }, (req.query.$projection !== undefined && req.query.$projection !== null) ? Object.assign({}, req.query.$projection) : undefined
-        // 管理者以外にセキュアな情報を露出しないように
-        // (!req.isAdmin) ? { 'paymentAccepted.gmoInfo.shopPass': 0 } : undefined
-        );
+        const seller = yield sellerRepo.findById({ id: req.params.id }, (req.query.$projection !== undefined && req.query.$projection !== null) ? Object.assign({}, req.query.$projection) : undefined);
+        // GMOのショップIDだけ補完する(互換性維持対応として)
+        const checkingPaymentMethodType = chevre.factory.paymentMethodType.CreditCard;
+        // クレジットカード決済サービスを取得
+        const productRepo = new chevre.repository.Product(mongoose.connection);
+        const paymentServices = yield productRepo.search({
+            limit: 1,
+            project: { id: { $eq: seller.project.id } },
+            typeOf: { $eq: chevre.factory.service.paymentService.PaymentServiceType.CreditCard },
+            serviceOutput: { typeOf: { $eq: checkingPaymentMethodType } }
+        });
+        // 存在すれば、ショップIDをpaymentAcceptedに追加
+        if (paymentServices.length > 0) {
+            const paymentService = paymentServices[0];
+            if (Array.isArray(seller.paymentAccepted)) {
+                const shopId = (_c = (_b = (_a = paymentService.provider) === null || _a === void 0 ? void 0 : _a.find((p) => p.id === seller.id)) === null || _b === void 0 ? void 0 : _b.credentials) === null || _c === void 0 ? void 0 : _c.shopId;
+                if (typeof shopId === 'string') {
+                    seller.paymentAccepted.forEach((payment) => {
+                        if (payment.paymentMethodType === checkingPaymentMethodType) {
+                            payment.gmoInfo = { shopId };
+                        }
+                    });
+                }
+            }
+        }
         res.json(seller);
     }
     catch (error) {

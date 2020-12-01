@@ -118,12 +118,43 @@ sellersRouter.get(
             };
 
             const sellerRepo = new chevre.repository.Seller(mongoose.connection);
-            const sellers = await sellerRepo.search(
+            let sellers = await sellerRepo.search(
                 searchConditions,
                 (req.query.$projection !== undefined && req.query.$projection !== null) ? { ...req.query.$projection } : undefined
-                // 管理者以外にセキュアな情報を露出しないように
-                // (!req.isAdmin) ? { 'paymentAccepted.gmoInfo.shopPass': 0 } : undefined
             );
+
+            // GMOのショップIDだけ補完する(互換性維持対応として)
+            const checkingPaymentMethodType = chevre.factory.paymentMethodType.CreditCard;
+            if (sellers.length > 0) {
+                // クレジットカード決済サービスを取得
+                const productRepo = new chevre.repository.Product(mongoose.connection);
+                const paymentServices = <chevre.factory.service.paymentService.IService[]>await productRepo.search({
+                    limit: 1,
+                    project: { id: { $eq: sellers[0].project.id } },
+                    typeOf: { $eq: chevre.factory.service.paymentService.PaymentServiceType.CreditCard },
+                    serviceOutput: { typeOf: { $eq: checkingPaymentMethodType } }
+                });
+
+                // 存在すれば、ショップIDをpaymentAcceptedに追加
+                if (paymentServices.length > 0) {
+                    const paymentService = paymentServices[0];
+                    sellers = sellers.map((seller) => {
+                        if (Array.isArray(seller.paymentAccepted)) {
+                            const shopId = paymentService.provider?.find((p) => p.id === seller.id)?.credentials?.shopId;
+
+                            if (typeof shopId === 'string') {
+                                seller.paymentAccepted.forEach((payment) => {
+                                    if (payment.paymentMethodType === checkingPaymentMethodType) {
+                                        (<any>payment).gmoInfo = { shopId };
+                                    }
+                                });
+                            }
+                        }
+
+                        return seller;
+                    });
+                }
+            }
 
             res.json(sellers);
         } catch (error) {
@@ -150,9 +181,34 @@ sellersRouter.get<ParamsDictionary>(
             const seller = await sellerRepo.findById(
                 { id: req.params.id },
                 (req.query.$projection !== undefined && req.query.$projection !== null) ? { ...req.query.$projection } : undefined
-                // 管理者以外にセキュアな情報を露出しないように
-                // (!req.isAdmin) ? { 'paymentAccepted.gmoInfo.shopPass': 0 } : undefined
             );
+
+            // GMOのショップIDだけ補完する(互換性維持対応として)
+            const checkingPaymentMethodType = chevre.factory.paymentMethodType.CreditCard;
+            // クレジットカード決済サービスを取得
+            const productRepo = new chevre.repository.Product(mongoose.connection);
+            const paymentServices = <chevre.factory.service.paymentService.IService[]>await productRepo.search({
+                limit: 1,
+                project: { id: { $eq: seller.project.id } },
+                typeOf: { $eq: chevre.factory.service.paymentService.PaymentServiceType.CreditCard },
+                serviceOutput: { typeOf: { $eq: checkingPaymentMethodType } }
+            });
+
+            // 存在すれば、ショップIDをpaymentAcceptedに追加
+            if (paymentServices.length > 0) {
+                const paymentService = paymentServices[0];
+                if (Array.isArray(seller.paymentAccepted)) {
+                    const shopId = paymentService.provider?.find((p) => p.id === seller.id)?.credentials?.shopId;
+
+                    if (typeof shopId === 'string') {
+                        seller.paymentAccepted.forEach((payment) => {
+                            if (payment.paymentMethodType === checkingPaymentMethodType) {
+                                (<any>payment).gmoInfo = { shopId };
+                            }
+                        });
+                    }
+                }
+            }
 
             res.json(seller);
         } catch (error) {
