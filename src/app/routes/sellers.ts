@@ -33,18 +33,6 @@ const validations: RequestHandler[] = [
         .not()
         .isEmpty()
         .withMessage(() => 'required'),
-    body('parentOrganization.typeOf')
-        .not()
-        .isEmpty()
-        .withMessage(() => 'required'),
-    body('parentOrganization.name.ja')
-        .not()
-        .isEmpty()
-        .withMessage(() => 'required'),
-    body('parentOrganization.name.en')
-        .not()
-        .isEmpty()
-        .withMessage(() => 'required'),
     body('url')
         .optional()
         .isURL(),

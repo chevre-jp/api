@@ -40,18 +40,6 @@ const validations = [
         .not()
         .isEmpty()
         .withMessage(() => 'required'),
-    express_validator_1.body('parentOrganization.typeOf')
-        .not()
-        .isEmpty()
-        .withMessage(() => 'required'),
-    express_validator_1.body('parentOrganization.name.ja')
-        .not()
-        .isEmpty()
-        .withMessage(() => 'required'),
-    express_validator_1.body('parentOrganization.name.en')
-        .not()
-        .isEmpty()
-        .withMessage(() => 'required'),
     express_validator_1.body('url')
         .optional()
         .isURL(),

@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - 外部決済サービス認証情報を販売者から決済サービスへ移行
+- 販売者の親組織を非必須属性に変更
 
 ### Deprecated
 
