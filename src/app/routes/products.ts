@@ -3,7 +3,9 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
-import { body } from 'express-validator';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
+import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -24,7 +26,7 @@ productsRouter.post(
         body('project')
             .not()
             .isEmpty()
-            .withMessage((_, __) => 'Required')
+            .withMessage(() => 'Required')
     ],
     validator,
     async (req, res, next) => {
@@ -50,35 +52,37 @@ productsRouter.get(
     '',
     permitScopes(['admin']),
     ...[
-        body('offers.$elemMatch.validFrom.$gte')
+        query('$projection.*')
+            .toInt(),
+        query('offers.$elemMatch.validFrom.$gte')
             .optional()
             .isISO8601()
             .toDate(),
-        body('offers.$elemMatch.validFrom.$lte')
+        query('offers.$elemMatch.validFrom.$lte')
             .optional()
             .isISO8601()
             .toDate(),
-        body('offers.$elemMatch.validThrough.$gte')
+        query('offers.$elemMatch.validThrough.$gte')
             .optional()
             .isISO8601()
             .toDate(),
-        body('offers.$elemMatch.validThrough.$lte')
+        query('offers.$elemMatch.validThrough.$lte')
             .optional()
             .isISO8601()
             .toDate(),
-        body('offers.$elemMatch.availabilityEnds.$gte')
+        query('offers.$elemMatch.availabilityEnds.$gte')
             .optional()
             .isISO8601()
             .toDate(),
-        body('offers.$elemMatch.availabilityEnds.$lte')
+        query('offers.$elemMatch.availabilityEnds.$lte')
             .optional()
             .isISO8601()
             .toDate(),
-        body('offers.$elemMatch.availabilityStarts.$gte')
+        query('offers.$elemMatch.availabilityStarts.$gte')
             .optional()
             .isISO8601()
             .toDate(),
-        body('offers.$elemMatch.availabilityStarts.$lte')
+        query('offers.$elemMatch.availabilityStarts.$lte')
             .optional()
             .isISO8601()
             .toDate()
@@ -95,7 +99,10 @@ productsRouter.get(
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
-            const products = await productRepo.search(searchConditions);
+            const products = await productRepo.search(
+                searchConditions,
+                (req.query.$projection !== undefined && req.query.$projection !== null) ? { ...req.query.$projection } : undefined
+            );
 
             res.json(products);
         } catch (error) {
@@ -107,15 +114,23 @@ productsRouter.get(
 /**
  * プロダクト検索
  */
-productsRouter.get(
+// tslint:disable-next-line:use-default-type-parameter
+productsRouter.get<ParamsDictionary>(
     '/:id',
     permitScopes(['admin']),
+    ...[
+        query('$projection.*')
+            .toInt()
+    ],
     validator,
     async (req, res, next) => {
         try {
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
-            const product = await productRepo.findById({ id: req.params.id });
+            const product = await productRepo.findById(
+                { id: req.params.id },
+                (req.query.$projection !== undefined && req.query.$projection !== null) ? { ...req.query.$projection } : undefined
+            );
 
             res.json(product);
         } catch (error) {
