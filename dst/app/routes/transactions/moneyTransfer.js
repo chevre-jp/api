@@ -20,10 +20,8 @@ const moment = require("moment");
 const mongoose = require("mongoose");
 const moneyTransferTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
-const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-moneyTransferTransactionsRouter.use(authentication_1.default);
 moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
     express_validator_1.body('project')
         .not()

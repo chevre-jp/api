@@ -13,11 +13,8 @@ const payTransactionsRouter = Router();
 
 import * as redis from '../../../redis';
 
-import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
-
-payTransactionsRouter.use(authentication);
 
 /**
  * 決済認証(ムビチケ購入番号確認)

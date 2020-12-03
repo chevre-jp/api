@@ -13,11 +13,8 @@ const refundTransactionsRouter = Router();
 
 import * as redis from '../../../redis';
 
-import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
-
-refundTransactionsRouter.use(authentication);
 
 refundTransactionsRouter.post(
     '/start',
