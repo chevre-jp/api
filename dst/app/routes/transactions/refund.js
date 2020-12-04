@@ -19,10 +19,8 @@ const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const refundTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
-const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-refundTransactionsRouter.use(authentication_1.default);
 refundTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
     express_validator_1.body('project')
         .not()

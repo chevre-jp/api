@@ -12,11 +12,8 @@ const cancelReservationTransactionsRouter = Router();
 
 import * as redis from '../../../redis';
 
-import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
-
-cancelReservationTransactionsRouter.use(authentication);
 
 cancelReservationTransactionsRouter.post(
     '/start',

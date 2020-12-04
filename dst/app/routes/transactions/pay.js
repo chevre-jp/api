@@ -19,10 +19,8 @@ const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const payTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
-const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-payTransactionsRouter.use(authentication_1.default);
 /**
  * 決済認証(ムビチケ購入番号確認)
  */
