@@ -8,14 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- 取引検索を追加
-
 ### Changed
-
-- 外部決済サービス認証情報を販売者から決済サービスへ移行
-- 販売者の親組織を非必須属性に変更
-- 販売者検索の条件からpaymentAcceptedを除外
-- プロダクト検索時にprojectionを指定できるように調整
 
 ### Deprecated
 
@@ -24,6 +17,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.52.0 - 2020-12-04
+
+### Added
+
+- 取引検索を追加
+
+### Changed
+
+- 外部決済サービス認証情報を販売者から決済サービスへ移行
+- 販売者の親組織を非必須属性に変更
+- 販売者検索の条件からpaymentAcceptedを除外
+- プロダクト検索時にprojectionを指定できるように調整
 
 ## v7.51.1 - 2020-11-25
 
