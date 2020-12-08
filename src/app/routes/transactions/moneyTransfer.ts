@@ -65,6 +65,7 @@ moneyTransferTransactionsRouter.post(
                 recipient: req.body.recipient,
                 expires: moment(req.body.expires)
                     .toDate(),
+                ...(typeof req.body.identifier === 'string') ? { identifier: req.body.identifier } : undefined,
                 ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
                 product: productRepo,
