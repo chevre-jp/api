@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- ルーム検索結果にセクション数と座席数を追加
+
 ### Changed
 
 - Pecorino取引に対して識別子を指定できるように調整

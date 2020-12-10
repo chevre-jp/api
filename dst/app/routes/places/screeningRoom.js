@@ -102,6 +102,8 @@ screeningRoomRouter.post('', permitScopes_1.default(['admin']), ...[
  * 検索
  */
 screeningRoomRouter.get('', permitScopes_1.default(['admin']), ...[
+    express_validator_1.query('$projection.*')
+        .toInt(),
     express_validator_1.query('openSeatingAllowed')
         .optional()
         .isBoolean()
@@ -109,7 +111,7 @@ screeningRoomRouter.get('', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e, _f;
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
@@ -216,21 +218,39 @@ screeningRoomRouter.get('', permitScopes_1.default(['admin']), ...[
             { $unwind: '$containsPlace' },
             ...matchStages,
             {
-                $project: {
-                    _id: 0,
-                    typeOf: '$containsPlace.typeOf',
-                    branchCode: '$containsPlace.branchCode',
-                    name: '$containsPlace.name',
-                    address: '$containsPlace.address',
-                    containedInPlace: {
+                $project: Object.assign(Object.assign({ _id: 0, typeOf: '$containsPlace.typeOf', branchCode: '$containsPlace.branchCode', name: '$containsPlace.name', address: '$containsPlace.address', containedInPlace: {
                         id: '$_id',
                         typeOf: '$typeOf',
                         branchCode: '$branchCode',
                         name: '$name'
-                    },
-                    openSeatingAllowed: '$containsPlace.openSeatingAllowed',
-                    additionalProperty: '$containsPlace.additionalProperty'
-                }
+                    }, openSeatingAllowed: '$containsPlace.openSeatingAllowed', additionalProperty: '$containsPlace.additionalProperty' }, (((_e = req.query.$projection) === null || _e === void 0 ? void 0 : _e.sectionCount) === 1)
+                    ? {
+                        sectionCount: {
+                            $cond: {
+                                if: { $isArray: '$containsPlace.containsPlace' },
+                                then: { $size: '$containsPlace.containsPlace' },
+                                else: 0
+                            }
+                        }
+                    }
+                    : undefined), (((_f = req.query.$projection) === null || _f === void 0 ? void 0 : _f.seatCount) === 1)
+                    ? {
+                        seatCount: {
+                            $sum: {
+                                $map: {
+                                    input: '$containsPlace.containsPlace',
+                                    in: {
+                                        $cond: {
+                                            if: { $isArray: '$$this.containsPlace' },
+                                            then: { $size: '$$this.containsPlace' },
+                                            else: 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    : undefined)
             }
         ]);
         // tslint:disable-next-line:no-single-line-block-comment
