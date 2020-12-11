@@ -18,6 +18,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.53.0 - 2020-12-11
+
+### Added
+
+- ルーム検索結果にセクション数と座席数を追加
+
+### Changed
+
+- Pecorino取引に対して識別子を指定できるように調整
+- ポイント特典インターフェースを拡張
+- ムビチケ返金失敗時のエラーメッセージに情報追加
+- ポイント特典入金前に既に入金済かどうかを確認するように調整
+
 ## v7.52.0 - 2020-12-04
 
 ### Added

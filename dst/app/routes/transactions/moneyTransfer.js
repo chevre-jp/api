@@ -57,8 +57,8 @@ moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['admin'])
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
         const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
-        const transaction = yield chevre.service.transaction.moneyTransfer.start(Object.assign({ typeOf: chevre.factory.transactionType.MoneyTransfer, project: project, agent: req.body.agent, object: req.body.object, recipient: req.body.recipient, expires: moment(req.body.expires)
-                .toDate() }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
+        const transaction = yield chevre.service.transaction.moneyTransfer.start(Object.assign(Object.assign({ typeOf: chevre.factory.transactionType.MoneyTransfer, project: project, agent: req.body.agent, object: req.body.object, recipient: req.body.recipient, expires: moment(req.body.expires)
+                .toDate() }, (typeof req.body.identifier === 'string') ? { identifier: req.body.identifier } : undefined), (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
             product: productRepo,
             project: projectRepo,
             serviceOutput: serviceOutputRepo,

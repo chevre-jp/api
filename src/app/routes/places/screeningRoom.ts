@@ -116,6 +116,8 @@ screeningRoomRouter.get(
     '',
     permitScopes(['admin']),
     ...[
+        query('$projection.*')
+            .toInt(),
         query('openSeatingAllowed')
             .optional()
             .isBoolean()
@@ -254,7 +256,36 @@ screeningRoomRouter.get(
                             name: '$name'
                         },
                         openSeatingAllowed: '$containsPlace.openSeatingAllowed',
-                        additionalProperty: '$containsPlace.additionalProperty'
+                        additionalProperty: '$containsPlace.additionalProperty',
+                        ...(req.query.$projection?.sectionCount === 1)
+                            ? {
+                                sectionCount: {
+                                    $cond: {
+                                        if: { $isArray: '$containsPlace.containsPlace' },
+                                        then: { $size: '$containsPlace.containsPlace' },
+                                        else: 0
+                                    }
+                                }
+                            }
+                            : undefined,
+                        ...(req.query.$projection?.seatCount === 1)
+                            ? {
+                                seatCount: {
+                                    $sum: {
+                                        $map: {
+                                            input: '$containsPlace.containsPlace',
+                                            in: {
+                                                $cond: {
+                                                    if: { $isArray: '$$this.containsPlace' },
+                                                    then: { $size: '$$this.containsPlace' },
+                                                    else: 0
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            : undefined
                     }
                 }
             ]);
