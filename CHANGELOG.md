@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- イベントのオファー集計にオファーカテゴリー情報を追加
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.53.1 - 2020-12-13
+
+### Changed
+
+- イベントのオファー集計にオファーカテゴリー情報を追加
 
 ## v7.53.0 - 2020-12-11
 
