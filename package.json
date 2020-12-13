@@ -21,7 +21,7 @@
     "http-status": "^1.4.2",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
-    "mongoose": "^5.9.20",
+    "mongoose": "^5.11.7",
     "qs": "^6.9.4",
     "redis": "^2.8.0"
   },
