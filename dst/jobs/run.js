@@ -22,23 +22,25 @@ const run_6 = require("./continuous/aggregateScreeningEvent/run");
 const run_7 = require("./continuous/cancelMoneyTransfer/run");
 const run_8 = require("./continuous/cancelPendingReservation/run");
 const run_9 = require("./continuous/cancelReservation/run");
-const run_10 = require("./continuous/importEventCapacitiesFromCOA/run");
-const run_11 = require("./continuous/importEventsFromCOA/run");
-const run_12 = require("./continuous/importOffersFromCOA/run");
-const run_13 = require("./continuous/makeTransactionExpired/run");
-const run_14 = require("./continuous/moneyTransfer/run");
-const run_15 = require("./continuous/pay/run");
-const run_16 = require("./continuous/reexportTransactionTasks/run");
-const run_17 = require("./continuous/refund/run");
-const run_18 = require("./continuous/registerService/run");
-const run_19 = require("./continuous/reserve/run");
-const run_20 = require("./continuous/retryTasks/run");
-const run_21 = require("./continuous/triggerWebhook/run");
-const run_22 = require("./continuous/voidPayment/run");
-const run_23 = require("./triggered/createImportEventCapacitiesTask/run");
-const run_24 = require("./triggered/createImportEventsTask/run");
-const run_25 = require("./triggered/createImportOffersTask/run");
-const run_26 = require("./triggered/createTopDeckEvents/run");
+const run_10 = require("./continuous/createReservationReport/run");
+const run_11 = require("./continuous/importEventCapacitiesFromCOA/run");
+const run_12 = require("./continuous/importEventsFromCOA/run");
+const run_13 = require("./continuous/importOffersFromCOA/run");
+const run_14 = require("./continuous/makeTransactionExpired/run");
+const run_15 = require("./continuous/moneyTransfer/run");
+const run_16 = require("./continuous/pay/run");
+const run_17 = require("./continuous/reexportTransactionTasks/run");
+const run_18 = require("./continuous/refund/run");
+const run_19 = require("./continuous/registerService/run");
+const run_20 = require("./continuous/reserve/run");
+const run_21 = require("./continuous/retryTasks/run");
+const run_22 = require("./continuous/sendEmailMessage/run");
+const run_23 = require("./continuous/triggerWebhook/run");
+const run_24 = require("./continuous/voidPayment/run");
+const run_25 = require("./triggered/createImportEventCapacitiesTask/run");
+const run_26 = require("./triggered/createImportEventsTask/run");
+const run_27 = require("./triggered/createImportOffersTask/run");
+const run_28 = require("./triggered/createTopDeckEvents/run");
 const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'string')
     ? process.env.IMPORT_EVENTS_PROJECTS.split(',')
     : [];
@@ -66,13 +68,15 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     yield run_20.default();
     yield run_21.default();
     yield run_22.default();
+    yield run_23.default();
+    yield run_24.default();
     yield Promise.all(importEventsProjects.map((projectId) => __awaiter(void 0, void 0, void 0, function* () {
-        yield run_24.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
-        yield run_23.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        yield run_26.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
         yield run_25.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        yield run_27.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
     })));
     if (typeof TOPDECK_PROJECT === 'string') {
-        yield run_26.default({
+        yield run_28.default({
             project: { typeOf: chevre.factory.organizationType.Project, id: TOPDECK_PROJECT }
         });
     }
