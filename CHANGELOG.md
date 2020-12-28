@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - イベント入場時にUseActionを作成するように調整
+- アクション検索条件拡張
+- イベントに入場ゲート集計属性を追加
 
 ### Deprecated
 
