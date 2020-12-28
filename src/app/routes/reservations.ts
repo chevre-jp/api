@@ -456,29 +456,27 @@ reservationsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-
             const actionRepo = new chevre.repository.Action(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
             const reservation = await reservationRepo.findById<chevre.factory.reservationType.EventReservation>({ id: req.params.id });
 
-            // JoinActionを作成する
-            const actionAttributes: chevre.factory.action.IAttributes<any, any, any> = {
+            // UseActionを作成する
+            const actionAttributes: chevre.factory.action.IAttributes<chevre.factory.actionType.UseAction, any, any> = {
                 project: reservation.project,
-                typeOf: 'JoinAction',
+                typeOf: chevre.factory.actionType.UseAction,
                 agent: {
-                    ...req.user,
-                    id: req.user.sub,
                     typeOf: 'Person'
                 },
-                // どの予約を使って
-                instrument: reservation,
-                object: {},
-                ...{
-                    // どのイベントに
-                    event: reservation.reservationFor
+                instrument: {
+                    // どのトークンを使って
+                    ...(typeof req.body.instrument?.token === 'string')
+                        ? { token: req.body.instrument.token }
+                        : undefined
                 },
+                // どの予約を
+                object: [reservation],
                 // どのエントランスで
                 ...(typeof req.body.location?.identifier === 'string')
                     ? {
@@ -488,8 +486,9 @@ reservationsRouter.put(
                         }
                     }
                     : undefined
+                // purpose: params.purpose
             };
-            const action = await actionRepo.start<any>(actionAttributes);
+            const action = await actionRepo.start(actionAttributes);
 
             try {
                 await reservationRepo.attend({ id: reservation.id });

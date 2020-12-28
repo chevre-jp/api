@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- イベント入場時にJoinActionを作成するように調整
+- イベント入場時にUseActionを作成するように調整
 
 ### Deprecated
 
