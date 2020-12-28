@@ -456,12 +456,57 @@ reservationsRouter.put(
     validator,
     async (req, res, next) => {
         try {
+
+            const actionRepo = new chevre.repository.Action(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
-            const reservation = await reservationRepo.attend({
-                id: req.params.id
-            });
+            const reservation = await reservationRepo.findById<chevre.factory.reservationType.EventReservation>({ id: req.params.id });
+
+            // JoinActionを作成する
+            const actionAttributes: chevre.factory.action.IAttributes<any, any, any> = {
+                project: reservation.project,
+                typeOf: 'JoinAction',
+                agent: {
+                    ...req.user,
+                    id: req.user.sub,
+                    typeOf: 'Person'
+                },
+                // どの予約を使って
+                instrument: reservation,
+                object: {},
+                ...{
+                    // どのイベントに
+                    event: reservation.reservationFor
+                },
+                // どのエントランスで
+                ...(typeof req.body.location?.identifier === 'string')
+                    ? {
+                        location: {
+                            typeOf: chevre.factory.placeType.Place,
+                            identifier: req.body.location.identifier
+                        }
+                    }
+                    : undefined
+            };
+            const action = await actionRepo.start<any>(actionAttributes);
+
+            try {
+                await reservationRepo.attend({ id: reservation.id });
+            } catch (error) {
+                // actionにエラー結果を追加
+                try {
+                    const actionError = { ...error, message: error.message, name: error.name };
+                    await actionRepo.giveUp({ typeOf: action.typeOf, id: action.id, error: actionError });
+                } catch (__) {
+                    // 失敗したら仕方ない
+                }
+
+                throw error;
+            }
+
+            // アクション完了
+            await actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
 
             const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
                 project: reservation.project,

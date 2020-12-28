@@ -367,12 +367,43 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
     }
 }));
 reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitScopes_1.default(['admin', 'reservations.attended']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
+        const actionRepo = new chevre.repository.Action(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const reservation = yield reservationRepo.attend({
-            id: req.params.id
-        });
+        const reservation = yield reservationRepo.findById({ id: req.params.id });
+        // JoinActionを作成する
+        const actionAttributes = Object.assign(Object.assign({ project: reservation.project, typeOf: 'JoinAction', agent: Object.assign(Object.assign({}, req.user), { id: req.user.sub, typeOf: 'Person' }), 
+            // どの予約を使って
+            instrument: reservation, object: {} }, {
+            // どのイベントに
+            event: reservation.reservationFor
+        }), (typeof ((_a = req.body.location) === null || _a === void 0 ? void 0 : _a.identifier) === 'string')
+            ? {
+                location: {
+                    typeOf: chevre.factory.placeType.Place,
+                    identifier: req.body.location.identifier
+                }
+            }
+            : undefined);
+        const action = yield actionRepo.start(actionAttributes);
+        try {
+            yield reservationRepo.attend({ id: reservation.id });
+        }
+        catch (error) {
+            // actionにエラー結果を追加
+            try {
+                const actionError = Object.assign(Object.assign({}, error), { message: error.message, name: error.name });
+                yield actionRepo.giveUp({ typeOf: action.typeOf, id: action.id, error: actionError });
+            }
+            catch (__) {
+                // 失敗したら仕方ない
+            }
+            throw error;
+        }
+        // アクション完了
+        yield actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
         const aggregateTask = {
             project: reservation.project,
             name: chevre.factory.taskName.AggregateScreeningEvent,
