@@ -522,8 +522,9 @@ reservationsRouter.put(
             };
             await taskRepo.save(aggregateTask);
 
-            res.status(NO_CONTENT)
-                .end();
+            // res.status(NO_CONTENT)
+            //     .end();
+            res.json({ id: action.id });
         } catch (error) {
             next(error);
         }

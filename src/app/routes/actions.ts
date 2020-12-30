@@ -4,6 +4,7 @@
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 import { query } from 'express-validator';
+import { NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
 import authentication from '../middlewares/authentication';
@@ -52,6 +53,34 @@ actionsRouter.get(
             const actions = await actionRepo.search(searchConditions);
 
             res.json(actions);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * アクションを取消
+ */
+actionsRouter.put(
+    `/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`,
+    permitScopes(['admin']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const actionRepo = new chevre.repository.Action(mongoose.connection);
+
+            const doc = await actionRepo.actionModel.findById(req.params.id)
+                .exec();
+            if (doc === null) {
+                throw new chevre.factory.errors.NotFound('Action');
+            }
+
+            const action = <chevre.factory.action.IAction<chevre.factory.action.IAttributes<any, any, any>>>doc.toObject();
+            await actionRepo.cancel({ typeOf: action.typeOf, id: action.id });
+
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

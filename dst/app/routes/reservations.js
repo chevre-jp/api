@@ -421,8 +421,9 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
             }
         };
         yield taskRepo.save(aggregateTask);
-        res.status(http_status_1.NO_CONTENT)
-            .end();
+        // res.status(NO_CONTENT)
+        //     .end();
+        res.json({ id: action.id });
     }
     catch (error) {
         next(error);
