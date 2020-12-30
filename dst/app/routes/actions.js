@@ -59,8 +59,10 @@ actionsRouter.get('', permitScopes_1.default(['admin']), ...[
  * アクションを取消
  */
 actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`, permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
         const actionRepo = new chevre.repository.Action(mongoose.connection);
+        const taskRepo = new chevre.repository.Task(mongoose.connection);
         const doc = yield actionRepo.actionModel.findById(req.params.id)
             .exec();
         if (doc === null) {
@@ -68,6 +70,25 @@ actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`
         }
         const action = doc.toObject();
         yield actionRepo.cancel({ typeOf: action.typeOf, id: action.id });
+        // 予約使用アクションであれば、イベント再集計
+        if (action.typeOf === chevre.factory.actionType.UseAction
+            && Array.isArray(action.object)
+            && typeof ((_b = (_a = action.object[0]) === null || _a === void 0 ? void 0 : _a.reservationFor) === null || _b === void 0 ? void 0 : _b.id) === 'string') {
+            const aggregateTask = {
+                project: action.project,
+                name: chevre.factory.taskName.AggregateScreeningEvent,
+                status: chevre.factory.taskStatus.Ready,
+                runsAt: new Date(),
+                remainingNumberOfTries: 3,
+                numberOfTried: 0,
+                executionResults: [],
+                data: {
+                    typeOf: action.object[0].reservationFor.typeOf,
+                    id: action.object[0].reservationFor.id
+                }
+            };
+            yield taskRepo.save(aggregateTask);
+        }
         res.status(http_status_1.NO_CONTENT)
             .end();
     }

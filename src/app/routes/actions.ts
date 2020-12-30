@@ -69,6 +69,7 @@ actionsRouter.put(
     async (req, res, next) => {
         try {
             const actionRepo = new chevre.repository.Action(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
 
             const doc = await actionRepo.actionModel.findById(req.params.id)
                 .exec();
@@ -78,6 +79,26 @@ actionsRouter.put(
 
             const action = <chevre.factory.action.IAction<chevre.factory.action.IAttributes<any, any, any>>>doc.toObject();
             await actionRepo.cancel({ typeOf: action.typeOf, id: action.id });
+
+            // 予約使用アクションであれば、イベント再集計
+            if (action.typeOf === chevre.factory.actionType.UseAction
+                && Array.isArray(action.object)
+                && typeof action.object[0]?.reservationFor?.id === 'string') {
+                const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                    project: action.project,
+                    name: chevre.factory.taskName.AggregateScreeningEvent,
+                    status: chevre.factory.taskStatus.Ready,
+                    runsAt: new Date(),
+                    remainingNumberOfTries: 3,
+                    numberOfTried: 0,
+                    executionResults: [],
+                    data: {
+                        typeOf: action.object[0].reservationFor.typeOf,
+                        id: action.object[0].reservationFor.id
+                    }
+                };
+                await taskRepo.save(aggregateTask);
+            }
 
             res.status(NO_CONTENT)
                 .end();
