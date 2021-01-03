@@ -79,8 +79,10 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
         const countDocuments = req.query.countDocuments === '1';
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
-            // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: { bookingTime: chevre.factory.sortType.Descending } });
+            // tslint:disable-next-line:no-magic-numbers
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (typeof req.query.sort === 'object' && req.query.sort !== undefined && req.query.sort !== null)
+                ? req.query.sort
+                : { bookingTime: chevre.factory.sortType.Descending } });
         const reservations = yield reservationRepo.search(searchConditions);
         if (countDocuments) {
             const totalCount = yield reservationRepo.count(searchConditions);
