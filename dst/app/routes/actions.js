@@ -62,6 +62,7 @@ actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`
     var _a, _b;
     try {
         const actionRepo = new chevre.repository.Action(mongoose.connection);
+        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const doc = yield actionRepo.actionModel.findById(req.params.id)
             .exec();
@@ -74,6 +75,27 @@ actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`
         if (action.typeOf === chevre.factory.actionType.UseAction
             && Array.isArray(action.object)
             && typeof ((_b = (_a = action.object[0]) === null || _a === void 0 ? void 0 : _a.reservationFor) === null || _b === void 0 ? void 0 : _b.id) === 'string') {
+            const reservation = action.object[0];
+            try {
+                // 予約のuseActionExistsを調整
+                const useReservationActions = yield actionRepo.search({
+                    limit: 1,
+                    actionStatus: { $in: [chevre.factory.actionStatusType.CompletedActionStatus] },
+                    typeOf: { $eq: chevre.factory.actionType.UseAction },
+                    object: Object.assign({ 
+                        // 予約タイプ
+                        typeOf: { $eq: chevre.factory.reservationType.EventReservation } }, {
+                        id: { $eq: reservation.id }
+                    })
+                });
+                if (useReservationActions.length === 0) {
+                    yield reservationRepo.reservationModel.findByIdAndUpdate(reservation.id, { useActionExists: false })
+                        .exec();
+                }
+            }
+            catch (error) {
+                console.error('set useActionExists:false failed.', error);
+            }
             const aggregateTask = {
                 project: action.project,
                 name: chevre.factory.taskName.AggregateScreeningEvent,

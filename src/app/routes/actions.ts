@@ -69,6 +69,7 @@ actionsRouter.put(
     async (req, res, next) => {
         try {
             const actionRepo = new chevre.repository.Action(mongoose.connection);
+            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
             const doc = await actionRepo.actionModel.findById(req.params.id)
@@ -84,6 +85,34 @@ actionsRouter.put(
             if (action.typeOf === chevre.factory.actionType.UseAction
                 && Array.isArray(action.object)
                 && typeof action.object[0]?.reservationFor?.id === 'string') {
+                const reservation = action.object[0];
+
+                try {
+                    // 予約のuseActionExistsを調整
+                    const useReservationActions = await actionRepo.search({
+                        limit: 1,
+                        actionStatus: { $in: [chevre.factory.actionStatusType.CompletedActionStatus] },
+                        typeOf: { $eq: chevre.factory.actionType.UseAction },
+                        object: {
+                            // 予約タイプ
+                            typeOf: { $eq: chevre.factory.reservationType.EventReservation },
+                            // 予約ID
+                            ...{
+                                id: { $eq: reservation.id }
+                            }
+                        }
+                    });
+                    if (useReservationActions.length === 0) {
+                        await reservationRepo.reservationModel.findByIdAndUpdate(
+                            reservation.id,
+                            { useActionExists: false }
+                        )
+                            .exec();
+                    }
+                } catch (error) {
+                    console.error('set useActionExists:false failed.', error);
+                }
+
                 const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
                     project: action.project,
                     name: chevre.factory.taskName.AggregateScreeningEvent,

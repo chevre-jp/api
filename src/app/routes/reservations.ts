@@ -73,6 +73,8 @@ reservationsRouter.get(
     validator,
     async (req, res, next) => {
         try {
+            const countDocuments = req.query.countDocuments === '1';
+
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const searchConditions: chevre.factory.reservation.ISearchConditions<any> = {
                 ...req.query,
@@ -83,6 +85,11 @@ reservationsRouter.get(
             };
 
             const reservations = await reservationRepo.search(searchConditions);
+
+            if (countDocuments) {
+                const totalCount = await reservationRepo.count(searchConditions);
+                res.set('X-Total-Count', totalCount.toString());
+            }
 
             res.json(reservations);
         } catch (error) {

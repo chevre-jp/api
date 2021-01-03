@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - アクション検索条件拡張
 - イベントに入場ゲート集計属性を追加
 - ID指定されたイベントについてはEventScheduledでなくても予約集計するように調整
+- 予約検索にcountDocuments指定を追加
+- 予約にuseActionExists属性を追加
 
 ### Deprecated
 
