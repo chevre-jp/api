@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - CreateReservationReportタスクを追加
 - SendEmailMessageタスクを追加
 - アクション取消サービスを追加
+- 予約使用アクションウェブフックを実装
 
 ### Changed
 

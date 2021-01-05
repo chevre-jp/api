@@ -66,9 +66,11 @@ actionsRouter.put(
     `/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`,
     permitScopes(['admin']),
     validator,
+    // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
         try {
             const actionRepo = new chevre.repository.Action(mongoose.connection);
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
@@ -78,8 +80,11 @@ actionsRouter.put(
                 throw new chevre.factory.errors.NotFound('Action');
             }
 
-            const action = <chevre.factory.action.IAction<chevre.factory.action.IAttributes<any, any, any>>>doc.toObject();
-            await actionRepo.cancel({ typeOf: action.typeOf, id: action.id });
+            let action = <chevre.factory.action.IAction<chevre.factory.action.IAttributes<any, any, any>>>doc.toObject();
+
+            const project = await projectRepo.findById({ id: action.project.id });
+
+            action = await actionRepo.cancel({ typeOf: action.typeOf, id: action.id });
 
             // 予約使用アクションであれば、イベント再集計
             if (action.typeOf === chevre.factory.actionType.UseAction
@@ -113,6 +118,35 @@ actionsRouter.put(
                     console.error('set useActionExists:false failed.', error);
                 }
 
+                const tasks: chevre.factory.task.IAttributes[] = [];
+
+                // アクション通知タスク作成
+                const informAction = (<any>project).settings?.onActionStatusChanged?.informAction;
+                if (Array.isArray(informAction)) {
+                    informAction.forEach((informParams) => {
+                        const triggerWebhookTask: chevre.factory.task.triggerWebhook.IAttributes = {
+                            project: action.project,
+                            name: chevre.factory.taskName.TriggerWebhook,
+                            status: chevre.factory.taskStatus.Ready,
+                            runsAt: new Date(),
+                            remainingNumberOfTries: 3,
+                            numberOfTried: 0,
+                            executionResults: [],
+                            data: {
+                                project: action.project,
+                                typeOf: chevre.factory.actionType.InformAction,
+                                agent: action.project,
+                                recipient: {
+                                    typeOf: 'Person',
+                                    ...informParams.recipient
+                                },
+                                object: action
+                            }
+                        };
+                        tasks.push(triggerWebhookTask);
+                    });
+                }
+
                 const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
                     project: action.project,
                     name: chevre.factory.taskName.AggregateScreeningEvent,
@@ -126,7 +160,11 @@ actionsRouter.put(
                         id: action.object[0].reservationFor.id
                     }
                 };
-                await taskRepo.save(aggregateTask);
+                tasks.push(aggregateTask);
+
+                if (tasks.length > 0) {
+                    await taskRepo.saveMany(tasks);
+                }
             }
 
             res.status(NO_CONTENT)

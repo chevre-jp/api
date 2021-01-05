@@ -373,13 +373,17 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
         next(error);
     }
 }));
-reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitScopes_1.default(['admin', 'reservations.attended']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitScopes_1.default(['admin', 'reservations.attended']), validator_1.default, 
+// tslint:disable-next-line:max-func-body-length
+(req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d;
     try {
         const actionRepo = new chevre.repository.Action(mongoose.connection);
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const reservation = yield reservationRepo.findById({ id: req.params.id });
+        const project = yield projectRepo.findById({ id: reservation.project.id });
         // UseActionを作成する
         const actionAttributes = Object.assign({ project: reservation.project, typeOf: chevre.factory.actionType.UseAction, agent: {
                 typeOf: 'Person'
@@ -397,7 +401,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
             : undefined
         // purpose: params.purpose
         );
-        const action = yield actionRepo.start(actionAttributes);
+        let action = yield actionRepo.start(actionAttributes);
         try {
             yield reservationRepo.attend({ id: reservation.id });
         }
@@ -413,7 +417,31 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
             throw error;
         }
         // アクション完了
-        yield actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
+        action = yield actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
+        const tasks = [];
+        // アクション通知タスク作成
+        const informAction = (_d = (_c = project.settings) === null || _c === void 0 ? void 0 : _c.onActionStatusChanged) === null || _d === void 0 ? void 0 : _d.informAction;
+        if (Array.isArray(informAction)) {
+            informAction.forEach((informParams) => {
+                const triggerWebhookTask = {
+                    project: action.project,
+                    name: chevre.factory.taskName.TriggerWebhook,
+                    status: chevre.factory.taskStatus.Ready,
+                    runsAt: new Date(),
+                    remainingNumberOfTries: 3,
+                    numberOfTried: 0,
+                    executionResults: [],
+                    data: {
+                        project: action.project,
+                        typeOf: chevre.factory.actionType.InformAction,
+                        agent: action.project,
+                        recipient: Object.assign({ typeOf: 'Person' }, informParams.recipient),
+                        object: action
+                    }
+                };
+                tasks.push(triggerWebhookTask);
+            });
+        }
         const aggregateTask = {
             project: reservation.project,
             name: chevre.factory.taskName.AggregateScreeningEvent,
@@ -427,7 +455,10 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
                 id: reservation.reservationFor.id
             }
         };
-        yield taskRepo.save(aggregateTask);
+        tasks.push(aggregateTask);
+        if (tasks.length > 0) {
+            yield taskRepo.saveMany(tasks);
+        }
         // res.status(NO_CONTENT)
         //     .end();
         res.json({ id: action.id });
