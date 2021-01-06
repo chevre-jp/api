@@ -390,9 +390,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
         const reservation = yield reservationRepo.findById({ id: req.params.id });
         const project = yield projectRepo.findById({ id: reservation.project.id });
         // UseActionを作成する
-        const actionAttributes = Object.assign({ project: reservation.project, typeOf: chevre.factory.actionType.UseAction, agent: {
-                typeOf: 'Person'
-            }, instrument: Object.assign({}, (typeof ((_a = req.body.instrument) === null || _a === void 0 ? void 0 : _a.token) === 'string')
+        const actionAttributes = Object.assign({ project: reservation.project, typeOf: chevre.factory.actionType.UseAction, agent: Object.assign({ typeOf: 'Person' }, req.body.agent), instrument: Object.assign({}, (typeof ((_a = req.body.instrument) === null || _a === void 0 ? void 0 : _a.token) === 'string')
                 ? { token: req.body.instrument.token }
                 : undefined), 
             // どの予約を

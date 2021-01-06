@@ -485,7 +485,8 @@ reservationsRouter.put(
                 project: reservation.project,
                 typeOf: chevre.factory.actionType.UseAction,
                 agent: {
-                    typeOf: 'Person'
+                    typeOf: 'Person',
+                    ...req.body.agent
                 },
                 instrument: {
                     // どのトークンを使って
