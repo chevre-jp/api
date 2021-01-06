@@ -26,6 +26,8 @@ reservationsRouter.use(authentication_1.default);
  * 予約検索
  */
 reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
+    express_validator_1.query('$projection.*')
+        .toInt(),
     express_validator_1.query('limit')
         .optional()
         .isInt()
@@ -83,7 +85,10 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (typeof req.query.sort === 'object' && req.query.sort !== undefined && req.query.sort !== null)
                 ? req.query.sort
                 : { bookingTime: chevre.factory.sortType.Descending } });
-        const reservations = yield reservationRepo.search(searchConditions);
+        // projectionの指定があれば適用する
+        const projection = (req.query.$projection !== undefined && req.query.$projection !== null)
+            ? Object.assign({}, req.query.$projection) : undefined;
+        const reservations = yield reservationRepo.search(searchConditions, projection);
         if (countDocuments) {
             const totalCount = yield reservationRepo.count(searchConditions);
             res.set('X-Total-Count', totalCount.toString());

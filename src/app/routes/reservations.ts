@@ -21,6 +21,8 @@ reservationsRouter.get(
     '',
     permitScopes(['admin', 'reservations', 'reservations.read-only']),
     ...[
+        query('$projection.*')
+            .toInt(),
         query('limit')
             .optional()
             .isInt()
@@ -86,7 +88,11 @@ reservationsRouter.get(
                     : { bookingTime: chevre.factory.sortType.Descending }
             };
 
-            const reservations = await reservationRepo.search(searchConditions);
+            // projectionの指定があれば適用する
+            const projection: any = (req.query.$projection !== undefined && req.query.$projection !== null)
+                ? { ...req.query.$projection }
+                : undefined;
+            const reservations = await reservationRepo.search(searchConditions, projection);
 
             if (countDocuments) {
                 const totalCount = await reservationRepo.count(searchConditions);
