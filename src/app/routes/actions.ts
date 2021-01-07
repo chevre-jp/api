@@ -110,7 +110,10 @@ actionsRouter.put(
                     if (useReservationActions.length === 0) {
                         await reservationRepo.reservationModel.findByIdAndUpdate(
                             reservation.id,
-                            { useActionExists: false }
+                            {
+                                $set: { useActionExists: false },
+                                $unset: { 'reservedTicket.dateUsed': 1 }
+                            }
                         )
                             .exec();
                     }

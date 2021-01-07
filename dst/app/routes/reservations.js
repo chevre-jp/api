@@ -381,13 +381,13 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
 reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitScopes_1.default(['admin', 'reservations.attended']), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     try {
         const actionRepo = new chevre.repository.Action(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const reservation = yield reservationRepo.findById({ id: req.params.id });
+        let reservation = yield reservationRepo.findById({ id: req.params.id });
         const project = yield projectRepo.findById({ id: reservation.project.id });
         // UseActionを作成する
         const actionAttributes = Object.assign({ project: reservation.project, typeOf: chevre.factory.actionType.UseAction, agent: Object.assign({ typeOf: 'Person' }, req.body.agent), instrument: Object.assign({}, (typeof ((_a = req.body.instrument) === null || _a === void 0 ? void 0 : _a.token) === 'string')
@@ -406,7 +406,12 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
         );
         let action = yield actionRepo.start(actionAttributes);
         try {
-            yield reservationRepo.attend({ id: reservation.id });
+            reservation = (yield reservationRepo.attend({ id: reservation.id }));
+            // 使用日時がなければ追加
+            if (((_c = reservation.reservedTicket) === null || _c === void 0 ? void 0 : _c.dateUsed) === undefined) {
+                yield reservationRepo.reservationModel.findByIdAndUpdate(reservation.id, { 'reservedTicket.dateUsed': new Date() }, { new: true })
+                    .exec();
+            }
         }
         catch (error) {
             // actionにエラー結果を追加
@@ -423,7 +428,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
         action = yield actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
         const tasks = [];
         // アクション通知タスク作成
-        const informAction = (_d = (_c = project.settings) === null || _c === void 0 ? void 0 : _c.onActionStatusChanged) === null || _d === void 0 ? void 0 : _d.informAction;
+        const informAction = (_e = (_d = project.settings) === null || _d === void 0 ? void 0 : _d.onActionStatusChanged) === null || _e === void 0 ? void 0 : _e.informAction;
         if (Array.isArray(informAction)) {
             informAction.forEach((informParams) => {
                 const triggerWebhookTask = {

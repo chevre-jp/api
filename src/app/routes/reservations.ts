@@ -477,7 +477,7 @@ reservationsRouter.put(
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
-            const reservation = await reservationRepo.findById<chevre.factory.reservationType.EventReservation>({ id: req.params.id });
+            let reservation = await reservationRepo.findById<chevre.factory.reservationType.EventReservation>({ id: req.params.id });
             const project = await projectRepo.findById({ id: reservation.project.id });
 
             // UseActionを作成する
@@ -510,7 +510,18 @@ reservationsRouter.put(
             let action = await actionRepo.start(actionAttributes);
 
             try {
-                await reservationRepo.attend({ id: reservation.id });
+                reservation = <chevre.factory.reservation.IReservation<chevre.factory.reservationType.EventReservation>>
+                    await reservationRepo.attend({ id: reservation.id });
+
+                // 使用日時がなければ追加
+                if ((<any>reservation).reservedTicket?.dateUsed === undefined) {
+                    await reservationRepo.reservationModel.findByIdAndUpdate(
+                        reservation.id,
+                        { 'reservedTicket.dateUsed': new Date() },
+                        { new: true }
+                    )
+                        .exec();
+                }
             } catch (error) {
                 // actionにエラー結果を追加
                 try {

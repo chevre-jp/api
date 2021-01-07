@@ -93,7 +93,10 @@ actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`
                     })
                 });
                 if (useReservationActions.length === 0) {
-                    yield reservationRepo.reservationModel.findByIdAndUpdate(reservation.id, { useActionExists: false })
+                    yield reservationRepo.reservationModel.findByIdAndUpdate(reservation.id, {
+                        $set: { useActionExists: false },
+                        $unset: { 'reservedTicket.dateUsed': 1 }
+                    })
                         .exec();
                 }
             }
