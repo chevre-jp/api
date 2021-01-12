@@ -20,10 +20,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - イベントに入場ゲート集計属性を追加
 - ID指定されたイベントについてはEventScheduledでなくても予約集計するように調整
 - 予約検索にcountDocuments指定を追加
-- 予約にuseActionExists属性を追加
 - 予約にreservedTicket.dateUsed属性を実験的に追加
 - 予約検索に$projectionを指定できるように調整
 - 予約使用時にagent.identifierを指定できるように調整
+- 予約検索条件拡張
 
 ### Deprecated
 

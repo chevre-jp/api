@@ -514,7 +514,7 @@ reservationsRouter.put(
                     await reservationRepo.attend({ id: reservation.id });
 
                 // 使用日時がなければ追加
-                if ((<any>reservation).reservedTicket?.dateUsed === undefined) {
+                if (reservation.reservedTicket?.dateUsed === undefined) {
                     await reservationRepo.reservationModel.findByIdAndUpdate(
                         reservation.id,
                         { 'reservedTicket.dateUsed': new Date() },

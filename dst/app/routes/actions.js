@@ -81,7 +81,7 @@ actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`
             && typeof ((_b = (_a = action.object[0]) === null || _a === void 0 ? void 0 : _a.reservationFor) === null || _b === void 0 ? void 0 : _b.id) === 'string') {
             const reservation = action.object[0];
             try {
-                // 予約のuseActionExistsを調整
+                // 予約使用アクションが存在しなければ、dateUsedをunset
                 const useReservationActions = yield actionRepo.search({
                     limit: 1,
                     actionStatus: { $in: [chevre.factory.actionStatusType.CompletedActionStatus] },
@@ -94,14 +94,13 @@ actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`
                 });
                 if (useReservationActions.length === 0) {
                     yield reservationRepo.reservationModel.findByIdAndUpdate(reservation.id, {
-                        $set: { useActionExists: false },
                         $unset: { 'reservedTicket.dateUsed': 1 }
                     })
                         .exec();
                 }
             }
             catch (error) {
-                console.error('set useActionExists:false failed.', error);
+                console.error('unset reservedTicket.dateUsed failed.', error);
             }
             const tasks = [];
             // アクション通知タスク作成

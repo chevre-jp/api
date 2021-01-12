@@ -93,7 +93,7 @@ actionsRouter.put(
                 const reservation = action.object[0];
 
                 try {
-                    // 予約のuseActionExistsを調整
+                    // 予約使用アクションが存在しなければ、dateUsedをunset
                     const useReservationActions = await actionRepo.search({
                         limit: 1,
                         actionStatus: { $in: [chevre.factory.actionStatusType.CompletedActionStatus] },
@@ -111,14 +111,13 @@ actionsRouter.put(
                         await reservationRepo.reservationModel.findByIdAndUpdate(
                             reservation.id,
                             {
-                                $set: { useActionExists: false },
                                 $unset: { 'reservedTicket.dateUsed': 1 }
                             }
                         )
                             .exec();
                     }
                 } catch (error) {
-                    console.error('set useActionExists:false failed.', error);
+                    console.error('unset reservedTicket.dateUsed failed.', error);
                 }
 
                 const tasks: chevre.factory.task.IAttributes[] = [];
