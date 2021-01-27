@@ -21,7 +21,7 @@ healthRouter.get(
         let timer: NodeJS.Timer | undefined;
 
         try {
-            await new Promise(async (resolve, reject) => {
+            await new Promise<void>(async (resolve, reject) => {
                 let givenUpChecking = false;
 
                 timer = setInterval(
@@ -61,7 +61,7 @@ healthRouter.get(
                 clearInterval(timer);
             }
 
-            await new Promise(async (resolve, reject) => {
+            await new Promise<void>(async (resolve, reject) => {
                 let givenUpChecking = false;
 
                 // redisサーバー接続が生きているかどうか確認

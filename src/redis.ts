@@ -14,7 +14,7 @@ let client: redis.RedisClient | undefined;
 /**
  * AzureRedisは10分間アイドル状態だとタイムアウトしてコネクションが切断される
  * 無駄な再コネクションを避けるために定期的にPINGコマンドを送信する
- * @see http://aka.ms/redis/p/bestpractices
+ * http://aka.ms/redis/p/bestpractices
  */
 setInterval(
     () => {
@@ -93,7 +93,6 @@ function createClient() {
 /**
  * 接続クライアントをリセットする
  * 接続リトライをギブアップした場合に呼び出される
- * @see retry_strategy
  */
 // tslint:disable-next-line:no-single-line-block-comment
 /* istanbul ignore next */

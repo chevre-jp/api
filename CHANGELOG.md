@@ -24,6 +24,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 予約検索に$projectionを指定できるように調整
 - 予約使用時にagent.identifierを指定できるように調整
 - 予約検索条件拡張
+- update packages
+- update typescript
 
 ### Deprecated
 
