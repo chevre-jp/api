@@ -13,6 +13,7 @@ import aggregateScreeningEvent from './continuous/aggregateScreeningEvent/run';
 import cancelMoneyTransfer from './continuous/cancelMoneyTransfer/run';
 import cancelPendingReservation from './continuous/cancelPendingReservation/run';
 import cancelPoincancelReservationtAward from './continuous/cancelReservation/run';
+import createReservationReport from './continuous/createReservationReport/run';
 import importEventCapacitiesFromCOA from './continuous/importEventCapacitiesFromCOA/run';
 import importEventsFromCOA from './continuous/importEventsFromCOA/run';
 import importOffersFromCOA from './continuous/importOffersFromCOA/run';
@@ -24,6 +25,7 @@ import refund from './continuous/refund/run';
 import registerService from './continuous/registerService/run';
 import reserve from './continuous/reserve/run';
 import retryTasks from './continuous/retryTasks/run';
+import sendEmailMessage from './continuous/sendEmailMessage/run';
 import triggerWebhook from './continuous/triggerWebhook/run';
 import voidPayment from './continuous/voidPayment/run';
 
@@ -49,6 +51,7 @@ export default async () => {
     await cancelMoneyTransfer();
     await cancelPendingReservation();
     await cancelPoincancelReservationtAward();
+    await createReservationReport();
     await importEventCapacitiesFromCOA();
     await importEventsFromCOA();
     await importOffersFromCOA();
@@ -60,6 +63,7 @@ export default async () => {
     await registerService();
     await reserve();
     await retryTasks();
+    await sendEmailMessage();
     await triggerWebhook();
     await voidPayment();
 

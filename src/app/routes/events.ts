@@ -229,6 +229,7 @@ eventsRouter.get(
             const projection: any = (req.query.$projection !== undefined && req.query.$projection !== null)
                 ? { ...req.query.$projection }
                 : {
+                    aggregateEntranceGate: 0,
                     aggregateOffer: 0,
                     // 古いデータについて不要な情報が含まれていたため対処
                     'offers.project.settings': 0

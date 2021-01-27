@@ -205,6 +205,7 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
         // projectionの指定があれば適用する
         const projection = (req.query.$projection !== undefined && req.query.$projection !== null)
             ? Object.assign({}, req.query.$projection) : {
+            aggregateEntranceGate: 0,
             aggregateOffer: 0,
             // 古いデータについて不要な情報が含まれていたため対処
             'offers.project.settings': 0

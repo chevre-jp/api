@@ -18,6 +18,29 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.54.0 - 2021-01-27
+
+### Added
+
+- CreateReservationReportタスクを追加
+- SendEmailMessageタスクを追加
+- アクション取消サービスを追加
+- 予約使用アクションウェブフックを実装
+
+### Changed
+
+- イベント入場時にUseActionを作成するように調整
+- アクション検索条件拡張
+- イベントに入場ゲート集計属性を追加
+- ID指定されたイベントについてはEventScheduledでなくても予約集計するように調整
+- 予約検索にcountDocuments指定を追加
+- 予約にreservedTicket.dateUsed属性を実験的に追加
+- 予約検索に$projectionを指定できるように調整
+- 予約使用時にagent.identifierを指定できるように調整
+- 予約検索条件拡張
+- update packages
+- update typescript
+
 ## v7.53.1 - 2020-12-13
 
 ### Changed

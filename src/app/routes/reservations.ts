@@ -21,6 +21,8 @@ reservationsRouter.get(
     '',
     permitScopes(['admin', 'reservations', 'reservations.read-only']),
     ...[
+        query('$projection.*')
+            .toInt(),
         query('limit')
             .optional()
             .isInt()
@@ -73,16 +75,29 @@ reservationsRouter.get(
     validator,
     async (req, res, next) => {
         try {
+            const countDocuments = req.query.countDocuments === '1';
+
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const searchConditions: chevre.factory.reservation.ISearchConditions<any> = {
                 ...req.query,
-                // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+                // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
-                sort: { bookingTime: chevre.factory.sortType.Descending }
+                sort: (typeof req.query.sort === 'object' && req.query.sort !== undefined && req.query.sort !== null)
+                    ? req.query.sort
+                    : { bookingTime: chevre.factory.sortType.Descending }
             };
 
-            const reservations = await reservationRepo.search(searchConditions);
+            // projectionの指定があれば適用する
+            const projection: any = (req.query.$projection !== undefined && req.query.$projection !== null)
+                ? { ...req.query.$projection }
+                : undefined;
+            const reservations = await reservationRepo.search(searchConditions, projection);
+
+            if (countDocuments) {
+                const totalCount = await reservationRepo.count(searchConditions);
+                res.set('X-Total-Count', totalCount.toString());
+            }
 
             res.json(reservations);
         } catch (error) {
@@ -454,14 +469,102 @@ reservationsRouter.put(
     '/eventReservation/screeningEvent/:id/attended',
     permitScopes(['admin', 'reservations.attended']),
     validator,
+    // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
         try {
+            const actionRepo = new chevre.repository.Action(mongoose.connection);
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
-            const reservation = await reservationRepo.attend({
-                id: req.params.id
-            });
+            let reservation = await reservationRepo.findById<chevre.factory.reservationType.EventReservation>({ id: req.params.id });
+            const project = await projectRepo.findById({ id: reservation.project.id });
+
+            // UseActionを作成する
+            const actionAttributes: chevre.factory.action.IAttributes<chevre.factory.actionType.UseAction, any, any> = {
+                project: reservation.project,
+                typeOf: chevre.factory.actionType.UseAction,
+                agent: {
+                    typeOf: 'Person',
+                    ...req.body.agent
+                },
+                instrument: {
+                    // どのトークンを使って
+                    ...(typeof req.body.instrument?.token === 'string')
+                        ? { token: req.body.instrument.token }
+                        : undefined
+                },
+                // どの予約を
+                object: [reservation],
+                // どのエントランスで
+                ...(typeof req.body.location?.identifier === 'string')
+                    ? {
+                        location: {
+                            typeOf: chevre.factory.placeType.Place,
+                            identifier: req.body.location.identifier
+                        }
+                    }
+                    : undefined
+                // purpose: params.purpose
+            };
+            let action = await actionRepo.start(actionAttributes);
+
+            try {
+                reservation = <chevre.factory.reservation.IReservation<chevre.factory.reservationType.EventReservation>>
+                    await reservationRepo.attend({ id: reservation.id });
+
+                // 使用日時がなければ追加
+                if (reservation.reservedTicket?.dateUsed === undefined) {
+                    await reservationRepo.reservationModel.findByIdAndUpdate(
+                        reservation.id,
+                        { 'reservedTicket.dateUsed': new Date() },
+                        { new: true }
+                    )
+                        .exec();
+                }
+            } catch (error) {
+                // actionにエラー結果を追加
+                try {
+                    const actionError = { ...error, message: error.message, name: error.name };
+                    await actionRepo.giveUp({ typeOf: action.typeOf, id: action.id, error: actionError });
+                } catch (__) {
+                    // 失敗したら仕方ない
+                }
+
+                throw error;
+            }
+
+            // アクション完了
+            action = await actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
+
+            const tasks: chevre.factory.task.IAttributes[] = [];
+
+            // アクション通知タスク作成
+            const informAction = (<any>project).settings?.onActionStatusChanged?.informAction;
+            if (Array.isArray(informAction)) {
+                informAction.forEach((informParams) => {
+                    const triggerWebhookTask: chevre.factory.task.triggerWebhook.IAttributes = {
+                        project: action.project,
+                        name: chevre.factory.taskName.TriggerWebhook,
+                        status: chevre.factory.taskStatus.Ready,
+                        runsAt: new Date(),
+                        remainingNumberOfTries: 3,
+                        numberOfTried: 0,
+                        executionResults: [],
+                        data: {
+                            project: action.project,
+                            typeOf: chevre.factory.actionType.InformAction,
+                            agent: action.project,
+                            recipient: {
+                                typeOf: 'Person',
+                                ...informParams.recipient
+                            },
+                            object: action
+                        }
+                    };
+                    tasks.push(triggerWebhookTask);
+                });
+            }
 
             const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
                 project: reservation.project,
@@ -476,10 +579,15 @@ reservationsRouter.put(
                     id: reservation.reservationFor.id
                 }
             };
-            await taskRepo.save(aggregateTask);
+            tasks.push(aggregateTask);
 
-            res.status(NO_CONTENT)
-                .end();
+            if (tasks.length > 0) {
+                await taskRepo.saveMany(tasks);
+            }
+
+            // res.status(NO_CONTENT)
+            //     .end();
+            res.json({ id: action.id });
         } catch (error) {
             next(error);
         }
