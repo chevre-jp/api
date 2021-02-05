@@ -1,11 +1,10 @@
-# Chevre API Application
+# Chevre API
 
 [![CircleCI](https://circleci.com/gh/chevre-jp/api.svg?style=svg)](https://circleci.com/gh/chevre-jp/api)
 
 ## Table of contents
 
 * [Usage](#usage)
-* [License](#license)
 
 ## Usage
 
@@ -28,7 +27,3 @@
 | `REDIS_TLS_SERVERNAME`         | false    |              | Redis Cache Connection                 |
 | `RESOURECE_SERVER_IDENTIFIER`  | true     |              |                                        |
 | `TOKEN_ISSUERS`                | true     |              |                                        |
-
-## License
-
-ISC
