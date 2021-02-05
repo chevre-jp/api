@@ -9,23 +9,23 @@
     }
   ],
   "dependencies": {
-    "@chevre/domain": "15.43.0",
+    "@chevre/domain": "15.44.0",
     "@motionpicture/express-middleware": "^0.1.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "cron": "^1.7.2",
-    "debug": "^3.2.6",
+    "cron": "^1.8.2",
+    "debug": "^3.2.7",
     "express": "^4.17.1",
-    "express-validator": "^6.6.0",
-    "helmet": "^3.21.0",
-    "http-status": "^1.4.2",
-    "moment": "^2.27.0",
-    "moment-timezone": "^0.5.31",
-    "mongoose": "^5.9.20",
-    "qs": "^6.9.4",
+    "express-validator": "^6.9.2",
+    "helmet": "^3.23.3",
+    "http-status": "^1.5.0",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.32",
+    "mongoose": "5.9.29",
+    "qs": "^6.9.6",
     "redis": "^2.8.0"
   },
-  "description": "Chevre API Web Application",
+  "description": "Chevre API",
   "devDependencies": {
     "@types/body-parser": "^1.17.1",
     "@types/cors": "^2.8.6",
@@ -43,13 +43,11 @@
     "@types/request": "^2.48.4",
     "@types/request-promise-native": "^1.0.17",
     "@types/sinon": "^5.0.7",
-    "@types/supertest": "^2.0.8",
     "mocha": "^5.2.0",
     "nock": "^9.6.1",
     "nyc": "^12.0.2",
     "rimraf": "^2.7.1",
     "sinon": "^6.3.5",
-    "supertest": "^3.4.2",
     "ts-node": "^8.10.2",
     "tslint": "^6.1.2",
     "tslint-microsoft-contrib": "^6.2.0",
@@ -79,5 +77,5 @@
     "version": "git add -A",
     "postversion": "git push origin --tags"
   },
-  "version": "7.54.0"
+  "version": "7.55.0"
 }
