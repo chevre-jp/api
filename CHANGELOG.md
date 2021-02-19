@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- クレジットカード決済サービスの全パラメータにサイト情報をオプションとして追加
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.56.0 - 2021-02-18
+
+### Changed
+
+- クレジットカード決済サービスの全パラメータにサイト情報をオプションとして追加
 
 ## v7.55.0 - 2021-02-05
 
