@@ -51,6 +51,7 @@ refundTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const actionRepo = new chevre.repository.Action(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const sellerRepo = new chevre.repository.Seller(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
@@ -70,6 +71,7 @@ refundTransactionsRouter.post(
                 expires: req.body.expires,
                 transactionNumber: req.body.transactionNumber
             })({
+                action: actionRepo,
                 project: projectRepo,
                 seller: sellerRepo,
                 transaction: transactionRepo
