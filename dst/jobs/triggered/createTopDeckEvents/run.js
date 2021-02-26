@@ -32,7 +32,7 @@ exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
     // tslint:disable-next-line:no-magic-numbers
     10000);
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
-    const job = new cron_1.CronJob('0 * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
+    const job = new cron_1.CronJob('15 * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
         if (!holdSingletonProcess) {
             return;
         }
