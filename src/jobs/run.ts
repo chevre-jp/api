@@ -71,10 +71,13 @@ export default async () => {
     await Promise.all(importEventsProjects.map(async (projectId) => {
         await createImportEventsTask({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
         await createImportEventCapacitiesTask({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
-        await createImportOffersTask({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
     }));
 
     if (!USE_CRON) {
+        await Promise.all(importEventsProjects.map(async (projectId) => {
+            await createImportOffersTask({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        }));
+
         if (typeof TOPDECK_PROJECT === 'string') {
             await createTopDeckEvents({
                 project: { typeOf: chevre.factory.organizationType.Project, id: TOPDECK_PROJECT }

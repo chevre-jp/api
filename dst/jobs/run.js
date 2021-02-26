@@ -74,9 +74,11 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     yield Promise.all(importEventsProjects.map((projectId) => __awaiter(void 0, void 0, void 0, function* () {
         yield run_26.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
         yield run_25.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
-        yield run_27.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
     })));
     if (!USE_CRON) {
+        yield Promise.all(importEventsProjects.map((projectId) => __awaiter(void 0, void 0, void 0, function* () {
+            yield run_27.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        })));
         if (typeof TOPDECK_PROJECT === 'string') {
             yield run_28.default({
                 project: { typeOf: chevre.factory.organizationType.Project, id: TOPDECK_PROJECT }
