@@ -43,9 +43,11 @@ export default async (params: {
             ? Math.min(Number((<any>project).settings?.importEventsIntervalInMinutes), MAX_IMPORT_EVENTS_INTERVAL_IN_MINUTES)
             // tslint:disable-next-line:no-magic-numbers
             : MAX_IMPORT_EVENTS_INTERVAL_IN_MINUTES;
+        debug('importEventsIntervalInMinutes:', importEventsIntervalInMinutes);
 
         const job = new CronJob(
-            `*/${importEventsIntervalInMinutes} * * * *`,
+            // `*/${importEventsIntervalInMinutes} * * * *`,
+            '45 * * * *',
             // tslint:disable-next-line:max-func-body-length
             async () => {
                 if (!holdSingletonProcess) {

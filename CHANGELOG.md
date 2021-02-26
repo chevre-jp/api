@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 返金取引開始前に決済アクションの存在確認を追加
 - IMPORT_OFFERS_INTERVAL_IN_HOURS設定を追加
 - tttsイベント作成スケジュール調整
+- ssktsイベントインポートスケジュール調整
 
 ### Deprecated
 
