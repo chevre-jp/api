@@ -45,6 +45,7 @@ const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'str
     ? process.env.IMPORT_EVENTS_PROJECTS.split(',')
     : [];
 const TOPDECK_PROJECT = process.env.TOPDECK_PROJECT;
+const USE_CRON = process.env.USE_CRON === '1';
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     yield run_1.default();
     yield run_2.default();
@@ -75,9 +76,11 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
         yield run_25.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
         yield run_27.default({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
     })));
-    if (typeof TOPDECK_PROJECT === 'string') {
-        yield run_28.default({
-            project: { typeOf: chevre.factory.organizationType.Project, id: TOPDECK_PROJECT }
-        });
+    if (!USE_CRON) {
+        if (typeof TOPDECK_PROJECT === 'string') {
+            yield run_28.default({
+                project: { typeOf: chevre.factory.organizationType.Project, id: TOPDECK_PROJECT }
+            });
+        }
     }
 });
