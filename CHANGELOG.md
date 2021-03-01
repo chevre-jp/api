@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - cronルーターを追加
+- 決済サービスタイプにFaceToFaceを追加
 
 ### Changed
 
