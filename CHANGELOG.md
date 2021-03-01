@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - IMPORT_OFFERS_INTERVAL_IN_HOURS設定を追加
 - tttsイベント作成スケジュール調整
 - ssktsイベントインポートスケジュール調整
+- 決済取引開始時に販売者の対応決済方法を検証するように調整
 
 ### Deprecated
 
