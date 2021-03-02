@@ -105,13 +105,15 @@ sellersRouter.get('', permitScopes_1.default(['admin']), ...[
             if (paymentServices.length > 0) {
                 const paymentService = paymentServices[0];
                 sellers = sellers.map((seller) => {
-                    var _a, _b, _c;
+                    var _a, _b;
                     if (Array.isArray(seller.paymentAccepted)) {
-                        const shopId = (_c = (_b = (_a = paymentService.provider) === null || _a === void 0 ? void 0 : _a.find((p) => p.id === seller.id)) === null || _b === void 0 ? void 0 : _b.credentials) === null || _c === void 0 ? void 0 : _c.shopId;
-                        if (typeof shopId === 'string') {
+                        const providerCredentials = (_b = (_a = paymentService.provider) === null || _a === void 0 ? void 0 : _a.find((p) => p.id === seller.id)) === null || _b === void 0 ? void 0 : _b.credentials;
+                        const shopId = providerCredentials === null || providerCredentials === void 0 ? void 0 : providerCredentials.shopId;
+                        const tokenizationCode = providerCredentials === null || providerCredentials === void 0 ? void 0 : providerCredentials.tokenizationCode;
+                        if (typeof shopId === 'string' || typeof tokenizationCode === 'string') {
                             seller.paymentAccepted.forEach((payment) => {
                                 if (payment.paymentMethodType === checkingPaymentMethodType) {
-                                    payment.gmoInfo = { shopId };
+                                    payment.gmoInfo = { shopId, tokenizationCode };
                                 }
                             });
                         }
@@ -134,7 +136,7 @@ sellersRouter.get('/:id', permitScopes_1.default(['admin']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _a, _b;
     try {
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         const seller = yield sellerRepo.findById({ id: req.params.id }, (req.query.$projection !== undefined && req.query.$projection !== null) ? Object.assign({}, req.query.$projection) : undefined);
@@ -152,11 +154,13 @@ sellersRouter.get('/:id', permitScopes_1.default(['admin']), ...[
         if (paymentServices.length > 0) {
             const paymentService = paymentServices[0];
             if (Array.isArray(seller.paymentAccepted)) {
-                const shopId = (_c = (_b = (_a = paymentService.provider) === null || _a === void 0 ? void 0 : _a.find((p) => p.id === seller.id)) === null || _b === void 0 ? void 0 : _b.credentials) === null || _c === void 0 ? void 0 : _c.shopId;
-                if (typeof shopId === 'string') {
+                const providerCredentials = (_b = (_a = paymentService.provider) === null || _a === void 0 ? void 0 : _a.find((p) => p.id === seller.id)) === null || _b === void 0 ? void 0 : _b.credentials;
+                const shopId = providerCredentials === null || providerCredentials === void 0 ? void 0 : providerCredentials.shopId;
+                const tokenizationCode = providerCredentials === null || providerCredentials === void 0 ? void 0 : providerCredentials.tokenizationCode;
+                if (typeof shopId === 'string' || typeof tokenizationCode === 'string') {
                     seller.paymentAccepted.forEach((payment) => {
                         if (payment.paymentMethodType === checkingPaymentMethodType) {
-                            payment.gmoInfo = { shopId };
+                            payment.gmoInfo = { shopId, tokenizationCode };
                         }
                     });
                 }
