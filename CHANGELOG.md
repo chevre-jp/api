@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - tttsイベント作成スケジュール調整
 - ssktsイベントインポートスケジュール調整
 - 決済取引開始時に販売者の対応決済方法を検証するように調整
+- 返金取引開始時に、必ず決済取引から決済サービスタイプを取得するように調整
 
 ### Deprecated
 
