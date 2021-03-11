@@ -33,6 +33,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 
+- 取引番号発行時のエラーハンドリング調整
+
 ### Security
 
 ## v7.56.0 - 2021-02-18
