@@ -26,7 +26,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ssktsイベントインポートスケジュール調整
 - 決済取引開始時に販売者の対応決済方法を検証するように調整
 - 返金取引開始時に、必ず決済取引から決済サービスタイプを取得するように調整
-- 映画作品名称を多言語対応
+- コンテンツ名称を多言語対応
 
 ### Deprecated
 
