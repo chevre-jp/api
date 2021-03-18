@@ -31,7 +31,7 @@ export default async (params: {
     const connection = await connectMongo({ defaultConnection: false });
 
     const job = new CronJob(
-        '0 * * * *',
+        '15 * * * *',
         async () => {
             if (!holdSingletonProcess) {
                 return;

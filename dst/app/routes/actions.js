@@ -20,6 +20,9 @@ const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
+const informUseReservationUrls = (typeof process.env.INFORM_USE_RESERVATION_URL === 'string')
+    ? process.env.INFORM_USE_RESERVATION_URL.split(',')
+    : [];
 const actionsRouter = express_1.Router();
 actionsRouter.use(authentication_1.default);
 /**
@@ -61,10 +64,9 @@ actionsRouter.get('', permitScopes_1.default(['admin']), ...[
 actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`, permitScopes_1.default(['admin']), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d;
+    var _a, _b;
     try {
         const actionRepo = new chevre.repository.Action(mongoose.connection);
-        const projectRepo = new chevre.repository.Project(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const doc = yield actionRepo.actionModel.findById(req.params.id)
@@ -73,7 +75,6 @@ actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`
             throw new chevre.factory.errors.NotFound('Action');
         }
         let action = doc.toObject();
-        const project = yield projectRepo.findById({ id: action.project.id });
         action = yield actionRepo.cancel({ typeOf: action.typeOf, id: action.id });
         // 予約使用アクションであれば、イベント再集計
         if (action.typeOf === chevre.factory.actionType.UseAction
@@ -104,9 +105,9 @@ actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`
             }
             const tasks = [];
             // アクション通知タスク作成
-            const informAction = (_d = (_c = project.settings) === null || _c === void 0 ? void 0 : _c.onActionStatusChanged) === null || _d === void 0 ? void 0 : _d.informAction;
-            if (Array.isArray(informAction)) {
-                informAction.forEach((informParams) => {
+            if (Array.isArray(informUseReservationUrls)) {
+                informUseReservationUrls.filter((url) => url.length > 0)
+                    .forEach((url) => {
                     const triggerWebhookTask = {
                         project: action.project,
                         name: chevre.factory.taskName.TriggerWebhook,
@@ -119,7 +120,10 @@ actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`
                             project: action.project,
                             typeOf: chevre.factory.actionType.InformAction,
                             agent: action.project,
-                            recipient: Object.assign({ typeOf: 'Person' }, informParams.recipient),
+                            recipient: {
+                                typeOf: 'Person',
+                                url
+                            },
                             object: action
                         }
                     };

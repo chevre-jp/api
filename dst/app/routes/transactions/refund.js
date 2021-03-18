@@ -51,6 +51,7 @@ refundTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
         .withMessage('Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const actionRepo = new chevre.repository.Action(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
@@ -64,6 +65,7 @@ refundTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
             expires: req.body.expires,
             transactionNumber: req.body.transactionNumber
         })({
+            action: actionRepo,
             project: projectRepo,
             seller: sellerRepo,
             transaction: transactionRepo

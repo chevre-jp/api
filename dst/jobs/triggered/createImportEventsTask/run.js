@@ -44,7 +44,10 @@ exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
             ? Math.min(Number((_d = project.settings) === null || _d === void 0 ? void 0 : _d.importEventsIntervalInMinutes), MAX_IMPORT_EVENTS_INTERVAL_IN_MINUTES)
             // tslint:disable-next-line:no-magic-numbers
             : MAX_IMPORT_EVENTS_INTERVAL_IN_MINUTES;
-        const job = new cron_1.CronJob(`*/${importEventsIntervalInMinutes} * * * *`, 
+        debug('importEventsIntervalInMinutes:', importEventsIntervalInMinutes);
+        const job = new cron_1.CronJob(
+        // `*/${importEventsIntervalInMinutes} * * * *`,
+        '45 * * * *', 
         // tslint:disable-next-line:max-func-body-length
         () => __awaiter(void 0, void 0, void 0, function* () {
             if (!holdSingletonProcess) {

@@ -128,12 +128,14 @@ sellersRouter.get(
                     const paymentService = paymentServices[0];
                     sellers = sellers.map((seller) => {
                         if (Array.isArray(seller.paymentAccepted)) {
-                            const shopId = paymentService.provider?.find((p) => p.id === seller.id)?.credentials?.shopId;
+                            const providerCredentials = paymentService.provider?.find((p) => p.id === seller.id)?.credentials;
+                            const shopId = providerCredentials?.shopId;
+                            const tokenizationCode = providerCredentials?.tokenizationCode;
 
-                            if (typeof shopId === 'string') {
+                            if (typeof shopId === 'string' || typeof tokenizationCode === 'string') {
                                 seller.paymentAccepted.forEach((payment) => {
                                     if (payment.paymentMethodType === checkingPaymentMethodType) {
-                                        (<any>payment).gmoInfo = { shopId };
+                                        (<any>payment).gmoInfo = { shopId, tokenizationCode };
                                     }
                                 });
                             }
@@ -186,12 +188,14 @@ sellersRouter.get<ParamsDictionary>(
             if (paymentServices.length > 0) {
                 const paymentService = paymentServices[0];
                 if (Array.isArray(seller.paymentAccepted)) {
-                    const shopId = paymentService.provider?.find((p) => p.id === seller.id)?.credentials?.shopId;
+                    const providerCredentials = paymentService.provider?.find((p) => p.id === seller.id)?.credentials;
+                    const shopId = providerCredentials?.shopId;
+                    const tokenizationCode = providerCredentials?.tokenizationCode;
 
-                    if (typeof shopId === 'string') {
+                    if (typeof shopId === 'string' || typeof tokenizationCode === 'string') {
                         seller.paymentAccepted.forEach((payment) => {
                             if (payment.paymentMethodType === checkingPaymentMethodType) {
-                                (<any>payment).gmoInfo = { shopId };
+                                (<any>payment).gmoInfo = { shopId, tokenizationCode };
                             }
                         });
                     }

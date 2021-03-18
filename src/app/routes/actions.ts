@@ -11,6 +11,10 @@ import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
+const informUseReservationUrls = (typeof process.env.INFORM_USE_RESERVATION_URL === 'string')
+    ? process.env.INFORM_USE_RESERVATION_URL.split(',')
+    : [];
+
 const actionsRouter = Router();
 actionsRouter.use(authentication);
 
@@ -70,7 +74,6 @@ actionsRouter.put(
     async (req, res, next) => {
         try {
             const actionRepo = new chevre.repository.Action(mongoose.connection);
-            const projectRepo = new chevre.repository.Project(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
@@ -81,9 +84,6 @@ actionsRouter.put(
             }
 
             let action = <chevre.factory.action.IAction<chevre.factory.action.IAttributes<any, any, any>>>doc.toObject();
-
-            const project = await projectRepo.findById({ id: action.project.id });
-
             action = await actionRepo.cancel({ typeOf: action.typeOf, id: action.id });
 
             // 予約使用アクションであれば、イベント再集計
@@ -123,30 +123,30 @@ actionsRouter.put(
                 const tasks: chevre.factory.task.IAttributes[] = [];
 
                 // アクション通知タスク作成
-                const informAction = (<any>project).settings?.onActionStatusChanged?.informAction;
-                if (Array.isArray(informAction)) {
-                    informAction.forEach((informParams) => {
-                        const triggerWebhookTask: chevre.factory.task.triggerWebhook.IAttributes = {
-                            project: action.project,
-                            name: chevre.factory.taskName.TriggerWebhook,
-                            status: chevre.factory.taskStatus.Ready,
-                            runsAt: new Date(),
-                            remainingNumberOfTries: 3,
-                            numberOfTried: 0,
-                            executionResults: [],
-                            data: {
+                if (Array.isArray(informUseReservationUrls)) {
+                    informUseReservationUrls.filter((url) => url.length > 0)
+                        .forEach((url) => {
+                            const triggerWebhookTask: chevre.factory.task.triggerWebhook.IAttributes = {
                                 project: action.project,
-                                typeOf: chevre.factory.actionType.InformAction,
-                                agent: action.project,
-                                recipient: {
-                                    typeOf: 'Person',
-                                    ...informParams.recipient
-                                },
-                                object: action
-                            }
-                        };
-                        tasks.push(triggerWebhookTask);
-                    });
+                                name: chevre.factory.taskName.TriggerWebhook,
+                                status: chevre.factory.taskStatus.Ready,
+                                runsAt: new Date(),
+                                remainingNumberOfTries: 3,
+                                numberOfTried: 0,
+                                executionResults: [],
+                                data: {
+                                    project: action.project,
+                                    typeOf: chevre.factory.actionType.InformAction,
+                                    agent: action.project,
+                                    recipient: {
+                                        typeOf: 'Person',
+                                        url
+                                    },
+                                    object: action
+                                }
+                            };
+                            tasks.push(triggerWebhookTask);
+                        });
                 }
 
                 const aggregateTask: chevre.factory.task.aggregateScreeningEvent.IAttributes = {

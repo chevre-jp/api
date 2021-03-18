@@ -93,6 +93,7 @@ payTransactionsRouter.post(
             const productRepo = new chevre.repository.Product(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const sellerRepo = new chevre.repository.Seller(mongoose.connection);
+            const taskRepo = new chevre.repository.Task(mongoose.connection);
             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
@@ -116,7 +117,8 @@ payTransactionsRouter.post(
                 product: productRepo,
                 project: projectRepo,
                 seller: sellerRepo,
-                transaction: transactionRepo
+                transaction: transactionRepo,
+                task: taskRepo
             });
 
             res.json(transaction);

@@ -20,6 +20,9 @@ const mongoose = require("mongoose");
 const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
+const informUseReservationUrls = (typeof process.env.INFORM_USE_RESERVATION_URL === 'string')
+    ? process.env.INFORM_USE_RESERVATION_URL.split(',')
+    : [];
 const reservationsRouter = express_1.Router();
 reservationsRouter.use(authentication_1.default);
 /**
@@ -381,14 +384,12 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
 reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitScopes_1.default(['admin', 'reservations.attended']), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c;
     try {
         const actionRepo = new chevre.repository.Action(mongoose.connection);
-        const projectRepo = new chevre.repository.Project(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         let reservation = yield reservationRepo.findById({ id: req.params.id });
-        const project = yield projectRepo.findById({ id: reservation.project.id });
         // UseActionを作成する
         const actionAttributes = Object.assign({ project: reservation.project, typeOf: chevre.factory.actionType.UseAction, agent: Object.assign({ typeOf: 'Person' }, req.body.agent), instrument: Object.assign({}, (typeof ((_a = req.body.instrument) === null || _a === void 0 ? void 0 : _a.token) === 'string')
                 ? { token: req.body.instrument.token }
@@ -428,9 +429,9 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
         action = yield actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
         const tasks = [];
         // アクション通知タスク作成
-        const informAction = (_e = (_d = project.settings) === null || _d === void 0 ? void 0 : _d.onActionStatusChanged) === null || _e === void 0 ? void 0 : _e.informAction;
-        if (Array.isArray(informAction)) {
-            informAction.forEach((informParams) => {
+        if (Array.isArray(informUseReservationUrls)) {
+            informUseReservationUrls.filter((url) => url.length > 0)
+                .forEach((url) => {
                 const triggerWebhookTask = {
                     project: action.project,
                     name: chevre.factory.taskName.TriggerWebhook,
@@ -443,7 +444,10 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
                         project: action.project,
                         typeOf: chevre.factory.actionType.InformAction,
                         agent: action.project,
-                        recipient: Object.assign({ typeOf: 'Person' }, informParams.recipient),
+                        recipient: {
+                            typeOf: 'Person',
+                            url
+                        },
                         object: action
                     }
                 };

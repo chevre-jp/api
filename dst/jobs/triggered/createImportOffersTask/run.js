@@ -18,6 +18,9 @@ const createDebug = require("debug");
 const connectMongo_1 = require("../../../connectMongo");
 const singletonProcess = require("../../../singletonProcess");
 const debug = createDebug('chevre-api:jobs');
+const IMPORT_OFFERS_INTERVAL_IN_HOURS = (typeof process.env.IMPORT_OFFERS_INTERVAL_IN_HOURS === 'string')
+    ? Number(process.env.IMPORT_OFFERS_INTERVAL_IN_HOURS)
+    : 1;
 exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
     let holdSingletonProcess = false;
     setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
@@ -31,7 +34,7 @@ exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
     10000);
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
     try {
-        const job = new cron_1.CronJob('*/60 * * * *', () => __awaiter(void 0, void 0, void 0, function* () {
+        const job = new cron_1.CronJob(`30 */${IMPORT_OFFERS_INTERVAL_IN_HOURS} * * *`, () => __awaiter(void 0, void 0, void 0, function* () {
             if (!holdSingletonProcess) {
                 return;
             }

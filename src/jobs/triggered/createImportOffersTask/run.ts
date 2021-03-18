@@ -10,6 +10,10 @@ import * as singletonProcess from '../../../singletonProcess';
 
 const debug = createDebug('chevre-api:jobs');
 
+const IMPORT_OFFERS_INTERVAL_IN_HOURS = (typeof process.env.IMPORT_OFFERS_INTERVAL_IN_HOURS === 'string')
+    ? Number(process.env.IMPORT_OFFERS_INTERVAL_IN_HOURS)
+    : 1;
+
 export default async (params: {
     project: chevre.factory.project.IProject;
 }) => {
@@ -30,7 +34,7 @@ export default async (params: {
 
     try {
         const job = new CronJob(
-            '*/60 * * * *',
+            `30 */${IMPORT_OFFERS_INTERVAL_IN_HOURS} * * *`,
             async () => {
                 if (!holdSingletonProcess) {
                     return;

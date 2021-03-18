@@ -3,6 +3,7 @@
  */
 import * as express from 'express';
 
+import cronRouter from './cron';
 import ahRouter from './_ah';
 
 import accountTitlesRouter from './accountTitles';
@@ -33,7 +34,9 @@ const router = express.Router();
 // })
 
 router.use('/_ah', ahRouter);
+router.use('/cron', cronRouter);
 router.use('/health', healthRouter);
+
 router.use('/accountTitles', accountTitlesRouter);
 router.use('/actions', actionsRouter);
 router.use('/categoryCodes', categoryCodesRouter);

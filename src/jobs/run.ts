@@ -39,6 +39,7 @@ const importEventsProjects = (typeof process.env.IMPORT_EVENTS_PROJECTS === 'str
     : [];
 
 const TOPDECK_PROJECT = process.env.TOPDECK_PROJECT;
+const USE_CRON = process.env.USE_CRON === '1';
 
 export default async () => {
     await onTransactionCanceled();
@@ -70,12 +71,17 @@ export default async () => {
     await Promise.all(importEventsProjects.map(async (projectId) => {
         await createImportEventsTask({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
         await createImportEventCapacitiesTask({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
-        await createImportOffersTask({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
     }));
 
-    if (typeof TOPDECK_PROJECT === 'string') {
-        await createTopDeckEvents({
-            project: { typeOf: chevre.factory.organizationType.Project, id: TOPDECK_PROJECT }
-        });
+    if (!USE_CRON) {
+        await Promise.all(importEventsProjects.map(async (projectId) => {
+            await createImportOffersTask({ project: { typeOf: chevre.factory.organizationType.Project, id: projectId } });
+        }));
+
+        if (typeof TOPDECK_PROJECT === 'string') {
+            await createTopDeckEvents({
+                project: { typeOf: chevre.factory.organizationType.Project, id: TOPDECK_PROJECT }
+            });
+        }
     }
 };
