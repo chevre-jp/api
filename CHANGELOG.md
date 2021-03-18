@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v7.57.0 - 2021-03-18
+
+### Added
+
 - cronルーターを追加
 - 決済サービスタイプにFaceToFaceを追加
 - ペイメントサービスのプロバイダー認証情報にトークン認証コードを追加
@@ -29,15 +43,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 返金取引開始時に、必ず決済取引から決済サービスタイプを取得するように調整
 - コンテンツ名称を多言語対応
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - 取引番号発行時のエラーハンドリング調整
-
-### Security
 
 ## v7.56.0 - 2021-02-18
 
