@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.57.1 - 2021-03-21
+
+### Changed
+
+- USE_CHECK_PAY_ACTION_BEFORE_REFUND設定を削除
+
 ## v7.57.0 - 2021-03-18
 
 ### Added
