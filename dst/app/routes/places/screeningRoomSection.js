@@ -111,10 +111,13 @@ screeningRoomSectionRouter.post('', permitScopes_1.default(['admin']), ...[
 /**
  * 検索
  */
-screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), validator_1.default, 
+screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), ...[
+    express_validator_1.query('$projection.*')
+        .toInt()
+], validator_1.default, 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
@@ -208,12 +211,7 @@ screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), validator_
             { $unwind: '$containsPlace.containsPlace' },
             ...matchStages,
             {
-                $project: {
-                    _id: 0,
-                    typeOf: '$containsPlace.containsPlace.typeOf',
-                    branchCode: '$containsPlace.containsPlace.branchCode',
-                    name: '$containsPlace.containsPlace.name',
-                    containedInPlace: {
+                $project: Object.assign({ _id: 0, typeOf: '$containsPlace.containsPlace.typeOf', branchCode: '$containsPlace.containsPlace.branchCode', name: '$containsPlace.containsPlace.name', containedInPlace: {
                         typeOf: '$containsPlace.typeOf',
                         branchCode: '$containsPlace.branchCode',
                         name: '$containsPlace.name',
@@ -223,9 +221,17 @@ screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), validator_
                             branchCode: '$branchCode',
                             name: '$name'
                         }
-                    },
-                    additionalProperty: '$containsPlace.containsPlace.additionalProperty'
-                }
+                    }, additionalProperty: '$containsPlace.containsPlace.additionalProperty' }, (((_j = req.query.$projection) === null || _j === void 0 ? void 0 : _j.seatCount) === 1)
+                    ? {
+                        seatCount: {
+                            $cond: {
+                                if: { $isArray: '$containsPlace.containsPlace.containsPlace' },
+                                then: { $size: '$containsPlace.containsPlace.containsPlace' },
+                                else: 0
+                            }
+                        }
+                    }
+                    : undefined)
             }
         ]);
         // tslint:disable-next-line:no-single-line-block-comment

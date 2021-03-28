@@ -5,7 +5,7 @@ import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -125,6 +125,10 @@ screeningRoomSectionRouter.post(
 screeningRoomSectionRouter.get(
     '',
     permitScopes(['admin']),
+    ...[
+        query('$projection.*')
+            .toInt()
+    ],
     validator,
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
@@ -247,7 +251,18 @@ screeningRoomSectionRouter.get(
                                 name: '$name'
                             }
                         },
-                        additionalProperty: '$containsPlace.containsPlace.additionalProperty'
+                        additionalProperty: '$containsPlace.containsPlace.additionalProperty',
+                        ...(req.query.$projection?.seatCount === 1)
+                            ? {
+                                seatCount: {
+                                    $cond: {
+                                        if: { $isArray: '$containsPlace.containsPlace.containsPlace' },
+                                        then: { $size: '$containsPlace.containsPlace.containsPlace' },
+                                        else: 0
+                                    }
+                                }
+                            }
+                            : undefined
                     }
                 }
             ]);
