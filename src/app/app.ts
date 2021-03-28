@@ -61,8 +61,8 @@ app.use((__, res, next) => {
 // app.set('views', `${__dirname}/../../views`);
 // app.set('view engine', 'ejs');
 
-app.use(bodyParser.json({ limit: '1mb' }));
-app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 connectMongo({ defaultConnection: true })
     .then()

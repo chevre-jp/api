@@ -77,5 +77,5 @@
     "version": "git add -A",
     "postversion": "git push origin --tags"
   },
-  "version": "7.58.0"
+  "version": "7.58.1"
 }
