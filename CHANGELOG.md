@@ -8,8 +8,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- セクション検索結果に座席数をオプションで追加
-
 ### Changed
 
 ### Deprecated
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.58.0 - 2021-03-28
+
+### Added
+
+- セクション検索結果に座席数をオプションで追加
 
 ## v7.57.1 - 2021-03-21
 
