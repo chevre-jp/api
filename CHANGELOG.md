@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- リクエストボディサイズ制限を調整
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.58.1 - 2021-03-28
+
+### Changed
+
+- リクエストボディサイズ制限を調整
 
 ## v7.58.0 - 2021-03-28
 
