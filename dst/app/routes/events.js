@@ -352,7 +352,19 @@ eventsRouter.get('/:id/offers/ticket', permitScopes_1.default(['admin', 'events'
 /**
  * 座席検索
  */
-eventsRouter.get('/:id/seats', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+// tslint:disable-next-line:use-default-type-parameter
+eventsRouter.get('/:id/seats', permitScopes_1.default(['admin', 'events', 'events.read-only']), ...[
+    express_validator_1.query('$projection.*')
+        .toInt(),
+    express_validator_1.query('limit')
+        .optional()
+        .isInt()
+        .toInt(),
+    express_validator_1.query('page')
+        .optional()
+        .isInt()
+        .toInt()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment

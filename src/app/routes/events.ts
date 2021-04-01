@@ -3,6 +3,8 @@
  */
 import * as chevre from '@chevre/domain';
 import { RequestHandler, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { body, oneOf, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
@@ -430,9 +432,22 @@ eventsRouter.get(
 /**
  * 座席検索
  */
-eventsRouter.get(
+// tslint:disable-next-line:use-default-type-parameter
+eventsRouter.get<ParamsDictionary>(
     '/:id/seats',
     permitScopes(['admin', 'events', 'events.read-only']),
+    ...[
+        query('$projection.*')
+            .toInt(),
+        query('limit')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('page')
+            .optional()
+            .isInt()
+            .toInt()
+    ],
     validator,
     async (req, res, next) => {
         try {
