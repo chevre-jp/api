@@ -5,7 +5,7 @@ import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
 import * as mongoose from 'mongoose';
@@ -14,8 +14,121 @@ import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
+const ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH = (process.env.ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH !== undefined)
+    ? Number(process.env.ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH)
+    // tslint:disable-next-line:no-magic-numbers
+    : 256;
+
 const ordersRouter = Router();
 ordersRouter.use(authentication);
+
+/**
+ * 注文検索
+ */
+ordersRouter.get(
+    '',
+    permitScopes(['admin']),
+    ...[
+        query('project.id.$eq')
+            .not()
+            .isEmpty()
+            .isString(),
+        query('disableTotalCount')
+            .optional()
+            .isBoolean()
+            .toBoolean(),
+        query('identifier.$all')
+            .optional()
+            .isArray(),
+        query('identifier.$in')
+            .optional()
+            .isArray(),
+        query('identifier.$all.*.name')
+            .optional()
+            .not()
+            .isEmpty()
+            .isString()
+            .isLength({ max: ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH }),
+        query('identifier.$all.*.value')
+            .optional()
+            .not()
+            .isEmpty()
+            .isString()
+            .isLength({ max: ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH }),
+        query('identifier.$in.*.name')
+            .optional()
+            .not()
+            .isEmpty()
+            .isString()
+            .isLength({ max: ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH }),
+        query('identifier.$in.*.value')
+            .optional()
+            .not()
+            .isEmpty()
+            .isString()
+            .isLength({ max: ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH }),
+        query('orderDateFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('orderDateThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('orderDate.$gte')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('orderDate.$lte')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('acceptedOffers.itemOffered.reservationFor.inSessionFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('acceptedOffers.itemOffered.reservationFor.inSessionThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('acceptedOffers.itemOffered.reservationFor.startFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('acceptedOffers.itemOffered.reservationFor.startThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('price.$gte')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('price.$lte')
+            .optional()
+            .isInt()
+            .toInt()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const orderRepo = new chevre.repository.Order(mongoose.connection);
+
+            const searchConditions: chevre.factory.order.ISearchConditions = {
+                ...req.query,
+                project: { id: { $eq: String(req.query.project?.id?.$eq) } },
+                // tslint:disable-next-line:no-magic-numbers
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+            };
+
+            const orders = await orderRepo.search(searchConditions);
+
+            res.json(orders);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 /**
  * 注文作成
