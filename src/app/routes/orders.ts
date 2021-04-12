@@ -131,6 +131,27 @@ ordersRouter.get(
 );
 
 /**
+ * 注文取得
+ */
+ordersRouter.get(
+    '/:orderNumber',
+    permitScopes(['admin']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const orderRepo = new chevre.repository.Order(mongoose.connection);
+            const order = await orderRepo.findByOrderNumber({
+                orderNumber: req.params.orderNumber
+            });
+
+            res.json(order);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
  * 注文作成
  */
 // tslint:disable-next-line:use-default-type-parameter

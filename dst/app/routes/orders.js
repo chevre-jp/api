@@ -124,6 +124,21 @@ ordersRouter.get('', permitScopes_1.default(['admin']), ...[
     }
 }));
 /**
+ * 注文取得
+ */
+ordersRouter.get('/:orderNumber', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const orderRepo = new chevre.repository.Order(mongoose.connection);
+        const order = yield orderRepo.findByOrderNumber({
+            orderNumber: req.params.orderNumber
+        });
+        res.json(order);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
  * 注文作成
  */
 // tslint:disable-next-line:use-default-type-parameter
