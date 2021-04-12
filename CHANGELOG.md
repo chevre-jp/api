@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- 注文作成を追加
+- 注文ステータス変更を追加
+
 ### Changed
 
 - 予約ステータス変更の冪等性担保
