@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 注文検索を追加
 - 注文番号による注文検索を追加
 - ウェブフックルーターを追加
+- 経理レポート検索を追加
+- 旧売上レポート検索を追加
 
 ### Changed
 
