@@ -7,10 +7,12 @@ import { Router } from 'express';
 import { query } from 'express-validator';
 import * as mongoose from 'mongoose';
 
+import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const aggregateSalesRouter = Router();
+aggregateSalesRouter.use(authentication);
 
 /**
  * 検索

@@ -9,10 +9,12 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { query } from 'express-validator';
 import * as mongoose from 'mongoose';
 
+import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const accountingReportsRouter = Router();
+accountingReportsRouter.use(authentication);
 
 /**
  * 検索
