@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 注文ステータス変更を追加
 - 注文検索を追加
 - 注文番号による注文検索を追加
+- ウェブフックルーターを追加
 
 ### Changed
 
