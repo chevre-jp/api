@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ウェブフックルーターを追加
 - 経理レポート検索を追加
 - 旧売上レポート検索を追加
+- コードリポジトリを追加
+- 所有権リポジトリを追加
+- プロジェクトメンバーリポジトリを追加
+- IAMロールリポジトリを追加
 
 ### Changed
 
