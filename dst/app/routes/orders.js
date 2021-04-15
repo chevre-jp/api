@@ -144,10 +144,13 @@ ordersRouter.get('/:orderNumber', permitScopes_1.default(['admin']), validator_1
 // tslint:disable-next-line:use-default-type-parameter
 ordersRouter.put('/:orderNumber', permitScopes_1.default(['admin']), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const accountingReportRepo = new chevre.repository.AccountingReport(mongoose.connection);
         const orderRepo = new chevre.repository.Order(mongoose.connection);
         const orderNumber = req.params.orderNumber;
         const order = createOrder(Object.assign(Object.assign({}, req.body), { orderNumber }));
         yield orderRepo.createIfNotExist(order);
+        // 経理レポートを保管
+        yield chevre.service.webhook.createAccountingReportIfNotExist(order)({ accountingReport: accountingReportRepo });
         res.status(http_status_1.NO_CONTENT)
             .end();
     }

@@ -162,6 +162,7 @@ ordersRouter.put<ParamsDictionary>(
     validator,
     async (req, res, next) => {
         try {
+            const accountingReportRepo = new chevre.repository.AccountingReport(mongoose.connection);
             const orderRepo = new chevre.repository.Order(mongoose.connection);
             const orderNumber = req.params.orderNumber;
             const order = createOrder({
@@ -170,6 +171,9 @@ ordersRouter.put<ParamsDictionary>(
             });
 
             await orderRepo.createIfNotExist(order);
+
+            // 経理レポートを保管
+            await chevre.service.webhook.createAccountingReportIfNotExist(order)({ accountingReport: accountingReportRepo });
 
             res.status(NO_CONTENT)
                 .end();
