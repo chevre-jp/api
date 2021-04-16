@@ -40,6 +40,7 @@ authorizationsRouter.post(
             .isEmpty(),
         body('*.validFrom')
             .not()
+            .isEmpty()
             .isISO8601()
             .toDate(),
         body('*.expiresInSeconds')

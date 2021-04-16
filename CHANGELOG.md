@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - プロジェクトメンバーリポジトリを追加
 - IAMロールリポジトリを追加
 - 承認ルーターを追加
+- 所有権ルーターを追加
 
 ### Changed
 

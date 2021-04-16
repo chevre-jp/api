@@ -44,6 +44,7 @@ authorizationsRouter.post('', permitScopes_1.default(['admin']), ...[
         .isEmpty(),
     express_validator_1.body('*.validFrom')
         .not()
+        .isEmpty()
         .isISO8601()
         .toDate(),
     express_validator_1.body('*.expiresInSeconds')
