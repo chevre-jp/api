@@ -39,7 +39,7 @@ authorizationsRouter.post('', permitScopes_1.default(['admin']), ...[
         .not()
         .isEmpty()
         .isString(),
-    express_validator_1.body('*.data')
+    express_validator_1.body('*.object')
         .not()
         .isEmpty(),
     express_validator_1.body('*.validFrom')
@@ -60,7 +60,7 @@ authorizationsRouter.post('', permitScopes_1.default(['admin']), ...[
             return {
                 project: { typeOf: chevre.factory.organizationType.Project, id: String((_a = o.project) === null || _a === void 0 ? void 0 : _a.id) },
                 code: o.code,
-                data: o.data,
+                data: o.object,
                 validFrom: o.validFrom,
                 expiresInSeconds: o.expiresInSeconds
             };

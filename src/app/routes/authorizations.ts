@@ -35,7 +35,7 @@ authorizationsRouter.post(
             .not()
             .isEmpty()
             .isString(),
-        body('*.data')
+        body('*.object')
             .not()
             .isEmpty(),
         body('*.validFrom')
@@ -58,7 +58,7 @@ authorizationsRouter.post(
                 return {
                     project: { typeOf: chevre.factory.organizationType.Project, id: String(o.project?.id) },
                     code: o.code,
-                    data: o.data,
+                    data: o.object,
                     validFrom: o.validFrom,
                     expiresInSeconds: o.expiresInSeconds
                 };
