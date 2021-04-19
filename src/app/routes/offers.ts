@@ -7,12 +7,10 @@ import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const offersRouter = Router();
-offersRouter.use(authentication);
 
 offersRouter.post(
     '',

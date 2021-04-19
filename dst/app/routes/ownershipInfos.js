@@ -19,11 +19,9 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const ownershipInfosRouter = express_1.Router();
-ownershipInfosRouter.use(authentication_1.default);
 /**
  * 所有権作成
  * 識別子に対して冪等性を確保

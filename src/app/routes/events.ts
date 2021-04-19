@@ -11,15 +11,12 @@ import * as mongoose from 'mongoose';
 
 import screeningEventRouter from './events/screeningEvent';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 import * as redis from '../../redis';
 
 const eventsRouter = Router();
-
-eventsRouter.use(authentication);
 
 eventsRouter.use('/screeningEvent', screeningEventRouter);
 

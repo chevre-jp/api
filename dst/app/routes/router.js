@@ -32,6 +32,7 @@ const tasks_1 = require("./tasks");
 const transactionNumbers_1 = require("./transactionNumbers");
 const transactions_1 = require("./transactions");
 const webhooks_1 = require("./webhooks");
+const authentication_1 = require("../middlewares/authentication");
 const router = express.Router();
 // middleware that is specific to this router
 // router.use((req, res, next) => {
@@ -42,6 +43,8 @@ router.use('/_ah', _ah_1.default);
 router.use('/cron', cron_1.default);
 router.use('/health', health_1.default);
 router.use('/webhooks', webhooks_1.default);
+// 認証
+router.use(authentication_1.default);
 router.use('/accountingReports', accountingReports_1.default);
 router.use('/accountTitles', accountTitles_1.default);
 router.use('/actions', actions_1.default);

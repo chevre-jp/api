@@ -17,11 +17,9 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const redis = require("../../redis");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const transactionNumbersRouter = express_1.Router();
-transactionNumbersRouter.use(authentication_1.default);
 /**
  * 取引番号発行
  */

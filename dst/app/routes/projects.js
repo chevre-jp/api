@@ -17,11 +17,9 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const projectsRouter = express_1.Router();
-projectsRouter.use(authentication_1.default);
 /**
  * プロジェクト作成
  */

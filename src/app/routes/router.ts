@@ -33,6 +33,8 @@ import transactionNumbersRouter from './transactionNumbers';
 import transactionsRouter from './transactions';
 import webhooksRouter from './webhooks';
 
+import authentication from '../middlewares/authentication';
+
 const router = express.Router();
 
 // middleware that is specific to this router
@@ -45,6 +47,9 @@ router.use('/_ah', ahRouter);
 router.use('/cron', cronRouter);
 router.use('/health', healthRouter);
 router.use('/webhooks', webhooksRouter);
+
+// 認証
+router.use(authentication);
 
 router.use('/accountingReports', accountingReportsRouter);
 router.use('/accountTitles', accountTitlesRouter);

@@ -7,7 +7,6 @@ import { body, query } from 'express-validator';
 import { CREATED } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
@@ -16,7 +15,6 @@ import * as redis from '../../redis';
 const MAX_NUM_IDENTIFIERS_CREATED = 100;
 
 const serviceOutputsRouter = Router();
-serviceOutputsRouter.use(authentication);
 
 /**
  * 検索

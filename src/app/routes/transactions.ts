@@ -13,13 +13,10 @@ import refundTransactionsRouter from './transactions/refund';
 import registerServiceTransactionsRouter from './transactions/registerService';
 import reserveTransactionsRouter from './transactions/reserve';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const transactionsRouter = Router();
-
-transactionsRouter.use(authentication);
 
 transactionsRouter.use('/cancelReservation', cancelReservationTransactionsRouter);
 transactionsRouter.use(`/${chevre.factory.transactionType.MoneyTransfer}`, moneyTransferTransactionsRouter);

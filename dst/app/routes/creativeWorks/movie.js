@@ -18,11 +18,9 @@ const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const mongoose = require("mongoose");
-const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const movieRouter = express_1.Router();
-movieRouter.use(authentication_1.default);
 movieRouter.post('', permitScopes_1.default(['admin']), ...[
     express_validator_1.body('project')
         .not()

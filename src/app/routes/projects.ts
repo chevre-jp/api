@@ -7,12 +7,10 @@ import { body } from 'express-validator';
 import { CREATED } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const projectsRouter = Router();
-projectsRouter.use(authentication);
 
 /**
  * プロジェクト作成

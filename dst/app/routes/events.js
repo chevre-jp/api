@@ -18,12 +18,10 @@ const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const screeningEvent_1 = require("./events/screeningEvent");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const redis = require("../../redis");
 const eventsRouter = express_1.Router();
-eventsRouter.use(authentication_1.default);
 eventsRouter.use('/screeningEvent', screeningEvent_1.default);
 const MAX_NUM_EVENTS_CREATED = 200;
 /**

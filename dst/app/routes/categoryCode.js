@@ -17,7 +17,6 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const categoryCodesRouter = express_1.Router();
@@ -49,7 +48,6 @@ const validations = [
         .withMessage(() => 'Required')
         .isString()
 ];
-categoryCodesRouter.use(authentication_1.default);
 categoryCodesRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };

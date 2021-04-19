@@ -9,12 +9,10 @@ import { body, query } from 'express-validator';
 import { CREATED } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const ownershipInfosRouter = Router();
-ownershipInfosRouter.use(authentication);
 
 /**
  * 所有権作成

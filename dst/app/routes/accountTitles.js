@@ -18,12 +18,10 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const debug = createDebug('chevre-api:router');
 const accountTitlesRouter = express_1.Router();
-accountTitlesRouter.use(authentication_1.default);
 /**
  * 科目分類追加
  */

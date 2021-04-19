@@ -10,12 +10,10 @@ import { CREATED } from 'http-status';
 import * as moment from 'moment';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const tasksRouter = Router();
-tasksRouter.use(authentication);
 
 /**
  * タスク作成

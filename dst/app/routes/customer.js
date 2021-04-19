@@ -17,7 +17,6 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 /**
@@ -47,7 +46,6 @@ const validations = [
         .isArray()
 ];
 const customersRouter = express_1.Router();
-customersRouter.use(authentication_1.default);
 /**
  * 顧客作成
  */

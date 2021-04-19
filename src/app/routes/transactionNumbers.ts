@@ -8,13 +8,10 @@ import { CREATED } from 'http-status';
 
 import * as redis from '../../redis';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const transactionNumbersRouter = Router();
-
-transactionNumbersRouter.use(authentication);
 
 /**
  * 取引番号発行
