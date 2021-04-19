@@ -61,7 +61,10 @@ ownershipInfosRouter.post(
                 project: { typeOf: chevre.factory.organizationType.Project, id: req.body.project?.id },
                 typeOf: 'OwnershipInfo',
                 typeOfGood: req.body.typeOfGood,
-                ...(req.body.ownedThrough instanceof Date) ? { ownedThrough: req.body.ownedThrough } : undefined
+                ...(req.body.ownedThrough instanceof Date) ? { ownedThrough: req.body.ownedThrough } : undefined,
+                ...(req.body.acquiredFrom !== undefined && req.body.acquiredFrom !== null)
+                    ? { acquiredFrom: req.body.acquiredFrom }
+                    : undefined
             });
 
             res.status(CREATED)

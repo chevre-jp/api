@@ -56,7 +56,9 @@ ownershipInfosRouter.post('/saveByIdentifier', permitScopes_1.default(['admin'])
     var _a;
     try {
         const ownershipInfoRepo = new chevre.repository.OwnershipInfo(mongoose.connection);
-        const ownershipInfo = yield ownershipInfoRepo.saveByIdentifier(Object.assign({ id: '', identifier: req.body.identifier, ownedBy: req.body.ownedBy, ownedFrom: req.body.ownedFrom, project: { typeOf: chevre.factory.organizationType.Project, id: (_a = req.body.project) === null || _a === void 0 ? void 0 : _a.id }, typeOf: 'OwnershipInfo', typeOfGood: req.body.typeOfGood }, (req.body.ownedThrough instanceof Date) ? { ownedThrough: req.body.ownedThrough } : undefined));
+        const ownershipInfo = yield ownershipInfoRepo.saveByIdentifier(Object.assign(Object.assign({ id: '', identifier: req.body.identifier, ownedBy: req.body.ownedBy, ownedFrom: req.body.ownedFrom, project: { typeOf: chevre.factory.organizationType.Project, id: (_a = req.body.project) === null || _a === void 0 ? void 0 : _a.id }, typeOf: 'OwnershipInfo', typeOfGood: req.body.typeOfGood }, (req.body.ownedThrough instanceof Date) ? { ownedThrough: req.body.ownedThrough } : undefined), (req.body.acquiredFrom !== undefined && req.body.acquiredFrom !== null)
+            ? { acquiredFrom: req.body.acquiredFrom }
+            : undefined));
         res.status(http_status_1.CREATED)
             .json(ownershipInfo);
     }
