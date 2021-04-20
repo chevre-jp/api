@@ -99,4 +99,49 @@ ownershipInfosRouter.get('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
+/**
+ * 所有権変更
+ */
+ownershipInfosRouter.put('/updateByIdentifier', permitScopes_1.default(['admin']), ...[
+    express_validator_1.body('project.id')
+        .not()
+        .isEmpty()
+        .isString(),
+    express_validator_1.body('identifier')
+        .not()
+        .isEmpty()
+        .isString(),
+    // body('ownedBy')
+    //     .not()
+    //     .isEmpty(),
+    express_validator_1.body('ownedThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _e;
+    try {
+        const ownershipInfoRepo = new chevre.repository.OwnershipInfo(mongoose.connection);
+        if (req.body.ownedThrough instanceof Date) {
+            yield ownershipInfoRepo.ownershipInfoModel.findOneAndUpdate({
+                'project.id': {
+                    $exists: true,
+                    $eq: (_e = req.body.project) === null || _e === void 0 ? void 0 : _e.id
+                },
+                identifier: req.body.identifier
+            }, { ownedThrough: req.body.ownedThrough }, { new: true })
+                .select({ __v: 0, createdAt: 0, updatedAt: 0 })
+                .exec();
+            // 存在しない場合はいったん保留
+            // if (doc !== null) {
+            //     throw new chevre.factory.errors.NotFound(ownershipInfoRepo.ownershipInfoModel.modelName);
+            // }
+        }
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 exports.default = ownershipInfosRouter;

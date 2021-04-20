@@ -6,7 +6,7 @@ import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 // import { ParamsDictionary } from 'express-serve-static-core';
 import { body, query } from 'express-validator';
-import { CREATED } from 'http-status';
+import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
 import permitScopes from '../middlewares/permitScopes';
@@ -116,6 +116,62 @@ ownershipInfosRouter.get(
             }
 
             res.json(ownershipInfos);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * 所有権変更
+ */
+ownershipInfosRouter.put(
+    '/updateByIdentifier',
+    permitScopes(['admin']),
+    ...[
+        body('project.id')
+            .not()
+            .isEmpty()
+            .isString(),
+        body('identifier')
+            .not()
+            .isEmpty()
+            .isString(),
+        // body('ownedBy')
+        //     .not()
+        //     .isEmpty(),
+        body('ownedThrough')
+            .optional()
+            .isISO8601()
+            .toDate()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const ownershipInfoRepo = new chevre.repository.OwnershipInfo(mongoose.connection);
+
+            if (req.body.ownedThrough instanceof Date) {
+                await ownershipInfoRepo.ownershipInfoModel.findOneAndUpdate(
+                    {
+                        'project.id': {
+                            $exists: true,
+                            $eq: req.body.project?.id
+                        },
+                        identifier: req.body.identifier
+                    },
+                    { ownedThrough: req.body.ownedThrough },
+                    { new: true }
+                )
+                    .select({ __v: 0, createdAt: 0, updatedAt: 0 })
+                    .exec();
+                // 存在しない場合はいったん保留
+                // if (doc !== null) {
+                //     throw new chevre.factory.errors.NotFound(ownershipInfoRepo.ownershipInfoModel.modelName);
+                // }
+            }
+
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }
