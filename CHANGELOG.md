@@ -37,6 +37,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Removed
 
+- イベントの全座席検索を廃止
+
 ### Fixed
 
 - イベントの座席オファー検索におけるコーディングバグに対応

@@ -371,28 +371,29 @@ eventsRouter.delete(
 
 /**
  * 座席オファー検索
+ * 非推奨なので廃止
  */
-eventsRouter.get(
-    '/:id/offers',
-    permitScopes(['admin', 'events', 'events.read-only']),
-    validator,
-    async (req, res, next) => {
-        try {
-            const offers = await chevre.service.offer.searchEventSeatOffers({
-                event: { id: req.params.id }
-            })({
-                event: new chevre.repository.Event(mongoose.connection),
-                priceSpecification: new chevre.repository.PriceSpecification(mongoose.connection),
-                eventAvailability: new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient()),
-                place: new chevre.repository.Place(mongoose.connection)
-            });
+// eventsRouter.get(
+//     '/:id/offers',
+//     permitScopes(['admin', 'events', 'events.read-only']),
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const offers = await chevre.service.offer.searchEventSeatOffers({
+//                 event: { id: req.params.id }
+//             })({
+//                 event: new chevre.repository.Event(mongoose.connection),
+//                 priceSpecification: new chevre.repository.PriceSpecification(mongoose.connection),
+//                 eventAvailability: new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient()),
+//                 place: new chevre.repository.Place(mongoose.connection)
+//             });
 
-            res.json(offers);
-        } catch (error) {
-            next(error);
-        }
-    }
-);
+//             res.json(offers);
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
 
 /**
  * イベントオファー検索
