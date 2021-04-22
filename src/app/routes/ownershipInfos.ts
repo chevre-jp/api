@@ -91,6 +91,14 @@ ownershipInfosRouter.get(
         query('ownedThrough')
             .optional()
             .isISO8601()
+            .toDate(),
+        query('ownedFromGte')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('ownedFromLte')
+            .optional()
+            .isISO8601()
             .toDate()
     ],
     validator,
@@ -113,6 +121,12 @@ ownershipInfosRouter.get(
             switch (typeOfGood.typeOf) {
                 default:
                     ownershipInfos = await ownershipInfoRepo.search(searchConditions);
+            }
+
+            const countDocuments = req.query.countDocuments === '1';
+            if (countDocuments) {
+                const totalCount = await ownershipInfoRepo.count(searchConditions);
+                res.set('X-Total-Count', totalCount.toString());
             }
 
             res.json(ownershipInfos);

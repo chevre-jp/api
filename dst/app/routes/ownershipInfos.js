@@ -79,6 +79,14 @@ ownershipInfosRouter.get('', permitScopes_1.default(['admin']), ...[
     express_validator_1.query('ownedThrough')
         .optional()
         .isISO8601()
+        .toDate(),
+    express_validator_1.query('ownedFromGte')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.query('ownedFromLte')
+        .optional()
+        .isISO8601()
         .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _b, _c, _d;
@@ -92,6 +100,11 @@ ownershipInfosRouter.get('', permitScopes_1.default(['admin']), ...[
         switch (typeOfGood.typeOf) {
             default:
                 ownershipInfos = yield ownershipInfoRepo.search(searchConditions);
+        }
+        const countDocuments = req.query.countDocuments === '1';
+        if (countDocuments) {
+            const totalCount = yield ownershipInfoRepo.count(searchConditions);
+            res.set('X-Total-Count', totalCount.toString());
         }
         res.json(ownershipInfos);
     }
