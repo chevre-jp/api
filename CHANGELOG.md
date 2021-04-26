@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - セクションに座席が未登録の場合のイベント予約集計を調整
 - 返金アクションにtotalPaymentDueをセット
 - 認証処理を最適化
+- cinerinoのMongoDBインデックスを移行
 
 ### Deprecated
 
