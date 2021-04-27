@@ -74,6 +74,7 @@ function createFromBody(params) {
 /**
  * プロジェクト取得
  */
+// tslint:disable-next-line:use-default-type-parameter
 projectsRouter.get('/:id', permitScopes_1.default(['admin']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
