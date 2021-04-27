@@ -3,7 +3,9 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
-import { body } from 'express-validator';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
+import { body, query } from 'express-validator';
 import { CREATED } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -76,9 +78,14 @@ function createFromBody(params: any): chevre.factory.project.IProject {
 /**
  * プロジェクト取得
  */
-projectsRouter.get(
+// tslint:disable-next-line:use-default-type-parameter
+projectsRouter.get<ParamsDictionary>(
     '/:id',
     permitScopes(['admin']),
+    ...[
+        query('$projection.*')
+            .toInt()
+    ],
     validator,
     async (req, res, next) => {
         try {
@@ -87,7 +94,11 @@ projectsRouter.get(
             // const projection: any = (req.memberPermissions.indexOf(`${RESOURCE_SERVER_IDENTIFIER}/projects.settings.read`) >= 0)
             //     ? undefined
             //     : { settings: 0 };
-            const project = await projectRepo.findById({ id: req.params.id }, undefined);
+            // $projectionを適用
+            const projection = (req.query.$projection !== undefined && req.query.$projection !== null)
+                ? { ...req.query.$projection }
+                : undefined;
+            const project = await projectRepo.findById({ id: req.params.id }, projection);
 
             res.json(project);
         } catch (error) {

@@ -74,13 +74,19 @@ function createFromBody(params) {
 /**
  * プロジェクト取得
  */
-projectsRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+projectsRouter.get('/:id', permitScopes_1.default(['admin']), ...[
+    express_validator_1.query('$projection.*')
+        .toInt()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         // const projection: any = (req.memberPermissions.indexOf(`${RESOURCE_SERVER_IDENTIFIER}/projects.settings.read`) >= 0)
         //     ? undefined
         //     : { settings: 0 };
-        const project = yield projectRepo.findById({ id: req.params.id }, undefined);
+        // $projectionを適用
+        const projection = (req.query.$projection !== undefined && req.query.$projection !== null)
+            ? Object.assign({}, req.query.$projection) : undefined;
+        const project = yield projectRepo.findById({ id: req.params.id }, projection);
         res.json(project);
     }
     catch (error) {
