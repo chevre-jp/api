@@ -82,6 +82,10 @@ function createFromBody(params: any): chevre.factory.project.IProject {
 projectsRouter.get(
     '',
     permitScopes(['admin']),
+    ...[
+        query('$projection.*')
+            .toInt()
+    ],
     validator,
     async (req, res, next) => {
         try {

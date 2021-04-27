@@ -75,7 +75,10 @@ function createFromBody(params) {
  * プロジェクト検索
  * 閲覧権限を持つプロジェクトを検索
  */
-projectsRouter.get('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+projectsRouter.get('', permitScopes_1.default(['admin']), ...[
+    express_validator_1.query('$projection.*')
+        .toInt()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
