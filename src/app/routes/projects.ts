@@ -76,6 +76,37 @@ function createFromBody(params: any): chevre.factory.project.IProject {
 }
 
 /**
+ * プロジェクト検索
+ * 閲覧権限を持つプロジェクトを検索
+ */
+projectsRouter.get(
+    '',
+    permitScopes(['admin']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
+
+            const searchConditions: chevre.factory.project.ISearchConditions = {
+                ...req.query,
+                // tslint:disable-next-line:no-magic-numbers
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+            };
+
+            const projects = await projectRepo.search(
+                searchConditions,
+                (req.query.$projection !== undefined && req.query.$projection !== null) ? { ...req.query.$projection } : undefined
+            );
+
+            res.json(projects);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
  * プロジェクト取得
  */
 // tslint:disable-next-line:use-default-type-parameter

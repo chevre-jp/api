@@ -72,6 +72,23 @@ function createFromBody(params) {
     };
 }
 /**
+ * プロジェクト検索
+ * 閲覧権限を持つプロジェクトを検索
+ */
+projectsRouter.get('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
+        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+            // tslint:disable-next-line:no-magic-numbers
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
+        const projects = yield projectRepo.search(searchConditions, (req.query.$projection !== undefined && req.query.$projection !== null) ? Object.assign({}, req.query.$projection) : undefined);
+        res.json(projects);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
  * プロジェクト取得
  */
 // tslint:disable-next-line:use-default-type-parameter

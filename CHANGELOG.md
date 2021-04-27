@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 所有権ルーターを追加
 - 顧客ルーターを追加
 - プロジェクト更新を追加
+- プロジェクト検索を追加
 
 ### Changed
 
