@@ -6,7 +6,7 @@ import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, query } from 'express-validator';
-import { CREATED } from 'http-status';
+import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
 import permitScopes from '../middlewares/permitScopes';
@@ -101,6 +101,47 @@ projectsRouter.get<ParamsDictionary>(
             const project = await projectRepo.findById({ id: req.params.id }, projection);
 
             res.json(project);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * プロジェクト更新
+ */
+projectsRouter.patch(
+    '/:id',
+    permitScopes(['admin']),
+    ...[],
+    validator,
+    async (req, res, next) => {
+        try {
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
+
+            await projectRepo.projectModel.findOneAndUpdate(
+                { _id: req.params.id },
+                {
+                    updatedAt: new Date(),
+                    ...(typeof req.body.name === 'string' && req.body.name.length > 0) ? { name: req.body.name } : undefined,
+                    ...(typeof req.body.logo === 'string' && req.body.logo.length > 0) ? { logo: req.body.logo } : undefined,
+                    ...(typeof req.body.settings?.sendgridApiKey === 'string')
+                        ? { 'settings.sendgridApiKey': req.body.settings.sendgridApiKey }
+                        : undefined,
+                    ...(Array.isArray(req.body.settings?.onOrderStatusChanged?.informOrder))
+                        ? { 'settings.onOrderStatusChanged.informOrder': req.body.settings.onOrderStatusChanged.informOrder }
+                        : undefined,
+                    ...(req.body.settings?.cognito !== undefined && req.body.settings?.cognito !== null)
+                        ? { 'settings.cognito': req.body.settings.cognito }
+                        : undefined
+                    // "useMyCreditCards": true,
+                    // "useUsernameAsGMOMemberId": true,
+                }
+            )
+                .exec();
+
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
             next(error);
         }

@@ -74,6 +74,7 @@ function createFromBody(params) {
 /**
  * プロジェクト取得
  */
+// tslint:disable-next-line:use-default-type-parameter
 projectsRouter.get('/:id', permitScopes_1.default(['admin']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
@@ -88,6 +89,31 @@ projectsRouter.get('/:id', permitScopes_1.default(['admin']), ...[
             ? Object.assign({}, req.query.$projection) : undefined;
         const project = yield projectRepo.findById({ id: req.params.id }, projection);
         res.json(project);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * プロジェクト更新
+ */
+projectsRouter.patch('/:id', permitScopes_1.default(['admin']), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e;
+    try {
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
+        yield projectRepo.projectModel.findOneAndUpdate({ _id: req.params.id }, Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ updatedAt: new Date() }, (typeof req.body.name === 'string' && req.body.name.length > 0) ? { name: req.body.name } : undefined), (typeof req.body.logo === 'string' && req.body.logo.length > 0) ? { logo: req.body.logo } : undefined), (typeof ((_a = req.body.settings) === null || _a === void 0 ? void 0 : _a.sendgridApiKey) === 'string')
+            ? { 'settings.sendgridApiKey': req.body.settings.sendgridApiKey }
+            : undefined), (Array.isArray((_c = (_b = req.body.settings) === null || _b === void 0 ? void 0 : _b.onOrderStatusChanged) === null || _c === void 0 ? void 0 : _c.informOrder))
+            ? { 'settings.onOrderStatusChanged.informOrder': req.body.settings.onOrderStatusChanged.informOrder }
+            : undefined), (((_d = req.body.settings) === null || _d === void 0 ? void 0 : _d.cognito) !== undefined && ((_e = req.body.settings) === null || _e === void 0 ? void 0 : _e.cognito) !== null)
+            ? { 'settings.cognito': req.body.settings.cognito }
+            : undefined
+        // "useMyCreditCards": true,
+        // "useUsernameAsGMOMemberId": true,
+        ))
+            .exec();
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (error) {
         next(error);
