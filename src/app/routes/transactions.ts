@@ -60,7 +60,7 @@ transactionsRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             const searchConditions: chevre.factory.transaction.ISearchConditions<chevre.factory.transactionType> = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers

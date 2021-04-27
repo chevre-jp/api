@@ -51,7 +51,7 @@ registerServiceTransactionsRouter.post(
             const productRepo = new chevre.repository.Product(mongoose.connection);
             const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
@@ -101,7 +101,7 @@ registerServiceTransactionsRouter.put<ParamsDictionary>(
 
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
             await chevre.service.transaction.registerService.confirm({
                 ...req.body,
@@ -146,7 +146,7 @@ registerServiceTransactionsRouter.put(
         try {
             const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
 
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             await chevre.service.transaction.registerService.cancel({
                 ...req.body,
                 ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }

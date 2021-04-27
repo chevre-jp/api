@@ -17,7 +17,7 @@ export default async () => {
 
     const projectRepo = new chevre.repository.Project(connection);
     const taskRepo = new chevre.repository.Task(connection);
-    const transactionRepo = new chevre.repository.Transaction(connection);
+    const transactionRepo = new chevre.repository.AssetTransaction(connection);
 
     setInterval(
         async () => {

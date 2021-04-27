@@ -45,7 +45,7 @@ cancelReservationTransactionsRouter.post(
     async (req, res, next) => {
         try {
             const projectRepo = new chevre.repository.Project(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
@@ -107,7 +107,7 @@ cancelReservationTransactionsRouter.post(
         try {
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
@@ -173,7 +173,7 @@ cancelReservationTransactionsRouter.put(
         try {
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
             await chevre.service.transaction.cancelReservation.confirm({
                 ...req.body,
@@ -216,7 +216,7 @@ cancelReservationTransactionsRouter.put(
     validator,
     async (req, res, next) => {
         try {
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             await transactionRepo.cancel({
                 typeOf: chevre.factory.transactionType.CancelReservation,
                 id: req.params.transactionId

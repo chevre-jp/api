@@ -51,7 +51,7 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['admin'
         const productRepo = new chevre.repository.Product(mongoose.connection);
         const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const transaction = yield chevre.service.transaction.registerService.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.RegisterService, agent: Object.assign({}, req.body.agent
             // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
@@ -83,7 +83,7 @@ registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         yield chevre.service.transaction.registerService.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
         // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
         // tslint:disable-next-line:no-floating-promises
@@ -116,7 +116,7 @@ registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.
 registerServiceTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         yield chevre.service.transaction.registerService.cancel(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({
             transaction: transactionRepo
         });

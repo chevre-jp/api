@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 認証処理を最適化
 - cinerinoのMongoDBインデックスを移行
 - プロジェクト検索に$projection指定を適用
+- 資産取引コレクションをrename
 
 ### Deprecated
 

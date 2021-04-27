@@ -21,7 +21,7 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     const INTERVAL_MILLISECONDS = 200;
     const projectRepo = new chevre.repository.Project(connection);
     const taskRepo = new chevre.repository.Task(connection);
-    const transactionRepo = new chevre.repository.Transaction(connection);
+    const transactionRepo = new chevre.repository.AssetTransaction(connection);
     setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
         if (countExecute > MAX_NUBMER_OF_PARALLEL_TASKS) {
             return;

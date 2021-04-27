@@ -52,7 +52,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
         const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
@@ -102,7 +102,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
 //             const placeRepo = new chevre.repository.Place(mongoose.connection);
 //             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
 //             const taskRepo = new chevre.repository.Task(mongoose.connection);
-//             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+//             const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 //             const offerRepo = new chevre.repository.Offer(mongoose.connection);
 //             const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
 //             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
@@ -148,7 +148,7 @@ reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         yield chevre.service.transaction.reserve.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
         // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
         // tslint:disable-next-line:no-floating-promises
@@ -186,7 +186,7 @@ reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default([
         const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         yield chevre.service.transaction.reserve.cancel(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({
             action: actionRepo,
             eventAvailability: eventAvailabilityRepo,
