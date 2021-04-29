@@ -25,7 +25,6 @@ import refund from './continuous/refund/run';
 import registerService from './continuous/registerService/run';
 import reserve from './continuous/reserve/run';
 import retryTasks from './continuous/retryTasks/run';
-import sendEmailMessage from './continuous/sendEmailMessage/run';
 import triggerWebhook from './continuous/triggerWebhook/run';
 import voidPayment from './continuous/voidPayment/run';
 
@@ -64,7 +63,6 @@ export default async () => {
     await registerService();
     await reserve();
     await retryTasks();
-    await sendEmailMessage();
     await triggerWebhook();
     await voidPayment();
 

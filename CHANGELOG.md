@@ -43,6 +43,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Removed
 
 - イベントの全座席検索を廃止
+- Eメール送信タスクを削除
 
 ### Fixed
 
