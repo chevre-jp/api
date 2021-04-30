@@ -70,7 +70,21 @@ function createFromBody(params: any): chevre.factory.project.IProject {
         settings: {
             onReservationStatusChanged: {
                 informReservation: []
-            }
+            },
+            ...(typeof params.settings?.cognito?.customerUserPool?.id === 'string')
+                ? {
+                    cognito: { customerUserPool: { id: params.settings.cognito.customerUserPool.id } }
+                }
+                : undefined
+            ,
+            onOrderStatusChanged: {
+                informOrder: (Array.isArray(params.settings?.onOrderStatusChanged?.informOrder))
+                    ? params.settings.onOrderStatusChanged.informOrder
+                    : []
+            },
+            sendgridApiKey: (typeof params.settings?.sendgridApiKey === 'string')
+                ? params.settings?.sendgridApiKey
+                : ''
         }
     };
 }

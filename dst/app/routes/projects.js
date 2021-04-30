@@ -59,16 +59,24 @@ projectsRouter.post('', permitScopes_1.default(['admin']), ...[
     }
 }));
 function createFromBody(params) {
+    var _a, _b, _c, _d, _e, _f, _g;
     return {
         id: params.id,
         typeOf: params.typeOf,
         logo: params.logo,
         name: params.name,
-        settings: {
-            onReservationStatusChanged: {
+        settings: Object.assign(Object.assign({ onReservationStatusChanged: {
                 informReservation: []
+            } }, (typeof ((_c = (_b = (_a = params.settings) === null || _a === void 0 ? void 0 : _a.cognito) === null || _b === void 0 ? void 0 : _b.customerUserPool) === null || _c === void 0 ? void 0 : _c.id) === 'string')
+            ? {
+                cognito: { customerUserPool: { id: params.settings.cognito.customerUserPool.id } }
             }
-        }
+            : undefined), { onOrderStatusChanged: {
+                informOrder: (Array.isArray((_e = (_d = params.settings) === null || _d === void 0 ? void 0 : _d.onOrderStatusChanged) === null || _e === void 0 ? void 0 : _e.informOrder))
+                    ? params.settings.onOrderStatusChanged.informOrder
+                    : []
+            }, sendgridApiKey: (typeof ((_f = params.settings) === null || _f === void 0 ? void 0 : _f.sendgridApiKey) === 'string')
+                ? (_g = params.settings) === null || _g === void 0 ? void 0 : _g.sendgridApiKey : '' })
     };
 }
 /**
