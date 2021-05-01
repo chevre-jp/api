@@ -2,6 +2,7 @@
  * 取引期限監視
  */
 import * as chevre from '@chevre/domain';
+import * as moment from 'moment';
 
 import { connectMongo } from '../../../connectMongo';
 
@@ -24,6 +25,19 @@ export default async () => {
 
             try {
                 await transactionRepo.makeExpired();
+
+                // 過去の不要な取引を削除
+                await transactionRepo.transactionModel.deleteMany({
+                    startDate: {
+                        $lt: moment()
+                            // tslint:disable-next-line:no-magic-numbers
+                            .add(-7, 'days')
+                            .toDate()
+                    },
+                    status: { $in: [chevre.factory.transactionStatusType.Canceled, chevre.factory.transactionStatusType.Expired] },
+                    tasksExportationStatus: chevre.factory.transactionTasksExportationStatus.Exported
+                })
+                    .exec();
             } catch (error) {
                 console.error(error);
             }
