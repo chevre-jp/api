@@ -47,6 +47,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - イベントの全座席検索を廃止
 - Eメール送信タスクを削除
+- 予約ダウンロードを削除
 
 ### Fixed
 
