@@ -26,11 +26,11 @@ const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const transactionsRouter = express_1.Router();
 transactionsRouter.use('/cancelReservation', cancelReservation_1.default);
-transactionsRouter.use(`/${chevre.factory.transactionType.MoneyTransfer}`, moneyTransfer_1.default);
-transactionsRouter.use(`/${chevre.factory.transactionType.Pay}`, pay_1.default);
-transactionsRouter.use(`/${chevre.factory.transactionType.Refund}`, refund_1.default);
+transactionsRouter.use(`/${chevre.factory.assetTransactionType.MoneyTransfer}`, moneyTransfer_1.default);
+transactionsRouter.use(`/${chevre.factory.assetTransactionType.Pay}`, pay_1.default);
+transactionsRouter.use(`/${chevre.factory.assetTransactionType.Refund}`, refund_1.default);
 transactionsRouter.use('/reserve', reserve_1.default);
-transactionsRouter.use(`/${chevre.factory.transactionType.RegisterService}`, registerService_1.default);
+transactionsRouter.use(`/${chevre.factory.assetTransactionType.RegisterService}`, registerService_1.default);
 /**
  * 取引検索
  */

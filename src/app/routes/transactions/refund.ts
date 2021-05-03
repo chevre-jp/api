@@ -60,7 +60,7 @@ refundTransactionsRouter.post(
 
             const transaction = await chevre.service.transaction.refund.start({
                 project: project,
-                typeOf: chevre.factory.transactionType.Refund,
+                typeOf: chevre.factory.assetTransactionType.Refund,
                 agent: {
                     ...req.body.agent
                 },
@@ -115,7 +115,7 @@ refundTransactionsRouter.put<ParamsDictionary>(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.Refund] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.Refund] }
             })({
                 project: projectRepo,
                 task: taskRepo,

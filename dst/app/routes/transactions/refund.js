@@ -58,7 +58,7 @@ refundTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const transaction = yield chevre.service.transaction.refund.start({
             project: project,
-            typeOf: chevre.factory.transactionType.Refund,
+            typeOf: chevre.factory.assetTransactionType.Refund,
             agent: Object.assign({}, req.body.agent),
             object: req.body.object,
             recipient: Object.assign({}, req.body.recipient),
@@ -96,7 +96,7 @@ refundTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default([
         // tslint:disable-next-line:no-floating-promises
         chevre.service.transaction.exportTasks({
             status: chevre.factory.transactionStatusType.Confirmed,
-            typeOf: { $in: [chevre.factory.transactionType.Refund] }
+            typeOf: { $in: [chevre.factory.assetTransactionType.Refund] }
         })({
             project: projectRepo,
             task: taskRepo,

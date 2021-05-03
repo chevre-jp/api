@@ -40,6 +40,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 資産取引クリーンアップ処理を追加
 - タスククリーンアップ処理を追加
 - cinerinoのアクション検索条件を継承
+- 資産取引のネームスペースを変更
 
 ### Deprecated
 

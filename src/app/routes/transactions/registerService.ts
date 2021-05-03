@@ -57,7 +57,7 @@ registerServiceTransactionsRouter.post(
 
             const transaction = await chevre.service.transaction.registerService.start({
                 project: project,
-                typeOf: chevre.factory.transactionType.RegisterService,
+                typeOf: chevre.factory.assetTransactionType.RegisterService,
                 agent: {
                     ...req.body.agent
                     // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
@@ -112,7 +112,7 @@ registerServiceTransactionsRouter.put<ParamsDictionary>(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.RegisterService] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.RegisterService] }
             })({
                 project: projectRepo,
                 task: taskRepo,

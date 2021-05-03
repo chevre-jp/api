@@ -52,7 +52,7 @@ cancelReservationTransactionsRouter.post(
 
             const transaction = await chevre.service.transaction.cancelReservation.start({
                 project: project,
-                typeOf: chevre.factory.transactionType.CancelReservation,
+                typeOf: chevre.factory.assetTransactionType.CancelReservation,
                 agent: {
                     ...req.body.agent
                     // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
@@ -114,7 +114,7 @@ cancelReservationTransactionsRouter.post(
 
             await chevre.service.transaction.cancelReservation.startAndConfirm({
                 project: project,
-                typeOf: chevre.factory.transactionType.CancelReservation,
+                typeOf: chevre.factory.assetTransactionType.CancelReservation,
                 agent: {
                     ...req.body.agent
                     // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
@@ -139,7 +139,7 @@ cancelReservationTransactionsRouter.post(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.CancelReservation] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.CancelReservation] }
             })({
                 project: projectRepo,
                 task: taskRepo,
@@ -184,7 +184,7 @@ cancelReservationTransactionsRouter.put(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.CancelReservation] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.CancelReservation] }
             })({
                 project: projectRepo,
                 task: taskRepo,
@@ -218,7 +218,7 @@ cancelReservationTransactionsRouter.put(
         try {
             const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             await transactionRepo.cancel({
-                typeOf: chevre.factory.transactionType.CancelReservation,
+                typeOf: chevre.factory.assetTransactionType.CancelReservation,
                 id: req.params.transactionId
             });
 

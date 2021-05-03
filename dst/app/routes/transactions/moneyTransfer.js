@@ -57,7 +57,7 @@ moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['admin'])
         const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
-        const transaction = yield chevre.service.transaction.moneyTransfer.start(Object.assign(Object.assign({ typeOf: chevre.factory.transactionType.MoneyTransfer, project: project, agent: req.body.agent, object: req.body.object, recipient: req.body.recipient, expires: moment(req.body.expires)
+        const transaction = yield chevre.service.transaction.moneyTransfer.start(Object.assign(Object.assign({ typeOf: chevre.factory.assetTransactionType.MoneyTransfer, project: project, agent: req.body.agent, object: req.body.object, recipient: req.body.recipient, expires: moment(req.body.expires)
                 .toDate() }, (typeof req.body.identifier === 'string') ? { identifier: req.body.identifier } : undefined), (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
             product: productRepo,
             project: projectRepo,
@@ -85,7 +85,7 @@ moneyTransferTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.de
         // tslint:disable-next-line:no-floating-promises
         chevre.service.transaction.exportTasks({
             status: chevre.factory.transactionStatusType.Confirmed,
-            typeOf: { $in: [chevre.factory.transactionType.MoneyTransfer] }
+            typeOf: { $in: [chevre.factory.assetTransactionType.MoneyTransfer] }
         })({
             project: projectRepo,
             task: taskRepo,

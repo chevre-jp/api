@@ -100,7 +100,7 @@ payTransactionsRouter.post(
 
             const transaction = await chevre.service.transaction.pay.start({
                 project: project,
-                typeOf: chevre.factory.transactionType.Pay,
+                typeOf: chevre.factory.assetTransactionType.Pay,
                 agent: {
                     ...req.body.agent
                 },
@@ -159,7 +159,7 @@ payTransactionsRouter.put<ParamsDictionary>(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.Pay] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.Pay] }
             })({
                 project: projectRepo,
                 task: taskRepo,

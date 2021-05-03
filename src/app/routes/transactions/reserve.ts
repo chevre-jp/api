@@ -62,7 +62,7 @@ reserveTransactionsRouter.post(
 
             const transaction = await chevre.service.transaction.reserve.start({
                 project: project,
-                typeOf: chevre.factory.transactionType.Reserve,
+                typeOf: chevre.factory.assetTransactionType.Reserve,
                 agent: req.body.agent,
                 object: req.body.object,
                 expires: moment(req.body.expires)
@@ -175,7 +175,7 @@ reserveTransactionsRouter.put(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.Reserve] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.Reserve] }
             })({
                 project: projectRepo,
                 task: taskRepo,

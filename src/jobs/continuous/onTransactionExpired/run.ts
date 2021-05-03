@@ -32,12 +32,12 @@ export default async () => {
                     status: chevre.factory.transactionStatusType.Expired,
                     typeOf: {
                         $in: [
-                            chevre.factory.transactionType.CancelReservation,
-                            chevre.factory.transactionType.MoneyTransfer,
-                            chevre.factory.transactionType.Pay,
-                            chevre.factory.transactionType.Refund,
-                            chevre.factory.transactionType.RegisterService,
-                            chevre.factory.transactionType.Reserve
+                            chevre.factory.assetTransactionType.CancelReservation,
+                            chevre.factory.assetTransactionType.MoneyTransfer,
+                            chevre.factory.assetTransactionType.Pay,
+                            chevre.factory.assetTransactionType.Refund,
+                            chevre.factory.assetTransactionType.RegisterService,
+                            chevre.factory.assetTransactionType.Reserve
                         ]
                     },
                     runsTasksAfterInSeconds: RUNS_TASKS_AFTER_IN_SECONDS

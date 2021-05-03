@@ -85,7 +85,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
-        const transaction = yield chevre.service.transaction.pay.start(Object.assign(Object.assign({ project: project, typeOf: chevre.factory.transactionType.Pay, agent: Object.assign({}, req.body.agent), object: req.body.object, recipient: Object.assign({}, req.body.recipient), expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined), (req.body.purpose !== undefined && req.body.purpose !== null) ? { purpose: req.body.purpose } : undefined))({
+        const transaction = yield chevre.service.transaction.pay.start(Object.assign(Object.assign({ project: project, typeOf: chevre.factory.assetTransactionType.Pay, agent: Object.assign({}, req.body.agent), object: req.body.object, recipient: Object.assign({}, req.body.recipient), expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined), (req.body.purpose !== undefined && req.body.purpose !== null) ? { purpose: req.body.purpose } : undefined))({
             action: actionRepo,
             event: eventRepo,
             product: productRepo,
@@ -120,7 +120,7 @@ payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['ad
         // tslint:disable-next-line:no-floating-promises
         chevre.service.transaction.exportTasks({
             status: chevre.factory.transactionStatusType.Confirmed,
-            typeOf: { $in: [chevre.factory.transactionType.Pay] }
+            typeOf: { $in: [chevre.factory.assetTransactionType.Pay] }
         })({
             project: projectRepo,
             task: taskRepo,

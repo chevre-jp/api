@@ -19,11 +19,11 @@ import validator from '../middlewares/validator';
 const transactionsRouter = Router();
 
 transactionsRouter.use('/cancelReservation', cancelReservationTransactionsRouter);
-transactionsRouter.use(`/${chevre.factory.transactionType.MoneyTransfer}`, moneyTransferTransactionsRouter);
-transactionsRouter.use(`/${chevre.factory.transactionType.Pay}`, payTransactionsRouter);
-transactionsRouter.use(`/${chevre.factory.transactionType.Refund}`, refundTransactionsRouter);
+transactionsRouter.use(`/${chevre.factory.assetTransactionType.MoneyTransfer}`, moneyTransferTransactionsRouter);
+transactionsRouter.use(`/${chevre.factory.assetTransactionType.Pay}`, payTransactionsRouter);
+transactionsRouter.use(`/${chevre.factory.assetTransactionType.Refund}`, refundTransactionsRouter);
 transactionsRouter.use('/reserve', reserveTransactionsRouter);
-transactionsRouter.use(`/${chevre.factory.transactionType.RegisterService}`, registerServiceTransactionsRouter);
+transactionsRouter.use(`/${chevre.factory.assetTransactionType.RegisterService}`, registerServiceTransactionsRouter);
 
 /**
  * 取引検索
@@ -61,7 +61,7 @@ transactionsRouter.get(
     async (req, res, next) => {
         try {
             const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
-            const searchConditions: chevre.factory.transaction.ISearchConditions<chevre.factory.transactionType> = {
+            const searchConditions: chevre.factory.assetTransaction.ISearchConditions<chevre.factory.assetTransactionType> = {
                 ...req.query,
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,

@@ -58,7 +58,7 @@ moneyTransferTransactionsRouter.post(
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
             const transaction = await chevre.service.transaction.moneyTransfer.start({
-                typeOf: chevre.factory.transactionType.MoneyTransfer,
+                typeOf: chevre.factory.assetTransactionType.MoneyTransfer,
                 project: project,
                 agent: req.body.agent,
                 object: req.body.object,
@@ -106,7 +106,7 @@ moneyTransferTransactionsRouter.put(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.MoneyTransfer] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.MoneyTransfer] }
             })({
                 project: projectRepo,
                 task: taskRepo,
