@@ -119,7 +119,8 @@ actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`
                             typeOf: chevre.factory.actionType.InformAction,
                             agent: action.project,
                             recipient: {
-                                typeOf: 'Person',
+                                typeOf: chevre.factory.personType.Person,
+                                id: url,
                                 url
                             },
                             object: action

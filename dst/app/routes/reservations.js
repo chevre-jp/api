@@ -123,7 +123,7 @@ reservationsRouter.patch('/:id', permitScopes_1.default(['admin', 'reservations.
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         // 予約存在確認
         const reservation = yield reservationRepo.findById({ id: req.params.id });
-        const actionAttributes = Object.assign({ project: reservation.project, typeOf: 'ReplaceAction', agent: Object.assign(Object.assign({}, req.user), { id: req.user.sub, typeOf: 'Person' }), object: reservation }, {
+        const actionAttributes = Object.assign({ project: reservation.project, typeOf: 'ReplaceAction', agent: Object.assign(Object.assign({}, req.user), { id: req.user.sub, typeOf: chevre.factory.personType.Person }), object: reservation }, {
             replacee: reservation,
             replacer: update,
             targetCollection: {
@@ -321,7 +321,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         let reservation = yield reservationRepo.findById({ id: req.params.id });
         // UseActionを作成する
-        const actionAttributes = Object.assign({ project: reservation.project, typeOf: chevre.factory.actionType.UseAction, agent: Object.assign({ typeOf: 'Person' }, req.body.agent), instrument: Object.assign({}, (typeof ((_a = req.body.instrument) === null || _a === void 0 ? void 0 : _a.token) === 'string')
+        const actionAttributes = Object.assign({ project: reservation.project, typeOf: chevre.factory.actionType.UseAction, agent: Object.assign({ typeOf: chevre.factory.personType.Person }, req.body.agent), instrument: Object.assign({}, (typeof ((_a = req.body.instrument) === null || _a === void 0 ? void 0 : _a.token) === 'string')
                 ? { token: req.body.instrument.token }
                 : undefined), 
             // どの予約を
@@ -375,7 +375,8 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
                         typeOf: chevre.factory.actionType.InformAction,
                         agent: action.project,
                         recipient: {
-                            typeOf: 'Person',
+                            typeOf: chevre.factory.personType.Person,
+                            id: url,
                             url
                         },
                         object: action

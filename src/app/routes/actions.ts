@@ -137,7 +137,8 @@ actionsRouter.put(
                                     typeOf: chevre.factory.actionType.InformAction,
                                     agent: action.project,
                                     recipient: {
-                                        typeOf: 'Person',
+                                        typeOf: chevre.factory.personType.Person,
+                                        id: url,
                                         url
                                     },
                                     object: action

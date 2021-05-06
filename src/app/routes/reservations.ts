@@ -150,7 +150,7 @@ reservationsRouter.patch(
                 agent: {
                     ...req.user,
                     id: req.user.sub,
-                    typeOf: 'Person'
+                    typeOf: chevre.factory.personType.Person
                 },
                 object: reservation,
                 ...{
@@ -405,7 +405,7 @@ reservationsRouter.put(
                 project: reservation.project,
                 typeOf: chevre.factory.actionType.UseAction,
                 agent: {
-                    typeOf: 'Person',
+                    typeOf: chevre.factory.personType.Person,
                     ...req.body.agent
                 },
                 instrument: {
@@ -476,7 +476,8 @@ reservationsRouter.put(
                                 typeOf: chevre.factory.actionType.InformAction,
                                 agent: action.project,
                                 recipient: {
-                                    typeOf: 'Person',
+                                    typeOf: chevre.factory.personType.Person,
+                                    id: url,
                                     url
                                 },
                                 object: action
