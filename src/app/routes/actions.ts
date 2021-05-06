@@ -21,7 +21,7 @@ const actionsRouter = Router();
  */
 actionsRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('limit')
             .optional()
@@ -66,7 +66,7 @@ actionsRouter.get(
  */
 actionsRouter.put(
     `/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`,
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {

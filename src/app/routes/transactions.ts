@@ -30,7 +30,7 @@ transactionsRouter.use(`/${chevre.factory.assetTransactionType.RegisterService}`
  */
 transactionsRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('limit')
             .optional()

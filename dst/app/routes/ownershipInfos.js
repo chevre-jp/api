@@ -26,7 +26,7 @@ const ownershipInfosRouter = express_1.Router();
  * 所有権作成
  * 識別子に対して冪等性を確保
  */
-ownershipInfosRouter.post('/saveByIdentifier', permitScopes_1.default(['admin']), ...[
+ownershipInfosRouter.post('/saveByIdentifier', permitScopes_1.default([]), ...[
     express_validator_1.body('project.id')
         .not()
         .isEmpty()
@@ -67,7 +67,7 @@ ownershipInfosRouter.post('/saveByIdentifier', permitScopes_1.default(['admin'])
 /**
  * 所有権検索
  */
-ownershipInfosRouter.get('', permitScopes_1.default(['admin']), ...[
+ownershipInfosRouter.get('', permitScopes_1.default([]), ...[
     express_validator_1.query('project.id.$eq')
         .not()
         .isEmpty()
@@ -115,7 +115,7 @@ ownershipInfosRouter.get('', permitScopes_1.default(['admin']), ...[
 /**
  * 所有権変更
  */
-ownershipInfosRouter.put('/updateByIdentifier', permitScopes_1.default(['admin']), ...[
+ownershipInfosRouter.put('/updateByIdentifier', permitScopes_1.default([]), ...[
     express_validator_1.body('project.id')
         .not()
         .isEmpty()

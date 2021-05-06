@@ -59,7 +59,7 @@ const sellersRouter = Router();
  */
 sellersRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -87,7 +87,7 @@ sellersRouter.post(
  */
 sellersRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('$projection.*')
             .toInt()
@@ -156,7 +156,7 @@ sellersRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 sellersRouter.get<ParamsDictionary>(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('$projection.*')
             .toInt()
@@ -212,7 +212,7 @@ sellersRouter.get<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 sellersRouter.put<ParamsDictionary>(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -237,7 +237,7 @@ sellersRouter.put<ParamsDictionary>(
  */
 sellersRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {

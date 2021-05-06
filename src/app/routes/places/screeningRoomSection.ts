@@ -19,7 +19,7 @@ const screeningRoomSectionRouter = Router();
  */
 screeningRoomSectionRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()
@@ -122,7 +122,7 @@ screeningRoomSectionRouter.post(
  */
 screeningRoomSectionRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('$projection.*')
             .toInt()
@@ -287,7 +287,7 @@ screeningRoomSectionRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 screeningRoomSectionRouter.put<ParamsDictionary>(
     '/:branchCode',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()
@@ -397,7 +397,7 @@ screeningRoomSectionRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 screeningRoomSectionRouter.delete<ParamsDictionary>(
     '/:branchCode',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()

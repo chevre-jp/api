@@ -23,7 +23,7 @@ const projectsRouter = express_1.Router();
 /**
  * プロジェクト作成
  */
-projectsRouter.post('', permitScopes_1.default(['admin']), ...[
+projectsRouter.post('', permitScopes_1.default([]), ...[
     express_validator_1.body('typeOf')
         .not()
         .isEmpty()
@@ -83,7 +83,7 @@ function createFromBody(params) {
  * プロジェクト検索
  * 閲覧権限を持つプロジェクトを検索
  */
-projectsRouter.get('', permitScopes_1.default(['admin']), ...[
+projectsRouter.get('', permitScopes_1.default([]), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -103,7 +103,7 @@ projectsRouter.get('', permitScopes_1.default(['admin']), ...[
  * プロジェクト取得
  */
 // tslint:disable-next-line:use-default-type-parameter
-projectsRouter.get('/:id', permitScopes_1.default(['admin']), ...[
+projectsRouter.get('/:id', permitScopes_1.default([]), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -125,7 +125,7 @@ projectsRouter.get('/:id', permitScopes_1.default(['admin']), ...[
 /**
  * プロジェクト更新
  */
-projectsRouter.patch('/:id', permitScopes_1.default(['admin']), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+projectsRouter.patch('/:id', permitScopes_1.default([]), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e;
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
@@ -152,7 +152,7 @@ projectsRouter.patch('/:id', permitScopes_1.default(['admin']), ...[], validator
  */
 // projectsRouter.get(
 //     '/:id/settings',
-//     permitScopes(['admin']),
+//     permitScopes([]),
 //     validator,
 //     async (req, res, next) => {
 //         try {

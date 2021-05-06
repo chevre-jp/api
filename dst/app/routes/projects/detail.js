@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * プロジェクト詳細ルーター
  */
-// import * as chevre from '@chevre/domain';
+const chevre = require("@chevre/domain");
 const express = require("express");
 const accountingReports_1 = require("../accountingReports");
 const accountTitles_1 = require("../accountTitles");
@@ -30,14 +30,15 @@ const tasks_1 = require("../tasks");
 const transactionNumbers_1 = require("../transactionNumbers");
 const transactions_1 = require("../transactions");
 const projectDetailRouter = express.Router();
-// projectDetailRouter.use((req, _, next) => {
-//     // プロジェクト未指定は拒否
-//     if (typeof req.project?.id !== 'string') {
-//         next(new chevre.factory.errors.Forbidden('project not specified'));
-//         return;
-//     }
-//     next();
-// });
+projectDetailRouter.use((req, _, next) => {
+    var _a;
+    // プロジェクト未指定は拒否
+    if (typeof ((_a = req.project) === null || _a === void 0 ? void 0 : _a.id) !== 'string') {
+        next(new chevre.factory.errors.Forbidden('project not specified'));
+        return;
+    }
+    next();
+});
 projectDetailRouter.use('/health', health_1.default);
 projectDetailRouter.use('/accountingReports', accountingReports_1.default);
 projectDetailRouter.use('/accountTitles', accountTitles_1.default);

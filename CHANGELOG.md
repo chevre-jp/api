@@ -42,6 +42,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - タスククリーンアップ処理を追加
 - cinerinoのアクション検索条件を継承
 - 資産取引のネームスペースを変更
+- chevre.adminスコープを全サービスに対して許可
 
 ### Deprecated
 

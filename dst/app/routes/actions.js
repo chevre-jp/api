@@ -26,7 +26,7 @@ const actionsRouter = express_1.Router();
 /**
  * アクション検索
  */
-actionsRouter.get('', permitScopes_1.default(['admin']), ...[
+actionsRouter.get('', permitScopes_1.default([]), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()
@@ -59,7 +59,7 @@ actionsRouter.get('', permitScopes_1.default(['admin']), ...[
 /**
  * アクションを取消
  */
-actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`, permitScopes_1.default(['admin']), validator_1.default, 
+actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`, permitScopes_1.default([]), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;

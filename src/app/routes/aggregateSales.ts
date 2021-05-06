@@ -17,7 +17,7 @@ const aggregateSalesRouter = Router();
  */
 aggregateSalesRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('limit')
             .optional()

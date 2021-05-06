@@ -16,7 +16,7 @@ const movieTheaterRouter = Router();
 
 movieTheaterRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()
@@ -54,7 +54,7 @@ movieTheaterRouter.post(
 
 movieTheaterRouter.get(
     '',
-    permitScopes(['admin', 'places', 'places.read-only']),
+    permitScopes(['places', 'places.read-only']),
     validator,
     async (req, res, next) => {
         try {
@@ -77,7 +77,7 @@ movieTheaterRouter.get(
 
 movieTheaterRouter.get(
     '/:id',
-    permitScopes(['admin', 'places', 'places.read-only']),
+    permitScopes(['places', 'places.read-only']),
     validator,
     async (req, res, next) => {
         try {
@@ -94,7 +94,7 @@ movieTheaterRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 movieTheaterRouter.put<ParamsDictionary>(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('branchCode')
             .not()
@@ -124,7 +124,7 @@ movieTheaterRouter.put<ParamsDictionary>(
 
 movieTheaterRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {

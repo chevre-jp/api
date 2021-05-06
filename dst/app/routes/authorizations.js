@@ -24,7 +24,7 @@ const authorizationsRouter = express_1.Router();
 /**
  * 承認作成
  */
-authorizationsRouter.post('', permitScopes_1.default(['admin']), ...[
+authorizationsRouter.post('', permitScopes_1.default([]), ...[
     express_validator_1.body()
         .isArray()
         .custom((value) => value.length <= MAX_NUM_AUTHORIZATIONS_CREATED)
@@ -73,7 +73,7 @@ authorizationsRouter.post('', permitScopes_1.default(['admin']), ...[
 /**
  * 承認検索
  */
-authorizationsRouter.get('', permitScopes_1.default(['admin']), ...[
+authorizationsRouter.get('', permitScopes_1.default([]), ...[
     express_validator_1.query('project.id.$eq')
         .not()
         .isEmpty()

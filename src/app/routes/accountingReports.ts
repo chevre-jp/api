@@ -20,7 +20,7 @@ const accountingReportsRouter = Router();
 // tslint:disable-next-line:use-default-type-parameter
 accountingReportsRouter.get<ParamsDictionary>(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('limit')
             .optional()

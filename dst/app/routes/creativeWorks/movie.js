@@ -21,7 +21,7 @@ const mongoose = require("mongoose");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const movieRouter = express_1.Router();
-movieRouter.post('', permitScopes_1.default(['admin']), ...[
+movieRouter.post('', permitScopes_1.default([]), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -68,7 +68,7 @@ movieRouter.post('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), ...[
+movieRouter.get('', permitScopes_1.default(['creativeWorks', 'creativeWorks.read-only']), ...[
     express_validator_1.query('datePublishedFrom')
         .optional()
         .isISO8601()
@@ -106,7 +106,7 @@ movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeW
         next(error);
     }
 }));
-movieRouter.get('/:id', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+movieRouter.get('/:id', permitScopes_1.default(['creativeWorks', 'creativeWorks.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         const movie = yield creativeWorkRepo.findMovieById({ id: req.params.id });
@@ -117,7 +117,7 @@ movieRouter.get('/:id', permitScopes_1.default(['admin', 'creativeWorks', 'creat
     }
 }));
 // tslint:disable-next-line:use-default-type-parameter
-movieRouter.put('/:id', permitScopes_1.default(['admin']), ...[
+movieRouter.put('/:id', permitScopes_1.default([]), ...[
     express_validator_1.body('datePublished')
         .optional()
         .isISO8601()
@@ -159,7 +159,7 @@ movieRouter.put('/:id', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-movieRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+movieRouter.delete('/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         yield creativeWorkRepo.deleteMovie({ id: req.params.id });

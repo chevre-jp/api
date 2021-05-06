@@ -21,7 +21,7 @@ import validator from '../../middlewares/validator';
  */
 payTransactionsRouter.post(
     '/check',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {
@@ -55,7 +55,7 @@ payTransactionsRouter.post(
 
 payTransactionsRouter.post(
     '/start',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()
@@ -134,7 +134,7 @@ payTransactionsRouter.post(
 // tslint:disable-next-line:use-default-type-parameter
 payTransactionsRouter.put<ParamsDictionary>(
     '/:transactionId/confirm',
-    permitScopes(['admin', 'transactions']),
+    permitScopes(['transactions']),
     ...[
         body('endDate')
             .optional()
@@ -187,7 +187,7 @@ payTransactionsRouter.put<ParamsDictionary>(
 
 payTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['admin', 'transactions']),
+    permitScopes(['transactions']),
     validator,
     async (req, res, next) => {
         try {

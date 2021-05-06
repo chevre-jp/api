@@ -49,7 +49,7 @@ const customersRouter = Router();
  */
 customersRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -77,7 +77,7 @@ customersRouter.post(
  */
 customersRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('$projection.*')
             .toInt()
@@ -111,7 +111,7 @@ customersRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 customersRouter.get<ParamsDictionary>(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('$projection.*')
             .toInt()
@@ -138,7 +138,7 @@ customersRouter.get<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 customersRouter.put<ParamsDictionary>(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -163,7 +163,7 @@ customersRouter.put<ParamsDictionary>(
  */
 customersRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {

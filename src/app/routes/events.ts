@@ -121,7 +121,7 @@ const validations: RequestHandler[] = [
  */
 eventsRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -162,7 +162,7 @@ eventsRouter.post(
  */
 eventsRouter.get(
     '',
-    permitScopes(['admin', 'events', 'events.read-only']),
+    permitScopes(['events', 'events.read-only']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -256,7 +256,7 @@ eventsRouter.get(
  */
 eventsRouter.get(
     '/:id',
-    permitScopes(['admin', 'events', 'events.read-only']),
+    permitScopes(['events', 'events.read-only']),
     validator,
     async (req, res, next) => {
         try {
@@ -283,7 +283,7 @@ eventsRouter.get(
  */
 eventsRouter.patch(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     // ...validations,
     validator,
     async (req, res, next) => {
@@ -317,7 +317,7 @@ eventsRouter.patch(
  */
 eventsRouter.put(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -351,7 +351,7 @@ eventsRouter.put(
 
 eventsRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {
@@ -375,7 +375,7 @@ eventsRouter.delete(
  */
 // eventsRouter.get(
 //     '/:id/offers',
-//     permitScopes(['admin', 'events', 'events.read-only']),
+//     permitScopes(['events', 'events.read-only']),
 //     validator,
 //     async (req, res, next) => {
 //         try {
@@ -400,7 +400,7 @@ eventsRouter.delete(
  */
 eventsRouter.get(
     '/:id/offers/ticket',
-    permitScopes(['admin', 'events', 'events.read-only']),
+    permitScopes(['events', 'events.read-only']),
     validator,
     async (req, res, next) => {
         try {
@@ -433,7 +433,7 @@ eventsRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 eventsRouter.get<ParamsDictionary>(
     '/:id/seats',
-    permitScopes(['admin', 'events', 'events.read-only']),
+    permitScopes(['events', 'events.read-only']),
     ...[
         query('$projection.*')
             .toInt(),

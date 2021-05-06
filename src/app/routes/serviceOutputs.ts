@@ -21,7 +21,7 @@ const serviceOutputsRouter = Router();
  */
 serviceOutputsRouter.get(
     '',
-    permitScopes(['admin', 'serviceOutputs', 'serviceOutputs.read-only']),
+    permitScopes(['serviceOutputs', 'serviceOutputs.read-only']),
     ...[
         query('limit')
             .optional()
@@ -79,7 +79,7 @@ serviceOutputsRouter.get(
  */
 serviceOutputsRouter.post(
     '/identifier',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body()
             .isArray({ min: 1, max: MAX_NUM_IDENTIFIERS_CREATED })

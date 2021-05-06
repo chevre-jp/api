@@ -19,7 +19,7 @@ const projectsRouter = Router();
  */
 projectsRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('typeOf')
             .not()
@@ -95,7 +95,7 @@ function createFromBody(params: any): chevre.factory.project.IProject {
  */
 projectsRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('$projection.*')
             .toInt()
@@ -130,7 +130,7 @@ projectsRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 projectsRouter.get<ParamsDictionary>(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('$projection.*')
             .toInt()
@@ -161,7 +161,7 @@ projectsRouter.get<ParamsDictionary>(
  */
 projectsRouter.patch(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[],
     validator,
     async (req, res, next) => {
@@ -202,7 +202,7 @@ projectsRouter.patch(
  */
 // projectsRouter.get(
 //     '/:id/settings',
-//     permitScopes(['admin']),
+//     permitScopes([]),
 //     validator,
 //     async (req, res, next) => {
 //         try {

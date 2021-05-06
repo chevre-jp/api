@@ -24,7 +24,7 @@ const validator_1 = require("../../middlewares/validator");
 /**
  * 決済認証(ムビチケ購入番号確認)
  */
-payTransactionsRouter.post('/check', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+payTransactionsRouter.post('/check', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const action = yield chevre.service.transaction.pay.check({
@@ -47,7 +47,7 @@ payTransactionsRouter.post('/check', permitScopes_1.default(['admin']), validato
         next(error);
     }
 }));
-payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
+payTransactionsRouter.post('/start', permitScopes_1.default([]), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -104,7 +104,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
  * 取引確定
  */
 // tslint:disable-next-line:use-default-type-parameter
-payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), ...[
+payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['transactions']), ...[
     express_validator_1.body('endDate')
         .optional()
         .isISO8601()
@@ -144,7 +144,7 @@ payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['ad
         next(error);
     }
 }));
-payTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+payTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);

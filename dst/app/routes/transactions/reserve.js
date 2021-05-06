@@ -22,7 +22,7 @@ const reserveTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), ...[
+reserveTransactionsRouter.post('/start', permitScopes_1.default(['transactions']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -94,7 +94,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
  */
 // reserveTransactionsRouter.post(
 //     '/:transactionId/reservations',
-//     permitScopes(['admin', 'transactions']),
+//     permitScopes(['transactions']),
 //     validator,
 //     async (req, res, next) => {
 //         try {
@@ -143,7 +143,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'trans
 /**
  * 取引確定
  */
-reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const projectRepo = new chevre.repository.Project(mongoose.connection);
@@ -178,7 +178,7 @@ reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(
         next(error);
     }
 }));
-reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const actionRepo = new chevre.repository.Action(mongoose.connection);

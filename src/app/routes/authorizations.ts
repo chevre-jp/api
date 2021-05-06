@@ -19,7 +19,7 @@ const authorizationsRouter = Router();
  */
 authorizationsRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body()
             .isArray()
@@ -75,7 +75,7 @@ authorizationsRouter.post(
  */
 authorizationsRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('project.id.$eq')
             .not()

@@ -25,7 +25,7 @@ const screeningRoomRouter = express_1.Router();
 /**
  * 作成
  */
-screeningRoomRouter.post('', permitScopes_1.default(['admin']), ...[
+screeningRoomRouter.post('', permitScopes_1.default([]), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -99,7 +99,7 @@ screeningRoomRouter.post('', permitScopes_1.default(['admin']), ...[
 /**
  * 検索
  */
-screeningRoomRouter.get('', permitScopes_1.default(['admin']), ...[
+screeningRoomRouter.get('', permitScopes_1.default([]), ...[
     express_validator_1.query('$projection.*')
         .toInt(),
     express_validator_1.query('openSeatingAllowed')
@@ -268,7 +268,7 @@ screeningRoomRouter.get('', permitScopes_1.default(['admin']), ...[
  * 更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-screeningRoomRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
+screeningRoomRouter.put('/:branchCode', permitScopes_1.default([]), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -336,7 +336,7 @@ screeningRoomRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
  * 削除
  */
 // tslint:disable-next-line:use-default-type-parameter
-screeningRoomRouter.delete('/:branchCode', permitScopes_1.default(['admin']), ...[
+screeningRoomRouter.delete('/:branchCode', permitScopes_1.default([]), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()

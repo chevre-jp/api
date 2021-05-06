@@ -34,7 +34,7 @@ transactionsRouter.use(`/${chevre.factory.assetTransactionType.RegisterService}`
 /**
  * 取引検索
  */
-transactionsRouter.get('', permitScopes_1.default(['admin']), ...[
+transactionsRouter.get('', permitScopes_1.default([]), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()

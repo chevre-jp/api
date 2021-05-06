@@ -25,7 +25,7 @@ const ordersRouter = Router();
  */
 ordersRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('project.id.$eq')
             .not()
@@ -133,7 +133,7 @@ ordersRouter.get(
  */
 ordersRouter.get(
     '/:orderNumber',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {
@@ -155,7 +155,7 @@ ordersRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 ordersRouter.put<ParamsDictionary>(
     '/:orderNumber',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[],
     validator,
     async (req, res, next) => {
@@ -244,7 +244,7 @@ function createOrder(params: chevre.factory.order.IOrder): chevre.factory.order.
 // tslint:disable-next-line:use-default-type-parameter
 ordersRouter.put<ParamsDictionary>(
     `/:orderNumber/${chevre.factory.orderStatus.OrderDelivered}`,
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[],
     validator,
     async (req, res, next) => {
@@ -271,7 +271,7 @@ ordersRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 ordersRouter.put<ParamsDictionary>(
     `/:orderNumber/${chevre.factory.orderStatus.OrderReturned}`,
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('dateReturned')
             .not()

@@ -62,7 +62,7 @@ const sellersRouter = express_1.Router();
 /**
  * 販売者作成
  */
-sellersRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+sellersRouter.post('', permitScopes_1.default([]), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const attributes = Object.assign(Object.assign({}, req.body), { project: project });
@@ -78,7 +78,7 @@ sellersRouter.post('', permitScopes_1.default(['admin']), ...validations, valida
 /**
  * 販売者検索
  */
-sellersRouter.get('', permitScopes_1.default(['admin']), ...[
+sellersRouter.get('', permitScopes_1.default([]), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -130,7 +130,7 @@ sellersRouter.get('', permitScopes_1.default(['admin']), ...[
  * IDで販売者検索
  */
 // tslint:disable-next-line:use-default-type-parameter
-sellersRouter.get('/:id', permitScopes_1.default(['admin']), ...[
+sellersRouter.get('/:id', permitScopes_1.default([]), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -174,7 +174,7 @@ sellersRouter.get('/:id', permitScopes_1.default(['admin']), ...[
  * 販売者更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-sellersRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+sellersRouter.put('/:id', permitScopes_1.default([]), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const attributes = Object.assign({}, req.body);
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
@@ -189,7 +189,7 @@ sellersRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, val
 /**
  * 販売者削除
  */
-sellersRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+sellersRouter.delete('/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         yield sellerRepo.deleteById({

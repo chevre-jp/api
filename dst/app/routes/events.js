@@ -119,7 +119,7 @@ const validations = [
 /**
  * イベント作成
  */
-eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+eventsRouter.post('', permitScopes_1.default([]), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const params = req.body.map((a) => {
             const project = Object.assign(Object.assign({}, a.project), { typeOf: chevre.factory.organizationType.Project });
@@ -146,7 +146,7 @@ eventsRouter.post('', permitScopes_1.default(['admin']), ...validations, validat
 /**
  * イベント検索
  */
-eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-only']), ...[
+eventsRouter.get('', permitScopes_1.default(['events', 'events.read-only']), ...[
     express_validator_1.query('$projection.*')
         .toInt(),
     express_validator_1.query('typeOf')
@@ -222,7 +222,7 @@ eventsRouter.get('', permitScopes_1.default(['admin', 'events', 'events.read-onl
 /**
  * IDでイベント検索
  */
-eventsRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+eventsRouter.get('/:id', permitScopes_1.default(['events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const event = yield eventRepo.findById({
@@ -240,7 +240,7 @@ eventsRouter.get('/:id', permitScopes_1.default(['admin', 'events', 'events.read
 /**
  * イベント更新
  */
-eventsRouter.patch('/:id', permitScopes_1.default(['admin']), 
+eventsRouter.patch('/:id', permitScopes_1.default([]), 
 // ...validations,
 validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -267,7 +267,7 @@ validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, funct
 /**
  * イベント更新
  */
-eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+eventsRouter.put('/:id', permitScopes_1.default([]), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventAttributes = req.body[0];
         const upsert = req.query.upsert === 'true';
@@ -291,7 +291,7 @@ eventsRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, vali
         next(error);
     }
 }));
-eventsRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+eventsRouter.delete('/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         yield eventRepo.eventModel.findOneAndDelete({ _id: req.params.id })
@@ -309,7 +309,7 @@ eventsRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.defau
  */
 // eventsRouter.get(
 //     '/:id/offers',
-//     permitScopes(['admin', 'events', 'events.read-only']),
+//     permitScopes(['events', 'events.read-only']),
 //     validator,
 //     async (req, res, next) => {
 //         try {
@@ -330,7 +330,7 @@ eventsRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.defau
 /**
  * イベントオファー検索
  */
-eventsRouter.get('/:id/offers/ticket', permitScopes_1.default(['admin', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+eventsRouter.get('/:id/offers/ticket', permitScopes_1.default(['events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
@@ -356,7 +356,7 @@ eventsRouter.get('/:id/offers/ticket', permitScopes_1.default(['admin', 'events'
  * 座席検索
  */
 // tslint:disable-next-line:use-default-type-parameter
-eventsRouter.get('/:id/seats', permitScopes_1.default(['admin', 'events', 'events.read-only']), ...[
+eventsRouter.get('/:id/seats', permitScopes_1.default(['events', 'events.read-only']), ...[
     express_validator_1.query('$projection.*')
         .toInt(),
     express_validator_1.query('limit')

@@ -25,7 +25,7 @@ const seatRouter = express_1.Router();
 /**
  * 作成
  */
-seatRouter.post('', permitScopes_1.default(['admin']), ...[
+seatRouter.post('', permitScopes_1.default([]), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -117,7 +117,7 @@ seatRouter.post('', permitScopes_1.default(['admin']), ...[
 /**
  * 座席検索
  */
-seatRouter.get('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+seatRouter.get('', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
@@ -134,7 +134,7 @@ seatRouter.get('', permitScopes_1.default(['admin']), validator_1.default, (req,
  * 更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-seatRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
+seatRouter.put('/:branchCode', permitScopes_1.default([]), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -223,7 +223,7 @@ seatRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
  * 削除
  */
 // tslint:disable-next-line:use-default-type-parameter
-seatRouter.delete('/:branchCode', permitScopes_1.default(['admin']), ...[
+seatRouter.delete('/:branchCode', permitScopes_1.default([]), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()

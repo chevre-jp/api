@@ -28,7 +28,7 @@ const ordersRouter = express_1.Router();
 /**
  * 注文検索
  */
-ordersRouter.get('', permitScopes_1.default(['admin']), ...[
+ordersRouter.get('', permitScopes_1.default([]), ...[
     express_validator_1.query('project.id.$eq')
         .not()
         .isEmpty()
@@ -124,7 +124,7 @@ ordersRouter.get('', permitScopes_1.default(['admin']), ...[
 /**
  * 注文取得
  */
-ordersRouter.get('/:orderNumber', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+ordersRouter.get('/:orderNumber', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const orderRepo = new chevre.repository.Order(mongoose.connection);
         const order = yield orderRepo.findByOrderNumber({
@@ -140,7 +140,7 @@ ordersRouter.get('/:orderNumber', permitScopes_1.default(['admin']), validator_1
  * 注文作成
  */
 // tslint:disable-next-line:use-default-type-parameter
-ordersRouter.put('/:orderNumber', permitScopes_1.default(['admin']), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+ordersRouter.put('/:orderNumber', permitScopes_1.default([]), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const accountingReportRepo = new chevre.repository.AccountingReport(mongoose.connection);
         const orderRepo = new chevre.repository.Order(mongoose.connection);
@@ -198,7 +198,7 @@ function createOrder(params) {
  * 注文配送
  */
 // tslint:disable-next-line:use-default-type-parameter
-ordersRouter.put(`/:orderNumber/${chevre.factory.orderStatus.OrderDelivered}`, permitScopes_1.default(['admin']), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+ordersRouter.put(`/:orderNumber/${chevre.factory.orderStatus.OrderDelivered}`, permitScopes_1.default([]), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const orderRepo = new chevre.repository.Order(mongoose.connection);
         const orderNumber = req.params.orderNumber;
@@ -217,7 +217,7 @@ ordersRouter.put(`/:orderNumber/${chevre.factory.orderStatus.OrderDelivered}`, p
  * 注文返品
  */
 // tslint:disable-next-line:use-default-type-parameter
-ordersRouter.put(`/:orderNumber/${chevre.factory.orderStatus.OrderReturned}`, permitScopes_1.default(['admin']), ...[
+ordersRouter.put(`/:orderNumber/${chevre.factory.orderStatus.OrderReturned}`, permitScopes_1.default([]), ...[
     express_validator_1.body('dateReturned')
         .not()
         .isEmpty()

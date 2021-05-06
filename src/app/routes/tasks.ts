@@ -21,7 +21,7 @@ const tasksRouter = Router();
 // tslint:disable-next-line:use-default-type-parameter
 tasksRouter.post<ParamsDictionary>(
     '/:name',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()
@@ -74,7 +74,7 @@ tasksRouter.post<ParamsDictionary>(
  */
 tasksRouter.get(
     '/:name/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {
@@ -95,7 +95,7 @@ tasksRouter.get(
  */
 tasksRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('runsFrom')
             .optional()

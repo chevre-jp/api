@@ -1,7 +1,7 @@
 /**
  * プロジェクト詳細ルーター
  */
-// import * as chevre from '@chevre/domain';
+import * as chevre from '@chevre/domain';
 import * as express from 'express';
 
 import accountingReportsRouter from '../accountingReports';
@@ -31,16 +31,16 @@ import transactionsRouter from '../transactions';
 
 const projectDetailRouter = express.Router();
 
-// projectDetailRouter.use((req, _, next) => {
-//     // プロジェクト未指定は拒否
-//     if (typeof req.project?.id !== 'string') {
-//         next(new chevre.factory.errors.Forbidden('project not specified'));
+projectDetailRouter.use((req, _, next) => {
+    // プロジェクト未指定は拒否
+    if (typeof req.project?.id !== 'string') {
+        next(new chevre.factory.errors.Forbidden('project not specified'));
 
-//         return;
-//     }
+        return;
+    }
 
-//     next();
-// });
+    next();
+});
 
 projectDetailRouter.use('/health', healthRouter);
 

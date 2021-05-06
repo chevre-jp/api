@@ -22,7 +22,7 @@ const seatRouter = Router();
  */
 seatRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()
@@ -137,7 +137,7 @@ seatRouter.post(
  */
 seatRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {
@@ -164,7 +164,7 @@ seatRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 seatRouter.put<ParamsDictionary>(
     '/:branchCode',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()
@@ -276,7 +276,7 @@ seatRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 seatRouter.delete<ParamsDictionary>(
     '/:branchCode',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()

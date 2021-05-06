@@ -21,7 +21,7 @@ const reservationsRouter = Router();
  */
 reservationsRouter.get(
     '',
-    permitScopes(['admin', 'reservations', 'reservations.read-only']),
+    permitScopes(['reservations', 'reservations.read-only']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -110,7 +110,7 @@ reservationsRouter.get(
 
 reservationsRouter.get(
     '/:id',
-    permitScopes(['admin', 'reservations', 'reservations.read-only']),
+    permitScopes(['reservations', 'reservations.read-only']),
     validator,
     async (req, res, next) => {
         try {
@@ -131,7 +131,7 @@ reservationsRouter.get(
  */
 reservationsRouter.patch(
     '/:id',
-    permitScopes(['admin', 'reservations.write']),
+    permitScopes(['reservations.write']),
     validator,
     async (req, res, next) => {
         try {
@@ -199,7 +199,7 @@ reservationsRouter.patch(
 
 reservationsRouter.get(
     '/eventReservation/screeningEvent',
-    permitScopes(['admin', 'reservations', 'reservations.read-only']),
+    permitScopes(['reservations', 'reservations.read-only']),
     ...[
         query('limit')
             .optional()
@@ -274,7 +274,7 @@ reservationsRouter.get(
 
 reservationsRouter.get(
     '/eventReservation/screeningEvent/:id',
-    permitScopes(['admin', 'reservations', 'reservations.read-only']),
+    permitScopes(['reservations', 'reservations.read-only']),
     validator,
     async (req, res, next) => {
         try {
@@ -295,7 +295,7 @@ reservationsRouter.get(
  */
 reservationsRouter.put(
     '/eventReservation/screeningEvent/checkedIn',
-    permitScopes(['admin', 'reservations.checkedIn']),
+    permitScopes(['reservations.checkedIn']),
     validator,
     async (req, res, next) => {
         try {
@@ -348,7 +348,7 @@ reservationsRouter.put(
 
 reservationsRouter.put(
     '/eventReservation/screeningEvent/:id/checkedIn',
-    permitScopes(['admin', 'reservations.checkedIn']),
+    permitScopes(['reservations.checkedIn']),
     validator,
     async (req, res, next) => {
         try {
@@ -389,7 +389,7 @@ reservationsRouter.put(
 
 reservationsRouter.put(
     '/eventReservation/screeningEvent/:id/attended',
-    permitScopes(['admin', 'reservations.attended']),
+    permitScopes(['reservations.attended']),
     validator,
     // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {

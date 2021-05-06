@@ -20,7 +20,7 @@ const ownershipInfosRouter = Router();
  */
 ownershipInfosRouter.post(
     '/saveByIdentifier',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project.id')
             .not()
@@ -78,7 +78,7 @@ ownershipInfosRouter.post(
  */
 ownershipInfosRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('project.id.$eq')
             .not()
@@ -141,7 +141,7 @@ ownershipInfosRouter.get(
  */
 ownershipInfosRouter.put(
     '/updateByIdentifier',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project.id')
             .not()

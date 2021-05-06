@@ -26,7 +26,7 @@ const reservationsRouter = express_1.Router();
 /**
  * 予約検索
  */
-reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
+reservationsRouter.get('', permitScopes_1.default(['reservations', 'reservations.read-only']), ...[
     express_validator_1.query('$projection.*')
         .toInt(),
     express_validator_1.query('limit')
@@ -100,7 +100,7 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
         next(error);
     }
 }));
-reservationsRouter.get('/:id', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reservationsRouter.get('/:id', permitScopes_1.default(['reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const reservation = yield reservationRepo.findById({
@@ -115,7 +115,7 @@ reservationsRouter.get('/:id', permitScopes_1.default(['admin', 'reservations', 
 /**
  * 予約部分変更
  */
-reservationsRouter.patch('/:id', permitScopes_1.default(['admin', 'reservations.write']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reservationsRouter.patch('/:id', permitScopes_1.default(['reservations.write']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const update = req.body;
         delete update.id;
@@ -159,7 +159,7 @@ reservationsRouter.patch('/:id', permitScopes_1.default(['admin', 'reservations.
         next(error);
     }
 }));
-reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
+reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['reservations', 'reservations.read-only']), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()
@@ -221,7 +221,7 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
         next(error);
     }
 }));
-reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.default(['reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const reservation = yield reservationRepo.findById({
@@ -236,7 +236,7 @@ reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.de
 /**
  * 発券
  */
-reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScopes_1.default(['admin', 'reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScopes_1.default(['reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (req.body.id === undefined && req.body.reservationNumber === undefined) {
             throw new chevre.factory.errors.ArgumentNull('At least one of id and reservationNumber');
@@ -279,7 +279,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScope
         next(error);
     }
 }));
-reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitScopes_1.default(['admin', 'reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitScopes_1.default(['reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
@@ -311,7 +311,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
         next(error);
     }
 }));
-reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitScopes_1.default(['admin', 'reservations.attended']), validator_1.default, 
+reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitScopes_1.default(['reservations.attended']), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;

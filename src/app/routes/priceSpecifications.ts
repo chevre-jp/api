@@ -14,7 +14,7 @@ const priceSpecificationsRouter = Router();
 
 // priceSpecificationsRouter.get(
 //     '/compoundPriceSpecification',
-//     permitScopes(['admin']),
+//     permitScopes([]),
 //     validator,
 //     async (req, res, next) => {
 //         try {
@@ -37,7 +37,7 @@ const priceSpecificationsRouter = Router();
 
 priceSpecificationsRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()
@@ -69,7 +69,7 @@ priceSpecificationsRouter.post(
 
 priceSpecificationsRouter.get(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {
@@ -91,7 +91,7 @@ priceSpecificationsRouter.get(
 
 priceSpecificationsRouter.put(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {
@@ -115,7 +115,7 @@ priceSpecificationsRouter.put(
 
 priceSpecificationsRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {
@@ -135,7 +135,7 @@ priceSpecificationsRouter.delete(
 
 priceSpecificationsRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {

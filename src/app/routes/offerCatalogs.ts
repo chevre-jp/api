@@ -14,7 +14,7 @@ const offerCatalogsRouter = Router();
 
 offerCatalogsRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()
@@ -40,7 +40,7 @@ offerCatalogsRouter.post(
 
 offerCatalogsRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {
@@ -62,7 +62,7 @@ offerCatalogsRouter.get(
 
 offerCatalogsRouter.get(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {
@@ -77,7 +77,7 @@ offerCatalogsRouter.get(
 
 offerCatalogsRouter.put(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {
@@ -94,7 +94,7 @@ offerCatalogsRouter.put(
 
 offerCatalogsRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {

@@ -25,7 +25,7 @@ const serviceOutputsRouter = express_1.Router();
 /**
  * 検索
  */
-serviceOutputsRouter.get('', permitScopes_1.default(['admin', 'serviceOutputs', 'serviceOutputs.read-only']), ...[
+serviceOutputsRouter.get('', permitScopes_1.default(['serviceOutputs', 'serviceOutputs.read-only']), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()
@@ -68,7 +68,7 @@ serviceOutputsRouter.get('', permitScopes_1.default(['admin', 'serviceOutputs', 
 /**
  * サービスアウトプット識別子発行
  */
-serviceOutputsRouter.post('/identifier', permitScopes_1.default(['admin']), ...[
+serviceOutputsRouter.post('/identifier', permitScopes_1.default([]), ...[
     express_validator_1.body()
         .isArray({ min: 1, max: MAX_NUM_IDENTIFIERS_CREATED })
         .withMessage(() => `must be an array <= ${MAX_NUM_IDENTIFIERS_CREATED}`),
