@@ -11,7 +11,7 @@ const projects_1 = require("./projects");
 const detail_1 = require("./projects/detail");
 const webhooks_1 = require("./webhooks");
 const authentication_1 = require("../middlewares/authentication");
-// import setPermissions from '../middlewares/setPermissions';
+const setPermissions_1 = require("../middlewares/setPermissions");
 const setProject_1 = require("../middlewares/setProject");
 const USE_PROJECTLESS_ROUTER = process.env.USE_PROJECTLESS_ROUTER === '1';
 const router = express.Router();
@@ -29,7 +29,7 @@ router.use(authentication_1.default);
 // リクエストプロジェクト設定
 router.use(setProject_1.default);
 // プロジェクトメンバー権限を確認
-// router.use(setPermissions);
+router.use(setPermissions_1.default);
 // プロジェクトルーター
 router.use('/projects', projects_1.default);
 // 以下、プロジェクト指定済の状態でルーティング

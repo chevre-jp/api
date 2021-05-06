@@ -12,7 +12,7 @@ import projectDetailRouter from './projects/detail';
 import webhooksRouter from './webhooks';
 
 import authentication from '../middlewares/authentication';
-// import setPermissions from '../middlewares/setPermissions';
+import setPermissions from '../middlewares/setPermissions';
 import setProject from '../middlewares/setProject';
 
 const USE_PROJECTLESS_ROUTER = process.env.USE_PROJECTLESS_ROUTER === '1';
@@ -37,7 +37,7 @@ router.use(authentication);
 router.use(setProject);
 
 // プロジェクトメンバー権限を確認
-// router.use(setPermissions);
+router.use(setPermissions);
 
 // プロジェクトルーター
 router.use('/projects', projectsRouter);

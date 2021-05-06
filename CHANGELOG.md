@@ -43,6 +43,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - cinerinoのアクション検索条件を継承
 - 資産取引のネームスペースを変更
 - chevre.adminスコープを全サービスに対して許可
+- 権限セットミドルウェアを追加
 
 ### Deprecated
 

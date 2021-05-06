@@ -14,6 +14,13 @@ declare global {
             project: IRequestProject;
             user: IUser;
             accessToken: string;
+            // isAdmin: boolean;
+            isPOS: boolean;
+            isProjectMember: boolean;
+            /**
+             * プロジェクトメンバーの権限
+             */
+            memberPermissions: string[];
         }
     }
 }

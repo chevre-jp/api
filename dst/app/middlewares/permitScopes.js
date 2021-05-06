@@ -9,8 +9,8 @@ const iam_1 = require("../iam");
 const debug = createDebug('chevre-api:middlewares');
 exports.default = (specifiedPermittedScopes) => {
     return (req, __, next) => {
-        if (process.env.RESOURECE_SERVER_IDENTIFIER === undefined) {
-            next(new Error('RESOURECE_SERVER_IDENTIFIER undefined'));
+        if (process.env.RESOURCE_SERVER_IDENTIFIER === undefined) {
+            next(new Error('RESOURCE_SERVER_IDENTIFIER undefined'));
             return;
         }
         let permittedScopes = [...specifiedPermittedScopes];
@@ -18,13 +18,12 @@ exports.default = (specifiedPermittedScopes) => {
         permittedScopes.push(iam_1.Permission.Admin, iam_1.Permission.ChevreAdmin);
         permittedScopes = [...new Set(permittedScopes)];
         debug('permittedScopes:', permittedScopes);
-        const ownedScopes = [...req.user.scopes];
-        // const ownedScopes: string[] = [...req.user.scopes, ...req.memberPermissions];
+        const ownedScopes = [...req.user.scopes, ...req.memberPermissions];
         debug('ownedScopes:', ownedScopes);
         // ドメインつきのスコープリストも許容するように変更
         const permittedScopesWithResourceServerIdentifier = [
-            ...permittedScopes.map((permittedScope) => `${process.env.RESOURECE_SERVER_IDENTIFIER}/${permittedScope}`),
-            ...permittedScopes.map((permittedScope) => `${process.env.RESOURECE_SERVER_IDENTIFIER}/auth/${permittedScope}`)
+            ...permittedScopes.map((permittedScope) => `${process.env.RESOURCE_SERVER_IDENTIFIER}/${permittedScope}`),
+            ...permittedScopes.map((permittedScope) => `${process.env.RESOURCE_SERVER_IDENTIFIER}/auth/${permittedScope}`)
         ];
         debug('permittedScopesWithResourceServerIdentifier:', permittedScopesWithResourceServerIdentifier);
         // スコープチェック
