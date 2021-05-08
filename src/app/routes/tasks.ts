@@ -49,7 +49,7 @@ tasksRouter.post<ParamsDictionary>(
 
             const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
 
-            const attributes: chevre.factory.task.IAttributes = {
+            const attributes: chevre.factory.task.IAttributes<chevre.factory.taskName> = {
                 project: project,
                 name: <chevre.factory.taskName>req.params.name,
                 status: chevre.factory.taskStatus.Ready,

@@ -118,7 +118,7 @@ actionsRouter.put(
                     console.error('unset reservedTicket.dateUsed failed.', error);
                 }
 
-                const tasks: chevre.factory.task.IAttributes[] = [];
+                const tasks: chevre.factory.task.IAttributes<chevre.factory.taskName>[] = [];
 
                 // アクション通知タスク作成
                 if (Array.isArray(informUseReservationUrls)) {

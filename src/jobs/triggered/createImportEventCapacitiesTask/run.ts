@@ -78,7 +78,7 @@ export default async (params: {
 
                     await Promise.all(movieTheaters.map(async (movieTheater) => {
                         try {
-                            const taskAttributes: chevre.factory.task.IAttributes = {
+                            const taskAttributes: chevre.factory.task.importEventCapacitiesFromCOA.IAttributes = {
                                 name: chevre.factory.taskName.ImportEventCapacitiesFromCOA,
                                 status: chevre.factory.taskStatus.Ready,
                                 runsAt: runsAt,

@@ -457,7 +457,7 @@ reservationsRouter.put(
             // アクション完了
             action = await actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
 
-            const tasks: chevre.factory.task.IAttributes[] = [];
+            const tasks: chevre.factory.task.IAttributes<chevre.factory.taskName>[] = [];
 
             // アクション通知タスク作成
             if (Array.isArray(informUseReservationUrls)) {
