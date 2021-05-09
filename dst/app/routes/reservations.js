@@ -26,7 +26,7 @@ const reservationsRouter = express_1.Router();
 /**
  * 予約検索
  */
-reservationsRouter.get('', permitScopes_1.default(['reservations', 'reservations.read-only']), ...[
+reservationsRouter.get('', permitScopes_1.default(['reservations.read', 'reservations', 'reservations.read-only']), ...[
     express_validator_1.query('$projection.*')
         .toInt(),
     express_validator_1.query('limit')
@@ -100,7 +100,7 @@ reservationsRouter.get('', permitScopes_1.default(['reservations', 'reservations
         next(error);
     }
 }));
-reservationsRouter.get('/:id', permitScopes_1.default(['reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reservationsRouter.get('/:id', permitScopes_1.default(['reservations.read', 'reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const reservation = yield reservationRepo.findById({
@@ -159,7 +159,7 @@ reservationsRouter.patch('/:id', permitScopes_1.default(['reservations.write']),
         next(error);
     }
 }));
-reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['reservations', 'reservations.read-only']), ...[
+reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['reservations.read', 'reservations', 'reservations.read-only']), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()
@@ -221,7 +221,7 @@ reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.defaul
         next(error);
     }
 }));
-reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.default(['reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.default(['reservations.read', 'reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const reservation = yield reservationRepo.findById({

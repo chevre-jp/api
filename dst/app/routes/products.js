@@ -23,7 +23,7 @@ const productsRouter = express_1.Router();
 /**
  * プロダクト作成
  */
-productsRouter.post('', permitScopes_1.default([]), ...[
+productsRouter.post('', permitScopes_1.default(['products.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -43,7 +43,7 @@ productsRouter.post('', permitScopes_1.default([]), ...[
 /**
  * プロダクト検索
  */
-productsRouter.get('', permitScopes_1.default([]), ...[
+productsRouter.get('', permitScopes_1.default(['products.*']), ...[
     express_validator_1.query('$projection.*')
         .toInt(),
     express_validator_1.query('offers.$elemMatch.validFrom.$gte')
@@ -95,7 +95,7 @@ productsRouter.get('', permitScopes_1.default([]), ...[
  * プロダクト検索
  */
 // tslint:disable-next-line:use-default-type-parameter
-productsRouter.get('/:id', permitScopes_1.default([]), ...[
+productsRouter.get('/:id', permitScopes_1.default(['products.*']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -111,7 +111,7 @@ productsRouter.get('/:id', permitScopes_1.default([]), ...[
 /**
  * プロダクトに対するオファー検索
  */
-productsRouter.get('/:id/offers', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+productsRouter.get('/:id/offers', permitScopes_1.default(['products.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
@@ -132,7 +132,7 @@ productsRouter.get('/:id/offers', permitScopes_1.default([]), validator_1.defaul
 /**
  * プロダクト更新
  */
-productsRouter.put('/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+productsRouter.put('/:id', permitScopes_1.default(['products.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
         const product = Object.assign(Object.assign({}, req.body), { project: project });
@@ -150,7 +150,7 @@ productsRouter.put('/:id', permitScopes_1.default([]), validator_1.default, (req
 /**
  * プロダクト削除
  */
-productsRouter.delete('/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+productsRouter.delete('/:id', permitScopes_1.default(['products.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productRepo = new chevre.repository.Product(mongoose.connection);
         yield productRepo.deleteById({ id: req.params.id });

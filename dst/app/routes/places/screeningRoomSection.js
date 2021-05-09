@@ -23,7 +23,7 @@ const screeningRoomSectionRouter = express_1.Router();
 /**
  * 作成
  */
-screeningRoomSectionRouter.post('', permitScopes_1.default([]), ...[
+screeningRoomSectionRouter.post('', permitScopes_1.default(['places.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -109,7 +109,7 @@ screeningRoomSectionRouter.post('', permitScopes_1.default([]), ...[
 /**
  * 検索
  */
-screeningRoomSectionRouter.get('', permitScopes_1.default([]), ...[
+screeningRoomSectionRouter.get('', permitScopes_1.default(['places.*']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, 
@@ -249,7 +249,7 @@ screeningRoomSectionRouter.get('', permitScopes_1.default([]), ...[
  * 更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-screeningRoomSectionRouter.put('/:branchCode', permitScopes_1.default([]), ...[
+screeningRoomSectionRouter.put('/:branchCode', permitScopes_1.default(['places.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -328,7 +328,7 @@ screeningRoomSectionRouter.put('/:branchCode', permitScopes_1.default([]), ...[
  * 削除
  */
 // tslint:disable-next-line:use-default-type-parameter
-screeningRoomSectionRouter.delete('/:branchCode', permitScopes_1.default([]), ...[
+screeningRoomSectionRouter.delete('/:branchCode', permitScopes_1.default(['places.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()

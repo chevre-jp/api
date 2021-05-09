@@ -42,7 +42,7 @@ const priceSpecificationsRouter = express_1.Router();
 //         }
 //     }
 // );
-priceSpecificationsRouter.post('', permitScopes_1.default([]), ...[
+priceSpecificationsRouter.post('', permitScopes_1.default(['priceSpecifications.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -61,7 +61,7 @@ priceSpecificationsRouter.post('', permitScopes_1.default([]), ...[
         next(error);
     }
 }));
-priceSpecificationsRouter.get('/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+priceSpecificationsRouter.get('/:id', permitScopes_1.default(['priceSpecifications.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         const doc = yield priceSpecificationRepo.priceSpecificationModel.findById(req.params.id)
@@ -76,7 +76,7 @@ priceSpecificationsRouter.get('/:id', permitScopes_1.default([]), validator_1.de
         next(error);
     }
 }));
-priceSpecificationsRouter.put('/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+priceSpecificationsRouter.put('/:id', permitScopes_1.default(['priceSpecifications.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const priceSpecification = Object.assign({}, req.body);
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
@@ -89,7 +89,7 @@ priceSpecificationsRouter.put('/:id', permitScopes_1.default([]), validator_1.de
         next(error);
     }
 }));
-priceSpecificationsRouter.delete('/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+priceSpecificationsRouter.delete('/:id', permitScopes_1.default(['priceSpecifications.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         yield priceSpecificationRepo.priceSpecificationModel.findOneAndDelete({ _id: req.params.id })
@@ -101,7 +101,7 @@ priceSpecificationsRouter.delete('/:id', permitScopes_1.default([]), validator_1
         next(error);
     }
 }));
-priceSpecificationsRouter.get('', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+priceSpecificationsRouter.get('', permitScopes_1.default(['priceSpecifications.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 

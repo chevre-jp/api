@@ -19,7 +19,7 @@ const productsRouter = Router();
  */
 productsRouter.post(
     '',
-    permitScopes([]),
+    permitScopes(['products.*']),
     ...[
         body('project')
             .not()
@@ -48,7 +48,7 @@ productsRouter.post(
  */
 productsRouter.get(
     '',
-    permitScopes([]),
+    permitScopes(['products.*']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -115,7 +115,7 @@ productsRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 productsRouter.get<ParamsDictionary>(
     '/:id',
-    permitScopes([]),
+    permitScopes(['products.*']),
     ...[
         query('$projection.*')
             .toInt()
@@ -142,7 +142,7 @@ productsRouter.get<ParamsDictionary>(
  */
 productsRouter.get(
     '/:id/offers',
-    permitScopes([]),
+    permitScopes(['products.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -170,7 +170,7 @@ productsRouter.get(
  */
 productsRouter.put(
     '/:id',
-    permitScopes([]),
+    permitScopes(['products.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -202,7 +202,7 @@ productsRouter.put(
  */
 productsRouter.delete(
     '/:id',
-    permitScopes([]),
+    permitScopes(['products.*']),
     validator,
     async (req, res, next) => {
         try {

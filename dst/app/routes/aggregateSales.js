@@ -22,7 +22,7 @@ const aggregateSalesRouter = express_1.Router();
 /**
  * 検索
  */
-aggregateSalesRouter.get('', permitScopes_1.default([]), ...[
+aggregateSalesRouter.get('', permitScopes_1.default(['salesReports.read']), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()

@@ -21,7 +21,7 @@ const reservationsRouter = Router();
  */
 reservationsRouter.get(
     '',
-    permitScopes(['reservations', 'reservations.read-only']),
+    permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -110,7 +110,7 @@ reservationsRouter.get(
 
 reservationsRouter.get(
     '/:id',
-    permitScopes(['reservations', 'reservations.read-only']),
+    permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
     validator,
     async (req, res, next) => {
         try {
@@ -199,7 +199,7 @@ reservationsRouter.patch(
 
 reservationsRouter.get(
     '/eventReservation/screeningEvent',
-    permitScopes(['reservations', 'reservations.read-only']),
+    permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
     ...[
         query('limit')
             .optional()
@@ -274,7 +274,7 @@ reservationsRouter.get(
 
 reservationsRouter.get(
     '/eventReservation/screeningEvent/:id',
-    permitScopes(['reservations', 'reservations.read-only']),
+    permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
     validator,
     async (req, res, next) => {
         try {

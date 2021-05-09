@@ -25,7 +25,7 @@ const ordersRouter = Router();
  */
 ordersRouter.get(
     '',
-    permitScopes([]),
+    permitScopes(['orders.read']),
     ...[
         query('project.id.$eq')
             .not()
@@ -133,7 +133,7 @@ ordersRouter.get(
  */
 ordersRouter.get(
     '/:orderNumber',
-    permitScopes([]),
+    permitScopes(['orders.read']),
     validator,
     async (req, res, next) => {
         try {

@@ -20,7 +20,7 @@ const mongoose = require("mongoose");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const offersRouter = express_1.Router();
-offersRouter.post('', permitScopes_1.default([]), ...[
+offersRouter.post('', permitScopes_1.default(['offers.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -42,7 +42,7 @@ offersRouter.post('', permitScopes_1.default([]), ...[
         next(error);
     }
 }));
-offersRouter.get('', permitScopes_1.default([]), ...[
+offersRouter.get('', permitScopes_1.default(['offers.*']), ...[
     express_validator_1.query('priceSpecification.price.$gte')
         .optional()
         .isInt()
@@ -76,7 +76,7 @@ offersRouter.get('', permitScopes_1.default([]), ...[
         next(error);
     }
 }));
-offersRouter.get('/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+offersRouter.get('/:id', permitScopes_1.default(['offers.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const offer = yield offerRepo.findById({ id: req.params.id });
@@ -86,7 +86,7 @@ offersRouter.get('/:id', permitScopes_1.default([]), validator_1.default, (req, 
         next(error);
     }
 }));
-offersRouter.put('/:id', permitScopes_1.default([]), ...[
+offersRouter.put('/:id', permitScopes_1.default(['offers.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -107,7 +107,7 @@ offersRouter.put('/:id', permitScopes_1.default([]), ...[
         next(error);
     }
 }));
-offersRouter.delete('/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+offersRouter.delete('/:id', permitScopes_1.default(['offers.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         yield offerRepo.deleteById({ id: req.params.id });

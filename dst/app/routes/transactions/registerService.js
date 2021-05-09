@@ -21,7 +21,7 @@ const registerServiceTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-registerServiceTransactionsRouter.post('/start', permitScopes_1.default([]), ...[
+registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['assetTransactions.write']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -73,7 +73,7 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default([]), ...
  * 取引確定
  */
 // tslint:disable-next-line:use-default-type-parameter
-registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['transactions']), ...[
+registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['assetTransactions.write', 'transactions']), ...[
     express_validator_1.body('endDate')
         .optional()
         .isISO8601()
@@ -113,7 +113,7 @@ registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.
         next(error);
     }
 }));
-registerServiceTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+registerServiceTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);

@@ -18,7 +18,7 @@ const transactionNumbersRouter = Router();
  */
 transactionNumbersRouter.post(
     '',
-    permitScopes([]),
+    permitScopes(['transactionNumbers.write']),
     ...[
         body('project.id')
             .not()

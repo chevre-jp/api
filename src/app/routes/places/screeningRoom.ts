@@ -22,7 +22,7 @@ const screeningRoomRouter = Router();
  */
 screeningRoomRouter.post(
     '',
-    permitScopes([]),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()
@@ -112,7 +112,7 @@ screeningRoomRouter.post(
  */
 screeningRoomRouter.get(
     '',
-    permitScopes([]),
+    permitScopes(['places.*']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -311,7 +311,7 @@ screeningRoomRouter.get(
 screeningRoomRouter.put<ParamsDictionary>(
 
     '/:branchCode',
-    permitScopes([]),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()
@@ -399,7 +399,7 @@ screeningRoomRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 screeningRoomRouter.delete<ParamsDictionary>(
     '/:branchCode',
-    permitScopes([]),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()

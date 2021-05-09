@@ -23,7 +23,7 @@ const transactionNumbersRouter = express_1.Router();
 /**
  * 取引番号発行
  */
-transactionNumbersRouter.post('', permitScopes_1.default([]), ...[
+transactionNumbersRouter.post('', permitScopes_1.default(['transactionNumbers.write']), ...[
     express_validator_1.body('project.id')
         .not()
         .isEmpty()

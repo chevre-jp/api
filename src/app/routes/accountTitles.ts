@@ -22,7 +22,7 @@ const accountTitlesRouter = Router();
  */
 accountTitlesRouter.post(
     '/accountTitleCategory',
-    permitScopes([]),
+    permitScopes(['accountTitles.*']),
     ...[
         body('project')
             .not()
@@ -62,7 +62,7 @@ accountTitlesRouter.post(
  */
 accountTitlesRouter.get(
     '/accountTitleCategory',
-    permitScopes(['accountTitles', 'accountTitles.read-only']),
+    permitScopes(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']),
     validator,
     // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
@@ -164,7 +164,7 @@ accountTitlesRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.put<ParamsDictionary>(
     '/accountTitleCategory/:codeValue',
-    permitScopes([]),
+    permitScopes(['accountTitles.*']),
     ...[
         body('codeValue')
             .not()
@@ -212,7 +212,7 @@ accountTitlesRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.delete<ParamsDictionary>(
     '/accountTitleCategory/:codeValue',
-    permitScopes([]),
+    permitScopes(['accountTitles.*']),
     ...[
         body('project.id')
             .not()
@@ -255,7 +255,7 @@ accountTitlesRouter.delete<ParamsDictionary>(
  */
 accountTitlesRouter.post(
     '/accountTitleSet',
-    permitScopes([]),
+    permitScopes(['accountTitles.*']),
     ...[
         body('codeValue')
             .not()
@@ -342,7 +342,7 @@ accountTitlesRouter.post(
  */
 accountTitlesRouter.get(
     '/accountTitleSet',
-    permitScopes(['accountTitles', 'accountTitles.read-only']),
+    permitScopes(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']),
     validator,
     // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
@@ -478,7 +478,7 @@ accountTitlesRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.put<ParamsDictionary>(
     '/accountTitleSet/:codeValue',
-    permitScopes([]),
+    permitScopes(['accountTitles.*']),
     ...[
         body('codeValue')
             .not()
@@ -542,7 +542,7 @@ accountTitlesRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.delete<ParamsDictionary>(
     '/accountTitleSet/:codeValue',
-    permitScopes([]),
+    permitScopes(['accountTitles.*']),
     ...[
         body('project.id')
             .not()
@@ -598,7 +598,7 @@ accountTitlesRouter.delete<ParamsDictionary>(
  */
 accountTitlesRouter.post(
     '',
-    permitScopes([]),
+    permitScopes(['accountTitles.*']),
     ...[
         body('codeValue')
             .not()
@@ -697,7 +697,7 @@ accountTitlesRouter.post(
  */
 accountTitlesRouter.get(
     '',
-    permitScopes(['accountTitles', 'accountTitles.read-only']),
+    permitScopes(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']),
     validator,
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
@@ -865,7 +865,7 @@ accountTitlesRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.put<ParamsDictionary>(
     '/:codeValue',
-    permitScopes([]),
+    permitScopes(['accountTitles.*']),
     ...[
         body('codeValue')
             .not()
@@ -942,7 +942,7 @@ accountTitlesRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.delete<ParamsDictionary>(
     '/:codeValue',
-    permitScopes([]),
+    permitScopes(['accountTitles.*']),
     ...[
         body('project.id')
             .not()

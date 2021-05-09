@@ -43,7 +43,7 @@ const validations: RequestHandler[] = [
 
 categoryCodesRouter.post(
     '',
-    permitScopes([]),
+    permitScopes(['categoryCodes.*']),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -70,7 +70,7 @@ categoryCodesRouter.post(
 
 categoryCodesRouter.get(
     '',
-    permitScopes([]),
+    permitScopes(['categoryCodes.*']),
     ...[
         query('limit')
             .optional()
@@ -104,7 +104,7 @@ categoryCodesRouter.get(
 
 categoryCodesRouter.get(
     '/:id',
-    permitScopes([]),
+    permitScopes(['categoryCodes.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -121,7 +121,7 @@ categoryCodesRouter.get(
 
 categoryCodesRouter.put(
     '/:id',
-    permitScopes([]),
+    permitScopes(['categoryCodes.*']),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -151,7 +151,7 @@ categoryCodesRouter.put(
 
 categoryCodesRouter.delete(
     '/:id',
-    permitScopes([]),
+    permitScopes(['categoryCodes.*']),
     validator,
     async (req, res, next) => {
         try {

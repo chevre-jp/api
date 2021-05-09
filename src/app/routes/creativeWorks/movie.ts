@@ -17,7 +17,7 @@ const movieRouter = Router();
 
 movieRouter.post(
     '',
-    permitScopes([]),
+    permitScopes(['creativeWorks.*']),
     ...[
         body('project')
             .not()
@@ -79,7 +79,7 @@ movieRouter.post(
 
 movieRouter.get(
     '',
-    permitScopes(['creativeWorks', 'creativeWorks.read-only']),
+    permitScopes(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read-only']),
     ...[
         query('datePublishedFrom')
             .optional()
@@ -127,7 +127,7 @@ movieRouter.get(
 
 movieRouter.get(
     '/:id',
-    permitScopes(['creativeWorks', 'creativeWorks.read-only']),
+    permitScopes(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read-only']),
     validator,
     async (req, res, next) => {
         try {
@@ -144,7 +144,7 @@ movieRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 movieRouter.put<ParamsDictionary>(
     '/:id',
-    permitScopes([]),
+    permitScopes(['creativeWorks.*']),
     ...[
         body('datePublished')
             .optional()
@@ -198,7 +198,7 @@ movieRouter.put<ParamsDictionary>(
 
 movieRouter.delete(
     '/:id',
-    permitScopes([]),
+    permitScopes(['creativeWorks.*']),
     validator,
     async (req, res, next) => {
         try {

@@ -103,7 +103,7 @@ projectsRouter.get('', permitScopes_1.default([]), ...[
  * プロジェクト取得
  */
 // tslint:disable-next-line:use-default-type-parameter
-projectsRouter.get('/:id', permitScopes_1.default([]), ...[
+projectsRouter.get('/:id', permitScopes_1.default(['projects.settings.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

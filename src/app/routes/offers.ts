@@ -14,7 +14,7 @@ const offersRouter = Router();
 
 offersRouter.post(
     '',
-    permitScopes([]),
+    permitScopes(['offers.*']),
     ...[
         body('project')
             .not()
@@ -44,7 +44,7 @@ offersRouter.post(
 
 offersRouter.get(
     '',
-    permitScopes([]),
+    permitScopes(['offers.*']),
     ...[
         query('priceSpecification.price.$gte')
             .optional()
@@ -89,7 +89,7 @@ offersRouter.get(
 
 offersRouter.get(
     '/:id',
-    permitScopes([]),
+    permitScopes(['offers.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -105,7 +105,7 @@ offersRouter.get(
 
 offersRouter.put(
     '/:id',
-    permitScopes([]),
+    permitScopes(['offers.*']),
     ...[
         body('project')
             .not()
@@ -133,7 +133,7 @@ offersRouter.put(
 
 offersRouter.delete(
     '/:id',
-    permitScopes([]),
+    permitScopes(['offers.*']),
     validator,
     async (req, res, next) => {
         try {

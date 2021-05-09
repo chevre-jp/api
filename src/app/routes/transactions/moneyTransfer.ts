@@ -17,7 +17,7 @@ import validator from '../../middlewares/validator';
 
 moneyTransferTransactionsRouter.post(
     '/start',
-    permitScopes([]),
+    permitScopes(['assetTransactions.write']),
     ...[
         body('project')
             .not()
@@ -87,7 +87,7 @@ moneyTransferTransactionsRouter.post(
  */
 moneyTransferTransactionsRouter.put(
     '/:transactionId/confirm',
-    permitScopes(['transactions']),
+    permitScopes(['assetTransactions.write', 'transactions']),
     validator,
     async (req, res, next) => {
         try {
@@ -134,7 +134,7 @@ moneyTransferTransactionsRouter.put(
 
 moneyTransferTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['transactions']),
+    permitScopes(['assetTransactions.write', 'transactions']),
     validator,
     async (req, res, next) => {
         try {

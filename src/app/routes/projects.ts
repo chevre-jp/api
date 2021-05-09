@@ -130,7 +130,7 @@ projectsRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 projectsRouter.get<ParamsDictionary>(
     '/:id',
-    permitScopes([]),
+    permitScopes(['projects.settings.read']),
     ...[
         query('$projection.*')
             .toInt()

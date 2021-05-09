@@ -121,7 +121,7 @@ const validations: RequestHandler[] = [
  */
 eventsRouter.post(
     '',
-    permitScopes([]),
+    permitScopes(['events.*']),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -162,7 +162,7 @@ eventsRouter.post(
  */
 eventsRouter.get(
     '',
-    permitScopes(['events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read-only']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -256,7 +256,7 @@ eventsRouter.get(
  */
 eventsRouter.get(
     '/:id',
-    permitScopes(['events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read-only']),
     validator,
     async (req, res, next) => {
         try {
@@ -283,7 +283,7 @@ eventsRouter.get(
  */
 eventsRouter.patch(
     '/:id',
-    permitScopes([]),
+    permitScopes(['events.*']),
     // ...validations,
     validator,
     async (req, res, next) => {
@@ -317,7 +317,7 @@ eventsRouter.patch(
  */
 eventsRouter.put(
     '/:id',
-    permitScopes([]),
+    permitScopes(['events.*']),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -351,7 +351,7 @@ eventsRouter.put(
 
 eventsRouter.delete(
     '/:id',
-    permitScopes([]),
+    permitScopes(['events.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -400,7 +400,7 @@ eventsRouter.delete(
  */
 eventsRouter.get(
     '/:id/offers/ticket',
-    permitScopes(['events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read-only']),
     validator,
     async (req, res, next) => {
         try {
@@ -433,7 +433,7 @@ eventsRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 eventsRouter.get<ParamsDictionary>(
     '/:id/seats',
-    permitScopes(['events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read-only']),
     ...[
         query('$projection.*')
             .toInt(),

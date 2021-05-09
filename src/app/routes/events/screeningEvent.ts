@@ -14,7 +14,7 @@ const screeningEventRouter = Router();
 
 screeningEventRouter.post(
     '/saveMultiple',
-    permitScopes([]),
+    permitScopes(['events.*']),
     ...[
         body('attributes.*.project')
             .not()

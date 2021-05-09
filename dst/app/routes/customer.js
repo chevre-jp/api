@@ -49,7 +49,7 @@ const customersRouter = express_1.Router();
 /**
  * 顧客作成
  */
-customersRouter.post('', permitScopes_1.default([]), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+customersRouter.post('', permitScopes_1.default(['customers.*']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
         const attributes = Object.assign(Object.assign({}, req.body), { project: project });
@@ -65,7 +65,7 @@ customersRouter.post('', permitScopes_1.default([]), ...validations, validator_1
 /**
  * 顧客検索
  */
-customersRouter.get('', permitScopes_1.default([]), ...[
+customersRouter.get('', permitScopes_1.default(['customers.*']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -85,7 +85,7 @@ customersRouter.get('', permitScopes_1.default([]), ...[
  * IDで顧客検索
  */
 // tslint:disable-next-line:use-default-type-parameter
-customersRouter.get('/:id', permitScopes_1.default([]), ...[
+customersRouter.get('/:id', permitScopes_1.default(['customers.*']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -102,7 +102,7 @@ customersRouter.get('/:id', permitScopes_1.default([]), ...[
  * 顧客更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-customersRouter.put('/:id', permitScopes_1.default([]), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+customersRouter.put('/:id', permitScopes_1.default(['customers.*']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const attributes = Object.assign({}, req.body);
         const customerRepo = new chevre.repository.Customer(mongoose.connection);
@@ -117,7 +117,7 @@ customersRouter.put('/:id', permitScopes_1.default([]), ...validations, validato
 /**
  * 顧客削除
  */
-customersRouter.delete('/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+customersRouter.delete('/:id', permitScopes_1.default(['customers.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const customerRepo = new chevre.repository.Customer(mongoose.connection);
         yield customerRepo.deleteById({

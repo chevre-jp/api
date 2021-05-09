@@ -28,7 +28,7 @@ const ordersRouter = express_1.Router();
 /**
  * 注文検索
  */
-ordersRouter.get('', permitScopes_1.default([]), ...[
+ordersRouter.get('', permitScopes_1.default(['orders.read']), ...[
     express_validator_1.query('project.id.$eq')
         .not()
         .isEmpty()
@@ -124,7 +124,7 @@ ordersRouter.get('', permitScopes_1.default([]), ...[
 /**
  * 注文取得
  */
-ordersRouter.get('/:orderNumber', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+ordersRouter.get('/:orderNumber', permitScopes_1.default(['orders.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const orderRepo = new chevre.repository.Order(mongoose.connection);
         const order = yield orderRepo.findByOrderNumber({

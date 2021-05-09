@@ -25,7 +25,7 @@ const accountTitlesRouter = express_1.Router();
 /**
  * 科目分類追加
  */
-accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default([]), ...[
+accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -54,7 +54,7 @@ accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default([]), ..
 /**
  * 科目分類検索
  */
-accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['accountTitles', 'accountTitles.read-only']), validator_1.default, 
+accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -139,7 +139,7 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['accoun
  * 科目分類更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.put('/accountTitleCategory/:codeValue', permitScopes_1.default([]), ...[
+accountTitlesRouter.put('/accountTitleCategory/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('codeValue')
         .not()
         .isEmpty()
@@ -174,7 +174,7 @@ accountTitlesRouter.put('/accountTitleCategory/:codeValue', permitScopes_1.defau
  * 科目分類削除
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.delete('/accountTitleCategory/:codeValue', permitScopes_1.default([]), ...[
+accountTitlesRouter.delete('/accountTitleCategory/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('project.id')
         .not()
         .isEmpty()
@@ -206,7 +206,7 @@ accountTitlesRouter.delete('/accountTitleCategory/:codeValue', permitScopes_1.de
 /**
  * 科目追加
  */
-accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default([]), ...[
+accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('codeValue')
         .not()
         .isEmpty()
@@ -276,7 +276,7 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default([]), ...[
 /**
  * 科目検索
  */
-accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['accountTitles', 'accountTitles.read-only']), validator_1.default, 
+accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -397,7 +397,7 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['accountTitl
  * 科目更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default([]), ...[
+accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('codeValue')
         .not()
         .isEmpty()
@@ -444,7 +444,7 @@ accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default([]
  * 科目削除
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.delete('/accountTitleSet/:codeValue', permitScopes_1.default([]), ...[
+accountTitlesRouter.delete('/accountTitleSet/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('project.id')
         .not()
         .isEmpty()
@@ -488,7 +488,7 @@ accountTitlesRouter.delete('/accountTitleSet/:codeValue', permitScopes_1.default
 /**
  * 細目追加
  */
-accountTitlesRouter.post('', permitScopes_1.default([]), ...[
+accountTitlesRouter.post('', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('codeValue')
         .not()
         .isEmpty()
@@ -572,7 +572,7 @@ accountTitlesRouter.post('', permitScopes_1.default([]), ...[
 /**
  * 細目検索
  */
-accountTitlesRouter.get('', permitScopes_1.default(['accountTitles', 'accountTitles.read-only']), validator_1.default, 
+accountTitlesRouter.get('', permitScopes_1.default(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -724,7 +724,7 @@ accountTitlesRouter.get('', permitScopes_1.default(['accountTitles', 'accountTit
  * 細目更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.put('/:codeValue', permitScopes_1.default([]), ...[
+accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('codeValue')
         .not()
         .isEmpty()
@@ -784,7 +784,7 @@ accountTitlesRouter.put('/:codeValue', permitScopes_1.default([]), ...[
  * 削除
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.delete('/:codeValue', permitScopes_1.default([]), ...[
+accountTitlesRouter.delete('/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('project.id')
         .not()
         .isEmpty()
