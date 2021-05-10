@@ -25,7 +25,7 @@ const tasksRouter = express_1.Router();
  * タスク作成
  */
 // tslint:disable-next-line:use-default-type-parameter
-tasksRouter.post('/:name', permitScopes_1.default([]), ...[
+tasksRouter.post('/:name', permitScopes_1.default(['tasks.*', 'tasks.create']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -47,7 +47,7 @@ tasksRouter.post('/:name', permitScopes_1.default([]), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const attributes = {
             project: project,
             name: req.params.name,
@@ -70,7 +70,7 @@ tasksRouter.post('/:name', permitScopes_1.default([]), ...[
 /**
  * タスク確認
  */
-tasksRouter.get('/:name/:id', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+tasksRouter.get('/:name/:id', permitScopes_1.default(['tasks.*', 'tasks.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const task = yield taskRepo.findById({
@@ -86,7 +86,7 @@ tasksRouter.get('/:name/:id', permitScopes_1.default([]), validator_1.default, (
 /**
  * タスク検索
  */
-tasksRouter.get('', permitScopes_1.default([]), ...[
+tasksRouter.get('', permitScopes_1.default(['tasks.*', 'tasks.read']), ...[
     express_validator_1.query('runsFrom')
         .optional()
         .isISO8601()
@@ -110,7 +110,7 @@ tasksRouter.get('', permitScopes_1.default([]), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const tasks = yield taskRepo.search(searchConditions);

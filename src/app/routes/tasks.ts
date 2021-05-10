@@ -21,7 +21,7 @@ const tasksRouter = Router();
 // tslint:disable-next-line:use-default-type-parameter
 tasksRouter.post<ParamsDictionary>(
     '/:name',
-    permitScopes([]),
+    permitScopes(['tasks.*', 'tasks.create']),
     ...[
         body('project')
             .not()
@@ -47,7 +47,7 @@ tasksRouter.post<ParamsDictionary>(
         try {
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const attributes: chevre.factory.task.IAttributes<chevre.factory.taskName> = {
                 project: project,
@@ -74,7 +74,7 @@ tasksRouter.post<ParamsDictionary>(
  */
 tasksRouter.get(
     '/:name/:id',
-    permitScopes([]),
+    permitScopes(['tasks.*', 'tasks.read']),
     validator,
     async (req, res, next) => {
         try {
@@ -95,7 +95,7 @@ tasksRouter.get(
  */
 tasksRouter.get(
     '',
-    permitScopes([]),
+    permitScopes(['tasks.*', 'tasks.read']),
     ...[
         query('runsFrom')
             .optional()
@@ -124,6 +124,7 @@ tasksRouter.get(
             const taskRepo = new chevre.repository.Task(mongoose.connection);
             const searchConditions: chevre.factory.task.ISearchConditions<chevre.factory.taskName> = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
