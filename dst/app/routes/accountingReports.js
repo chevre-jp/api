@@ -61,6 +61,7 @@ accountingReportsRouter.get('', permitScopes_1.default([]), ...[
             { $unwind: '$hasPart' },
             ...(unwindAcceptedOffers) ? [{ $unwind: '$mainEntity.acceptedOffers' }] : [],
             ...matchStages,
+            { $sort: { 'mainEntity.orderDate': chevre.factory.sortType.Descending } },
             {
                 $project: {
                     _id: 0,

@@ -63,6 +63,7 @@ accountingReportsRouter.get<ParamsDictionary>(
                 { $unwind: '$hasPart' },
                 ...(unwindAcceptedOffers) ? [{ $unwind: '$mainEntity.acceptedOffers' }] : [],
                 ...matchStages,
+                { $sort: { 'mainEntity.orderDate': chevre.factory.sortType.Descending } },
                 {
                     $project: {
                         _id: 0,
