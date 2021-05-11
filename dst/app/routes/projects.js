@@ -19,11 +19,16 @@ const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
+const iam_1 = require("../iam");
+const ADMIN_USER_POOL_ID = process.env.ADMIN_USER_POOL_ID;
 const projectsRouter = express_1.Router();
 /**
  * プロジェクト作成
+ * 同時に作成者はプロジェクトオーナーになります
  */
-projectsRouter.post('', permitScopes_1.default([]), ...[
+projectsRouter.post('', 
+// permitScopes([]),
+...[
     express_validator_1.body('typeOf')
         .not()
         .isEmpty()
@@ -43,11 +48,46 @@ projectsRouter.post('', permitScopes_1.default([]), ...[
         .not()
         .isEmpty()
         .withMessage(() => 'required')
-        .isURL()
+        .isURL(),
+    express_validator_1.body('settings.cognito.customerUserPool.id')
+        .not()
+        .isEmpty()
+        .withMessage(() => 'required')
+        .isString()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const memberRepo = new chevre.repository.Member(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         let project = createFromBody(req.body);
+        let member;
+        const personRepo = new chevre.repository.Person({
+            userPoolId: ADMIN_USER_POOL_ID
+        });
+        const profile = yield personRepo.getUserAttributesByAccessToken(req.accessToken);
+        // const people = await personRepo.search({ id: req.user.sub });
+        // if (people[0].memberOf === undefined) {
+        //     throw new chevre.factory.errors.NotFound('Administrator.memberOf');
+        // }
+        const memberName = (typeof profile.givenName === 'string' && typeof profile.familyName === 'string')
+            ? `${profile.givenName} ${profile.familyName}`
+            : req.user.username;
+        member = {
+            typeOf: chevre.factory.personType.Person,
+            id: req.user.sub,
+            name: memberName,
+            username: req.user.username,
+            hasRole: [{
+                    typeOf: 'OrganizationRole',
+                    roleName: iam_1.RoleName.Owner,
+                    memberOf: { typeOf: project.typeOf, id: project.id }
+                }]
+        };
+        // 権限作成
+        yield memberRepo.memberModel.create({
+            project: { typeOf: project.typeOf, id: project.id },
+            typeOf: 'OrganizationRole',
+            member: member
+        });
         // プロジェクト作成
         project = yield projectRepo.projectModel.create(Object.assign(Object.assign({}, project), { _id: project.id }))
             .then((doc) => doc.toObject());

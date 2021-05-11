@@ -12,14 +12,19 @@ import * as mongoose from 'mongoose';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
+import { RoleName } from '../iam';
+
+const ADMIN_USER_POOL_ID = <string>process.env.ADMIN_USER_POOL_ID;
+
 const projectsRouter = Router();
 
 /**
  * プロジェクト作成
+ * 同時に作成者はプロジェクトオーナーになります
  */
 projectsRouter.post(
     '',
-    permitScopes([]),
+    // permitScopes([]),
     ...[
         body('typeOf')
             .not()
@@ -40,14 +45,53 @@ projectsRouter.post(
             .not()
             .isEmpty()
             .withMessage(() => 'required')
-            .isURL()
+            .isURL(),
+        body('settings.cognito.customerUserPool.id')
+            .not()
+            .isEmpty()
+            .withMessage(() => 'required')
+            .isString()
     ],
     validator,
     async (req, res, next) => {
         try {
+            const memberRepo = new chevre.repository.Member(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
 
             let project = createFromBody(req.body);
+
+            let member;
+
+            const personRepo = new chevre.repository.Person({
+                userPoolId: ADMIN_USER_POOL_ID
+            });
+            const profile = await personRepo.getUserAttributesByAccessToken(req.accessToken);
+            // const people = await personRepo.search({ id: req.user.sub });
+            // if (people[0].memberOf === undefined) {
+            //     throw new chevre.factory.errors.NotFound('Administrator.memberOf');
+            // }
+            const memberName = (typeof profile.givenName === 'string' && typeof profile.familyName === 'string')
+                ? `${profile.givenName} ${profile.familyName}`
+                : req.user.username;
+
+            member = {
+                typeOf: chevre.factory.personType.Person,
+                id: req.user.sub,
+                name: memberName,
+                username: req.user.username,
+                hasRole: [{
+                    typeOf: 'OrganizationRole',
+                    roleName: RoleName.Owner,
+                    memberOf: { typeOf: project.typeOf, id: project.id }
+                }]
+            };
+
+            // 権限作成
+            await memberRepo.memberModel.create({
+                project: { typeOf: project.typeOf, id: project.id },
+                typeOf: 'OrganizationRole',
+                member: member
+            });
 
             // プロジェクト作成
             project = await projectRepo.projectModel.create({ ...project, _id: project.id })
