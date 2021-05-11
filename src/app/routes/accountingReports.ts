@@ -59,39 +59,44 @@ accountingReportsRouter.get<ParamsDictionary>(
             const unwindAcceptedOffers = req.query.$unwindAcceptedOffers === '1';
             const matchStages = request2matchStages(req);
 
-            const aggregate = reportRepo.accountingReportModel.aggregate([
-                { $unwind: '$hasPart' },
-                ...(unwindAcceptedOffers) ? [{ $unwind: '$mainEntity.acceptedOffers' }] : [],
-                ...matchStages,
-                { $sort: { 'mainEntity.orderDate': chevre.factory.sortType.Descending } },
-                {
-                    $project: {
-                        _id: 0,
-                        mainEntity: '$hasPart.mainEntity',
-                        // typeOf: '$hasPart.mainEntity.typeOf',
-                        // endDate: '$hasPart.mainEntity.endDate',
-                        // startDate: '$hasPart.mainEntity.startDate',
-                        // object: { $arrayElemAt: ['$hasPart.mainEntity.object', 0] },
-                        // purpose: '$hasPart.mainEntity.purpose',
-                        isPartOf: {
-                            mainEntity: '$mainEntity'
-                            // acceptedOffers: '$mainEntity.acceptedOffers',
-                            // confirmationNumber: '$mainEntity.confirmationNumber',
-                            // customer: '$mainEntity.customer',
-                            // numItems: '$mainEntity.numItems',
-                            // orderNumber: '$mainEntity.orderNumber',
-                            // orderDate: '$mainEntity.orderDate',
-                            // price: '$mainEntity.price',
-                            // project: '$mainEntity.project',
-                            // seller: '$mainEntity.seller'
+            const aggregate = reportRepo.accountingReportModel.aggregate(
+                [
+                    // pipelineの順序に注意
+                    // @see https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
+                    { $sort: { 'mainEntity.orderDate': chevre.factory.sortType.Descending } },
+                    { $unwind: '$hasPart' },
+                    ...(unwindAcceptedOffers) ? [{ $unwind: '$mainEntity.acceptedOffers' }] : [],
+                    ...matchStages,
+                    {
+                        $project: {
+                            _id: 0,
+                            mainEntity: '$hasPart.mainEntity',
+                            // typeOf: '$hasPart.mainEntity.typeOf',
+                            // endDate: '$hasPart.mainEntity.endDate',
+                            // startDate: '$hasPart.mainEntity.startDate',
+                            // object: { $arrayElemAt: ['$hasPart.mainEntity.object', 0] },
+                            // purpose: '$hasPart.mainEntity.purpose',
+                            isPartOf: {
+                                mainEntity: '$mainEntity'
+                                // acceptedOffers: '$mainEntity.acceptedOffers',
+                                // confirmationNumber: '$mainEntity.confirmationNumber',
+                                // customer: '$mainEntity.customer',
+                                // numItems: '$mainEntity.numItems',
+                                // orderNumber: '$mainEntity.orderNumber',
+                                // orderDate: '$mainEntity.orderDate',
+                                // price: '$mainEntity.price',
+                                // project: '$mainEntity.project',
+                                // seller: '$mainEntity.seller'
+                            }
                         }
                     }
-                }
-            ]);
+                ]
+            );
 
-            const reports = await aggregate.limit(limit * page)
+            const reports = await aggregate.allowDiskUse(true)
+                .limit(limit * page)
                 .skip(limit * (page - 1))
-                // .setOptions({ maxTimeMS: 10000 }))
+                // .setOptions({ maxTimeMS: 10000 })
                 .exec();
 
             res.json(reports);

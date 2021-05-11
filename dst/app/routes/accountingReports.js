@@ -58,10 +58,12 @@ accountingReportsRouter.get('', permitScopes_1.default([]), ...[
         const unwindAcceptedOffers = req.query.$unwindAcceptedOffers === '1';
         const matchStages = request2matchStages(req);
         const aggregate = reportRepo.accountingReportModel.aggregate([
+            // pipelineの順序に注意
+            // @see https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
+            { $sort: { 'mainEntity.orderDate': chevre.factory.sortType.Descending } },
             { $unwind: '$hasPart' },
             ...(unwindAcceptedOffers) ? [{ $unwind: '$mainEntity.acceptedOffers' }] : [],
             ...matchStages,
-            { $sort: { 'mainEntity.orderDate': chevre.factory.sortType.Descending } },
             {
                 $project: {
                     _id: 0,
@@ -86,9 +88,10 @@ accountingReportsRouter.get('', permitScopes_1.default([]), ...[
                 }
             }
         ]);
-        const reports = yield aggregate.limit(limit * page)
+        const reports = yield aggregate.allowDiskUse(true)
+            .limit(limit * page)
             .skip(limit * (page - 1))
-            // .setOptions({ maxTimeMS: 10000 }))
+            // .setOptions({ maxTimeMS: 10000 })
             .exec();
         res.json(reports);
     }
