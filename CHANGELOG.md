@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - プロジェクト検索を追加
 - プロジェクト指定ルーターを追加
 - IAMメンバー検索を追加
+- IAMメンバー編集を追加
 - IAMロール検索を追加
 
 ### Changed

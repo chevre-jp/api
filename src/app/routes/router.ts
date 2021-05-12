@@ -15,8 +15,6 @@ import authentication from '../middlewares/authentication';
 import setPermissions from '../middlewares/setPermissions';
 import setProject from '../middlewares/setProject';
 
-const USE_PROJECTLESS_ROUTER = process.env.USE_PROJECTLESS_ROUTER === '1';
-
 const router = express.Router();
 
 // middleware that is specific to this router
@@ -43,9 +41,6 @@ router.use(setPermissions);
 router.use('/projects', projectsRouter);
 
 // 以下、プロジェクト指定済の状態でルーティング
-if (USE_PROJECTLESS_ROUTER) {
-    router.use('', projectDetailRouter);
-}
 router.use('/projects/:id', projectDetailRouter);
 
 export default router;
