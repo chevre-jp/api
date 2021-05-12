@@ -23,7 +23,7 @@ const accountingReportsRouter = express_1.Router();
  * 検索
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountingReportsRouter.get('', permitScopes_1.default([]), ...[
+accountingReportsRouter.get('', permitScopes_1.default(['accountingReports.read']), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()
