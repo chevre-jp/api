@@ -78,7 +78,7 @@ sellersRouter.post('', permitScopes_1.default(['sellers.*']), ...validations, va
 /**
  * 販売者検索
  */
-sellersRouter.get('', permitScopes_1.default(['sellers.*']), ...[
+sellersRouter.get('', permitScopes_1.default(['sellers.*', 'sellers.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -130,7 +130,7 @@ sellersRouter.get('', permitScopes_1.default(['sellers.*']), ...[
  * IDで販売者検索
  */
 // tslint:disable-next-line:use-default-type-parameter
-sellersRouter.get('/:id', permitScopes_1.default(['sellers.*']), ...[
+sellersRouter.get('/:id', permitScopes_1.default(['sellers.*', 'sellers.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

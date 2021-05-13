@@ -79,7 +79,7 @@ movieRouter.post(
 
 movieRouter.get(
     '',
-    permitScopes(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read-only']),
+    permitScopes(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read']),
     ...[
         query('datePublishedFrom')
             .optional()
@@ -127,7 +127,7 @@ movieRouter.get(
 
 movieRouter.get(
     '/:id',
-    permitScopes(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read-only']),
+    permitScopes(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read']),
     validator,
     async (req, res, next) => {
         try {

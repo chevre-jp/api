@@ -70,7 +70,7 @@ categoryCodesRouter.post(
 
 categoryCodesRouter.get(
     '',
-    permitScopes(['categoryCodes.*']),
+    permitScopes(['categoryCodes.*', 'categoryCodes.read']),
     ...[
         query('limit')
             .optional()

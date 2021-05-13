@@ -112,7 +112,7 @@ screeningRoomRouter.post(
  */
 screeningRoomRouter.get(
     '',
-    permitScopes(['places.*']),
+    permitScopes(['places.*', 'places.read']),
     ...[
         query('$projection.*')
             .toInt(),

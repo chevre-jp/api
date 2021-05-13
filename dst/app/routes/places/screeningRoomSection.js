@@ -109,7 +109,7 @@ screeningRoomSectionRouter.post('', permitScopes_1.default(['places.*']), ...[
 /**
  * 検索
  */
-screeningRoomSectionRouter.get('', permitScopes_1.default(['places.*']), ...[
+screeningRoomSectionRouter.get('', permitScopes_1.default(['places.*', 'places.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, 

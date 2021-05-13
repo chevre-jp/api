@@ -62,7 +62,7 @@ categoryCodesRouter.post('', permitScopes_1.default(['categoryCodes.*']), ...val
         next(error);
     }
 }));
-categoryCodesRouter.get('', permitScopes_1.default(['categoryCodes.*']), ...[
+categoryCodesRouter.get('', permitScopes_1.default(['categoryCodes.*', 'categoryCodes.read']), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()

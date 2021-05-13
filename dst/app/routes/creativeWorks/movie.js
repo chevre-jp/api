@@ -68,7 +68,7 @@ movieRouter.post('', permitScopes_1.default(['creativeWorks.*']), ...[
         next(error);
     }
 }));
-movieRouter.get('', permitScopes_1.default(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read-only']), ...[
+movieRouter.get('', permitScopes_1.default(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read']), ...[
     express_validator_1.query('datePublishedFrom')
         .optional()
         .isISO8601()
@@ -106,7 +106,7 @@ movieRouter.get('', permitScopes_1.default(['creativeWorks.*', 'creativeWorks', 
         next(error);
     }
 }));
-movieRouter.get('/:id', permitScopes_1.default(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+movieRouter.get('/:id', permitScopes_1.default(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         const movie = yield creativeWorkRepo.findMovieById({ id: req.params.id });

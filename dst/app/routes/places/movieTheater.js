@@ -44,7 +44,7 @@ movieTheaterRouter.post('', permitScopes_1.default(['places.*']), ...[
         next(error);
     }
 }));
-movieTheaterRouter.get('', permitScopes_1.default(['places.*', 'places', 'places.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+movieTheaterRouter.get('', permitScopes_1.default(['places.*', 'places', 'places.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
@@ -57,7 +57,7 @@ movieTheaterRouter.get('', permitScopes_1.default(['places.*', 'places', 'places
         next(error);
     }
 }));
-movieTheaterRouter.get('/:id', permitScopes_1.default(['places.*', 'places', 'places.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+movieTheaterRouter.get('/:id', permitScopes_1.default(['places.*', 'places', 'places.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const movieTheater = yield placeRepo.findById({ id: req.params.id });

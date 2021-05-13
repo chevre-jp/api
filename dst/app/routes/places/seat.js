@@ -117,7 +117,7 @@ seatRouter.post('', permitScopes_1.default(['places.*']), ...[
 /**
  * 座席検索
  */
-seatRouter.get('', permitScopes_1.default(['places.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+seatRouter.get('', permitScopes_1.default(['places.*', 'places.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const searchConditions = Object.assign(Object.assign({}, req.query), { 

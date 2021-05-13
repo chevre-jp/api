@@ -87,7 +87,7 @@ sellersRouter.post(
  */
 sellersRouter.get(
     '',
-    permitScopes(['sellers.*']),
+    permitScopes(['sellers.*', 'sellers.read']),
     ...[
         query('$projection.*')
             .toInt()
@@ -156,7 +156,7 @@ sellersRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 sellersRouter.get<ParamsDictionary>(
     '/:id',
-    permitScopes(['sellers.*']),
+    permitScopes(['sellers.*', 'sellers.read']),
     ...[
         query('$projection.*')
             .toInt()

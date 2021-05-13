@@ -99,7 +99,7 @@ screeningRoomRouter.post('', permitScopes_1.default(['places.*']), ...[
 /**
  * 検索
  */
-screeningRoomRouter.get('', permitScopes_1.default(['places.*']), ...[
+screeningRoomRouter.get('', permitScopes_1.default(['places.*', 'places.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt(),
     express_validator_1.query('openSeatingAllowed')

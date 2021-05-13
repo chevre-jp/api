@@ -162,7 +162,7 @@ eventsRouter.post(
  */
 eventsRouter.get(
     '',
-    permitScopes(['events.*', 'events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -256,7 +256,7 @@ eventsRouter.get(
  */
 eventsRouter.get(
     '/:id',
-    permitScopes(['events.*', 'events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read']),
     validator,
     async (req, res, next) => {
         try {
@@ -400,7 +400,7 @@ eventsRouter.delete(
  */
 eventsRouter.get(
     '/:id/offers/ticket',
-    permitScopes(['events.*', 'events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read']),
     validator,
     async (req, res, next) => {
         try {
@@ -433,7 +433,7 @@ eventsRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 eventsRouter.get<ParamsDictionary>(
     '/:id/seats',
-    permitScopes(['events.*', 'events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read']),
     ...[
         query('$projection.*')
             .toInt(),

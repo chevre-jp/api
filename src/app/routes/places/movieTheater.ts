@@ -54,7 +54,7 @@ movieTheaterRouter.post(
 
 movieTheaterRouter.get(
     '',
-    permitScopes(['places.*', 'places', 'places.read-only']),
+    permitScopes(['places.*', 'places', 'places.read']),
     validator,
     async (req, res, next) => {
         try {
@@ -77,7 +77,7 @@ movieTheaterRouter.get(
 
 movieTheaterRouter.get(
     '/:id',
-    permitScopes(['places.*', 'places', 'places.read-only']),
+    permitScopes(['places.*', 'places', 'places.read']),
     validator,
     async (req, res, next) => {
         try {

@@ -137,7 +137,7 @@ seatRouter.post(
  */
 seatRouter.get(
     '',
-    permitScopes(['places.*']),
+    permitScopes(['places.*', 'places.read']),
     validator,
     async (req, res, next) => {
         try {

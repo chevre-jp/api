@@ -146,7 +146,7 @@ eventsRouter.post('', permitScopes_1.default(['events.*']), ...validations, vali
 /**
  * イベント検索
  */
-eventsRouter.get('', permitScopes_1.default(['events.*', 'events', 'events.read-only']), ...[
+eventsRouter.get('', permitScopes_1.default(['events.*', 'events', 'events.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt(),
     express_validator_1.query('typeOf')
@@ -222,7 +222,7 @@ eventsRouter.get('', permitScopes_1.default(['events.*', 'events', 'events.read-
 /**
  * IDでイベント検索
  */
-eventsRouter.get('/:id', permitScopes_1.default(['events.*', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+eventsRouter.get('/:id', permitScopes_1.default(['events.*', 'events', 'events.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const event = yield eventRepo.findById({
@@ -330,7 +330,7 @@ eventsRouter.delete('/:id', permitScopes_1.default(['events.*']), validator_1.de
 /**
  * イベントオファー検索
  */
-eventsRouter.get('/:id/offers/ticket', permitScopes_1.default(['events.*', 'events', 'events.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+eventsRouter.get('/:id/offers/ticket', permitScopes_1.default(['events.*', 'events', 'events.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
@@ -356,7 +356,7 @@ eventsRouter.get('/:id/offers/ticket', permitScopes_1.default(['events.*', 'even
  * 座席検索
  */
 // tslint:disable-next-line:use-default-type-parameter
-eventsRouter.get('/:id/seats', permitScopes_1.default(['events.*', 'events', 'events.read-only']), ...[
+eventsRouter.get('/:id/seats', permitScopes_1.default(['events.*', 'events', 'events.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt(),
     express_validator_1.query('limit')

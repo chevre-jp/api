@@ -49,6 +49,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 権限セットミドルウェアを追加
 - 承認作成時にコードを自動発行するように調整
 - req.agentを導入
+- customerロールの権限を各サービスに設定
 
 ### Deprecated
 
