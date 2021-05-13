@@ -6,7 +6,7 @@ import { Router } from 'express';
 import { body, query } from 'express-validator';
 import { CREATED } from 'http-status';
 import * as mongoose from 'mongoose';
-import * as uuid from 'uuid';
+// import * as uuid from 'uuid';
 
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
@@ -54,7 +54,7 @@ authorizationsRouter.post(
             const authorizationRepo = new chevre.repository.Code(mongoose.connection);
 
             const savingAuthorizations = (<any[]>req.body).map((o) => {
-                const code = uuid.v4();
+                // const code = uuid.v4();
 
                 return {
                     project: {
@@ -62,13 +62,14 @@ authorizationsRouter.post(
                         id: String(o.project?.id)
                     },
                     // code: o.code,
-                    code: code,
+                    // code: code,
                     data: o.object,
-                    validFrom: o.validFrom,
-                    expiresInSeconds: o.expiresInSeconds
+                    validFrom: <Date>o.validFrom,
+                    expiresInSeconds: <number>o.expiresInSeconds
                 };
             });
-            const authorizations = await authorizationRepo.save(savingAuthorizations);
+            // const authorizations = await authorizationRepo.save(savingAuthorizations);
+            const authorizations = await authorizationRepo.publish(savingAuthorizations);
 
             res.status(CREATED)
                 .json(authorizations);
