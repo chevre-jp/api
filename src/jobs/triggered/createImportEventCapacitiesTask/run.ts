@@ -9,7 +9,7 @@ import * as moment from 'moment';
 import { connectMongo } from '../../../connectMongo';
 import * as singletonProcess from '../../../singletonProcess';
 
-const debug = createDebug('cinerino-api:jobs');
+const debug = createDebug('chevre-api:jobs');
 
 const IMPORT_EVENTS_PER_DAYS = 3;
 const DAYS_WEEK = 7;

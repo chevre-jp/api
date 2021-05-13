@@ -48,6 +48,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - chevre.adminスコープを全サービスに対して許可
 - 権限セットミドルウェアを追加
 - 承認作成時にコードを自動発行するように調整
+- req.agentを導入
 
 ### Deprecated
 
