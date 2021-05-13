@@ -17,6 +17,7 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
+const uuid = require("uuid");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const MAX_NUM_AUTHORIZATIONS_CREATED = 1000;
@@ -53,16 +54,22 @@ authorizationsRouter.post('', permitScopes_1.default([]), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const authorizationRepo = new chevre.repository.Code(mongoose.connection);
-        const authorizations = yield authorizationRepo.save(req.body.map((o) => {
+        const savingAuthorizations = req.body.map((o) => {
             var _a;
+            const code = uuid.v4();
             return {
-                project: { typeOf: chevre.factory.organizationType.Project, id: String((_a = o.project) === null || _a === void 0 ? void 0 : _a.id) },
-                code: o.code,
+                project: {
+                    typeOf: chevre.factory.organizationType.Project,
+                    id: String((_a = o.project) === null || _a === void 0 ? void 0 : _a.id)
+                },
+                // code: o.code,
+                code: code,
                 data: o.object,
                 validFrom: o.validFrom,
                 expiresInSeconds: o.expiresInSeconds
             };
-        }));
+        });
+        const authorizations = yield authorizationRepo.save(savingAuthorizations);
         res.status(http_status_1.CREATED)
             .json(authorizations);
     }
