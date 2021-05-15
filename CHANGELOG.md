@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - IAMメンバー検索を追加
 - IAMメンバー編集を追加
 - IAMロール検索を追加
+- ユーザープールルーターを追加
 
 ### Changed
 

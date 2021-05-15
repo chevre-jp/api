@@ -30,6 +30,7 @@ const stats_1 = require("../stats");
 const tasks_1 = require("../tasks");
 const transactionNumbers_1 = require("../transactionNumbers");
 const transactions_1 = require("../transactions");
+const userPools_1 = require("../userPools");
 const projectDetailRouter = express.Router();
 projectDetailRouter.use((req, _, next) => {
     var _a;
@@ -65,4 +66,5 @@ projectDetailRouter.use('/stats', stats_1.default);
 projectDetailRouter.use('/tasks', tasks_1.default);
 projectDetailRouter.use('/transactions', transactions_1.default);
 projectDetailRouter.use('/transactionNumbers', transactionNumbers_1.default);
+projectDetailRouter.use('/userPools', userPools_1.default);
 exports.default = projectDetailRouter;

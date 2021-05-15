@@ -29,6 +29,7 @@ import statsRouter from '../stats';
 import tasksRouter from '../tasks';
 import transactionNumbersRouter from '../transactionNumbers';
 import transactionsRouter from '../transactions';
+import userPoolsRouter from '../userPools';
 
 const projectDetailRouter = express.Router();
 
@@ -69,5 +70,6 @@ projectDetailRouter.use('/stats', statsRouter);
 projectDetailRouter.use('/tasks', tasksRouter);
 projectDetailRouter.use('/transactions', transactionsRouter);
 projectDetailRouter.use('/transactionNumbers', transactionNumbersRouter);
+projectDetailRouter.use('/userPools', userPoolsRouter);
 
 export default projectDetailRouter;
