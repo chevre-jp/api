@@ -4,7 +4,9 @@
 import * as chevre from '@chevre/domain';
 import * as express from 'express';
 
+import accountActionsRouter from '../accountActions';
 import accountingReportsRouter from '../accountingReports';
+import accountsRouter from '../accounts';
 import accountTitlesRouter from '../accountTitles';
 import actionsRouter from '../actions';
 import aggregateSalesRouter from '../aggregateSales';
@@ -46,6 +48,8 @@ projectDetailRouter.use((req, _, next) => {
 
 projectDetailRouter.use('/health', healthRouter);
 
+projectDetailRouter.use('/accounts', accountsRouter);
+projectDetailRouter.use('/accountActions', accountActionsRouter);
 projectDetailRouter.use('/accountingReports', accountingReportsRouter);
 projectDetailRouter.use('/accountTitles', accountTitlesRouter);
 projectDetailRouter.use('/actions', actionsRouter);
