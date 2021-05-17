@@ -29,6 +29,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - IAMメンバー編集を追加
 - IAMロール検索を追加
 - ユーザープールルーターを追加
+- 口座リポジトリを追加
+- 口座アクションリポジトリを追加
+- 口座取引リポジトリを追加
 
 ### Changed
 
