@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const mongoose = require("mongoose");
@@ -49,4 +50,65 @@ function createAccount(params) {
         }
         : undefined);
 }
+/**
+ * 口座検索
+ */
+accountsRouter.get('', permitScopes_1.default([]), ...[
+    express_validator_1.query('openDate.$gte')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.query('openDate.$lte')
+        .optional()
+        .isISO8601()
+        .toDate()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const accountRepo = new chevre.repository.Account(mongoose.connection);
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
+            // tslint:disable-next-line:no-magic-numbers
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
+        const accounts = yield accountRepo.search(searchConditions);
+        res.json(accounts);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * 口座アクション検索(口座番号指定)
+ */
+// tslint:disable-next-line:use-default-type-parameter
+accountsRouter.get('/:accountNumber/actions/moneyTransfer', permitScopes_1.default([]), ...[
+    express_validator_1.query('startDate.$gte')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.query('startDate.$lte')
+        .optional()
+        .isISO8601()
+        .toDate()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const actionRepo = new chevre.repository.AccountAction(mongoose.connection);
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
+            // tslint:disable-next-line:no-magic-numbers
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, accountNumber: req.params.accountNumber });
+        let actions = yield actionRepo.searchTransferActions(searchConditions);
+        // 互換性維持対応
+        actions = actions.map((a) => {
+            return Object.assign(Object.assign({}, a), { amount: (typeof a.amount === 'number')
+                    ? {
+                        typeOf: 'MonetaryAmount',
+                        currency: 'Point',
+                        value: a.amount
+                    }
+                    : a.amount });
+        });
+        res.json(actions);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 exports.default = accountsRouter;
