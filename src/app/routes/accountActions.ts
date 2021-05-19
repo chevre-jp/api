@@ -5,6 +5,7 @@ import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
+import { query } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
@@ -57,5 +58,56 @@ function createAccountAction(
         ...params
     };
 }
+
+/**
+ * 口座アクション検索
+ */
+accountActionsRouter.get(
+    '',
+    permitScopes([]),
+    ...[
+        query('startDate.$gte')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('startDate.$lte')
+            .optional()
+            .isISO8601()
+            .toDate()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const searchConditions: chevre.factory.account.action.moneyTransfer.ISearchConditions = {
+                ...req.query,
+                project: { id: { $eq: req.project.id } },
+                // tslint:disable-next-line:no-magic-numbers
+                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+            };
+
+            const accountActionRepo = new chevre.repository.AccountAction(mongoose.connection);
+            let actions = await accountActionRepo.searchTransferActions(searchConditions);
+
+            // 互換性維持対応
+            actions = actions.map((a) => {
+                return {
+                    ...a,
+                    amount: (typeof a.amount === 'number')
+                        ? {
+                            typeOf: 'MonetaryAmount',
+                            currency: 'Point', // 旧データはPointしかないのでこれで十分
+                            value: a.amount
+                        }
+                        : a.amount
+                };
+            });
+
+            res.json(actions);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 export default accountActionsRouter;
