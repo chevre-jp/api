@@ -20,6 +20,14 @@ const moment = require("moment");
 const mongoose = require("mongoose");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
+const MAX_NUM_ACCOUNTS_CREATED = 100;
+const pecorinoAuthClient = new chevre.pecorinoapi.auth.ClientCredentials({
+    domain: chevre.credentials.pecorino.authorizeServerDomain,
+    clientId: chevre.credentials.pecorino.clientId,
+    clientSecret: chevre.credentials.pecorino.clientSecret,
+    scopes: [],
+    state: ''
+});
 const accountsRouter = express_1.Router();
 /**
  * 口座同期
@@ -50,6 +58,49 @@ function createAccount(params) {
         }
         : undefined);
 }
+/**
+ * 口座解約
+ * 冪等性の担保された処理となります。
+ */
+accountsRouter.put('/:accountNumber/close', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const accountService = new chevre.pecorinoapi.service.Account({
+            endpoint: chevre.credentials.pecorino.endpoint,
+            auth: pecorinoAuthClient
+        });
+        yield accountService.close({ accountNumber: req.params.accountNumber });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * 口座開設
+ */
+accountsRouter.post('', permitScopes_1.default([]), ...[
+    express_validator_1.body()
+        .isArray({ max: MAX_NUM_ACCOUNTS_CREATED })
+        .withMessage(() => `must be array <= ${MAX_NUM_ACCOUNTS_CREATED}`)
+], 
+// ...validations,
+validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const accountService = new chevre.pecorinoapi.service.Account({
+            endpoint: chevre.credentials.pecorino.endpoint,
+            auth: pecorinoAuthClient
+        });
+        const accounts = yield accountService.open(req.body.map((b) => {
+            return Object.assign(Object.assign({}, b), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
+        }));
+        res.status(http_status_1.CREATED)
+            .json(accounts);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 /**
  * 口座検索
  */

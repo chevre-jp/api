@@ -35,6 +35,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 口座検索を追加
 - 口座アクション検索(口座番号指定)を追加
 - 口座アクション検索を追加
+- 口座開設を追加
+- 口座解約を追加
 
 ### Changed
 

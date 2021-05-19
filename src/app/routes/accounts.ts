@@ -5,13 +5,23 @@ import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
-import { query } from 'express-validator';
-import { NO_CONTENT } from 'http-status';
+import { body, query } from 'express-validator';
+import { CREATED, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
 import * as mongoose from 'mongoose';
 
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
+
+const MAX_NUM_ACCOUNTS_CREATED = 100;
+
+const pecorinoAuthClient = new chevre.pecorinoapi.auth.ClientCredentials({
+    domain: chevre.credentials.pecorino.authorizeServerDomain,
+    clientId: chevre.credentials.pecorino.clientId,
+    clientSecret: chevre.credentials.pecorino.clientSecret,
+    scopes: [],
+    state: ''
+});
 
 const accountsRouter = Router();
 
@@ -65,6 +75,64 @@ function createAccount(params: chevre.factory.account.IAccount): chevre.factory.
             : undefined
     };
 }
+
+/**
+ * 口座解約
+ * 冪等性の担保された処理となります。
+ */
+accountsRouter.put(
+    '/:accountNumber/close',
+    permitScopes([]),
+    validator,
+    async (req, res, next) => {
+        try {
+            const accountService = new chevre.pecorinoapi.service.Account({
+                endpoint: chevre.credentials.pecorino.endpoint,
+                auth: pecorinoAuthClient
+            });
+            await accountService.close({ accountNumber: req.params.accountNumber });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * 口座開設
+ */
+accountsRouter.post(
+    '',
+    permitScopes([]),
+    ...[
+        body()
+            .isArray({ max: MAX_NUM_ACCOUNTS_CREATED })
+            .withMessage(() => `must be array <= ${MAX_NUM_ACCOUNTS_CREATED}`)
+    ],
+    // ...validations,
+    validator,
+    async (req, res, next) => {
+        try {
+            const accountService = new chevre.pecorinoapi.service.Account({
+                endpoint: chevre.credentials.pecorino.endpoint,
+                auth: pecorinoAuthClient
+            });
+            const accounts = await accountService.open((<any[]>req.body).map((b) => {
+                return {
+                    ...b,
+                    project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+                };
+            }));
+
+            res.status(CREATED)
+                .json(accounts);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 /**
  * 口座検索
