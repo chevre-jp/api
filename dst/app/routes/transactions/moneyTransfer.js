@@ -51,6 +51,7 @@ moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['assetTra
         .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const accountRepo = new chevre.repository.Account(mongoose.connection);
         const productRepo = new chevre.repository.Product(mongoose.connection);
         const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
@@ -59,6 +60,7 @@ moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['assetTra
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
         const transaction = yield chevre.service.transaction.moneyTransfer.start(Object.assign(Object.assign({ typeOf: chevre.factory.assetTransactionType.MoneyTransfer, project: project, agent: req.body.agent, object: req.body.object, recipient: req.body.recipient, expires: moment(req.body.expires)
                 .toDate() }, (typeof req.body.identifier === 'string') ? { identifier: req.body.identifier } : undefined), (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
+            account: accountRepo,
             product: productRepo,
             project: projectRepo,
             serviceOutput: serviceOutputRepo,

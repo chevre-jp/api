@@ -59,6 +59,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 承認作成時にコードを自動発行するように調整
 - req.agentを導入
 - customerロールの権限を各サービスに設定
+- 口座リポジトリ参照のPecorino依存を排除
+- 口座アクションリポジトリ参照のPecorino依存を排除
 
 ### Deprecated
 
