@@ -7,6 +7,7 @@ const express = require("express");
 const cron_1 = require("./cron");
 const _ah_1 = require("./_ah");
 const health_1 = require("./health");
+const members_1 = require("./members");
 const projects_1 = require("./projects");
 const detail_1 = require("./projects/detail");
 const webhooks_1 = require("./webhooks");
@@ -29,6 +30,8 @@ router.use(authentication_1.default);
 router.use(setProject_1.default);
 // プロジェクトメンバー権限を確認
 router.use(setPermissions_1.default);
+// メンバールーター
+router.use('/members', members_1.default);
 // プロジェクトルーター
 router.use('/projects', projects_1.default);
 // 以下、プロジェクト指定済の状態でルーティング

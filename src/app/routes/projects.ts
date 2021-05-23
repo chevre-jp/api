@@ -135,7 +135,6 @@ function createFromBody(params: any): chevre.factory.project.IProject {
 
 /**
  * プロジェクト検索
- * 閲覧権限を持つプロジェクトを検索
  */
 projectsRouter.get(
     '',

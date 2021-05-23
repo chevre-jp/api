@@ -121,7 +121,6 @@ function createFromBody(params) {
 }
 /**
  * プロジェクト検索
- * 閲覧権限を持つプロジェクトを検索
  */
 projectsRouter.get('', permitScopes_1.default([]), ...[
     express_validator_1.query('$projection.*')

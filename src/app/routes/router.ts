@@ -7,6 +7,7 @@ import cronRouter from './cron';
 import ahRouter from './_ah';
 
 import healthRouter from './health';
+import membersRouter from './members';
 import projectsRouter from './projects';
 import projectDetailRouter from './projects/detail';
 import webhooksRouter from './webhooks';
@@ -36,6 +37,9 @@ router.use(setProject);
 
 // プロジェクトメンバー権限を確認
 router.use(setPermissions);
+
+// メンバールーター
+router.use('/members', membersRouter);
 
 // プロジェクトルーター
 router.use('/projects', projectsRouter);
