@@ -7,7 +7,7 @@ import { Router } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
-import * as moment from 'moment';
+// import * as moment from 'moment';
 import * as mongoose from 'mongoose';
 
 import permitScopes from '../middlewares/permitScopes';
@@ -29,52 +29,52 @@ const accountsRouter = Router();
  * 口座同期
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountsRouter.put<ParamsDictionary>(
-    '/sync',
-    permitScopes([]),
-    ...[],
-    validator,
-    async (req, res, next) => {
-        try {
-            const accountRepo = new chevre.repository.Account(mongoose.connection);
-            const account = createAccount({
-                ...req.body
-            });
+// accountsRouter.put<ParamsDictionary>(
+//     '/sync',
+//     permitScopes([]),
+//     ...[],
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const accountRepo = new chevre.repository.Account(mongoose.connection);
+//             const account = createAccount({
+//                 ...req.body
+//             });
 
-            await accountRepo.accountModel.findByIdAndUpdate(
-                (<any>account).id,
-                account,
-                { upsert: true }
-            )
-                .exec();
+//             await accountRepo.accountModel.findByIdAndUpdate(
+//                 (<any>account).id,
+//                 account,
+//                 { upsert: true }
+//             )
+//                 .exec();
 
-            res.status(NO_CONTENT)
-                .end();
-        } catch (error) {
-            next(error);
-        }
-    }
-);
+//             res.status(NO_CONTENT)
+//                 .end();
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
 
-function createAccount(params: chevre.factory.account.IAccount): chevre.factory.account.IAccount {
-    delete (<any>params)._id;
-    delete (<any>params).createdAt;
-    delete (<any>params).updatedAt;
+// function createAccount(params: chevre.factory.account.IAccount): chevre.factory.account.IAccount {
+//     delete (<any>params)._id;
+//     delete (<any>params).createdAt;
+//     delete (<any>params).updatedAt;
 
-    return {
-        ...params,
-        balance: Number(params.balance),
-        availableBalance: Number(params.availableBalance),
-        openDate: moment(params.openDate)
-            .toDate(),
-        ...(params.closeDate !== undefined && params.closeDate !== null)
-            ? {
-                closeDate: moment(params.closeDate)
-                    .toDate()
-            }
-            : undefined
-    };
-}
+//     return {
+//         ...params,
+//         balance: Number(params.balance),
+//         availableBalance: Number(params.availableBalance),
+//         openDate: moment(params.openDate)
+//             .toDate(),
+//         ...(params.closeDate !== undefined && params.closeDate !== null)
+//             ? {
+//                 closeDate: moment(params.closeDate)
+//                     .toDate()
+//             }
+//             : undefined
+//     };
+// }
 
 /**
  * 口座解約

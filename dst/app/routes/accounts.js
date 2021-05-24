@@ -16,7 +16,7 @@ const chevre = require("@chevre/domain");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
-const moment = require("moment");
+// import * as moment from 'moment';
 const mongoose = require("mongoose");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
@@ -33,31 +33,48 @@ const accountsRouter = express_1.Router();
  * 口座同期
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountsRouter.put('/sync', permitScopes_1.default([]), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const accountRepo = new chevre.repository.Account(mongoose.connection);
-        const account = createAccount(Object.assign({}, req.body));
-        yield accountRepo.accountModel.findByIdAndUpdate(account.id, account, { upsert: true })
-            .exec();
-        res.status(http_status_1.NO_CONTENT)
-            .end();
-    }
-    catch (error) {
-        next(error);
-    }
-}));
-function createAccount(params) {
-    delete params._id;
-    delete params.createdAt;
-    delete params.updatedAt;
-    return Object.assign(Object.assign(Object.assign({}, params), { balance: Number(params.balance), availableBalance: Number(params.availableBalance), openDate: moment(params.openDate)
-            .toDate() }), (params.closeDate !== undefined && params.closeDate !== null)
-        ? {
-            closeDate: moment(params.closeDate)
-                .toDate()
-        }
-        : undefined);
-}
+// accountsRouter.put<ParamsDictionary>(
+//     '/sync',
+//     permitScopes([]),
+//     ...[],
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const accountRepo = new chevre.repository.Account(mongoose.connection);
+//             const account = createAccount({
+//                 ...req.body
+//             });
+//             await accountRepo.accountModel.findByIdAndUpdate(
+//                 (<any>account).id,
+//                 account,
+//                 { upsert: true }
+//             )
+//                 .exec();
+//             res.status(NO_CONTENT)
+//                 .end();
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
+// function createAccount(params: chevre.factory.account.IAccount): chevre.factory.account.IAccount {
+//     delete (<any>params)._id;
+//     delete (<any>params).createdAt;
+//     delete (<any>params).updatedAt;
+//     return {
+//         ...params,
+//         balance: Number(params.balance),
+//         availableBalance: Number(params.availableBalance),
+//         openDate: moment(params.openDate)
+//             .toDate(),
+//         ...(params.closeDate !== undefined && params.closeDate !== null)
+//             ? {
+//                 closeDate: moment(params.closeDate)
+//                     .toDate()
+//             }
+//             : undefined
+//     };
+// }
 /**
  * 口座解約
  * 冪等性の担保された処理となります。

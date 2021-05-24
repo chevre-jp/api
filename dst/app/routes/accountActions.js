@@ -14,8 +14,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/domain");
 const express_1 = require("express");
+// tslint:disable-next-line:no-implicit-dependencies
+// import { ParamsDictionary } from 'express-serve-static-core';
 const express_validator_1 = require("express-validator");
-const http_status_1 = require("http-status");
+// import { NO_CONTENT } from 'http-status';
 const mongoose = require("mongoose");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
@@ -24,27 +26,42 @@ const accountActionsRouter = express_1.Router();
  * 口座アクション同期
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountActionsRouter.put('/sync', permitScopes_1.default([]), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const accountActionRepo = new chevre.repository.AccountAction(mongoose.connection);
-        const action = createAccountAction(Object.assign({}, req.body));
-        yield accountActionRepo.actionModel.findByIdAndUpdate(action.id, {
-            $setOnInsert: action
-        }, { upsert: true })
-            .exec();
-        res.status(http_status_1.NO_CONTENT)
-            .end();
-    }
-    catch (error) {
-        next(error);
-    }
-}));
-function createAccountAction(params) {
-    delete params._id;
-    delete params.createdAt;
-    delete params.updatedAt;
-    return Object.assign({}, params);
-}
+// accountActionsRouter.put<ParamsDictionary>(
+//     '/sync',
+//     permitScopes([]),
+//     ...[],
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const accountActionRepo = new chevre.repository.AccountAction(mongoose.connection);
+//             const action = createAccountAction({
+//                 ...req.body
+//             });
+//             await accountActionRepo.actionModel.findByIdAndUpdate(
+//                 action.id,
+//                 {
+//                     $setOnInsert: action
+//                 },
+//                 { upsert: true }
+//             )
+//                 .exec();
+//             res.status(NO_CONTENT)
+//                 .end();
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
+// function createAccountAction(
+//     params: chevre.factory.account.action.moneyTransfer.IAction
+// ): chevre.factory.account.action.moneyTransfer.IAction {
+//     delete (<any>params)._id;
+//     delete (<any>params).createdAt;
+//     delete (<any>params).updatedAt;
+//     return {
+//         ...params
+//     };
+// }
 /**
  * 口座アクション検索
  */
