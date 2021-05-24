@@ -91,15 +91,37 @@ ownershipInfosRouter.get('', permitScopes_1.default([]), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _b, _c, _d;
     try {
+        const accountRepo = new chevre.repository.Account(mongoose.connection);
         const ownershipInfoRepo = new chevre.repository.OwnershipInfo(mongoose.connection);
-        const typeOfGood = (req.query.typeOfGood !== undefined && req.query.typeOfGood !== null) ? req.query.typeOfGood : {};
+        // const typeOfGood = (req.query.typeOfGood !== undefined && req.query.typeOfGood !== null) ? req.query.typeOfGood : {};
         let ownershipInfos;
-        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: String((_d = (_c = (_b = req.query) === null || _b === void 0 ? void 0 : _b.project) === null || _c === void 0 ? void 0 : _c.id) === null || _d === void 0 ? void 0 : _d.$eq) } }, 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        switch (typeOfGood.typeOf) {
-            default:
-                ownershipInfos = yield ownershipInfoRepo.search(searchConditions);
+        ownershipInfos = yield ownershipInfoRepo.search(searchConditions);
+        // typeOfGoodの詳細指定があればそちらも取得する
+        const includeGoodWithDetails = req.query.includeGoodWithDetails === '1';
+        if (includeGoodWithDetails) {
+            const productType = (_d = (_c = (_b = searchConditions.typeOfGood) === null || _b === void 0 ? void 0 : _b.issuedThrough) === null || _c === void 0 ? void 0 : _c.typeOf) === null || _d === void 0 ? void 0 : _d.$eq;
+            switch (productType) {
+                case chevre.factory.product.ProductType.PaymentCard:
+                    // 口座詳細取得
+                    const accountNumbers = ownershipInfos.map((o) => o.typeOfGood.accountNumber);
+                    if (accountNumbers.length > 0) {
+                        const accounts = yield accountRepo.search({
+                            project: { id: { $eq: req.project.id } },
+                            accountNumbers: accountNumbers
+                        });
+                        ownershipInfos = ownershipInfos.map((o) => {
+                            const account = accounts.find((a) => a.accountNumber === o.typeOfGood.accountNumber);
+                            // if (account === undefined) {
+                            //     throw new factory.errors.NotFound('Account');
+                            // }
+                            return Object.assign(Object.assign({}, o), (account !== undefined) ? { typeOfGood: account } : undefined);
+                        });
+                    }
+                default:
+            }
         }
         const countDocuments = req.query.countDocuments === '1';
         if (countDocuments) {
