@@ -43,7 +43,7 @@ productsRouter.post('', permitScopes_1.default(['products.*']), ...[
 /**
  * プロダクト検索
  */
-productsRouter.get('', permitScopes_1.default(['products.*']), ...[
+productsRouter.get('', permitScopes_1.default(['products.*', 'products.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt(),
     express_validator_1.query('offers.$elemMatch.validFrom.$gte')
@@ -84,7 +84,13 @@ productsRouter.get('', permitScopes_1.default(['products.*']), ...[
         const searchConditions = Object.assign(Object.assign({}, req.query), { 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const products = yield productRepo.search(searchConditions, (req.query.$projection !== undefined && req.query.$projection !== null) ? Object.assign({}, req.query.$projection) : undefined);
+        const $projection = Object.assign(Object.assign({}, req.query.$projection), { 
+            // defaultで隠蔽
+            availableChannel: 0, 
+            // 'availableChannel.credentials': 0,
+            // 'availableChannel.serviceUrl': 0,
+            'provider.credentials.shopPass': 0, 'provider.credentials.kgygishCd': 0, 'provider.credentials.stCd': 0 });
+        const products = yield productRepo.search(searchConditions, $projection);
         res.json(products);
     }
     catch (error) {

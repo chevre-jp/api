@@ -48,7 +48,7 @@ productsRouter.post(
  */
 productsRouter.get(
     '',
-    permitScopes(['products.*']),
+    permitScopes(['products.*', 'products.read']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -97,9 +97,19 @@ productsRouter.get(
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
+            const $projection: any = {
+                ...req.query.$projection,
+                // defaultで隠蔽
+                availableChannel: 0,
+                // 'availableChannel.credentials': 0,
+                // 'availableChannel.serviceUrl': 0,
+                'provider.credentials.shopPass': 0,
+                'provider.credentials.kgygishCd': 0,
+                'provider.credentials.stCd': 0
+            };
             const products = await productRepo.search(
                 searchConditions,
-                (req.query.$projection !== undefined && req.query.$projection !== null) ? { ...req.query.$projection } : undefined
+                $projection
             );
 
             res.json(products);

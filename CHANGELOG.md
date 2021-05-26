@@ -64,6 +64,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 口座アクションリポジトリ参照のPecorino依存を排除
 - 通貨転送取引中止時に取引が存在しない場合に対応
 - 所有権検索において所有物詳細も取得できるように調整
+- プロダクト検索結果から決済認証情報を隠蔽
 
 ### Deprecated
 
