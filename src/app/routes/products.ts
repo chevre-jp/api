@@ -152,7 +152,7 @@ productsRouter.get<ParamsDictionary>(
  */
 productsRouter.get(
     '/:id/offers',
-    permitScopes(['products.*']),
+    permitScopes(['products.*', 'products.read']),
     validator,
     async (req, res, next) => {
         try {

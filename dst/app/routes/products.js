@@ -117,7 +117,7 @@ productsRouter.get('/:id', permitScopes_1.default(['products.*']), ...[
 /**
  * プロダクトに対するオファー検索
  */
-productsRouter.get('/:id/offers', permitScopes_1.default(['products.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+productsRouter.get('/:id/offers', permitScopes_1.default(['products.*', 'products.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
