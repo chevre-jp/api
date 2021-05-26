@@ -65,7 +65,7 @@ customersRouter.post('', permitScopes_1.default(['customers.*']), ...validations
 /**
  * 顧客検索
  */
-customersRouter.get('', permitScopes_1.default(['customers.*']), ...[
+customersRouter.get('', permitScopes_1.default(['customers.*', 'customers.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -85,7 +85,7 @@ customersRouter.get('', permitScopes_1.default(['customers.*']), ...[
  * IDで顧客検索
  */
 // tslint:disable-next-line:use-default-type-parameter
-customersRouter.get('/:id', permitScopes_1.default(['customers.*']), ...[
+customersRouter.get('/:id', permitScopes_1.default(['customers.*', 'customers.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

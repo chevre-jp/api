@@ -77,7 +77,7 @@ customersRouter.post(
  */
 customersRouter.get(
     '',
-    permitScopes(['customers.*']),
+    permitScopes(['customers.*', 'customers.read']),
     ...[
         query('$projection.*')
             .toInt()
@@ -111,7 +111,7 @@ customersRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 customersRouter.get<ParamsDictionary>(
     '/:id',
-    permitScopes(['customers.*']),
+    permitScopes(['customers.*', 'customers.read']),
     ...[
         query('$projection.*')
             .toInt()
