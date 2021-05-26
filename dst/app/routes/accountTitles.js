@@ -59,7 +59,7 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['accoun
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         // const accountTitles = await accountTitleRepo.search(searchConditions);
@@ -281,7 +281,7 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['accountTitl
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         // const accountTitles = await accountTitleRepo.search(searchConditions);
@@ -577,7 +577,7 @@ accountTitlesRouter.get('', permitScopes_1.default(['accountTitles.*', 'accountT
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         // const accountTitles = await accountTitleRepo.search(searchConditions);

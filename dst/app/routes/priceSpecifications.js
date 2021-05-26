@@ -104,7 +104,7 @@ priceSpecificationsRouter.delete('/:id', permitScopes_1.default(['priceSpecifica
 priceSpecificationsRouter.get('', permitScopes_1.default(['priceSpecifications.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const priceSpecifications = yield priceSpecificationRepo.search(searchConditions);

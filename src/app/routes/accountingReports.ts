@@ -107,7 +107,9 @@ accountingReportsRouter.get<ParamsDictionary>(
 );
 
 function request2matchStages(req: Request): any[] {
-    const matchStages: any[] = [];
+    const matchStages: any[] = [{
+        $match: { 'project.id': { $eq: req.project.id } }
+    }];
 
     const projectIdEq = req.query.project?.id?.$eq;
     if (typeof projectIdEq === 'string') {

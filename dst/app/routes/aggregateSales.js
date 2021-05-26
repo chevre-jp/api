@@ -67,7 +67,7 @@ aggregateSalesRouter.get('', permitScopes_1.default(['salesReports.read']), ...[
         const page = (typeof ((_b = req.query) === null || _b === void 0 ? void 0 : _b.page) === 'number') ? Math.max(req.query.page, 1) : 1;
         const reportRepo = new chevre.repository.Report(mongoose.connection);
         const andConditions = [
-        // { 'project.id': { $exists: true, $eq: req.query.project?.id } }
+            { 'project.id': { $exists: true, $eq: req.project.id } }
         ];
         const $and = (_c = req.query) === null || _c === void 0 ? void 0 : _c.$and;
         if (Array.isArray($and)) {

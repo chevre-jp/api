@@ -24,17 +24,17 @@ const registerService_1 = require("./transactions/registerService");
 const reserve_1 = require("./transactions/reserve");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
-const transactionsRouter = express_1.Router();
-transactionsRouter.use('/cancelReservation', cancelReservation_1.default);
-transactionsRouter.use(`/${chevre.factory.assetTransactionType.MoneyTransfer}`, moneyTransfer_1.default);
-transactionsRouter.use(`/${chevre.factory.assetTransactionType.Pay}`, pay_1.default);
-transactionsRouter.use(`/${chevre.factory.assetTransactionType.Refund}`, refund_1.default);
-transactionsRouter.use('/reserve', reserve_1.default);
-transactionsRouter.use(`/${chevre.factory.assetTransactionType.RegisterService}`, registerService_1.default);
+const assetTransactionsRouter = express_1.Router();
+assetTransactionsRouter.use('/cancelReservation', cancelReservation_1.default);
+assetTransactionsRouter.use(`/${chevre.factory.assetTransactionType.MoneyTransfer}`, moneyTransfer_1.default);
+assetTransactionsRouter.use(`/${chevre.factory.assetTransactionType.Pay}`, pay_1.default);
+assetTransactionsRouter.use(`/${chevre.factory.assetTransactionType.Refund}`, refund_1.default);
+assetTransactionsRouter.use('/reserve', reserve_1.default);
+assetTransactionsRouter.use(`/${chevre.factory.assetTransactionType.RegisterService}`, registerService_1.default);
 /**
  * 取引検索
  */
-transactionsRouter.get('', permitScopes_1.default([]), ...[
+assetTransactionsRouter.get('', permitScopes_1.default([]), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()
@@ -62,7 +62,7 @@ transactionsRouter.get('', permitScopes_1.default([]), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: { startDate: chevre.factory.sortType.Descending } });
         const transactions = yield transactionRepo.search(searchConditions);
@@ -72,4 +72,4 @@ transactionsRouter.get('', permitScopes_1.default([]), ...[
         next(error);
     }
 }));
-exports.default = transactionsRouter;
+exports.default = assetTransactionsRouter;

@@ -90,8 +90,9 @@ productsRouter.get(
         try {
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
-            const searchConditions = {
+            const searchConditions: chevre.factory.product.ISearchConditions = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1

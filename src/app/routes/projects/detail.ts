@@ -10,6 +10,7 @@ import accountsRouter from '../accounts';
 import accountTitlesRouter from '../accountTitles';
 import actionsRouter from '../actions';
 import aggregateSalesRouter from '../aggregateSales';
+import assetTransactionsRouter from '../assetTransactions';
 import authorizationsRouter from '../authorizations';
 import categoryCodesRouter from '../categoryCode';
 import creativeWorksRouter from '../creativeWorks';
@@ -30,7 +31,6 @@ import serviceOutputsRouter from '../serviceOutputs';
 import statsRouter from '../stats';
 import tasksRouter from '../tasks';
 import transactionNumbersRouter from '../transactionNumbers';
-import transactionsRouter from '../transactions';
 import userPoolsRouter from '../userPools';
 
 const projectDetailRouter = express.Router();
@@ -72,7 +72,7 @@ projectDetailRouter.use('/sellers', sellersRouter);
 projectDetailRouter.use('/serviceOutputs', serviceOutputsRouter);
 projectDetailRouter.use('/stats', statsRouter);
 projectDetailRouter.use('/tasks', tasksRouter);
-projectDetailRouter.use('/transactions', transactionsRouter);
+projectDetailRouter.use('/transactions', assetTransactionsRouter);
 projectDetailRouter.use('/transactionNumbers', transactionNumbersRouter);
 projectDetailRouter.use('/userPools', userPoolsRouter);
 

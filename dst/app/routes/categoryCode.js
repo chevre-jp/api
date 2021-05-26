@@ -74,7 +74,7 @@ categoryCodesRouter.get('', permitScopes_1.default(['categoryCodes.*', 'category
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const categoryCodes = yield categoryCodeRepo.search(searchConditions);

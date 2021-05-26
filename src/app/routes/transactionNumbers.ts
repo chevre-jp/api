@@ -31,7 +31,7 @@ transactionNumbersRouter.post(
             const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
 
             const transactionNumber = await transactionNumberRepo.publishByTimestamp({
-                project: { id: req.body.project.id },
+                project: { id: req.project.id },
                 startDate: new Date()
             });
 

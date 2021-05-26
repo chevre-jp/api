@@ -53,7 +53,8 @@ serviceOutputsRouter.get(
             // };
 
             const serviceOutputs = await serviceOutputRepo.serviceOutputModel.find({
-                ...(req.query.project?.id !== undefined) ? { 'project.id': req.query.project?.id } : undefined,
+                'project.id': { $exists: true, $eq: req.project.id },
+                // ...(req.query.project?.id !== undefined) ? { 'project.id': req.query.project?.id } : undefined,
                 ...(req.query.typeOf !== undefined) ? { typeOf: req.query.typeOf } : undefined,
                 ...(req.query.identifier !== undefined) ? { identifier: req.query.identifier } : undefined,
                 ...(req.query.accessCode !== undefined) ? { accessCode: req.query.accessCode } : undefined,

@@ -32,7 +32,7 @@ transactionNumbersRouter.post('', permitScopes_1.default(['transactionNumbers.wr
     try {
         const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
         const transactionNumber = yield transactionNumberRepo.publishByTimestamp({
-            project: { id: req.body.project.id },
+            project: { id: req.project.id },
             startDate: new Date()
         });
         res.status(http_status_1.CREATED)

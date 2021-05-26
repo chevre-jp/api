@@ -112,7 +112,7 @@ screeningRoomRouter.get('', permitScopes_1.default(['places.*', 'places.read']),
     var _a, _b, _c, _d, _e, _f;
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const matchStages = [];

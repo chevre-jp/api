@@ -101,7 +101,9 @@ accountingReportsRouter.get('', permitScopes_1.default(['accountingReports.read'
 }));
 function request2matchStages(req) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
-    const matchStages = [];
+    const matchStages = [{
+            $match: { 'project.id': { $eq: req.project.id } }
+        }];
     const projectIdEq = (_b = (_a = req.query.project) === null || _a === void 0 ? void 0 : _a.id) === null || _b === void 0 ? void 0 : _b.$eq;
     if (typeof projectIdEq === 'string') {
         matchStages.push({
