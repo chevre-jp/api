@@ -12,9 +12,6 @@ import * as mongoose from 'mongoose';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
-export type ICustomer = any;
-export type ISearchConditions = any;
-
 /**
  * 販売者に対するバリデーション
  */
@@ -56,7 +53,7 @@ customersRouter.post(
         try {
             const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
 
-            const attributes: ICustomer = {
+            const attributes: chevre.factory.customer.ICustomer = {
                 ...req.body,
                 project: project
             };
@@ -85,7 +82,7 @@ customersRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const searchConditions: ISearchConditions = {
+            const searchConditions: chevre.factory.customer.ISearchConditions = {
                 ...req.query,
                 project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers
@@ -144,7 +141,7 @@ customersRouter.put<ParamsDictionary>(
     validator,
     async (req, res, next) => {
         try {
-            const attributes: ICustomer = {
+            const attributes: chevre.factory.customer.ICustomer = {
                 ...req.body
             };
 
