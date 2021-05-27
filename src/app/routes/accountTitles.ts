@@ -278,8 +278,14 @@ accountTitlesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet;
-            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = req.body;
+            const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = {
+                ...req.body.inCodeSet,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
+            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = {
+                ...req.body,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
@@ -630,9 +636,18 @@ accountTitlesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet;
-            const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet.inCodeSet;
-            const accountTitle: chevre.factory.accountTitle.IAccountTitle = req.body;
+            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = {
+                ...req.body.inCodeSet,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
+            const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = {
+                ...req.body.inCodeSet.inCodeSet,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
+            const accountTitle: chevre.factory.accountTitle.IAccountTitle = {
+                ...req.body,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 

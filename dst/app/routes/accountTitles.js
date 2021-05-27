@@ -225,8 +225,8 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['accountTit
         .withMessage(() => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accountTitleCategory = req.body.inCodeSet;
-        const accountTitleSet = req.body;
+        const accountTitleCategory = Object.assign(Object.assign({}, req.body.inCodeSet), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
+        const accountTitleSet = Object.assign(Object.assign({}, req.body), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         // 科目分類の存在確認
         let doc = yield accountTitleRepo.accountTitleModel.findOne({
@@ -515,9 +515,9 @@ accountTitlesRouter.post('', permitScopes_1.default(['accountTitles.*']), ...[
         .withMessage(() => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accountTitleSet = req.body.inCodeSet;
-        const accountTitleCategory = req.body.inCodeSet.inCodeSet;
-        const accountTitle = req.body;
+        const accountTitleSet = Object.assign(Object.assign({}, req.body.inCodeSet), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
+        const accountTitleCategory = Object.assign(Object.assign({}, req.body.inCodeSet.inCodeSet), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
+        const accountTitle = Object.assign(Object.assign({}, req.body), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         // 科目の存在確認
         let doc = yield accountTitleRepo.accountTitleModel.findOne({
