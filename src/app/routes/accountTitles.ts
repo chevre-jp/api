@@ -40,7 +40,7 @@ accountTitlesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const accountTitle: chevre.factory.accountTitle.IAccountTitle = {
                 ...req.body,
@@ -288,7 +288,7 @@ accountTitlesRouter.post(
                 {
                     'project.id': {
                         $exists: true,
-                        $eq: accountTitleSet.project.id
+                        $eq: req.project.id
                     },
                     codeValue: accountTitleCategory.codeValue
                 }
@@ -299,7 +299,7 @@ accountTitlesRouter.post(
             }
 
             const newAccountTitleSet: chevre.factory.accountTitle.IAccountTitle = {
-                project: { id: accountTitleSet.project.id, typeOf: chevre.factory.organizationType.Project },
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
                 typeOf: accountTitleSet.typeOf,
                 codeValue: accountTitleSet.codeValue,
                 name: accountTitleSet.name,
@@ -312,7 +312,7 @@ accountTitlesRouter.post(
                 {
                     'project.id': {
                         $exists: true,
-                        $eq: accountTitleSet.project.id
+                        $eq: req.project.id
                     },
                     codeValue: accountTitleCategory.codeValue,
                     'hasCategoryCode.codeValue': { $ne: accountTitleSet.codeValue }
@@ -640,7 +640,7 @@ accountTitlesRouter.post(
             let doc = await accountTitleRepo.accountTitleModel.findOne({
                 'project.id': {
                     $exists: true,
-                    $eq: accountTitle.project.id
+                    $eq: req.project.id
                 },
                 codeValue: accountTitleCategory.codeValue,
                 'hasCategoryCode.codeValue': accountTitleSet.codeValue
@@ -651,7 +651,7 @@ accountTitlesRouter.post(
             }
 
             const newAccountTitle: chevre.factory.accountTitle.IAccountTitle = {
-                project: { id: accountTitle.project.id, typeOf: chevre.factory.organizationType.Project },
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
                 typeOf: accountTitle.typeOf,
                 codeValue: accountTitle.codeValue,
                 name: accountTitle.name,
@@ -662,7 +662,7 @@ accountTitlesRouter.post(
                 {
                     'project.id': {
                         $exists: true,
-                        $eq: accountTitle.project.id
+                        $eq: req.project.id
                     },
                     codeValue: accountTitleCategory.codeValue,
                     'hasCategoryCode.codeValue': accountTitleSet.codeValue,

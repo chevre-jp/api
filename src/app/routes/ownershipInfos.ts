@@ -56,7 +56,7 @@ ownershipInfosRouter.post(
                 identifier: req.body.identifier,
                 ownedBy: req.body.ownedBy,
                 ownedFrom: req.body.ownedFrom,
-                project: { typeOf: chevre.factory.organizationType.Project, id: req.body.project?.id },
+                project: { typeOf: chevre.factory.organizationType.Project, id: req.project.id },
                 typeOf: 'OwnershipInfo',
                 typeOfGood: req.body.typeOfGood,
                 ...(req.body.ownedThrough instanceof Date) ? { ownedThrough: req.body.ownedThrough } : undefined,
@@ -202,7 +202,7 @@ ownershipInfosRouter.put(
                     {
                         'project.id': {
                             $exists: true,
-                            $eq: req.body.project?.id
+                            $eq: req.project.id
                         },
                         identifier: req.body.identifier
                     },

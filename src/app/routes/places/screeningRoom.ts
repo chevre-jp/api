@@ -52,7 +52,10 @@ screeningRoomRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const screeningRoom: chevre.factory.place.screeningRoom.IPlace = { ...req.body };
+            const screeningRoom: chevre.factory.place.screeningRoom.IPlace = {
+                ...req.body,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
 
             const placeRepo = new chevre.repository.Place(mongoose.connection);
 

@@ -51,7 +51,7 @@ const customersRouter = express_1.Router();
  */
 customersRouter.post('', permitScopes_1.default(['customers.*']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const attributes = Object.assign(Object.assign({}, req.body), { project: project });
         const customerRepo = new chevre.repository.Customer(mongoose.connection);
         const customer = yield customerRepo.save({ attributes: attributes });

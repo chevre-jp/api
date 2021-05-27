@@ -31,7 +31,7 @@ productsRouter.post('', permitScopes_1.default(['products.*']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productRepo = new chevre.repository.Product(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const doc = yield productRepo.productModel.create(Object.assign(Object.assign({}, req.body), { project: project }));
         res.status(http_status_1.CREATED)
             .json(doc.toObject());

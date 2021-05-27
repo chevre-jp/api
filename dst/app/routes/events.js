@@ -122,7 +122,7 @@ const validations = [
 eventsRouter.post('', permitScopes_1.default(['events.*']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const params = req.body.map((a) => {
-            const project = Object.assign(Object.assign({}, a.project), { typeOf: chevre.factory.organizationType.Project });
+            const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
             return Object.assign(Object.assign({}, a), { project: project });
         });
         const eventRepo = new chevre.repository.Event(mongoose.connection);

@@ -48,7 +48,7 @@ categoryCodesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             let categoryCode: chevre.factory.categoryCode.ICategoryCode = {
                 ...req.body,

@@ -28,7 +28,7 @@ offerCatalogsRouter.post('', permitScopes_1.default(['offerCatalogs.*']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const ticketTypeGroup = yield offerCatalogRepo.save(Object.assign(Object.assign({}, req.body), { id: '', project: project }));
         res.status(http_status_1.CREATED)
             .json(ticketTypeGroup);

@@ -58,7 +58,7 @@ reserveTransactionsRouter.post(
             const productRepo = new chevre.repository.Product(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const transaction = await chevre.service.transaction.reserve.start({
                 project: project,

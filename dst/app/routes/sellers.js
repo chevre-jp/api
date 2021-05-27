@@ -64,7 +64,7 @@ const sellersRouter = express_1.Router();
  */
 sellersRouter.post('', permitScopes_1.default(['sellers.*']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const attributes = Object.assign(Object.assign({}, req.body), { project: project });
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         const seller = yield sellerRepo.save({ attributes: attributes });

@@ -33,7 +33,7 @@ offersRouter.post('', permitScopes_1.default(['offers.*']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const offer = yield offerRepo.save(Object.assign(Object.assign({}, req.body), { id: '', project: project }));
         res.status(http_status_1.CREATED)
             .json(offer);

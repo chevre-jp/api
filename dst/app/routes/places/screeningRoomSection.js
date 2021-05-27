@@ -51,7 +51,7 @@ screeningRoomSectionRouter.post('', permitScopes_1.default(['places.*']), ...[
         .isArray()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const screeningRoomSection = Object.assign({}, req.body);
+        const screeningRoomSection = Object.assign(Object.assign({}, req.body), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
         const screeningRoom = screeningRoomSection.containedInPlace;
         const movieTheater = screeningRoom.containedInPlace;
         const placeRepo = new chevre.repository.Place(mongoose.connection);

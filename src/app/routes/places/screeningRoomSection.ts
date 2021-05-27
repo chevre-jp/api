@@ -50,7 +50,10 @@ screeningRoomSectionRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const screeningRoomSection: chevre.factory.place.screeningRoomSection.IPlace = { ...req.body };
+            const screeningRoomSection: chevre.factory.place.screeningRoomSection.IPlace = {
+                ...req.body,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
 
             const screeningRoom = <chevre.factory.place.screeningRoom.IPlace>screeningRoomSection.containedInPlace;
             const movieTheater = <chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace;

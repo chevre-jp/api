@@ -49,7 +49,7 @@ priceSpecificationsRouter.post('', permitScopes_1.default(['priceSpecifications.
         .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         let priceSpecification = Object.assign(Object.assign({}, req.body), { project: project });
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         const doc = yield priceSpecificationRepo.priceSpecificationModel.create(priceSpecification);

@@ -59,7 +59,7 @@ authorizationsRouter.post(
                 return {
                     project: {
                         typeOf: <chevre.factory.organizationType.Project>chevre.factory.organizationType.Project,
-                        id: String(o.project?.id)
+                        id: req.project.id
                     },
                     // code: o.code,
                     // code: code,

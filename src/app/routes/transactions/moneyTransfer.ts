@@ -56,7 +56,7 @@ moneyTransferTransactionsRouter.post(
             const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const transaction = await chevre.service.transaction.moneyTransfer.start({
                 typeOf: chevre.factory.assetTransactionType.MoneyTransfer,

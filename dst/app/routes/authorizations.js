@@ -56,11 +56,10 @@ authorizationsRouter.post('', permitScopes_1.default([]), ...[
         const authorizationRepo = new chevre.repository.Code(mongoose.connection);
         const savingAuthorizations = req.body.map((o) => {
             // const code = uuid.v4();
-            var _a;
             return {
                 project: {
                     typeOf: chevre.factory.organizationType.Project,
-                    id: String((_a = o.project) === null || _a === void 0 ? void 0 : _a.id)
+                    id: req.project.id
                 },
                 // code: o.code,
                 // code: code,

@@ -64,7 +64,7 @@ sellersRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const attributes: chevre.factory.seller.ISeller = {
                 ...req.body,

@@ -31,7 +31,7 @@ productsRouter.post(
         try {
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const doc = await productRepo.productModel.create({ ...req.body, project: project });
 

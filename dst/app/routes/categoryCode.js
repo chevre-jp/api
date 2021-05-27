@@ -50,7 +50,7 @@ const validations = [
 ];
 categoryCodesRouter.post('', permitScopes_1.default(['categoryCodes.*']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         let categoryCode = Object.assign(Object.assign({}, req.body), { project: project });
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
         const doc = yield categoryCodeRepo.categoryCodeModel.create(categoryCode);

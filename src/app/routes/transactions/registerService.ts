@@ -53,7 +53,7 @@ registerServiceTransactionsRouter.post(
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const transaction = await chevre.service.transaction.registerService.start({
                 project: project,

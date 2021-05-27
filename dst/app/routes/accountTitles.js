@@ -40,7 +40,7 @@ accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['accou
         .withMessage(() => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const accountTitle = Object.assign(Object.assign({}, req.body), { project: project });
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         yield accountTitleRepo.accountTitleModel.create(accountTitle);
@@ -232,7 +232,7 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['accountTit
         let doc = yield accountTitleRepo.accountTitleModel.findOne({
             'project.id': {
                 $exists: true,
-                $eq: accountTitleSet.project.id
+                $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue
         })
@@ -241,7 +241,7 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['accountTit
             throw new chevre.factory.errors.NotFound('AccountTitleCategory');
         }
         const newAccountTitleSet = {
-            project: { id: accountTitleSet.project.id, typeOf: chevre.factory.organizationType.Project },
+            project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
             typeOf: accountTitleSet.typeOf,
             codeValue: accountTitleSet.codeValue,
             name: accountTitleSet.name,
@@ -252,7 +252,7 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['accountTit
         doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
                 $exists: true,
-                $eq: accountTitleSet.project.id
+                $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue,
             'hasCategoryCode.codeValue': { $ne: accountTitleSet.codeValue }
@@ -523,7 +523,7 @@ accountTitlesRouter.post('', permitScopes_1.default(['accountTitles.*']), ...[
         let doc = yield accountTitleRepo.accountTitleModel.findOne({
             'project.id': {
                 $exists: true,
-                $eq: accountTitle.project.id
+                $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue,
             'hasCategoryCode.codeValue': accountTitleSet.codeValue
@@ -533,7 +533,7 @@ accountTitlesRouter.post('', permitScopes_1.default(['accountTitles.*']), ...[
             throw new chevre.factory.errors.NotFound('AccountTitleSet');
         }
         const newAccountTitle = {
-            project: { id: accountTitle.project.id, typeOf: chevre.factory.organizationType.Project },
+            project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
             typeOf: accountTitle.typeOf,
             codeValue: accountTitle.codeValue,
             name: accountTitle.name,
@@ -542,7 +542,7 @@ accountTitlesRouter.post('', permitScopes_1.default(['accountTitles.*']), ...[
         doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
                 $exists: true,
-                $eq: accountTitle.project.id
+                $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue,
             'hasCategoryCode.codeValue': accountTitleSet.codeValue,

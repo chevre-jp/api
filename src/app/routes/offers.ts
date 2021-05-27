@@ -31,7 +31,7 @@ offersRouter.post(
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const offer = await offerRepo.save({ ...req.body, id: '', project: project });
             res.status(CREATED)

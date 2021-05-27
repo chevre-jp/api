@@ -51,10 +51,9 @@ ownershipInfosRouter.post('/saveByIdentifier', permitScopes_1.default([]), ...[
         .not()
         .isEmpty()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
         const ownershipInfoRepo = new chevre.repository.OwnershipInfo(mongoose.connection);
-        const ownershipInfo = yield ownershipInfoRepo.saveByIdentifier(Object.assign(Object.assign({ id: '', identifier: req.body.identifier, ownedBy: req.body.ownedBy, ownedFrom: req.body.ownedFrom, project: { typeOf: chevre.factory.organizationType.Project, id: (_a = req.body.project) === null || _a === void 0 ? void 0 : _a.id }, typeOf: 'OwnershipInfo', typeOfGood: req.body.typeOfGood }, (req.body.ownedThrough instanceof Date) ? { ownedThrough: req.body.ownedThrough } : undefined), (req.body.acquiredFrom !== undefined && req.body.acquiredFrom !== null)
+        const ownershipInfo = yield ownershipInfoRepo.saveByIdentifier(Object.assign(Object.assign({ id: '', identifier: req.body.identifier, ownedBy: req.body.ownedBy, ownedFrom: req.body.ownedFrom, project: { typeOf: chevre.factory.organizationType.Project, id: req.project.id }, typeOf: 'OwnershipInfo', typeOfGood: req.body.typeOfGood }, (req.body.ownedThrough instanceof Date) ? { ownedThrough: req.body.ownedThrough } : undefined), (req.body.acquiredFrom !== undefined && req.body.acquiredFrom !== null)
             ? { acquiredFrom: req.body.acquiredFrom }
             : undefined));
         res.status(http_status_1.CREATED)
@@ -89,7 +88,7 @@ ownershipInfosRouter.get('', permitScopes_1.default([]), ...[
         .isISO8601()
         .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b, _c, _d;
+    var _a, _b, _c;
     try {
         const accountRepo = new chevre.repository.Account(mongoose.connection);
         const ownershipInfoRepo = new chevre.repository.OwnershipInfo(mongoose.connection);
@@ -102,7 +101,7 @@ ownershipInfosRouter.get('', permitScopes_1.default([]), ...[
         // typeOfGoodの詳細指定があればそちらも取得する
         const includeGoodWithDetails = req.query.includeGoodWithDetails === '1';
         if (includeGoodWithDetails) {
-            const productType = (_d = (_c = (_b = searchConditions.typeOfGood) === null || _b === void 0 ? void 0 : _b.issuedThrough) === null || _c === void 0 ? void 0 : _c.typeOf) === null || _d === void 0 ? void 0 : _d.$eq;
+            const productType = (_c = (_b = (_a = searchConditions.typeOfGood) === null || _a === void 0 ? void 0 : _a.issuedThrough) === null || _b === void 0 ? void 0 : _b.typeOf) === null || _c === void 0 ? void 0 : _c.$eq;
             switch (productType) {
                 case chevre.factory.product.ProductType.PaymentCard:
                     // 口座詳細取得
@@ -154,14 +153,13 @@ ownershipInfosRouter.put('/updateByIdentifier', permitScopes_1.default([]), ...[
         .isISO8601()
         .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _e;
     try {
         const ownershipInfoRepo = new chevre.repository.OwnershipInfo(mongoose.connection);
         if (req.body.ownedThrough instanceof Date) {
             yield ownershipInfoRepo.ownershipInfoModel.findOneAndUpdate({
                 'project.id': {
                     $exists: true,
-                    $eq: (_e = req.body.project) === null || _e === void 0 ? void 0 : _e.id
+                    $eq: req.project.id
                 },
                 identifier: req.body.identifier
             }, { ownedThrough: req.body.ownedThrough }, { new: true })

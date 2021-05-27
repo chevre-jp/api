@@ -52,7 +52,7 @@ screeningRoomRouter.post('', permitScopes_1.default(['places.*']), ...[
         .toBoolean()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const screeningRoom = Object.assign({}, req.body);
+        const screeningRoom = Object.assign(Object.assign({}, req.body), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         // 劇場の存在確認
         let doc = yield placeRepo.placeModel.findOne({

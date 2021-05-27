@@ -32,7 +32,7 @@ movieTheaterRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             let movieTheater: chevre.factory.place.movieTheater.IPlace = {
                 ...req.body,
