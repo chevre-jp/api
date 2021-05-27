@@ -194,80 +194,94 @@ reservationsRouter.get('/:id/actions/use', permitScopes_1.default(['reservations
         next(error);
     }
 }));
-reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['reservations.read', 'reservations', 'reservations.read-only']), ...[
-    express_validator_1.query('limit')
-        .optional()
-        .isInt()
-        .toInt(),
-    express_validator_1.query('page')
-        .optional()
-        .isInt()
-        .toInt(),
-    express_validator_1.query('bookingFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('bookingThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('modifiedFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('modifiedThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.startFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.startThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.endFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.endThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('checkedIn')
-        .optional()
-        .isBoolean()
-        .toBoolean(),
-    express_validator_1.query('attended')
-        .optional()
-        .isBoolean()
-        .toBoolean()
-], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.reservationType.EventReservation, 
-            // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: { bookingTime: chevre.factory.sortType.Descending } });
-        const reservations = yield reservationRepo.search(searchConditions);
-        res.json(reservations);
-    }
-    catch (error) {
-        next(error);
-    }
-}));
-reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.default(['reservations.read', 'reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const reservation = yield reservationRepo.findById({
-            id: req.params.id
-        });
-        res.json(reservation);
-    }
-    catch (error) {
-        next(error);
-    }
-}));
+// reservationsRouter.get(
+//     '/eventReservation/screeningEvent',
+//     permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
+//     ...[
+//         query('limit')
+//             .optional()
+//             .isInt()
+//             .toInt(),
+//         query('page')
+//             .optional()
+//             .isInt()
+//             .toInt(),
+//         query('bookingFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('bookingThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('modifiedFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('modifiedThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.startFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.startThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.endFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.endThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('checkedIn')
+//             .optional()
+//             .isBoolean()
+//             .toBoolean(),
+//         query('attended')
+//             .optional()
+//             .isBoolean()
+//             .toBoolean()
+//     ],
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+//             const searchConditions: chevre.factory.reservation.ISearchConditions<chevre.factory.reservationType.EventReservation> = {
+//                 ...req.query,
+//                 typeOf: chevre.factory.reservationType.EventReservation,
+//                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+//                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+//                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+//                 sort: { bookingTime: chevre.factory.sortType.Descending }
+//             };
+//             const reservations = await reservationRepo.search(searchConditions);
+//             res.json(reservations);
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
+// reservationsRouter.get(
+//     '/eventReservation/screeningEvent/:id',
+//     permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+//             const reservation = await reservationRepo.findById({
+//                 id: req.params.id
+//             });
+//             res.json(reservation);
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
 /**
  * 発券
  */
