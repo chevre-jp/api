@@ -3,6 +3,8 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { query } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
@@ -192,6 +194,50 @@ reservationsRouter.patch(
 
             res.status(NO_CONTENT)
                 .end();
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * 予約に対する使用アクション検索
+ */
+// tslint:disable-next-line:use-default-type-parameter
+reservationsRouter.get<ParamsDictionary>(
+    '/:id/actions/use',
+    permitScopes(['reservations.read']),
+    ...[
+        query('startFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        query('startThrough')
+            .optional()
+            .isISO8601()
+            .toDate()
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const reservationId = req.params.id;
+
+            const actionRepo = new chevre.repository.Action(mongoose.connection);
+
+            const actions = await actionRepo.search({
+                limit: 100,
+                page: 1,
+                sort: { startDate: chevre.factory.sortType.Descending },
+                project: { id: { $eq: req.project.id } },
+                typeOf: { $eq: chevre.factory.chevre.actionType.UseAction },
+                actionStatus: { $in: [chevre.factory.chevre.actionStatusType.CompletedActionStatus] },
+                object: {
+                    id: { $eq: reservationId },
+                    typeOf: { $eq: chevre.factory.chevre.reservationType.EventReservation }
+                }
+            });
+
+            res.json(actions);
         } catch (error) {
             next(error);
         }

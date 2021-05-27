@@ -38,6 +38,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 口座開設を追加
 - 口座解約を追加
 - マイプロジェクト検索を追加
+- 予約に対する使用アクション検索を追加
 
 ### Changed
 

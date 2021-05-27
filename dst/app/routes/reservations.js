@@ -159,6 +159,41 @@ reservationsRouter.patch('/:id', permitScopes_1.default(['reservations.write']),
         next(error);
     }
 }));
+/**
+ * 予約に対する使用アクション検索
+ */
+// tslint:disable-next-line:use-default-type-parameter
+reservationsRouter.get('/:id/actions/use', permitScopes_1.default(['reservations.read']), ...[
+    express_validator_1.query('startFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.query('startThrough')
+        .optional()
+        .isISO8601()
+        .toDate()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const reservationId = req.params.id;
+        const actionRepo = new chevre.repository.Action(mongoose.connection);
+        const actions = yield actionRepo.search({
+            limit: 100,
+            page: 1,
+            sort: { startDate: chevre.factory.sortType.Descending },
+            project: { id: { $eq: req.project.id } },
+            typeOf: { $eq: chevre.factory.chevre.actionType.UseAction },
+            actionStatus: { $in: [chevre.factory.chevre.actionStatusType.CompletedActionStatus] },
+            object: {
+                id: { $eq: reservationId },
+                typeOf: { $eq: chevre.factory.chevre.reservationType.EventReservation }
+            }
+        });
+        res.json(actions);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['reservations.read', 'reservations', 'reservations.read-only']), ...[
     express_validator_1.query('limit')
         .optional()
