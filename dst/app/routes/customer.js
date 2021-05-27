@@ -72,7 +72,7 @@ customersRouter.get('', permitScopes_1.default(['customers.*', 'customers.read']
     try {
         const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: { identifier: chevre.factory.sortType.Ascending } });
         const customerRepo = new chevre.repository.Customer(mongoose.connection);
         const customers = yield customerRepo.search(searchConditions, (req.query.$projection !== undefined && req.query.$projection !== null) ? Object.assign({}, req.query.$projection) : undefined);
         res.json(customers);

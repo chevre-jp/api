@@ -87,7 +87,8 @@ customersRouter.get(
                 project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
+                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+                sort: { identifier: chevre.factory.sortType.Ascending }
             };
 
             const customerRepo = new chevre.repository.Customer(mongoose.connection);
