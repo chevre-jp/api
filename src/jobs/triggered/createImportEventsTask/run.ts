@@ -37,8 +37,8 @@ export default async (params: {
     try {
         const projectRepo = new chevre.repository.Project(connection);
         const project = await projectRepo.findById({ id: params.project.id });
-        const importEventsInWeeks = (typeof (<any>project).settings?.importEventsInWeeks === 'number')
-            ? (<any>project).settings?.importEventsInWeeks : 1;
+        const importEventsInWeeks = (typeof project.settings?.importEventsInWeeks === 'number')
+            ? project.settings?.importEventsInWeeks : 1;
         const importEventsIntervalInMinutes = (typeof (<any>project).settings?.importEventsIntervalInMinutes === 'number')
             ? Math.min(Number((<any>project).settings?.importEventsIntervalInMinutes), MAX_IMPORT_EVENTS_INTERVAL_IN_MINUTES)
             // tslint:disable-next-line:no-magic-numbers
