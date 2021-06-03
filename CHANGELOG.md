@@ -69,6 +69,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - プロダクト検索結果から決済認証情報を隠蔽
 - リソース検索時のプロジェクトID条件をルーティングから指定するように調整
 - リソース作成時のプロジェクトID条件をルーティングから指定するように調整
+- サービス登録開始前に特典付与先口座の存在を確認するように調整
 
 ### Deprecated
 

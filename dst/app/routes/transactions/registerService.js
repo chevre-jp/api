@@ -46,6 +46,7 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['assetT
         .withMessage('Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const accountRepo = new chevre.repository.Account(mongoose.connection);
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
         const productRepo = new chevre.repository.Product(mongoose.connection);
@@ -56,6 +57,7 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['assetT
         const transaction = yield chevre.service.transaction.registerService.start(Object.assign({ project: project, typeOf: chevre.factory.assetTransactionType.RegisterService, agent: Object.assign({}, req.body.agent
             // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
             ), object: req.body.object, expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
+            account: accountRepo,
             offer: offerRepo,
             offerCatalog: offerCatalogRepo,
             product: productRepo,

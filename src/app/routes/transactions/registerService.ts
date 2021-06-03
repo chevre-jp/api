@@ -46,6 +46,7 @@ registerServiceTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const accountRepo = new chevre.repository.Account(mongoose.connection);
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
             const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
             const productRepo = new chevre.repository.Product(mongoose.connection);
@@ -66,6 +67,7 @@ registerServiceTransactionsRouter.post(
                 expires: req.body.expires,
                 ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
+                account: accountRepo,
                 offer: offerRepo,
                 offerCatalog: offerCatalogRepo,
                 product: productRepo,
