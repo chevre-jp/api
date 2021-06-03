@@ -38,7 +38,7 @@ withdrawTransactionsRouter.post('/start', permitScopes_1.default([]), ...[], val
         res.json(transaction);
     }
     catch (error) {
-        next(error);
+        next(chevre.errorHandler.handlePecorinoError(error));
     }
 }));
 withdrawTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -53,7 +53,7 @@ withdrawTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default
             .end();
     }
     catch (error) {
-        next(error);
+        next(chevre.errorHandler.handlePecorinoError(error));
     }
 }));
 withdrawTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -68,7 +68,7 @@ withdrawTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(
             .end();
     }
     catch (error) {
-        next(error);
+        next(chevre.errorHandler.handlePecorinoError(error));
     }
 }));
 exports.default = withdrawTransactionsRouter;

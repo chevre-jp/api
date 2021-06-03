@@ -90,7 +90,7 @@ accountsRouter.put('/:accountNumber/close', permitScopes_1.default([]), validato
             .end();
     }
     catch (error) {
-        next(error);
+        next(chevre.errorHandler.handlePecorinoError(error));
     }
 }));
 /**
@@ -115,7 +115,7 @@ validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, funct
             .json(accounts);
     }
     catch (error) {
-        next(error);
+        next(chevre.errorHandler.handlePecorinoError(error));
     }
 }));
 /**

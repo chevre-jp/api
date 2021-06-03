@@ -95,7 +95,7 @@ accountsRouter.put(
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
-            next(error);
+            next(chevre.errorHandler.handlePecorinoError(error));
         }
     }
 );
@@ -129,7 +129,7 @@ accountsRouter.post(
             res.status(CREATED)
                 .json(accounts);
         } catch (error) {
-            next(error);
+            next(chevre.errorHandler.handlePecorinoError(error));
         }
     }
 );

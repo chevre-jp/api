@@ -38,7 +38,7 @@ depositTransactionsRouter.post('/start', permitScopes_1.default([]), ...[], vali
         res.json(transaction);
     }
     catch (error) {
-        next(error);
+        next(chevre.errorHandler.handlePecorinoError(error));
     }
 }));
 depositTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -53,7 +53,7 @@ depositTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(
             .end();
     }
     catch (error) {
-        next(error);
+        next(chevre.errorHandler.handlePecorinoError(error));
     }
 }));
 depositTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -68,7 +68,7 @@ depositTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default([
             .end();
     }
     catch (error) {
-        next(error);
+        next(chevre.errorHandler.handlePecorinoError(error));
     }
 }));
 exports.default = depositTransactionsRouter;

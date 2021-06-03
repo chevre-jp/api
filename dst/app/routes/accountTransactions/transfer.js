@@ -38,7 +38,7 @@ transferTransactionsRouter.post('/start', permitScopes_1.default([]), ...[], val
         res.json(transaction);
     }
     catch (error) {
-        next(error);
+        next(chevre.errorHandler.handlePecorinoError(error));
     }
 }));
 transferTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -53,7 +53,7 @@ transferTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default
             .end();
     }
     catch (error) {
-        next(error);
+        next(chevre.errorHandler.handlePecorinoError(error));
     }
 }));
 transferTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -68,7 +68,7 @@ transferTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(
             .end();
     }
     catch (error) {
-        next(error);
+        next(chevre.errorHandler.handlePecorinoError(error));
     }
 }));
 exports.default = transferTransactionsRouter;

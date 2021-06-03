@@ -37,7 +37,7 @@ withdrawTransactionsRouter.post(
             // res.setHeader('Location', `https://${host}/transactions/${transaction.id}`);
             res.json(transaction);
         } catch (error) {
-            next(error);
+            next(chevre.errorHandler.handlePecorinoError(error));
         }
     }
 );
@@ -61,7 +61,7 @@ withdrawTransactionsRouter.put(
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
-            next(error);
+            next(chevre.errorHandler.handlePecorinoError(error));
         }
     }
 );
@@ -85,7 +85,7 @@ withdrawTransactionsRouter.put(
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
-            next(error);
+            next(chevre.errorHandler.handlePecorinoError(error));
         }
     }
 );
