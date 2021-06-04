@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 予約取消取引にassetTransactions.cancelReservation.write権限を設定
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.59.1 - 2021-06-04
+
+### Changed
+
+- 予約取消取引にassetTransactions.cancelReservation.write権限を設定
 
 ## v7.59.0 - 2021-06-04
 
