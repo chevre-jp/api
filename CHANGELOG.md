@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v7.59.0 - 2021-06-04
+
+### Added
+
 - 注文作成を追加
 - 注文ステータス変更を追加
 - 注文検索を追加
@@ -71,8 +85,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - リソース作成時のプロジェクトID条件をルーティングから指定するように調整
 - サービス登録開始前に特典付与先口座の存在を確認するように調整
 
-### Deprecated
-
 ### Removed
 
 - イベントの全座席検索を廃止
@@ -82,8 +94,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 - イベントの座席オファー検索におけるコーディングバグに対応
-
-### Security
 
 ## v7.58.1 - 2021-03-28
 
