@@ -17,7 +17,7 @@ import validator from '../../middlewares/validator';
 
 cancelReservationTransactionsRouter.post(
     '/start',
-    permitScopes(['assetTransactions.write', 'transactions']),
+    permitScopes(['assetTransactions.cancelReservation.write', 'assetTransactions.write', 'transactions']),
     ...[
         body('project')
             .not()
@@ -78,7 +78,7 @@ cancelReservationTransactionsRouter.post(
 
 cancelReservationTransactionsRouter.post(
     '/confirm',
-    permitScopes(['assetTransactions.write', 'transactions']),
+    permitScopes(['assetTransactions.cancelReservation.write', 'assetTransactions.write', 'transactions']),
     ...[
         body('project')
             .not()
@@ -167,7 +167,7 @@ cancelReservationTransactionsRouter.post(
 
 cancelReservationTransactionsRouter.put(
     '/:transactionId/confirm',
-    permitScopes(['assetTransactions.write', 'transactions']),
+    permitScopes(['assetTransactions.cancelReservation.write', 'assetTransactions.write', 'transactions']),
     validator,
     async (req, res, next) => {
         try {
@@ -212,7 +212,7 @@ cancelReservationTransactionsRouter.put(
 
 cancelReservationTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['assetTransactions.write', 'transactions']),
+    permitScopes(['assetTransactions.cancelReservation.write', 'assetTransactions.write', 'transactions']),
     validator,
     async (req, res, next) => {
         try {

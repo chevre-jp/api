@@ -22,7 +22,7 @@ const cancelReservationTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['assetTransactions.write', 'transactions']), ...[
+cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['assetTransactions.cancelReservation.write', 'assetTransactions.write', 'transactions']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -64,7 +64,7 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['asse
         next(error);
     }
 }));
-cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['assetTransactions.write', 'transactions']), ...[
+cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['assetTransactions.cancelReservation.write', 'assetTransactions.write', 'transactions']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -129,7 +129,7 @@ cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['as
         next(error);
     }
 }));
-cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['assetTransactions.cancelReservation.write', 'assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
@@ -163,7 +163,7 @@ cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_
         next(error);
     }
 }));
-cancelReservationTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+cancelReservationTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['assetTransactions.cancelReservation.write', 'assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         yield transactionRepo.cancel({
