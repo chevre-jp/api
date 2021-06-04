@@ -24,7 +24,8 @@
     "mongoose": "5.9.29",
     "qs": "^6.9.6",
     "redis": "^2.8.0",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "snyk": "^1.621.0"
   },
   "description": "Chevre API",
   "devDependencies": {
@@ -77,7 +78,10 @@
     "tslint": "tslint --project tsconfig.json -c tslint.json --exclude \"**/*.spec.ts\" \"src/**/*.ts\"",
     "preversion": "npm run clean && npm run build && npm test && npm run doc",
     "version": "git add -A",
-    "postversion": "git push origin --tags"
+    "postversion": "git push origin --tags",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
-  "version": "7.59.0"
+  "version": "7.59.0",
+  "snyk": true
 }
