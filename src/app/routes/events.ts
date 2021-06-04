@@ -3,21 +3,20 @@
  */
 import * as chevre from '@chevre/domain';
 import { RequestHandler, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { body, oneOf, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
 import screeningEventRouter from './events/screeningEvent';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 import * as redis from '../../redis';
 
 const eventsRouter = Router();
-
-eventsRouter.use(authentication);
 
 eventsRouter.use('/screeningEvent', screeningEventRouter);
 
@@ -122,13 +121,13 @@ const validations: RequestHandler[] = [
  */
 eventsRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['events.*']),
     ...validations,
     validator,
     async (req, res, next) => {
         try {
             const params = req.body.map((a: any) => {
-                const project: chevre.factory.project.IProject = { ...a.project, typeOf: chevre.factory.organizationType.Project };
+                const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
                 return {
                     ...a,
@@ -163,7 +162,7 @@ eventsRouter.post(
  */
 eventsRouter.get(
     '',
-    permitScopes(['admin', 'events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -220,6 +219,7 @@ eventsRouter.get(
             const eventRepo = new chevre.repository.Event(mongoose.connection);
             const searchConditions: chevre.factory.event.ISearchConditions<typeof req.query.typeOf> = {
                 ...req.query,
+                project: { ids: [req.project.id] },
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -257,7 +257,7 @@ eventsRouter.get(
  */
 eventsRouter.get(
     '/:id',
-    permitScopes(['admin', 'events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read']),
     validator,
     async (req, res, next) => {
         try {
@@ -284,7 +284,7 @@ eventsRouter.get(
  */
 eventsRouter.patch(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['events.*']),
     // ...validations,
     validator,
     async (req, res, next) => {
@@ -318,7 +318,7 @@ eventsRouter.patch(
  */
 eventsRouter.put(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['events.*']),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -352,7 +352,7 @@ eventsRouter.put(
 
 eventsRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['events.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -372,35 +372,36 @@ eventsRouter.delete(
 
 /**
  * 座席オファー検索
+ * 非推奨なので廃止
  */
-eventsRouter.get(
-    '/:id/offers',
-    permitScopes(['admin', 'events', 'events.read-only']),
-    validator,
-    async (req, res, next) => {
-        try {
-            const offers = await chevre.service.offer.searchEventSeatOffers({
-                event: { id: req.params.id }
-            })({
-                event: new chevre.repository.Event(mongoose.connection),
-                priceSpecification: new chevre.repository.PriceSpecification(mongoose.connection),
-                eventAvailability: new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient()),
-                place: new chevre.repository.Place(mongoose.connection)
-            });
+// eventsRouter.get(
+//     '/:id/offers',
+//     permitScopes(['events', 'events.read-only']),
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const offers = await chevre.service.offer.searchEventSeatOffers({
+//                 event: { id: req.params.id }
+//             })({
+//                 event: new chevre.repository.Event(mongoose.connection),
+//                 priceSpecification: new chevre.repository.PriceSpecification(mongoose.connection),
+//                 eventAvailability: new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient()),
+//                 place: new chevre.repository.Place(mongoose.connection)
+//             });
 
-            res.json(offers);
-        } catch (error) {
-            next(error);
-        }
-    }
-);
+//             res.json(offers);
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
 
 /**
  * イベントオファー検索
  */
 eventsRouter.get(
     '/:id/offers/ticket',
-    permitScopes(['admin', 'events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read']),
     validator,
     async (req, res, next) => {
         try {
@@ -430,9 +431,22 @@ eventsRouter.get(
 /**
  * 座席検索
  */
-eventsRouter.get(
+// tslint:disable-next-line:use-default-type-parameter
+eventsRouter.get<ParamsDictionary>(
     '/:id/seats',
-    permitScopes(['admin', 'events', 'events.read-only']),
+    permitScopes(['events.*', 'events', 'events.read']),
+    ...[
+        query('$projection.*')
+            .toInt(),
+        query('limit')
+            .optional()
+            .isInt()
+            .toInt(),
+        query('page')
+            .optional()
+            .isInt()
+            .toInt()
+    ],
     validator,
     async (req, res, next) => {
         try {

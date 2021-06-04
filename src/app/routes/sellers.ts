@@ -9,7 +9,6 @@ import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
@@ -55,19 +54,17 @@ const validations: RequestHandler[] = [
 
 const sellersRouter = Router();
 
-sellersRouter.use(authentication);
-
 /**
  * 販売者作成
  */
 sellersRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['sellers.*']),
     ...validations,
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const attributes: chevre.factory.seller.ISeller = {
                 ...req.body,
@@ -90,7 +87,7 @@ sellersRouter.post(
  */
 sellersRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes(['sellers.*', 'sellers.read']),
     ...[
         query('$projection.*')
             .toInt()
@@ -100,6 +97,7 @@ sellersRouter.get(
         try {
             const searchConditions: chevre.factory.seller.ISearchConditions = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -159,7 +157,7 @@ sellersRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 sellersRouter.get<ParamsDictionary>(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['sellers.*', 'sellers.read']),
     ...[
         query('$projection.*')
             .toInt()
@@ -215,7 +213,7 @@ sellersRouter.get<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 sellersRouter.put<ParamsDictionary>(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['sellers.*']),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -240,7 +238,7 @@ sellersRouter.put<ParamsDictionary>(
  */
 sellersRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['sellers.*']),
     validator,
     async (req, res, next) => {
         try {

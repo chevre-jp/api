@@ -17,7 +17,6 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 /**
@@ -60,13 +59,12 @@ const validations = [
         .isArray()
 ];
 const sellersRouter = express_1.Router();
-sellersRouter.use(authentication_1.default);
 /**
  * 販売者作成
  */
-sellersRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+sellersRouter.post('', permitScopes_1.default(['sellers.*']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const attributes = Object.assign(Object.assign({}, req.body), { project: project });
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         const seller = yield sellerRepo.save({ attributes: attributes });
@@ -80,12 +78,12 @@ sellersRouter.post('', permitScopes_1.default(['admin']), ...validations, valida
 /**
  * 販売者検索
  */
-sellersRouter.get('', permitScopes_1.default(['admin']), ...[
+sellersRouter.get('', permitScopes_1.default(['sellers.*', 'sellers.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
@@ -132,7 +130,7 @@ sellersRouter.get('', permitScopes_1.default(['admin']), ...[
  * IDで販売者検索
  */
 // tslint:disable-next-line:use-default-type-parameter
-sellersRouter.get('/:id', permitScopes_1.default(['admin']), ...[
+sellersRouter.get('/:id', permitScopes_1.default(['sellers.*', 'sellers.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -176,7 +174,7 @@ sellersRouter.get('/:id', permitScopes_1.default(['admin']), ...[
  * 販売者更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-sellersRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+sellersRouter.put('/:id', permitScopes_1.default(['sellers.*']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const attributes = Object.assign({}, req.body);
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
@@ -191,7 +189,7 @@ sellersRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, val
 /**
  * 販売者削除
  */
-sellersRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+sellersRouter.delete('/:id', permitScopes_1.default(['sellers.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         yield sellerRepo.deleteById({

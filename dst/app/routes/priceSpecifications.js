@@ -17,14 +17,12 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const priceSpecificationsRouter = express_1.Router();
-priceSpecificationsRouter.use(authentication_1.default);
 // priceSpecificationsRouter.get(
 //     '/compoundPriceSpecification',
-//     permitScopes(['admin']),
+//     permitScopes([]),
 //     validator,
 //     async (req, res, next) => {
 //         try {
@@ -44,14 +42,14 @@ priceSpecificationsRouter.use(authentication_1.default);
 //         }
 //     }
 // );
-priceSpecificationsRouter.post('', permitScopes_1.default(['admin']), ...[
+priceSpecificationsRouter.post('', permitScopes_1.default(['priceSpecifications.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
         .withMessage((_, __) => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         let priceSpecification = Object.assign(Object.assign({}, req.body), { project: project });
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         const doc = yield priceSpecificationRepo.priceSpecificationModel.create(priceSpecification);
@@ -63,7 +61,7 @@ priceSpecificationsRouter.post('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-priceSpecificationsRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+priceSpecificationsRouter.get('/:id', permitScopes_1.default(['priceSpecifications.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         const doc = yield priceSpecificationRepo.priceSpecificationModel.findById(req.params.id)
@@ -78,7 +76,7 @@ priceSpecificationsRouter.get('/:id', permitScopes_1.default(['admin']), validat
         next(error);
     }
 }));
-priceSpecificationsRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+priceSpecificationsRouter.put('/:id', permitScopes_1.default(['priceSpecifications.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const priceSpecification = Object.assign({}, req.body);
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
@@ -91,7 +89,7 @@ priceSpecificationsRouter.put('/:id', permitScopes_1.default(['admin']), validat
         next(error);
     }
 }));
-priceSpecificationsRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+priceSpecificationsRouter.delete('/:id', permitScopes_1.default(['priceSpecifications.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
         yield priceSpecificationRepo.priceSpecificationModel.findOneAndDelete({ _id: req.params.id })
@@ -103,10 +101,10 @@ priceSpecificationsRouter.delete('/:id', permitScopes_1.default(['admin']), vali
         next(error);
     }
 }));
-priceSpecificationsRouter.get('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+priceSpecificationsRouter.get('', permitScopes_1.default(['priceSpecifications.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const priceSpecifications = yield priceSpecificationRepo.search(searchConditions);

@@ -7,7 +7,6 @@ import { body, query } from 'express-validator';
 import { CREATED } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
@@ -16,14 +15,13 @@ import * as redis from '../../redis';
 const MAX_NUM_IDENTIFIERS_CREATED = 100;
 
 const serviceOutputsRouter = Router();
-serviceOutputsRouter.use(authentication);
 
 /**
  * 検索
  */
 serviceOutputsRouter.get(
     '',
-    permitScopes(['admin', 'serviceOutputs', 'serviceOutputs.read-only']),
+    permitScopes(['serviceOutputs', 'serviceOutputs.read-only']),
     ...[
         query('limit')
             .optional()
@@ -55,7 +53,8 @@ serviceOutputsRouter.get(
             // };
 
             const serviceOutputs = await serviceOutputRepo.serviceOutputModel.find({
-                ...(req.query.project?.id !== undefined) ? { 'project.id': req.query.project?.id } : undefined,
+                'project.id': { $exists: true, $eq: req.project.id },
+                // ...(req.query.project?.id !== undefined) ? { 'project.id': req.query.project?.id } : undefined,
                 ...(req.query.typeOf !== undefined) ? { typeOf: req.query.typeOf } : undefined,
                 ...(req.query.identifier !== undefined) ? { identifier: req.query.identifier } : undefined,
                 ...(req.query.accessCode !== undefined) ? { accessCode: req.query.accessCode } : undefined,
@@ -81,7 +80,7 @@ serviceOutputsRouter.get(
  */
 serviceOutputsRouter.post(
     '/identifier',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body()
             .isArray({ min: 1, max: MAX_NUM_IDENTIFIERS_CREATED })

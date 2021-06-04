@@ -7,17 +7,14 @@ import { body } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const offerCatalogsRouter = Router();
 
-offerCatalogsRouter.use(authentication);
-
 offerCatalogsRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['offerCatalogs.*']),
     ...[
         body('project')
             .not()
@@ -29,7 +26,7 @@ offerCatalogsRouter.post(
         try {
             const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const ticketTypeGroup = await offerCatalogRepo.save({ ...req.body, id: '', project: project });
 
@@ -43,13 +40,14 @@ offerCatalogsRouter.post(
 
 offerCatalogsRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes(['offerCatalogs.*']),
     validator,
     async (req, res, next) => {
         try {
             const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
             const searchConditions: chevre.factory.offerCatalog.ISearchConditions = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -65,7 +63,7 @@ offerCatalogsRouter.get(
 
 offerCatalogsRouter.get(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['offerCatalogs.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -80,7 +78,7 @@ offerCatalogsRouter.get(
 
 offerCatalogsRouter.put(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['offerCatalogs.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -97,7 +95,7 @@ offerCatalogsRouter.put(
 
 offerCatalogsRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['offerCatalogs.*']),
     validator,
     async (req, res, next) => {
         try {

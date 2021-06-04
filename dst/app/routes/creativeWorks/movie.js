@@ -18,12 +18,10 @@ const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const mongoose = require("mongoose");
-const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const movieRouter = express_1.Router();
-movieRouter.use(authentication_1.default);
-movieRouter.post('', permitScopes_1.default(['admin']), ...[
+movieRouter.post('', permitScopes_1.default(['creativeWorks.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -55,7 +53,7 @@ movieRouter.post('', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         let movie = Object.assign(Object.assign(Object.assign({}, req.body), (typeof req.body.duration === 'string' && req.body.duration.lenght > 0)
             ? {
                 duration: moment.duration(req.body.duration)
@@ -70,7 +68,7 @@ movieRouter.post('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), ...[
+movieRouter.get('', permitScopes_1.default(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read']), ...[
     express_validator_1.query('datePublishedFrom')
         .optional()
         .isISO8601()
@@ -98,7 +96,7 @@ movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeW
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const movies = yield creativeWorkRepo.searchMovies(searchConditions);
@@ -108,7 +106,7 @@ movieRouter.get('', permitScopes_1.default(['admin', 'creativeWorks', 'creativeW
         next(error);
     }
 }));
-movieRouter.get('/:id', permitScopes_1.default(['admin', 'creativeWorks', 'creativeWorks.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+movieRouter.get('/:id', permitScopes_1.default(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         const movie = yield creativeWorkRepo.findMovieById({ id: req.params.id });
@@ -119,7 +117,7 @@ movieRouter.get('/:id', permitScopes_1.default(['admin', 'creativeWorks', 'creat
     }
 }));
 // tslint:disable-next-line:use-default-type-parameter
-movieRouter.put('/:id', permitScopes_1.default(['admin']), ...[
+movieRouter.put('/:id', permitScopes_1.default(['creativeWorks.*']), ...[
     express_validator_1.body('datePublished')
         .optional()
         .isISO8601()
@@ -161,7 +159,7 @@ movieRouter.put('/:id', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-movieRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+movieRouter.delete('/:id', permitScopes_1.default(['creativeWorks.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
         yield creativeWorkRepo.deleteMovie({ id: req.params.id });

@@ -17,12 +17,10 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const offersRouter = express_1.Router();
-offersRouter.use(authentication_1.default);
-offersRouter.post('', permitScopes_1.default(['admin']), ...[
+offersRouter.post('', permitScopes_1.default(['offers.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -35,7 +33,7 @@ offersRouter.post('', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const offer = yield offerRepo.save(Object.assign(Object.assign({}, req.body), { id: '', project: project }));
         res.status(http_status_1.CREATED)
             .json(offer);
@@ -44,7 +42,7 @@ offersRouter.post('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-offersRouter.get('', permitScopes_1.default(['admin']), ...[
+offersRouter.get('', permitScopes_1.default(['offers.*']), ...[
     express_validator_1.query('priceSpecification.price.$gte')
         .optional()
         .isInt()
@@ -68,7 +66,7 @@ offersRouter.get('', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const offers = yield offerRepo.search(searchConditions);
@@ -78,7 +76,7 @@ offersRouter.get('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-offersRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+offersRouter.get('/:id', permitScopes_1.default(['offers.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         const offer = yield offerRepo.findById({ id: req.params.id });
@@ -88,7 +86,7 @@ offersRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default,
         next(error);
     }
 }));
-offersRouter.put('/:id', permitScopes_1.default(['admin']), ...[
+offersRouter.put('/:id', permitScopes_1.default(['offers.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -109,7 +107,7 @@ offersRouter.put('/:id', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-offersRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+offersRouter.delete('/:id', permitScopes_1.default(['offers.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerRepo = new chevre.repository.Offer(mongoose.connection);
         yield offerRepo.deleteById({ id: req.params.id });

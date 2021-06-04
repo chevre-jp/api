@@ -17,7 +17,7 @@ import validator from '../../middlewares/validator';
 
 reserveTransactionsRouter.post(
     '/start',
-    permitScopes(['admin', 'transactions']),
+    permitScopes(['assetTransactions.write', 'transactions']),
     ...[
         body('project')
             .not()
@@ -50,7 +50,7 @@ reserveTransactionsRouter.post(
             const placeRepo = new chevre.repository.Place(mongoose.connection);
             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
             const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
@@ -58,11 +58,11 @@ reserveTransactionsRouter.post(
             const productRepo = new chevre.repository.Product(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const transaction = await chevre.service.transaction.reserve.start({
                 project: project,
-                typeOf: chevre.factory.transactionType.Reserve,
+                typeOf: chevre.factory.assetTransactionType.Reserve,
                 agent: req.body.agent,
                 object: req.body.object,
                 expires: moment(req.body.expires)
@@ -102,7 +102,7 @@ reserveTransactionsRouter.post(
  */
 // reserveTransactionsRouter.post(
 //     '/:transactionId/reservations',
-//     permitScopes(['admin', 'transactions']),
+//     permitScopes(['transactions']),
 //     validator,
 //     async (req, res, next) => {
 //         try {
@@ -110,7 +110,7 @@ reserveTransactionsRouter.post(
 //             const placeRepo = new chevre.repository.Place(mongoose.connection);
 //             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
 //             const taskRepo = new chevre.repository.Task(mongoose.connection);
-//             const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+//             const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 //             const offerRepo = new chevre.repository.Offer(mongoose.connection);
 //             const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
 //             const eventAvailabilityRepo = new chevre.repository.itemAvailability.ScreeningEvent(redis.getClient());
@@ -156,7 +156,7 @@ reserveTransactionsRouter.post(
  */
 reserveTransactionsRouter.put(
     '/:transactionId/confirm',
-    permitScopes(['admin', 'transactions']),
+    permitScopes(['assetTransactions.write', 'transactions']),
     validator,
     async (req, res, next) => {
         try {
@@ -164,7 +164,7 @@ reserveTransactionsRouter.put(
 
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
             await chevre.service.transaction.reserve.confirm({
                 ...req.body,
@@ -175,7 +175,7 @@ reserveTransactionsRouter.put(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.Reserve] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.Reserve] }
             })({
                 project: projectRepo,
                 task: taskRepo,
@@ -203,7 +203,7 @@ reserveTransactionsRouter.put(
 
 reserveTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['admin', 'transactions']),
+    permitScopes(['assetTransactions.write', 'transactions']),
     validator,
     async (req, res, next) => {
         try {
@@ -214,7 +214,7 @@ reserveTransactionsRouter.put(
             const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
             await chevre.service.transaction.reserve.cancel({
                 ...req.body,

@@ -2,6 +2,7 @@
  * タスク中止
  */
 import * as chevre from '@chevre/domain';
+import * as moment from 'moment';
 
 import { connectMongo } from '../../../connectMongo';
 
@@ -25,6 +26,18 @@ export default async () => {
 
             try {
                 await chevre.service.task.abort({ intervalInMinutes: RETRY_INTERVAL_MINUTES })({ task: taskRepo });
+
+                // 過去の不要なタスクを削除
+                await taskRepo.taskModel.deleteMany({
+                    runsAt: {
+                        $lt: moment()
+                            // tslint:disable-next-line:no-magic-numbers
+                            .add(-7, 'days')
+                            .toDate()
+                    },
+                    status: { $in: [chevre.factory.taskStatus.Aborted, chevre.factory.taskStatus.Executed] }
+                })
+                    .exec();
             } catch (error) {
                 console.error(error);
             }

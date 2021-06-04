@@ -18,7 +18,7 @@ import validator from '../../middlewares/validator';
 
 refundTransactionsRouter.post(
     '/start',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         body('project')
             .not()
@@ -54,13 +54,13 @@ refundTransactionsRouter.post(
             const actionRepo = new chevre.repository.Action(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const sellerRepo = new chevre.repository.Seller(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const transaction = await chevre.service.transaction.refund.start({
                 project: project,
-                typeOf: chevre.factory.transactionType.Refund,
+                typeOf: chevre.factory.assetTransactionType.Refund,
                 agent: {
                     ...req.body.agent
                 },
@@ -90,7 +90,7 @@ refundTransactionsRouter.post(
 // tslint:disable-next-line:use-default-type-parameter
 refundTransactionsRouter.put<ParamsDictionary>(
     '/:transactionId/confirm',
-    permitScopes(['admin', 'transactions']),
+    permitScopes(['transactions']),
     ...[
         body('endDate')
             .optional()
@@ -104,7 +104,7 @@ refundTransactionsRouter.put<ParamsDictionary>(
 
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
             await chevre.service.transaction.refund.confirm({
                 ...req.body,
@@ -115,7 +115,7 @@ refundTransactionsRouter.put<ParamsDictionary>(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.Refund] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.Refund] }
             })({
                 project: projectRepo,
                 task: taskRepo,
@@ -143,13 +143,13 @@ refundTransactionsRouter.put<ParamsDictionary>(
 
 refundTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['admin', 'transactions']),
+    permitScopes(['transactions']),
     validator,
     async (req, res, next) => {
         try {
             const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
 
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             await chevre.service.transaction.refund.cancel({
                 ...req.body,
                 ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }

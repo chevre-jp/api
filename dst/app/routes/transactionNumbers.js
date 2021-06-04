@@ -17,15 +17,13 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const redis = require("../../redis");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const transactionNumbersRouter = express_1.Router();
-transactionNumbersRouter.use(authentication_1.default);
 /**
  * 取引番号発行
  */
-transactionNumbersRouter.post('', permitScopes_1.default(['admin']), ...[
+transactionNumbersRouter.post('', permitScopes_1.default(['transactionNumbers.write']), ...[
     express_validator_1.body('project.id')
         .not()
         .isEmpty()
@@ -34,7 +32,7 @@ transactionNumbersRouter.post('', permitScopes_1.default(['admin']), ...[
     try {
         const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
         const transactionNumber = yield transactionNumberRepo.publishByTimestamp({
-            project: { id: req.body.project.id },
+            project: { id: req.project.id },
             startDate: new Date()
         });
         res.status(http_status_1.CREATED)

@@ -10,21 +10,19 @@ import { body } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
 const debug = createDebug('chevre-api:router');
 
 const seatRouter = Router();
-seatRouter.use(authentication);
 
 /**
  * 作成
  */
 seatRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()
@@ -139,13 +137,14 @@ seatRouter.post(
  */
 seatRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes(['places.*', 'places.read']),
     validator,
     async (req, res, next) => {
         try {
             const placeRepo = new chevre.repository.Place(mongoose.connection);
-            const searchConditions: any = {
+            const searchConditions: chevre.factory.place.seat.ISearchConditions = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -166,7 +165,7 @@ seatRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 seatRouter.put<ParamsDictionary>(
     '/:branchCode',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()
@@ -278,7 +277,7 @@ seatRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 seatRouter.delete<ParamsDictionary>(
     '/:branchCode',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()

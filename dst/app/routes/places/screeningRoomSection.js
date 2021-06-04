@@ -17,15 +17,13 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const screeningRoomSectionRouter = express_1.Router();
-screeningRoomSectionRouter.use(authentication_1.default);
 /**
  * 作成
  */
-screeningRoomSectionRouter.post('', permitScopes_1.default(['admin']), ...[
+screeningRoomSectionRouter.post('', permitScopes_1.default(['places.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -53,7 +51,7 @@ screeningRoomSectionRouter.post('', permitScopes_1.default(['admin']), ...[
         .isArray()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const screeningRoomSection = Object.assign({}, req.body);
+        const screeningRoomSection = Object.assign(Object.assign({}, req.body), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
         const screeningRoom = screeningRoomSection.containedInPlace;
         const movieTheater = screeningRoom.containedInPlace;
         const placeRepo = new chevre.repository.Place(mongoose.connection);
@@ -111,7 +109,7 @@ screeningRoomSectionRouter.post('', permitScopes_1.default(['admin']), ...[
 /**
  * 検索
  */
-screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), ...[
+screeningRoomSectionRouter.get('', permitScopes_1.default(['places.*', 'places.read']), ...[
     express_validator_1.query('$projection.*')
         .toInt()
 ], validator_1.default, 
@@ -120,7 +118,7 @@ screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), ...[
     var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const matchStages = [];
@@ -251,7 +249,7 @@ screeningRoomSectionRouter.get('', permitScopes_1.default(['admin']), ...[
  * 更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-screeningRoomSectionRouter.put('/:branchCode', permitScopes_1.default(['admin']), ...[
+screeningRoomSectionRouter.put('/:branchCode', permitScopes_1.default(['places.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -330,7 +328,7 @@ screeningRoomSectionRouter.put('/:branchCode', permitScopes_1.default(['admin'])
  * 削除
  */
 // tslint:disable-next-line:use-default-type-parameter
-screeningRoomSectionRouter.delete('/:branchCode', permitScopes_1.default(['admin']), ...[
+screeningRoomSectionRouter.delete('/:branchCode', permitScopes_1.default(['places.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()

@@ -8,20 +8,17 @@ import { CREATED } from 'http-status';
 
 import * as redis from '../../redis';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const transactionNumbersRouter = Router();
-
-transactionNumbersRouter.use(authentication);
 
 /**
  * 取引番号発行
  */
 transactionNumbersRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['transactionNumbers.write']),
     ...[
         body('project.id')
             .not()
@@ -34,7 +31,7 @@ transactionNumbersRouter.post(
             const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
 
             const transactionNumber = await transactionNumberRepo.publishByTimestamp({
-                project: { id: req.body.project.id },
+                project: { id: req.project.id },
                 startDate: new Date()
             });
 

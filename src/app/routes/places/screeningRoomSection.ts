@@ -9,19 +9,17 @@ import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
 const screeningRoomSectionRouter = Router();
-screeningRoomSectionRouter.use(authentication);
 
 /**
  * 作成
  */
 screeningRoomSectionRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()
@@ -52,7 +50,10 @@ screeningRoomSectionRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const screeningRoomSection: chevre.factory.place.screeningRoomSection.IPlace = { ...req.body };
+            const screeningRoomSection: chevre.factory.place.screeningRoomSection.IPlace = {
+                ...req.body,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
 
             const screeningRoom = <chevre.factory.place.screeningRoom.IPlace>screeningRoomSection.containedInPlace;
             const movieTheater = <chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace;
@@ -124,7 +125,7 @@ screeningRoomSectionRouter.post(
  */
 screeningRoomSectionRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes(['places.*', 'places.read']),
     ...[
         query('$projection.*')
             .toInt()
@@ -136,6 +137,7 @@ screeningRoomSectionRouter.get(
             const placeRepo = new chevre.repository.Place(mongoose.connection);
             const searchConditions: chevre.factory.place.screeningRoomSection.ISearchConditions = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -289,7 +291,7 @@ screeningRoomSectionRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 screeningRoomSectionRouter.put<ParamsDictionary>(
     '/:branchCode',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()
@@ -399,7 +401,7 @@ screeningRoomSectionRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 screeningRoomSectionRouter.delete<ParamsDictionary>(
     '/:branchCode',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()

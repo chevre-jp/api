@@ -9,17 +9,14 @@ import { body } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
 const movieTheaterRouter = Router();
 
-movieTheaterRouter.use(authentication);
-
 movieTheaterRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()
@@ -35,7 +32,7 @@ movieTheaterRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             let movieTheater: chevre.factory.place.movieTheater.IPlace = {
                 ...req.body,
@@ -57,13 +54,14 @@ movieTheaterRouter.post(
 
 movieTheaterRouter.get(
     '',
-    permitScopes(['admin', 'places', 'places.read-only']),
+    permitScopes(['places.*', 'places', 'places.read']),
     validator,
     async (req, res, next) => {
         try {
             const placeRepo = new chevre.repository.Place(mongoose.connection);
             const searchConditions: chevre.factory.place.movieTheater.ISearchConditions = {
                 ...req.query,
+                project: { ids: [req.project.id] },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -80,7 +78,7 @@ movieTheaterRouter.get(
 
 movieTheaterRouter.get(
     '/:id',
-    permitScopes(['admin', 'places', 'places.read-only']),
+    permitScopes(['places.*', 'places', 'places.read']),
     validator,
     async (req, res, next) => {
         try {
@@ -97,7 +95,7 @@ movieTheaterRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 movieTheaterRouter.put<ParamsDictionary>(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     ...[
         body('branchCode')
             .not()
@@ -127,7 +125,7 @@ movieTheaterRouter.put<ParamsDictionary>(
 
 movieTheaterRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     validator,
     async (req, res, next) => {
         try {

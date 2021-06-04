@@ -10,12 +10,10 @@ import { CREATED } from 'http-status';
 import * as moment from 'moment';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const tasksRouter = Router();
-tasksRouter.use(authentication);
 
 /**
  * タスク作成
@@ -23,7 +21,7 @@ tasksRouter.use(authentication);
 // tslint:disable-next-line:use-default-type-parameter
 tasksRouter.post<ParamsDictionary>(
     '/:name',
-    permitScopes(['admin']),
+    permitScopes(['tasks.*', 'tasks.create']),
     ...[
         body('project')
             .not()
@@ -49,9 +47,9 @@ tasksRouter.post<ParamsDictionary>(
         try {
             const taskRepo = new chevre.repository.Task(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
-            const attributes: chevre.factory.task.IAttributes = {
+            const attributes: chevre.factory.task.IAttributes<chevre.factory.taskName> = {
                 project: project,
                 name: <chevre.factory.taskName>req.params.name,
                 status: chevre.factory.taskStatus.Ready,
@@ -76,7 +74,7 @@ tasksRouter.post<ParamsDictionary>(
  */
 tasksRouter.get(
     '/:name/:id',
-    permitScopes(['admin']),
+    permitScopes(['tasks.*', 'tasks.read']),
     validator,
     async (req, res, next) => {
         try {
@@ -97,7 +95,7 @@ tasksRouter.get(
  */
 tasksRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes(['tasks.*', 'tasks.read']),
     ...[
         query('runsFrom')
             .optional()
@@ -126,6 +124,7 @@ tasksRouter.get(
             const taskRepo = new chevre.repository.Task(mongoose.connection);
             const searchConditions: chevre.factory.task.ISearchConditions<chevre.factory.taskName> = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1

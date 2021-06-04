@@ -9,7 +9,7 @@ import * as moment from 'moment';
 import { connectMongo } from '../../../connectMongo';
 import * as singletonProcess from '../../../singletonProcess';
 
-const debug = createDebug('cinerino-api:jobs');
+const debug = createDebug('chevre-api:jobs');
 
 const IMPORT_EVENTS_PER_DAYS = 3;
 const DAYS_WEEK = 7;
@@ -78,7 +78,7 @@ export default async (params: {
 
                     await Promise.all(movieTheaters.map(async (movieTheater) => {
                         try {
-                            const taskAttributes: chevre.factory.task.IAttributes = {
+                            const taskAttributes: chevre.factory.task.importEventCapacitiesFromCOA.IAttributes = {
                                 name: chevre.factory.taskName.ImportEventCapacitiesFromCOA,
                                 status: chevre.factory.taskStatus.Ready,
                                 runsAt: runsAt,

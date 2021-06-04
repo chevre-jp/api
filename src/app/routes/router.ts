@@ -6,25 +6,16 @@ import * as express from 'express';
 import cronRouter from './cron';
 import ahRouter from './_ah';
 
-import accountTitlesRouter from './accountTitles';
-import actionsRouter from './actions';
-import categoryCodesRouter from './categoryCode';
-import creativeWorksRouter from './creativeWorks';
-import eventsRouter from './events';
 import healthRouter from './health';
-import offerCatalogsRouter from './offerCatalogs';
-import offersRouter from './offers';
-import placesRouter from './places';
-import priceSpecificationsRouter from './priceSpecifications';
-import productsRouter from './products';
+import membersRouter from './members';
 import projectsRouter from './projects';
-import reservationsRouter from './reservations';
-import sellersRouter from './sellers';
-import serviceOutputsRouter from './serviceOutputs';
-import statsRouter from './stats';
-import tasksRouter from './tasks';
-import transactionNumbersRouter from './transactionNumbers';
-import transactionsRouter from './transactions';
+import projectDetailRouter from './projects/detail';
+import webhooksRouter from './webhooks';
+
+import authentication from '../middlewares/authentication';
+import setPermissions from '../middlewares/setPermissions';
+import setProject from '../middlewares/setProject';
+
 const router = express.Router();
 
 // middleware that is specific to this router
@@ -36,24 +27,24 @@ const router = express.Router();
 router.use('/_ah', ahRouter);
 router.use('/cron', cronRouter);
 router.use('/health', healthRouter);
+router.use('/webhooks', webhooksRouter);
 
-router.use('/accountTitles', accountTitlesRouter);
-router.use('/actions', actionsRouter);
-router.use('/categoryCodes', categoryCodesRouter);
-router.use('/creativeWorks', creativeWorksRouter);
-router.use('/places', placesRouter);
-router.use('/events', eventsRouter);
-router.use('/offers', offersRouter);
-router.use('/offerCatalogs', offerCatalogsRouter);
-router.use('/priceSpecifications', priceSpecificationsRouter);
-router.use('/products', productsRouter);
+// 認証
+router.use(authentication);
+
+// リクエストプロジェクト設定
+router.use(setProject);
+
+// プロジェクトメンバー権限を確認
+router.use(setPermissions);
+
+// メンバールーター
+router.use('/members', membersRouter);
+
+// プロジェクトルーター
 router.use('/projects', projectsRouter);
-router.use('/reservations', reservationsRouter);
-router.use('/sellers', sellersRouter);
-router.use('/serviceOutputs', serviceOutputsRouter);
-router.use('/stats', statsRouter);
-router.use('/tasks', tasksRouter);
-router.use('/transactions', transactionsRouter);
-router.use('/transactionNumbers', transactionNumbersRouter);
+
+// 以下、プロジェクト指定済の状態でルーティング
+router.use('/projects/:id', projectDetailRouter);
 
 export default router;

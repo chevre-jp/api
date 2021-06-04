@@ -17,18 +17,16 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const informUseReservationUrls = (typeof process.env.INFORM_USE_RESERVATION_URL === 'string')
     ? process.env.INFORM_USE_RESERVATION_URL.split(',')
     : [];
 const reservationsRouter = express_1.Router();
-reservationsRouter.use(authentication_1.default);
 /**
  * 予約検索
  */
-reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
+reservationsRouter.get('', permitScopes_1.default(['reservations.read', 'reservations', 'reservations.read-only']), ...[
     express_validator_1.query('$projection.*')
         .toInt(),
     express_validator_1.query('limit')
@@ -83,7 +81,7 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
     try {
         const countDocuments = req.query.countDocuments === '1';
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (typeof req.query.sort === 'object' && req.query.sort !== undefined && req.query.sort !== null)
                 ? req.query.sort
@@ -102,75 +100,7 @@ reservationsRouter.get('', permitScopes_1.default(['admin', 'reservations', 'res
         next(error);
     }
 }));
-/**
- * ストリーミングダウンロード
- */
-reservationsRouter.get('/download', permitScopes_1.default(['admin']), ...[
-    express_validator_1.query('limit')
-        .optional()
-        .isInt()
-        .toInt(),
-    express_validator_1.query('page')
-        .optional()
-        .isInt()
-        .toInt(),
-    express_validator_1.query('bookingFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('bookingThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('modifiedFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('modifiedThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.startFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.startThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.endFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.endThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('checkedIn')
-        .optional()
-        .isBoolean()
-        .toBoolean(),
-    express_validator_1.query('attended')
-        .optional()
-        .isBoolean()
-        .toBoolean()
-], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const searchConditions = Object.assign({}, req.query);
-        const format = req.query.format;
-        const stream = yield chevre.service.report.reservation.stream({
-            conditions: searchConditions,
-            format: format
-        })({ reservation: reservationRepo });
-        res.type(`${req.query.format}; charset=utf-8`);
-        stream.pipe(res);
-    }
-    catch (error) {
-        next(error);
-    }
-}));
-reservationsRouter.get('/:id', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reservationsRouter.get('/:id', permitScopes_1.default(['reservations.read', 'reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const reservation = yield reservationRepo.findById({
@@ -185,7 +115,7 @@ reservationsRouter.get('/:id', permitScopes_1.default(['admin', 'reservations', 
 /**
  * 予約部分変更
  */
-reservationsRouter.patch('/:id', permitScopes_1.default(['admin', 'reservations.write']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reservationsRouter.patch('/:id', permitScopes_1.default(['reservations.write']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const update = req.body;
         delete update.id;
@@ -193,7 +123,7 @@ reservationsRouter.patch('/:id', permitScopes_1.default(['admin', 'reservations.
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         // 予約存在確認
         const reservation = yield reservationRepo.findById({ id: req.params.id });
-        const actionAttributes = Object.assign({ project: reservation.project, typeOf: 'ReplaceAction', agent: Object.assign(Object.assign({}, req.user), { id: req.user.sub, typeOf: 'Person' }), object: reservation }, {
+        const actionAttributes = Object.assign({ project: reservation.project, typeOf: 'ReplaceAction', agent: Object.assign(Object.assign({}, req.user), { id: req.user.sub, typeOf: chevre.factory.personType.Person }), object: reservation }, {
             replacee: reservation,
             replacer: update,
             targetCollection: {
@@ -229,84 +159,133 @@ reservationsRouter.patch('/:id', permitScopes_1.default(['admin', 'reservations.
         next(error);
     }
 }));
-reservationsRouter.get('/eventReservation/screeningEvent', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), ...[
-    express_validator_1.query('limit')
-        .optional()
-        .isInt()
-        .toInt(),
-    express_validator_1.query('page')
-        .optional()
-        .isInt()
-        .toInt(),
-    express_validator_1.query('bookingFrom')
+/**
+ * 予約に対する使用アクション検索
+ */
+// tslint:disable-next-line:use-default-type-parameter
+reservationsRouter.get('/:id/actions/use', permitScopes_1.default(['reservations.read']), ...[
+    express_validator_1.query('startFrom')
         .optional()
         .isISO8601()
         .toDate(),
-    express_validator_1.query('bookingThrough')
+    express_validator_1.query('startThrough')
         .optional()
         .isISO8601()
-        .toDate(),
-    express_validator_1.query('modifiedFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('modifiedThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.startFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.startThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.endFrom')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('reservationFor.endThrough')
-        .optional()
-        .isISO8601()
-        .toDate(),
-    express_validator_1.query('checkedIn')
-        .optional()
-        .isBoolean()
-        .toBoolean(),
-    express_validator_1.query('attended')
-        .optional()
-        .isBoolean()
-        .toBoolean()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.reservationType.EventReservation, 
-            // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: { bookingTime: chevre.factory.sortType.Descending } });
-        const reservations = yield reservationRepo.search(searchConditions);
-        res.json(reservations);
-    }
-    catch (error) {
-        next(error);
-    }
-}));
-reservationsRouter.get('/eventReservation/screeningEvent/:id', permitScopes_1.default(['admin', 'reservations', 'reservations.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const reservation = yield reservationRepo.findById({
-            id: req.params.id
+        const reservationId = req.params.id;
+        const actionRepo = new chevre.repository.Action(mongoose.connection);
+        const actions = yield actionRepo.search({
+            limit: 100,
+            page: 1,
+            sort: { startDate: chevre.factory.sortType.Descending },
+            project: { id: { $eq: req.project.id } },
+            typeOf: { $eq: chevre.factory.chevre.actionType.UseAction },
+            actionStatus: { $in: [chevre.factory.chevre.actionStatusType.CompletedActionStatus] },
+            object: {
+                id: { $eq: reservationId },
+                typeOf: { $eq: chevre.factory.chevre.reservationType.EventReservation }
+            }
         });
-        res.json(reservation);
+        res.json(actions);
     }
     catch (error) {
         next(error);
     }
 }));
+// reservationsRouter.get(
+//     '/eventReservation/screeningEvent',
+//     permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
+//     ...[
+//         query('limit')
+//             .optional()
+//             .isInt()
+//             .toInt(),
+//         query('page')
+//             .optional()
+//             .isInt()
+//             .toInt(),
+//         query('bookingFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('bookingThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('modifiedFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('modifiedThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.startFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.startThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.endFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.endThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('checkedIn')
+//             .optional()
+//             .isBoolean()
+//             .toBoolean(),
+//         query('attended')
+//             .optional()
+//             .isBoolean()
+//             .toBoolean()
+//     ],
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+//             const searchConditions: chevre.factory.reservation.ISearchConditions<chevre.factory.reservationType.EventReservation> = {
+//                 ...req.query,
+//                 typeOf: chevre.factory.reservationType.EventReservation,
+//                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+//                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+//                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+//                 sort: { bookingTime: chevre.factory.sortType.Descending }
+//             };
+//             const reservations = await reservationRepo.search(searchConditions);
+//             res.json(reservations);
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
+// reservationsRouter.get(
+//     '/eventReservation/screeningEvent/:id',
+//     permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+//             const reservation = await reservationRepo.findById({
+//                 id: req.params.id
+//             });
+//             res.json(reservation);
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
 /**
  * 発券
  */
-reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScopes_1.default(['admin', 'reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScopes_1.default(['reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         if (req.body.id === undefined && req.body.reservationNumber === undefined) {
             throw new chevre.factory.errors.ArgumentNull('At least one of id and reservationNumber');
@@ -349,7 +328,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/checkedIn', permitScope
         next(error);
     }
 }));
-reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitScopes_1.default(['admin', 'reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitScopes_1.default(['reservations.checkedIn']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
@@ -381,7 +360,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/checkedIn', permitS
         next(error);
     }
 }));
-reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitScopes_1.default(['admin', 'reservations.attended']), validator_1.default, 
+reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitScopes_1.default(['reservations.attended']), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
@@ -391,7 +370,7 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         let reservation = yield reservationRepo.findById({ id: req.params.id });
         // UseActionを作成する
-        const actionAttributes = Object.assign({ project: reservation.project, typeOf: chevre.factory.actionType.UseAction, agent: Object.assign({ typeOf: 'Person' }, req.body.agent), instrument: Object.assign({}, (typeof ((_a = req.body.instrument) === null || _a === void 0 ? void 0 : _a.token) === 'string')
+        const actionAttributes = Object.assign({ project: reservation.project, typeOf: chevre.factory.actionType.UseAction, agent: Object.assign({ typeOf: chevre.factory.personType.Person }, req.body.agent), instrument: Object.assign({}, (typeof ((_a = req.body.instrument) === null || _a === void 0 ? void 0 : _a.token) === 'string')
                 ? { token: req.body.instrument.token }
                 : undefined), 
             // どの予約を
@@ -445,7 +424,8 @@ reservationsRouter.put('/eventReservation/screeningEvent/:id/attended', permitSc
                         typeOf: chevre.factory.actionType.InformAction,
                         agent: action.project,
                         recipient: {
-                            typeOf: 'Person',
+                            typeOf: chevre.factory.personType.Person,
+                            id: url,
                             url
                         },
                         object: action

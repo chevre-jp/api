@@ -22,7 +22,7 @@ const cancelReservationTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admin', 'transactions']), ...[
+cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['assetTransactions.write', 'transactions']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -47,10 +47,10 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
-        const transaction = yield chevre.service.transaction.cancelReservation.start(Object.assign({ project: project, typeOf: chevre.factory.transactionType.CancelReservation, agent: Object.assign({}, req.body.agent
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
+        const transaction = yield chevre.service.transaction.cancelReservation.start(Object.assign({ project: project, typeOf: chevre.factory.assetTransactionType.CancelReservation, agent: Object.assign({}, req.body.agent
             // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
             ), object: Object.assign({ clientUser: req.user }, req.body.object), expires: moment(req.body.expires)
                 .toDate() }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
@@ -64,7 +64,7 @@ cancelReservationTransactionsRouter.post('/start', permitScopes_1.default(['admi
         next(error);
     }
 }));
-cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['admin', 'transactions']), ...[
+cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['assetTransactions.write', 'transactions']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -90,10 +90,10 @@ cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['ad
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
-        yield chevre.service.transaction.cancelReservation.startAndConfirm(Object.assign({ project: project, typeOf: chevre.factory.transactionType.CancelReservation, agent: Object.assign({}, req.body.agent
+        yield chevre.service.transaction.cancelReservation.startAndConfirm(Object.assign({ project: project, typeOf: chevre.factory.assetTransactionType.CancelReservation, agent: Object.assign({}, req.body.agent
             // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
             ), object: Object.assign({ clientUser: req.user }, req.body.object), expires: moment(req.body.expires)
                 .toDate(), potentialActions: Object.assign({}, req.body.potentialActions) }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
@@ -105,7 +105,7 @@ cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['ad
         // tslint:disable-next-line:no-floating-promises
         chevre.service.transaction.exportTasks({
             status: chevre.factory.transactionStatusType.Confirmed,
-            typeOf: { $in: [chevre.factory.transactionType.CancelReservation] }
+            typeOf: { $in: [chevre.factory.assetTransactionType.CancelReservation] }
         })({
             project: projectRepo,
             task: taskRepo,
@@ -129,17 +129,17 @@ cancelReservationTransactionsRouter.post('/confirm', permitScopes_1.default(['ad
         next(error);
     }
 }));
-cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         yield chevre.service.transaction.cancelReservation.confirm(Object.assign(Object.assign({}, req.body), { id: req.params.transactionId }))({ transaction: transactionRepo });
         // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
         // tslint:disable-next-line:no-floating-promises
         chevre.service.transaction.exportTasks({
             status: chevre.factory.transactionStatusType.Confirmed,
-            typeOf: { $in: [chevre.factory.transactionType.CancelReservation] }
+            typeOf: { $in: [chevre.factory.assetTransactionType.CancelReservation] }
         })({
             project: projectRepo,
             task: taskRepo,
@@ -163,11 +163,11 @@ cancelReservationTransactionsRouter.put('/:transactionId/confirm', permitScopes_
         next(error);
     }
 }));
-cancelReservationTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+cancelReservationTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         yield transactionRepo.cancel({
-            typeOf: chevre.factory.transactionType.CancelReservation,
+            typeOf: chevre.factory.assetTransactionType.CancelReservation,
             id: req.params.transactionId
         });
         res.status(http_status_1.NO_CONTENT)

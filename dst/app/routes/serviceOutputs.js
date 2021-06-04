@@ -17,17 +17,15 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const redis = require("../../redis");
 const MAX_NUM_IDENTIFIERS_CREATED = 100;
 const serviceOutputsRouter = express_1.Router();
-serviceOutputsRouter.use(authentication_1.default);
 /**
  * 検索
  */
-serviceOutputsRouter.get('', permitScopes_1.default(['admin', 'serviceOutputs', 'serviceOutputs.read-only']), ...[
+serviceOutputsRouter.get('', permitScopes_1.default(['serviceOutputs', 'serviceOutputs.read-only']), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()
@@ -45,7 +43,7 @@ serviceOutputsRouter.get('', permitScopes_1.default(['admin', 'serviceOutputs', 
     //     .isISO8601()
     //     .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f;
     try {
         const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         // const searchConditions: chevre.factory.reservation.ISearchConditions<any> = {
@@ -55,7 +53,7 @@ serviceOutputsRouter.get('', permitScopes_1.default(['admin', 'serviceOutputs', 
         //     page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
         //     sort: { bookingTime: chevre.factory.sortType.Descending }
         // };
-        const serviceOutputs = yield serviceOutputRepo.serviceOutputModel.find(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (((_a = req.query.project) === null || _a === void 0 ? void 0 : _a.id) !== undefined) ? { 'project.id': (_b = req.query.project) === null || _b === void 0 ? void 0 : _b.id } : undefined), (req.query.typeOf !== undefined) ? { typeOf: req.query.typeOf } : undefined), (req.query.identifier !== undefined) ? { identifier: req.query.identifier } : undefined), (req.query.accessCode !== undefined) ? { accessCode: req.query.accessCode } : undefined), (((_c = req.query.issuedBy) === null || _c === void 0 ? void 0 : _c.id) !== undefined) ? { 'issuedBy.id': (_d = req.query.issuedBy) === null || _d === void 0 ? void 0 : _d.id } : undefined), (((_e = req.query.issuedThrough) === null || _e === void 0 ? void 0 : _e.id) !== undefined) ? { 'issuedThrough.id': (_f = req.query.issuedThrough) === null || _f === void 0 ? void 0 : _f.id } : undefined), (((_g = req.query.issuedThrough) === null || _g === void 0 ? void 0 : _g.typeOf) !== undefined) ? { 'issuedThrough.typeOf': (_h = req.query.issuedThrough) === null || _h === void 0 ? void 0 : _h.typeOf } : undefined))
+        const serviceOutputs = yield serviceOutputRepo.serviceOutputModel.find(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ 'project.id': { $exists: true, $eq: req.project.id } }, (req.query.typeOf !== undefined) ? { typeOf: req.query.typeOf } : undefined), (req.query.identifier !== undefined) ? { identifier: req.query.identifier } : undefined), (req.query.accessCode !== undefined) ? { accessCode: req.query.accessCode } : undefined), (((_a = req.query.issuedBy) === null || _a === void 0 ? void 0 : _a.id) !== undefined) ? { 'issuedBy.id': (_b = req.query.issuedBy) === null || _b === void 0 ? void 0 : _b.id } : undefined), (((_c = req.query.issuedThrough) === null || _c === void 0 ? void 0 : _c.id) !== undefined) ? { 'issuedThrough.id': (_d = req.query.issuedThrough) === null || _d === void 0 ? void 0 : _d.id } : undefined), (((_e = req.query.issuedThrough) === null || _e === void 0 ? void 0 : _e.typeOf) !== undefined) ? { 'issuedThrough.typeOf': (_f = req.query.issuedThrough) === null || _f === void 0 ? void 0 : _f.typeOf } : undefined))
             .limit(req.query.limit)
             .skip(req.query.limit * (req.query.page - 1))
             .select({ __v: 0, createdAt: 0, updatedAt: 0 })
@@ -70,7 +68,7 @@ serviceOutputsRouter.get('', permitScopes_1.default(['admin', 'serviceOutputs', 
 /**
  * サービスアウトプット識別子発行
  */
-serviceOutputsRouter.post('/identifier', permitScopes_1.default(['admin']), ...[
+serviceOutputsRouter.post('/identifier', permitScopes_1.default([]), ...[
     express_validator_1.body()
         .isArray({ min: 1, max: MAX_NUM_IDENTIFIERS_CREATED })
         .withMessage(() => `must be an array <= ${MAX_NUM_IDENTIFIERS_CREATED}`),

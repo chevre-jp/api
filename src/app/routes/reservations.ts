@@ -3,11 +3,12 @@
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { query } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
@@ -16,14 +17,13 @@ const informUseReservationUrls = (typeof process.env.INFORM_USE_RESERVATION_URL 
     : [];
 
 const reservationsRouter = Router();
-reservationsRouter.use(authentication);
 
 /**
  * 予約検索
  */
 reservationsRouter.get(
     '',
-    permitScopes(['admin', 'reservations', 'reservations.read-only']),
+    permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -84,6 +84,7 @@ reservationsRouter.get(
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
             const searchConditions: chevre.factory.reservation.ISearchConditions<any> = {
                 ...req.query,
+                project: { ids: [req.project.id] },
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
@@ -110,89 +111,9 @@ reservationsRouter.get(
     }
 );
 
-/**
- * ストリーミングダウンロード
- */
-reservationsRouter.get(
-    '/download',
-    permitScopes(['admin']),
-    ...[
-        query('limit')
-            .optional()
-            .isInt()
-            .toInt(),
-        query('page')
-            .optional()
-            .isInt()
-            .toInt(),
-        query('bookingFrom')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('bookingThrough')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('modifiedFrom')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('modifiedThrough')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('reservationFor.startFrom')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('reservationFor.startThrough')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('reservationFor.endFrom')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('reservationFor.endThrough')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('checkedIn')
-            .optional()
-            .isBoolean()
-            .toBoolean(),
-        query('attended')
-            .optional()
-            .isBoolean()
-            .toBoolean()
-    ],
-    validator,
-    async (req, res, next) => {
-        try {
-            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-
-            const searchConditions: chevre.factory.reservation.ISearchConditions<any> = {
-                ...req.query
-            };
-
-            const format = req.query.format;
-
-            const stream = await chevre.service.report.reservation.stream({
-                conditions: searchConditions,
-                format: format
-            })({ reservation: reservationRepo });
-
-            res.type(`${req.query.format}; charset=utf-8`);
-            stream.pipe(res);
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
 reservationsRouter.get(
     '/:id',
-    permitScopes(['admin', 'reservations', 'reservations.read-only']),
+    permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
     validator,
     async (req, res, next) => {
         try {
@@ -213,7 +134,7 @@ reservationsRouter.get(
  */
 reservationsRouter.patch(
     '/:id',
-    permitScopes(['admin', 'reservations.write']),
+    permitScopes(['reservations.write']),
     validator,
     async (req, res, next) => {
         try {
@@ -232,7 +153,7 @@ reservationsRouter.patch(
                 agent: {
                     ...req.user,
                     id: req.user.sub,
-                    typeOf: 'Person'
+                    typeOf: chevre.factory.personType.Person
                 },
                 object: reservation,
                 ...{
@@ -279,105 +200,149 @@ reservationsRouter.patch(
     }
 );
 
-reservationsRouter.get(
-    '/eventReservation/screeningEvent',
-    permitScopes(['admin', 'reservations', 'reservations.read-only']),
+/**
+ * 予約に対する使用アクション検索
+ */
+// tslint:disable-next-line:use-default-type-parameter
+reservationsRouter.get<ParamsDictionary>(
+    '/:id/actions/use',
+    permitScopes(['reservations.read']),
     ...[
-        query('limit')
-            .optional()
-            .isInt()
-            .toInt(),
-        query('page')
-            .optional()
-            .isInt()
-            .toInt(),
-        query('bookingFrom')
+        query('startFrom')
             .optional()
             .isISO8601()
             .toDate(),
-        query('bookingThrough')
+        query('startThrough')
             .optional()
             .isISO8601()
-            .toDate(),
-        query('modifiedFrom')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('modifiedThrough')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('reservationFor.startFrom')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('reservationFor.startThrough')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('reservationFor.endFrom')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('reservationFor.endThrough')
-            .optional()
-            .isISO8601()
-            .toDate(),
-        query('checkedIn')
-            .optional()
-            .isBoolean()
-            .toBoolean(),
-        query('attended')
-            .optional()
-            .isBoolean()
-            .toBoolean()
+            .toDate()
     ],
     validator,
     async (req, res, next) => {
         try {
-            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-            const searchConditions: chevre.factory.reservation.ISearchConditions<chevre.factory.reservationType.EventReservation> = {
-                ...req.query,
-                typeOf: chevre.factory.reservationType.EventReservation,
-                // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-                limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-                page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
-                sort: { bookingTime: chevre.factory.sortType.Descending }
-            };
+            const reservationId = req.params.id;
 
-            const reservations = await reservationRepo.search(searchConditions);
+            const actionRepo = new chevre.repository.Action(mongoose.connection);
 
-            res.json(reservations);
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
-reservationsRouter.get(
-    '/eventReservation/screeningEvent/:id',
-    permitScopes(['admin', 'reservations', 'reservations.read-only']),
-    validator,
-    async (req, res, next) => {
-        try {
-            const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-            const reservation = await reservationRepo.findById({
-                id: req.params.id
+            const actions = await actionRepo.search({
+                limit: 100,
+                page: 1,
+                sort: { startDate: chevre.factory.sortType.Descending },
+                project: { id: { $eq: req.project.id } },
+                typeOf: { $eq: chevre.factory.chevre.actionType.UseAction },
+                actionStatus: { $in: [chevre.factory.chevre.actionStatusType.CompletedActionStatus] },
+                object: {
+                    id: { $eq: reservationId },
+                    typeOf: { $eq: chevre.factory.chevre.reservationType.EventReservation }
+                }
             });
 
-            res.json(reservation);
+            res.json(actions);
         } catch (error) {
             next(error);
         }
     }
 );
+
+// reservationsRouter.get(
+//     '/eventReservation/screeningEvent',
+//     permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
+//     ...[
+//         query('limit')
+//             .optional()
+//             .isInt()
+//             .toInt(),
+//         query('page')
+//             .optional()
+//             .isInt()
+//             .toInt(),
+//         query('bookingFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('bookingThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('modifiedFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('modifiedThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.startFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.startThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.endFrom')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('reservationFor.endThrough')
+//             .optional()
+//             .isISO8601()
+//             .toDate(),
+//         query('checkedIn')
+//             .optional()
+//             .isBoolean()
+//             .toBoolean(),
+//         query('attended')
+//             .optional()
+//             .isBoolean()
+//             .toBoolean()
+//     ],
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+//             const searchConditions: chevre.factory.reservation.ISearchConditions<chevre.factory.reservationType.EventReservation> = {
+//                 ...req.query,
+//                 typeOf: chevre.factory.reservationType.EventReservation,
+//                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
+//                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
+//                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
+//                 sort: { bookingTime: chevre.factory.sortType.Descending }
+//             };
+
+//             const reservations = await reservationRepo.search(searchConditions);
+
+//             res.json(reservations);
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
+
+// reservationsRouter.get(
+//     '/eventReservation/screeningEvent/:id',
+//     permitScopes(['reservations.read', 'reservations', 'reservations.read-only']),
+//     validator,
+//     async (req, res, next) => {
+//         try {
+//             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+//             const reservation = await reservationRepo.findById({
+//                 id: req.params.id
+//             });
+
+//             res.json(reservation);
+//         } catch (error) {
+//             next(error);
+//         }
+//     }
+// );
 
 /**
  * 発券
  */
 reservationsRouter.put(
     '/eventReservation/screeningEvent/checkedIn',
-    permitScopes(['admin', 'reservations.checkedIn']),
+    permitScopes(['reservations.checkedIn']),
     validator,
     async (req, res, next) => {
         try {
@@ -430,7 +395,7 @@ reservationsRouter.put(
 
 reservationsRouter.put(
     '/eventReservation/screeningEvent/:id/checkedIn',
-    permitScopes(['admin', 'reservations.checkedIn']),
+    permitScopes(['reservations.checkedIn']),
     validator,
     async (req, res, next) => {
         try {
@@ -471,7 +436,7 @@ reservationsRouter.put(
 
 reservationsRouter.put(
     '/eventReservation/screeningEvent/:id/attended',
-    permitScopes(['admin', 'reservations.attended']),
+    permitScopes(['reservations.attended']),
     validator,
     // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
@@ -487,7 +452,7 @@ reservationsRouter.put(
                 project: reservation.project,
                 typeOf: chevre.factory.actionType.UseAction,
                 agent: {
-                    typeOf: 'Person',
+                    typeOf: chevre.factory.personType.Person,
                     ...req.body.agent
                 },
                 instrument: {
@@ -539,7 +504,7 @@ reservationsRouter.put(
             // アクション完了
             action = await actionRepo.complete({ typeOf: action.typeOf, id: action.id, result: {} });
 
-            const tasks: chevre.factory.task.IAttributes[] = [];
+            const tasks: chevre.factory.task.IAttributes<chevre.factory.taskName>[] = [];
 
             // アクション通知タスク作成
             if (Array.isArray(informUseReservationUrls)) {
@@ -558,7 +523,8 @@ reservationsRouter.put(
                                 typeOf: chevre.factory.actionType.InformAction,
                                 agent: action.project,
                                 recipient: {
-                                    typeOf: 'Person',
+                                    typeOf: chevre.factory.personType.Person,
+                                    id: url,
                                     url
                                 },
                                 object: action

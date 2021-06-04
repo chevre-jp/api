@@ -17,12 +17,10 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const offerCatalogsRouter = express_1.Router();
-offerCatalogsRouter.use(authentication_1.default);
-offerCatalogsRouter.post('', permitScopes_1.default(['admin']), ...[
+offerCatalogsRouter.post('', permitScopes_1.default(['offerCatalogs.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -30,7 +28,7 @@ offerCatalogsRouter.post('', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const ticketTypeGroup = yield offerCatalogRepo.save(Object.assign(Object.assign({}, req.body), { id: '', project: project }));
         res.status(http_status_1.CREATED)
             .json(ticketTypeGroup);
@@ -39,10 +37,10 @@ offerCatalogsRouter.post('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-offerCatalogsRouter.get('', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+offerCatalogsRouter.get('', permitScopes_1.default(['offerCatalogs.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const ticketTypeGroups = yield offerCatalogRepo.search(searchConditions);
@@ -52,7 +50,7 @@ offerCatalogsRouter.get('', permitScopes_1.default(['admin']), validator_1.defau
         next(error);
     }
 }));
-offerCatalogsRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+offerCatalogsRouter.get('/:id', permitScopes_1.default(['offerCatalogs.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
         const ticketTypeGroup = yield offerCatalogRepo.findById({ id: req.params.id });
@@ -62,7 +60,7 @@ offerCatalogsRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.d
         next(error);
     }
 }));
-offerCatalogsRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+offerCatalogsRouter.put('/:id', permitScopes_1.default(['offerCatalogs.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerCatalog = req.body;
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
@@ -74,7 +72,7 @@ offerCatalogsRouter.put('/:id', permitScopes_1.default(['admin']), validator_1.d
         next(error);
     }
 }));
-offerCatalogsRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+offerCatalogsRouter.delete('/:id', permitScopes_1.default(['offerCatalogs.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
         yield offerCatalogRepo.deleteById({ id: req.params.id });

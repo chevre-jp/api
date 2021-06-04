@@ -18,7 +18,7 @@ const createDebug = require("debug");
 const moment = require("moment");
 const connectMongo_1 = require("../../../connectMongo");
 const singletonProcess = require("../../../singletonProcess");
-const debug = createDebug('cinerino-api:jobs');
+const debug = createDebug('chevre-api:jobs');
 const IMPORT_EVENTS_PER_DAYS = 3;
 const DAYS_WEEK = 7;
 // tslint:disable-next-line:max-func-body-length

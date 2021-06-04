@@ -17,18 +17,16 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const informUseReservationUrls = (typeof process.env.INFORM_USE_RESERVATION_URL === 'string')
     ? process.env.INFORM_USE_RESERVATION_URL.split(',')
     : [];
 const actionsRouter = express_1.Router();
-actionsRouter.use(authentication_1.default);
 /**
  * アクション検索
  */
-actionsRouter.get('', permitScopes_1.default(['admin']), ...[
+actionsRouter.get('', permitScopes_1.default([]), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()
@@ -48,7 +46,7 @@ actionsRouter.get('', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const actionRepo = new chevre.repository.Action(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const actions = yield actionRepo.search(searchConditions);
@@ -61,7 +59,7 @@ actionsRouter.get('', permitScopes_1.default(['admin']), ...[
 /**
  * アクションを取消
  */
-actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`, permitScopes_1.default(['admin']), validator_1.default, 
+actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`, permitScopes_1.default([]), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
@@ -121,7 +119,8 @@ actionsRouter.put(`/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`
                             typeOf: chevre.factory.actionType.InformAction,
                             agent: action.project,
                             recipient: {
-                                typeOf: 'Person',
+                                typeOf: chevre.factory.personType.Person,
+                                id: url,
                                 url
                             },
                             object: action

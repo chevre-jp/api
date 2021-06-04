@@ -24,9 +24,9 @@ const validator_1 = require("../../middlewares/validator");
 /**
  * 決済認証(ムビチケ購入番号確認)
  */
-payTransactionsRouter.post('/check', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+payTransactionsRouter.post('/check', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const action = yield chevre.service.transaction.pay.check({
             project: project,
             typeOf: chevre.factory.actionType.CheckAction,
@@ -47,7 +47,7 @@ payTransactionsRouter.post('/check', permitScopes_1.default(['admin']), validato
         next(error);
     }
 }));
-payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
+payTransactionsRouter.post('/start', permitScopes_1.default([]), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -77,15 +77,17 @@ payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
         .withMessage('Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const accountRepo = new chevre.repository.Account(mongoose.connection);
         const actionRepo = new chevre.repository.Action(mongoose.connection);
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const productRepo = new chevre.repository.Product(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
-        const transaction = yield chevre.service.transaction.pay.start(Object.assign(Object.assign({ project: project, typeOf: chevre.factory.transactionType.Pay, agent: Object.assign({}, req.body.agent), object: req.body.object, recipient: Object.assign({}, req.body.recipient), expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined), (req.body.purpose !== undefined && req.body.purpose !== null) ? { purpose: req.body.purpose } : undefined))({
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
+        const transaction = yield chevre.service.transaction.pay.start(Object.assign(Object.assign({ project: project, typeOf: chevre.factory.assetTransactionType.Pay, agent: Object.assign({}, req.body.agent), object: req.body.object, recipient: Object.assign({}, req.body.recipient), expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined), (req.body.purpose !== undefined && req.body.purpose !== null) ? { purpose: req.body.purpose } : undefined))({
+            account: accountRepo,
             action: actionRepo,
             event: eventRepo,
             product: productRepo,
@@ -104,7 +106,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default(['admin']), ...[
  * 取引確定
  */
 // tslint:disable-next-line:use-default-type-parameter
-payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['admin', 'transactions']), ...[
+payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['transactions']), ...[
     express_validator_1.body('endDate')
         .optional()
         .isISO8601()
@@ -114,13 +116,13 @@ payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['ad
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         yield chevre.service.transaction.pay.confirm(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({ transaction: transactionRepo });
         // 非同期でタスクエクスポート(APIレスポンスタイムに影響を与えないように)
         // tslint:disable-next-line:no-floating-promises
         chevre.service.transaction.exportTasks({
             status: chevre.factory.transactionStatusType.Confirmed,
-            typeOf: { $in: [chevre.factory.transactionType.Pay] }
+            typeOf: { $in: [chevre.factory.assetTransactionType.Pay] }
         })({
             project: projectRepo,
             task: taskRepo,
@@ -144,10 +146,10 @@ payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['ad
         next(error);
     }
 }));
-payTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['admin', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+payTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
-        const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+        const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         yield chevre.service.transaction.pay.cancel(Object.assign(Object.assign({}, req.body), (transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }))({
             transaction: transactionRepo
         });

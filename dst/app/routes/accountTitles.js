@@ -18,16 +18,14 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const debug = createDebug('chevre-api:router');
 const accountTitlesRouter = express_1.Router();
-accountTitlesRouter.use(authentication_1.default);
 /**
  * 科目分類追加
  */
-accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['admin']), ...[
+accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -42,7 +40,7 @@ accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['admin
         .withMessage(() => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         const accountTitle = Object.assign(Object.assign({}, req.body), { project: project });
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         yield accountTitleRepo.accountTitleModel.create(accountTitle);
@@ -56,12 +54,12 @@ accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['admin
 /**
  * 科目分類検索
  */
-accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
+accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         // const accountTitles = await accountTitleRepo.search(searchConditions);
@@ -141,7 +139,7 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['admin'
  * 科目分類更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.put('/accountTitleCategory/:codeValue', permitScopes_1.default(['admin']), ...[
+accountTitlesRouter.put('/accountTitleCategory/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('codeValue')
         .not()
         .isEmpty()
@@ -176,7 +174,7 @@ accountTitlesRouter.put('/accountTitleCategory/:codeValue', permitScopes_1.defau
  * 科目分類削除
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.delete('/accountTitleCategory/:codeValue', permitScopes_1.default(['admin']), ...[
+accountTitlesRouter.delete('/accountTitleCategory/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('project.id')
         .not()
         .isEmpty()
@@ -208,7 +206,7 @@ accountTitlesRouter.delete('/accountTitleCategory/:codeValue', permitScopes_1.de
 /**
  * 科目追加
  */
-accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), ...[
+accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('codeValue')
         .not()
         .isEmpty()
@@ -227,14 +225,14 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), 
         .withMessage(() => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accountTitleCategory = req.body.inCodeSet;
-        const accountTitleSet = req.body;
+        const accountTitleCategory = Object.assign(Object.assign({}, req.body.inCodeSet), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
+        const accountTitleSet = Object.assign(Object.assign({}, req.body), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         // 科目分類の存在確認
         let doc = yield accountTitleRepo.accountTitleModel.findOne({
             'project.id': {
                 $exists: true,
-                $eq: accountTitleSet.project.id
+                $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue
         })
@@ -243,7 +241,7 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), 
             throw new chevre.factory.errors.NotFound('AccountTitleCategory');
         }
         const newAccountTitleSet = {
-            project: { id: accountTitleSet.project.id, typeOf: chevre.factory.organizationType.Project },
+            project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
             typeOf: accountTitleSet.typeOf,
             codeValue: accountTitleSet.codeValue,
             name: accountTitleSet.name,
@@ -254,7 +252,7 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), 
         doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
                 $exists: true,
-                $eq: accountTitleSet.project.id
+                $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue,
             'hasCategoryCode.codeValue': { $ne: accountTitleSet.codeValue }
@@ -278,12 +276,12 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['admin']), 
 /**
  * 科目検索
  */
-accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['admin', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
+accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         // const accountTitles = await accountTitleRepo.search(searchConditions);
@@ -399,7 +397,7 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['admin', 'ac
  * 科目更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default(['admin']), ...[
+accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('codeValue')
         .not()
         .isEmpty()
@@ -446,7 +444,7 @@ accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default(['
  * 科目削除
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.delete('/accountTitleSet/:codeValue', permitScopes_1.default(['admin']), ...[
+accountTitlesRouter.delete('/accountTitleSet/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('project.id')
         .not()
         .isEmpty()
@@ -490,7 +488,7 @@ accountTitlesRouter.delete('/accountTitleSet/:codeValue', permitScopes_1.default
 /**
  * 細目追加
  */
-accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
+accountTitlesRouter.post('', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('codeValue')
         .not()
         .isEmpty()
@@ -517,15 +515,15 @@ accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
         .withMessage(() => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accountTitleSet = req.body.inCodeSet;
-        const accountTitleCategory = req.body.inCodeSet.inCodeSet;
-        const accountTitle = req.body;
+        const accountTitleSet = Object.assign(Object.assign({}, req.body.inCodeSet), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
+        const accountTitleCategory = Object.assign(Object.assign({}, req.body.inCodeSet.inCodeSet), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
+        const accountTitle = Object.assign(Object.assign({}, req.body), { project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project } });
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         // 科目の存在確認
         let doc = yield accountTitleRepo.accountTitleModel.findOne({
             'project.id': {
                 $exists: true,
-                $eq: accountTitle.project.id
+                $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue,
             'hasCategoryCode.codeValue': accountTitleSet.codeValue
@@ -535,7 +533,7 @@ accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
             throw new chevre.factory.errors.NotFound('AccountTitleSet');
         }
         const newAccountTitle = {
-            project: { id: accountTitle.project.id, typeOf: chevre.factory.organizationType.Project },
+            project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
             typeOf: accountTitle.typeOf,
             codeValue: accountTitle.codeValue,
             name: accountTitle.name,
@@ -544,7 +542,7 @@ accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
         doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
                 $exists: true,
-                $eq: accountTitle.project.id
+                $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue,
             'hasCategoryCode.codeValue': accountTitleSet.codeValue,
@@ -574,12 +572,12 @@ accountTitlesRouter.post('', permitScopes_1.default(['admin']), ...[
 /**
  * 細目検索
  */
-accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
+accountTitlesRouter.get('', permitScopes_1.default(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         // const accountTitles = await accountTitleRepo.search(searchConditions);
@@ -726,7 +724,7 @@ accountTitlesRouter.get('', permitScopes_1.default(['admin', 'accountTitles', 'a
  * 細目更新
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['admin']), ...[
+accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('codeValue')
         .not()
         .isEmpty()
@@ -786,7 +784,7 @@ accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['admin']), ...[
  * 削除
  */
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.delete('/:codeValue', permitScopes_1.default(['admin']), ...[
+accountTitlesRouter.delete('/:codeValue', permitScopes_1.default(['accountTitles.*']), ...[
     express_validator_1.body('project.id')
         .not()
         .isEmpty()

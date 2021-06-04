@@ -7,6 +7,8 @@ import { NextFunction, Request, Response } from 'express';
 
 import { } from '../../@types/index';
 
+import { Permission } from '../iam';
+
 const debug = createDebug('chevre-api:middlewares');
 
 /**
@@ -14,27 +16,37 @@ const debug = createDebug('chevre-api:middlewares');
  */
 type IScope = string;
 
-export default (permittedScopes: IScope[]) => {
+export default (specifiedPermittedScopes: IScope[]) => {
     return (req: Request, __: Response, next: NextFunction) => {
-        if (process.env.RESOURECE_SERVER_IDENTIFIER === undefined) {
-            next(new Error('RESOURECE_SERVER_IDENTIFIER undefined'));
+        if (process.env.RESOURCE_SERVER_IDENTIFIER === undefined) {
+            next(new Error('RESOURCE_SERVER_IDENTIFIER undefined'));
 
             return;
         }
 
-        debug('req.user.scopes:', req.user.scopes);
+        let permittedScopes = [...specifiedPermittedScopes];
+
+        // Permission.Adminは全アクセス許可
+        permittedScopes.push(Permission.Admin, Permission.ChevreAdmin);
+
+        permittedScopes = [...new Set(permittedScopes)];
+        debug('permittedScopes:', permittedScopes);
+
+        const ownedScopes: string[] = [...req.user.scopes, ...req.memberPermissions];
+
+        debug('ownedScopes:', ownedScopes);
 
         // ドメインつきのスコープリストも許容するように変更
         const permittedScopesWithResourceServerIdentifier = [
-            ...permittedScopes.map((permittedScope) => `${process.env.RESOURECE_SERVER_IDENTIFIER}/${permittedScope}`),
-            ...permittedScopes.map((permittedScope) => `${process.env.RESOURECE_SERVER_IDENTIFIER}/auth/${permittedScope}`)
+            ...permittedScopes.map((permittedScope) => `${process.env.RESOURCE_SERVER_IDENTIFIER}/${permittedScope}`),
+            ...permittedScopes.map((permittedScope) => `${process.env.RESOURCE_SERVER_IDENTIFIER}/auth/${permittedScope}`)
         ];
         debug('permittedScopesWithResourceServerIdentifier:', permittedScopesWithResourceServerIdentifier);
 
         // スコープチェック
         try {
             debug('checking scope requirements...', permittedScopesWithResourceServerIdentifier);
-            if (!isScopesPermitted(req.user.scopes, permittedScopesWithResourceServerIdentifier)) {
+            if (!isScopesPermitted(ownedScopes, permittedScopesWithResourceServerIdentifier)) {
                 next(new chevre.factory.errors.Forbidden('scope requirements not satisfied'));
             } else {
                 next();

@@ -17,7 +17,6 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../middlewares/authentication");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
 const categoryCodesRouter = express_1.Router();
@@ -49,10 +48,9 @@ const validations = [
         .withMessage(() => 'Required')
         .isString()
 ];
-categoryCodesRouter.use(authentication_1.default);
-categoryCodesRouter.post('', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+categoryCodesRouter.post('', permitScopes_1.default(['categoryCodes.*']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         let categoryCode = Object.assign(Object.assign({}, req.body), { project: project });
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
         const doc = yield categoryCodeRepo.categoryCodeModel.create(categoryCode);
@@ -64,7 +62,7 @@ categoryCodesRouter.post('', permitScopes_1.default(['admin']), ...validations, 
         next(error);
     }
 }));
-categoryCodesRouter.get('', permitScopes_1.default(['admin']), ...[
+categoryCodesRouter.get('', permitScopes_1.default(['categoryCodes.*', 'categoryCodes.read']), ...[
     express_validator_1.query('limit')
         .optional()
         .isInt()
@@ -76,7 +74,7 @@ categoryCodesRouter.get('', permitScopes_1.default(['admin']), ...[
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const categoryCodes = yield categoryCodeRepo.search(searchConditions);
@@ -86,7 +84,7 @@ categoryCodesRouter.get('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-categoryCodesRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+categoryCodesRouter.get('/:id', permitScopes_1.default(['categoryCodes.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
         const categoryCode = yield categoryCodeRepo.findById({ id: req.params.id });
@@ -96,7 +94,7 @@ categoryCodesRouter.get('/:id', permitScopes_1.default(['admin']), validator_1.d
         next(error);
     }
 }));
-categoryCodesRouter.put('/:id', permitScopes_1.default(['admin']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+categoryCodesRouter.put('/:id', permitScopes_1.default(['categoryCodes.*']), ...validations, validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
         const categoryCode = Object.assign(Object.assign({}, req.body), { project: project });
@@ -111,7 +109,7 @@ categoryCodesRouter.put('/:id', permitScopes_1.default(['admin']), ...validation
         next(error);
     }
 }));
-categoryCodesRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+categoryCodesRouter.delete('/:id', permitScopes_1.default(['categoryCodes.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const categoryCodeRepo = new chevre.repository.CategoryCode(mongoose.connection);
         yield categoryCodeRepo.deleteById({

@@ -10,16 +10,14 @@ import { CREATED, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
 import * as mongoose from 'mongoose';
 
-import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
 const movieRouter = Router();
-movieRouter.use(authentication);
 
 movieRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['creativeWorks.*']),
     ...[
         body('project')
             .not()
@@ -55,7 +53,7 @@ movieRouter.post(
         try {
             const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             let movie: chevre.factory.creativeWork.movie.ICreativeWork = {
                 ...req.body,
@@ -81,7 +79,7 @@ movieRouter.post(
 
 movieRouter.get(
     '',
-    permitScopes(['admin', 'creativeWorks', 'creativeWorks.read-only']),
+    permitScopes(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read']),
     ...[
         query('datePublishedFrom')
             .optional()
@@ -114,6 +112,7 @@ movieRouter.get(
             const creativeWorkRepo = new chevre.repository.CreativeWork(mongoose.connection);
             const searchConditions: chevre.factory.creativeWork.movie.ISearchConditions = {
                 ...req.query,
+                project: { ids: [req.project.id] },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -129,7 +128,7 @@ movieRouter.get(
 
 movieRouter.get(
     '/:id',
-    permitScopes(['admin', 'creativeWorks', 'creativeWorks.read-only']),
+    permitScopes(['creativeWorks.*', 'creativeWorks', 'creativeWorks.read']),
     validator,
     async (req, res, next) => {
         try {
@@ -146,7 +145,7 @@ movieRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 movieRouter.put<ParamsDictionary>(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['creativeWorks.*']),
     ...[
         body('datePublished')
             .optional()
@@ -200,7 +199,7 @@ movieRouter.put<ParamsDictionary>(
 
 movieRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['creativeWorks.*']),
     validator,
     async (req, res, next) => {
         try {

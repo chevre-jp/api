@@ -7,16 +7,14 @@ import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const offersRouter = Router();
-offersRouter.use(authentication);
 
 offersRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['offers.*']),
     ...[
         body('project')
             .not()
@@ -33,7 +31,7 @@ offersRouter.post(
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const offer = await offerRepo.save({ ...req.body, id: '', project: project });
             res.status(CREATED)
@@ -46,7 +44,7 @@ offersRouter.post(
 
 offersRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes(['offers.*']),
     ...[
         query('priceSpecification.price.$gte')
             .optional()
@@ -73,8 +71,9 @@ offersRouter.get(
     async (req, res, next) => {
         try {
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
-            const searchConditions = {
+            const searchConditions: chevre.factory.offer.ISearchConditions = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -91,7 +90,7 @@ offersRouter.get(
 
 offersRouter.get(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['offers.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -107,7 +106,7 @@ offersRouter.get(
 
 offersRouter.put(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['offers.*']),
     ...[
         body('project')
             .not()
@@ -135,7 +134,7 @@ offersRouter.put(
 
 offersRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['offers.*']),
     validator,
     async (req, res, next) => {
         try {

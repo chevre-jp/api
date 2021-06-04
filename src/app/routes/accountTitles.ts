@@ -10,21 +10,19 @@ import { body } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const debug = createDebug('chevre-api:router');
 
 const accountTitlesRouter = Router();
-accountTitlesRouter.use(authentication);
 
 /**
  * 科目分類追加
  */
 accountTitlesRouter.post(
     '/accountTitleCategory',
-    permitScopes(['admin']),
+    permitScopes(['accountTitles.*']),
     ...[
         body('project')
             .not()
@@ -42,7 +40,7 @@ accountTitlesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const accountTitle: chevre.factory.accountTitle.IAccountTitle = {
                 ...req.body,
@@ -64,7 +62,7 @@ accountTitlesRouter.post(
  */
 accountTitlesRouter.get(
     '/accountTitleCategory',
-    permitScopes(['admin', 'accountTitles', 'accountTitles.read-only']),
+    permitScopes(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']),
     validator,
     // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
@@ -72,6 +70,7 @@ accountTitlesRouter.get(
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
             const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
+                project: { ids: [req.project.id] },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -166,7 +165,7 @@ accountTitlesRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.put<ParamsDictionary>(
     '/accountTitleCategory/:codeValue',
-    permitScopes(['admin']),
+    permitScopes(['accountTitles.*']),
     ...[
         body('codeValue')
             .not()
@@ -214,7 +213,7 @@ accountTitlesRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.delete<ParamsDictionary>(
     '/accountTitleCategory/:codeValue',
-    permitScopes(['admin']),
+    permitScopes(['accountTitles.*']),
     ...[
         body('project.id')
             .not()
@@ -257,7 +256,7 @@ accountTitlesRouter.delete<ParamsDictionary>(
  */
 accountTitlesRouter.post(
     '/accountTitleSet',
-    permitScopes(['admin']),
+    permitScopes(['accountTitles.*']),
     ...[
         body('codeValue')
             .not()
@@ -279,8 +278,14 @@ accountTitlesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet;
-            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = req.body;
+            const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = {
+                ...req.body.inCodeSet,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
+            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = {
+                ...req.body,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
@@ -289,7 +294,7 @@ accountTitlesRouter.post(
                 {
                     'project.id': {
                         $exists: true,
-                        $eq: accountTitleSet.project.id
+                        $eq: req.project.id
                     },
                     codeValue: accountTitleCategory.codeValue
                 }
@@ -300,7 +305,7 @@ accountTitlesRouter.post(
             }
 
             const newAccountTitleSet: chevre.factory.accountTitle.IAccountTitle = {
-                project: { id: accountTitleSet.project.id, typeOf: chevre.factory.organizationType.Project },
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
                 typeOf: accountTitleSet.typeOf,
                 codeValue: accountTitleSet.codeValue,
                 name: accountTitleSet.name,
@@ -313,7 +318,7 @@ accountTitlesRouter.post(
                 {
                     'project.id': {
                         $exists: true,
-                        $eq: accountTitleSet.project.id
+                        $eq: req.project.id
                     },
                     codeValue: accountTitleCategory.codeValue,
                     'hasCategoryCode.codeValue': { $ne: accountTitleSet.codeValue }
@@ -344,7 +349,7 @@ accountTitlesRouter.post(
  */
 accountTitlesRouter.get(
     '/accountTitleSet',
-    permitScopes(['admin', 'accountTitles', 'accountTitles.read-only']),
+    permitScopes(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']),
     validator,
     // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
@@ -352,6 +357,7 @@ accountTitlesRouter.get(
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
             const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
+                project: { ids: [req.project.id] },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -480,7 +486,7 @@ accountTitlesRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.put<ParamsDictionary>(
     '/accountTitleSet/:codeValue',
-    permitScopes(['admin']),
+    permitScopes(['accountTitles.*']),
     ...[
         body('codeValue')
             .not()
@@ -544,7 +550,7 @@ accountTitlesRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.delete<ParamsDictionary>(
     '/accountTitleSet/:codeValue',
-    permitScopes(['admin']),
+    permitScopes(['accountTitles.*']),
     ...[
         body('project.id')
             .not()
@@ -600,7 +606,7 @@ accountTitlesRouter.delete<ParamsDictionary>(
  */
 accountTitlesRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['accountTitles.*']),
     ...[
         body('codeValue')
             .not()
@@ -630,9 +636,18 @@ accountTitlesRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet;
-            const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = req.body.inCodeSet.inCodeSet;
-            const accountTitle: chevre.factory.accountTitle.IAccountTitle = req.body;
+            const accountTitleSet: chevre.factory.accountTitle.IAccountTitle = {
+                ...req.body.inCodeSet,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
+            const accountTitleCategory: chevre.factory.accountTitle.IAccountTitle = {
+                ...req.body.inCodeSet.inCodeSet,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
+            const accountTitle: chevre.factory.accountTitle.IAccountTitle = {
+                ...req.body,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
 
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
 
@@ -640,7 +655,7 @@ accountTitlesRouter.post(
             let doc = await accountTitleRepo.accountTitleModel.findOne({
                 'project.id': {
                     $exists: true,
-                    $eq: accountTitle.project.id
+                    $eq: req.project.id
                 },
                 codeValue: accountTitleCategory.codeValue,
                 'hasCategoryCode.codeValue': accountTitleSet.codeValue
@@ -651,7 +666,7 @@ accountTitlesRouter.post(
             }
 
             const newAccountTitle: chevre.factory.accountTitle.IAccountTitle = {
-                project: { id: accountTitle.project.id, typeOf: chevre.factory.organizationType.Project },
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
                 typeOf: accountTitle.typeOf,
                 codeValue: accountTitle.codeValue,
                 name: accountTitle.name,
@@ -662,7 +677,7 @@ accountTitlesRouter.post(
                 {
                     'project.id': {
                         $exists: true,
-                        $eq: accountTitle.project.id
+                        $eq: req.project.id
                     },
                     codeValue: accountTitleCategory.codeValue,
                     'hasCategoryCode.codeValue': accountTitleSet.codeValue,
@@ -699,7 +714,7 @@ accountTitlesRouter.post(
  */
 accountTitlesRouter.get(
     '',
-    permitScopes(['admin', 'accountTitles', 'accountTitles.read-only']),
+    permitScopes(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']),
     validator,
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
@@ -707,6 +722,7 @@ accountTitlesRouter.get(
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
             const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
+                project: { ids: [req.project.id] },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -867,7 +883,7 @@ accountTitlesRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.put<ParamsDictionary>(
     '/:codeValue',
-    permitScopes(['admin']),
+    permitScopes(['accountTitles.*']),
     ...[
         body('codeValue')
             .not()
@@ -944,7 +960,7 @@ accountTitlesRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.delete<ParamsDictionary>(
     '/:codeValue',
-    permitScopes(['admin']),
+    permitScopes(['accountTitles.*']),
     ...[
         body('project.id')
             .not()

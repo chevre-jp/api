@@ -7,17 +7,14 @@ import { body } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const priceSpecificationsRouter = Router();
 
-priceSpecificationsRouter.use(authentication);
-
 // priceSpecificationsRouter.get(
 //     '/compoundPriceSpecification',
-//     permitScopes(['admin']),
+//     permitScopes([]),
 //     validator,
 //     async (req, res, next) => {
 //         try {
@@ -40,7 +37,7 @@ priceSpecificationsRouter.use(authentication);
 
 priceSpecificationsRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['priceSpecifications.*']),
     ...[
         body('project')
             .not()
@@ -50,7 +47,7 @@ priceSpecificationsRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             let priceSpecification: chevre.factory.priceSpecification.IPriceSpecification<any> = {
                 ...req.body,
@@ -72,7 +69,7 @@ priceSpecificationsRouter.post(
 
 priceSpecificationsRouter.get(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['priceSpecifications.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -94,7 +91,7 @@ priceSpecificationsRouter.get(
 
 priceSpecificationsRouter.put(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['priceSpecifications.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -118,7 +115,7 @@ priceSpecificationsRouter.put(
 
 priceSpecificationsRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['priceSpecifications.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -138,13 +135,14 @@ priceSpecificationsRouter.delete(
 
 priceSpecificationsRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes(['priceSpecifications.*']),
     validator,
     async (req, res, next) => {
         try {
             const priceSpecificationRepo = new chevre.repository.PriceSpecification(mongoose.connection);
             const searchConditions: chevre.factory.priceSpecification.ISearchConditions<any> = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1

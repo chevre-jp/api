@@ -7,7 +7,6 @@ import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
@@ -42,16 +41,14 @@ const validations: RequestHandler[] = [
         .isString()
 ];
 
-categoryCodesRouter.use(authentication);
-
 categoryCodesRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['categoryCodes.*']),
     ...validations,
     validator,
     async (req, res, next) => {
         try {
-            const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             let categoryCode: chevre.factory.categoryCode.ICategoryCode = {
                 ...req.body,
@@ -73,7 +70,7 @@ categoryCodesRouter.post(
 
 categoryCodesRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes(['categoryCodes.*', 'categoryCodes.read']),
     ...[
         query('limit')
             .optional()
@@ -91,6 +88,7 @@ categoryCodesRouter.get(
 
             const searchConditions: chevre.factory.categoryCode.ISearchConditions = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -107,7 +105,7 @@ categoryCodesRouter.get(
 
 categoryCodesRouter.get(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['categoryCodes.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -124,7 +122,7 @@ categoryCodesRouter.get(
 
 categoryCodesRouter.put(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['categoryCodes.*']),
     ...validations,
     validator,
     async (req, res, next) => {
@@ -154,7 +152,7 @@ categoryCodesRouter.put(
 
 categoryCodesRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['categoryCodes.*']),
     validator,
     async (req, res, next) => {
         try {

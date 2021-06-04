@@ -9,19 +9,17 @@ import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
 const productsRouter = Router();
-productsRouter.use(authentication);
 
 /**
  * プロダクト作成
  */
 productsRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['products.*']),
     ...[
         body('project')
             .not()
@@ -33,7 +31,7 @@ productsRouter.post(
         try {
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const doc = await productRepo.productModel.create({ ...req.body, project: project });
 
@@ -50,7 +48,7 @@ productsRouter.post(
  */
 productsRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes(['products.*', 'products.read']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -92,16 +90,27 @@ productsRouter.get(
         try {
             const productRepo = new chevre.repository.Product(mongoose.connection);
 
-            const searchConditions = {
+            const searchConditions: chevre.factory.product.ISearchConditions = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
 
+            const $projection: any = {
+                ...req.query.$projection,
+                // defaultで隠蔽
+                availableChannel: 0,
+                // 'availableChannel.credentials': 0,
+                // 'availableChannel.serviceUrl': 0,
+                'provider.credentials.shopPass': 0,
+                'provider.credentials.kgygishCd': 0,
+                'provider.credentials.stCd': 0
+            };
             const products = await productRepo.search(
                 searchConditions,
-                (req.query.$projection !== undefined && req.query.$projection !== null) ? { ...req.query.$projection } : undefined
+                $projection
             );
 
             res.json(products);
@@ -117,7 +126,7 @@ productsRouter.get(
 // tslint:disable-next-line:use-default-type-parameter
 productsRouter.get<ParamsDictionary>(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['products.*']),
     ...[
         query('$projection.*')
             .toInt()
@@ -144,7 +153,7 @@ productsRouter.get<ParamsDictionary>(
  */
 productsRouter.get(
     '/:id/offers',
-    permitScopes(['admin']),
+    permitScopes(['products.*', 'products.read']),
     validator,
     async (req, res, next) => {
         try {
@@ -172,7 +181,7 @@ productsRouter.get(
  */
 productsRouter.put(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['products.*']),
     validator,
     async (req, res, next) => {
         try {
@@ -204,7 +213,7 @@ productsRouter.put(
  */
 productsRouter.delete(
     '/:id',
-    permitScopes(['admin']),
+    permitScopes(['products.*']),
     validator,
     async (req, res, next) => {
         try {

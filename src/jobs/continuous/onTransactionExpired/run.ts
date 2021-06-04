@@ -17,7 +17,7 @@ export default async () => {
 
     const projectRepo = new chevre.repository.Project(connection);
     const taskRepo = new chevre.repository.Task(connection);
-    const transactionRepo = new chevre.repository.Transaction(connection);
+    const transactionRepo = new chevre.repository.AssetTransaction(connection);
 
     setInterval(
         async () => {
@@ -32,12 +32,12 @@ export default async () => {
                     status: chevre.factory.transactionStatusType.Expired,
                     typeOf: {
                         $in: [
-                            chevre.factory.transactionType.CancelReservation,
-                            chevre.factory.transactionType.MoneyTransfer,
-                            chevre.factory.transactionType.Pay,
-                            chevre.factory.transactionType.Refund,
-                            chevre.factory.transactionType.RegisterService,
-                            chevre.factory.transactionType.Reserve
+                            chevre.factory.assetTransactionType.CancelReservation,
+                            chevre.factory.assetTransactionType.MoneyTransfer,
+                            chevre.factory.assetTransactionType.Pay,
+                            chevre.factory.assetTransactionType.Refund,
+                            chevre.factory.assetTransactionType.RegisterService,
+                            chevre.factory.assetTransactionType.Reserve
                         ]
                     },
                     runsTasksAfterInSeconds: RUNS_TASKS_AFTER_IN_SECONDS

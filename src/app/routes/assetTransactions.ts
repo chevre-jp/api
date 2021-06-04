@@ -13,27 +13,24 @@ import refundTransactionsRouter from './transactions/refund';
 import registerServiceTransactionsRouter from './transactions/registerService';
 import reserveTransactionsRouter from './transactions/reserve';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
-const transactionsRouter = Router();
+const assetTransactionsRouter = Router();
 
-transactionsRouter.use(authentication);
-
-transactionsRouter.use('/cancelReservation', cancelReservationTransactionsRouter);
-transactionsRouter.use(`/${chevre.factory.transactionType.MoneyTransfer}`, moneyTransferTransactionsRouter);
-transactionsRouter.use(`/${chevre.factory.transactionType.Pay}`, payTransactionsRouter);
-transactionsRouter.use(`/${chevre.factory.transactionType.Refund}`, refundTransactionsRouter);
-transactionsRouter.use('/reserve', reserveTransactionsRouter);
-transactionsRouter.use(`/${chevre.factory.transactionType.RegisterService}`, registerServiceTransactionsRouter);
+assetTransactionsRouter.use('/cancelReservation', cancelReservationTransactionsRouter);
+assetTransactionsRouter.use(`/${chevre.factory.assetTransactionType.MoneyTransfer}`, moneyTransferTransactionsRouter);
+assetTransactionsRouter.use(`/${chevre.factory.assetTransactionType.Pay}`, payTransactionsRouter);
+assetTransactionsRouter.use(`/${chevre.factory.assetTransactionType.Refund}`, refundTransactionsRouter);
+assetTransactionsRouter.use('/reserve', reserveTransactionsRouter);
+assetTransactionsRouter.use(`/${chevre.factory.assetTransactionType.RegisterService}`, registerServiceTransactionsRouter);
 
 /**
  * 取引検索
  */
-transactionsRouter.get(
+assetTransactionsRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('limit')
             .optional()
@@ -63,9 +60,10 @@ transactionsRouter.get(
     validator,
     async (req, res, next) => {
         try {
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
-            const searchConditions: chevre.factory.transaction.ISearchConditions<chevre.factory.transactionType> = {
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
+            const searchConditions: chevre.factory.assetTransaction.ISearchConditions<chevre.factory.assetTransactionType> = {
                 ...req.query,
+                project: { ids: [req.project.id] },
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
@@ -81,4 +79,4 @@ transactionsRouter.get(
     }
 );
 
-export default transactionsRouter;
+export default assetTransactionsRouter;

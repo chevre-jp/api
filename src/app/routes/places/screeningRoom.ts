@@ -10,21 +10,19 @@ import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../../middlewares/authentication';
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
 const debug = createDebug('chevre-api:router');
 
 const screeningRoomRouter = Router();
-screeningRoomRouter.use(authentication);
 
 /**
  * 作成
  */
 screeningRoomRouter.post(
     '',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()
@@ -54,7 +52,10 @@ screeningRoomRouter.post(
     validator,
     async (req, res, next) => {
         try {
-            const screeningRoom: chevre.factory.place.screeningRoom.IPlace = { ...req.body };
+            const screeningRoom: chevre.factory.place.screeningRoom.IPlace = {
+                ...req.body,
+                project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project }
+            };
 
             const placeRepo = new chevre.repository.Place(mongoose.connection);
 
@@ -114,7 +115,7 @@ screeningRoomRouter.post(
  */
 screeningRoomRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes(['places.*', 'places.read']),
     ...[
         query('$projection.*')
             .toInt(),
@@ -130,6 +131,7 @@ screeningRoomRouter.get(
             const placeRepo = new chevre.repository.Place(mongoose.connection);
             const searchConditions: chevre.factory.place.screeningRoom.ISearchConditions = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -313,7 +315,7 @@ screeningRoomRouter.get(
 screeningRoomRouter.put<ParamsDictionary>(
 
     '/:branchCode',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()
@@ -401,7 +403,7 @@ screeningRoomRouter.put<ParamsDictionary>(
 // tslint:disable-next-line:use-default-type-parameter
 screeningRoomRouter.delete<ParamsDictionary>(
     '/:branchCode',
-    permitScopes(['admin']),
+    permitScopes(['places.*']),
     ...[
         body('project')
             .not()

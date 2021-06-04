@@ -7,7 +7,6 @@ import { query } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-import authentication from '../middlewares/authentication';
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
 
@@ -16,14 +15,13 @@ const informUseReservationUrls = (typeof process.env.INFORM_USE_RESERVATION_URL 
     : [];
 
 const actionsRouter = Router();
-actionsRouter.use(authentication);
 
 /**
  * アクション検索
  */
 actionsRouter.get(
     '',
-    permitScopes(['admin']),
+    permitScopes([]),
     ...[
         query('limit')
             .optional()
@@ -49,6 +47,7 @@ actionsRouter.get(
 
             const searchConditions: chevre.factory.action.ISearchConditions = {
                 ...req.query,
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -68,7 +67,7 @@ actionsRouter.get(
  */
 actionsRouter.put(
     `/:id/${chevre.factory.actionStatusType.CanceledActionStatus}`,
-    permitScopes(['admin']),
+    permitScopes([]),
     validator,
     // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
@@ -120,7 +119,7 @@ actionsRouter.put(
                     console.error('unset reservedTicket.dateUsed failed.', error);
                 }
 
-                const tasks: chevre.factory.task.IAttributes[] = [];
+                const tasks: chevre.factory.task.IAttributes<chevre.factory.taskName>[] = [];
 
                 // アクション通知タスク作成
                 if (Array.isArray(informUseReservationUrls)) {
@@ -139,7 +138,8 @@ actionsRouter.put(
                                     typeOf: chevre.factory.actionType.InformAction,
                                     agent: action.project,
                                     recipient: {
-                                        typeOf: 'Person',
+                                        typeOf: chevre.factory.personType.Person,
+                                        id: url,
                                         url
                                     },
                                     object: action

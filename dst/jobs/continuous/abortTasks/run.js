@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * タスク中止
  */
 const chevre = require("@chevre/domain");
+const moment = require("moment");
 const connectMongo_1 = require("../../../connectMongo");
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
@@ -28,6 +29,17 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
         count += 1;
         try {
             yield chevre.service.task.abort({ intervalInMinutes: RETRY_INTERVAL_MINUTES })({ task: taskRepo });
+            // 過去の不要なタスクを削除
+            yield taskRepo.taskModel.deleteMany({
+                runsAt: {
+                    $lt: moment()
+                        // tslint:disable-next-line:no-magic-numbers
+                        .add(-7, 'days')
+                        .toDate()
+                },
+                status: { $in: [chevre.factory.taskStatus.Aborted, chevre.factory.taskStatus.Executed] }
+            })
+                .exec();
         }
         catch (error) {
             console.error(error);

@@ -18,7 +18,7 @@ import validator from '../../middlewares/validator';
 
 registerServiceTransactionsRouter.post(
     '/start',
-    permitScopes(['admin']),
+    permitScopes(['assetTransactions.write']),
     ...[
         body('project')
             .not()
@@ -46,18 +46,19 @@ registerServiceTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const accountRepo = new chevre.repository.Account(mongoose.connection);
             const offerRepo = new chevre.repository.Offer(mongoose.connection);
             const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
             const productRepo = new chevre.repository.Product(mongoose.connection);
             const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const transaction = await chevre.service.transaction.registerService.start({
                 project: project,
-                typeOf: chevre.factory.transactionType.RegisterService,
+                typeOf: chevre.factory.assetTransactionType.RegisterService,
                 agent: {
                     ...req.body.agent
                     // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
@@ -66,6 +67,7 @@ registerServiceTransactionsRouter.post(
                 expires: req.body.expires,
                 ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
+                account: accountRepo,
                 offer: offerRepo,
                 offerCatalog: offerCatalogRepo,
                 product: productRepo,
@@ -87,7 +89,7 @@ registerServiceTransactionsRouter.post(
 // tslint:disable-next-line:use-default-type-parameter
 registerServiceTransactionsRouter.put<ParamsDictionary>(
     '/:transactionId/confirm',
-    permitScopes(['admin', 'transactions']),
+    permitScopes(['assetTransactions.write', 'transactions']),
     ...[
         body('endDate')
             .optional()
@@ -101,7 +103,7 @@ registerServiceTransactionsRouter.put<ParamsDictionary>(
 
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
             await chevre.service.transaction.registerService.confirm({
                 ...req.body,
@@ -112,7 +114,7 @@ registerServiceTransactionsRouter.put<ParamsDictionary>(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.RegisterService] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.RegisterService] }
             })({
                 project: projectRepo,
                 task: taskRepo,
@@ -140,13 +142,13 @@ registerServiceTransactionsRouter.put<ParamsDictionary>(
 
 registerServiceTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['admin', 'transactions']),
+    permitScopes(['assetTransactions.write', 'transactions']),
     validator,
     async (req, res, next) => {
         try {
             const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
 
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             await chevre.service.transaction.registerService.cancel({
                 ...req.body,
                 ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }

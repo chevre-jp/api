@@ -17,12 +17,10 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const mongoose = require("mongoose");
-const authentication_1 = require("../../middlewares/authentication");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 const movieTheaterRouter = express_1.Router();
-movieTheaterRouter.use(authentication_1.default);
-movieTheaterRouter.post('', permitScopes_1.default(['admin']), ...[
+movieTheaterRouter.post('', permitScopes_1.default(['places.*']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -35,7 +33,7 @@ movieTheaterRouter.post('', permitScopes_1.default(['admin']), ...[
         .isEmpty()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const project = Object.assign(Object.assign({}, req.body.project), { typeOf: chevre.factory.organizationType.Project });
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
         let movieTheater = Object.assign(Object.assign({}, req.body), { typeOf: chevre.factory.placeType.MovieTheater, id: '', project: project });
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         movieTheater = yield placeRepo.saveMovieTheater(movieTheater);
@@ -46,10 +44,10 @@ movieTheaterRouter.post('', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-movieTheaterRouter.get('', permitScopes_1.default(['admin', 'places', 'places.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+movieTheaterRouter.get('', permitScopes_1.default(['places.*', 'places', 'places.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         const movieTheaters = yield placeRepo.searchMovieTheaters(searchConditions);
@@ -59,7 +57,7 @@ movieTheaterRouter.get('', permitScopes_1.default(['admin', 'places', 'places.re
         next(error);
     }
 }));
-movieTheaterRouter.get('/:id', permitScopes_1.default(['admin', 'places', 'places.read-only']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+movieTheaterRouter.get('/:id', permitScopes_1.default(['places.*', 'places', 'places.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const movieTheater = yield placeRepo.findById({ id: req.params.id });
@@ -70,7 +68,7 @@ movieTheaterRouter.get('/:id', permitScopes_1.default(['admin', 'places', 'place
     }
 }));
 // tslint:disable-next-line:use-default-type-parameter
-movieTheaterRouter.put('/:id', permitScopes_1.default(['admin']), ...[
+movieTheaterRouter.put('/:id', permitScopes_1.default(['places.*']), ...[
     express_validator_1.body('branchCode')
         .not()
         .isEmpty(),
@@ -89,7 +87,7 @@ movieTheaterRouter.put('/:id', permitScopes_1.default(['admin']), ...[
         next(error);
     }
 }));
-movieTheaterRouter.delete('/:id', permitScopes_1.default(['admin']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+movieTheaterRouter.delete('/:id', permitScopes_1.default(['places.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         yield placeRepo.placeModel.findOneAndDelete({

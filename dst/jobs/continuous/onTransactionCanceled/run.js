@@ -21,7 +21,7 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     const INTERVAL_MILLISECONDS = 200;
     const projectRepo = new chevre.repository.Project(connection);
     const taskRepo = new chevre.repository.Task(connection);
-    const transactionRepo = new chevre.repository.Transaction(connection);
+    const transactionRepo = new chevre.repository.AssetTransaction(connection);
     setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
         if (countExecute > MAX_NUBMER_OF_PARALLEL_TASKS) {
             return;
@@ -32,12 +32,12 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
                 status: chevre.factory.transactionStatusType.Canceled,
                 typeOf: {
                     $in: [
-                        chevre.factory.transactionType.CancelReservation,
-                        chevre.factory.transactionType.MoneyTransfer,
-                        chevre.factory.transactionType.Pay,
-                        chevre.factory.transactionType.Refund,
-                        chevre.factory.transactionType.RegisterService,
-                        chevre.factory.transactionType.Reserve
+                        chevre.factory.assetTransactionType.CancelReservation,
+                        chevre.factory.assetTransactionType.MoneyTransfer,
+                        chevre.factory.assetTransactionType.Pay,
+                        chevre.factory.assetTransactionType.Refund,
+                        chevre.factory.assetTransactionType.RegisterService,
+                        chevre.factory.assetTransactionType.Reserve
                     ]
                 }
             })({

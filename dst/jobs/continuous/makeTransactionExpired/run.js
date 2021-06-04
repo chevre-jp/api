@@ -13,13 +13,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 取引期限監視
  */
 const chevre = require("@chevre/domain");
+const moment = require("moment");
 const connectMongo_1 = require("../../../connectMongo");
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     const connection = yield connectMongo_1.connectMongo({ defaultConnection: false });
     let count = 0;
     const MAX_NUBMER_OF_PARALLEL_TASKS = 10;
     const INTERVAL_MILLISECONDS = 500;
-    const transactionRepo = new chevre.repository.Transaction(connection);
+    const transactionRepo = new chevre.repository.AssetTransaction(connection);
     setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
         if (count > MAX_NUBMER_OF_PARALLEL_TASKS) {
             return;
@@ -27,6 +28,18 @@ exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
         count += 1;
         try {
             yield transactionRepo.makeExpired();
+            // 過去の不要な取引を削除
+            yield transactionRepo.transactionModel.deleteMany({
+                startDate: {
+                    $lt: moment()
+                        // tslint:disable-next-line:no-magic-numbers
+                        .add(-7, 'days')
+                        .toDate()
+                },
+                status: { $in: [chevre.factory.transactionStatusType.Canceled, chevre.factory.transactionStatusType.Expired] },
+                tasksExportationStatus: chevre.factory.transactionTasksExportationStatus.Exported
+            })
+                .exec();
         }
         catch (error) {
             console.error(error);

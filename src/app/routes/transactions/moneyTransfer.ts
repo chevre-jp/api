@@ -17,7 +17,7 @@ import validator from '../../middlewares/validator';
 
 moneyTransferTransactionsRouter.post(
     '/start',
-    permitScopes(['admin']),
+    permitScopes(['assetTransactions.write']),
     ...[
         body('project')
             .not()
@@ -49,16 +49,17 @@ moneyTransferTransactionsRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const accountRepo = new chevre.repository.Account(mongoose.connection);
             const productRepo = new chevre.repository.Product(mongoose.connection);
             const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
 
-            const project: chevre.factory.project.IProject = { ...req.body.project, typeOf: chevre.factory.organizationType.Project };
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
             const transaction = await chevre.service.transaction.moneyTransfer.start({
-                typeOf: chevre.factory.transactionType.MoneyTransfer,
+                typeOf: chevre.factory.assetTransactionType.MoneyTransfer,
                 project: project,
                 agent: req.body.agent,
                 object: req.body.object,
@@ -68,6 +69,7 @@ moneyTransferTransactionsRouter.post(
                 ...(typeof req.body.identifier === 'string') ? { identifier: req.body.identifier } : undefined,
                 ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
+                account: accountRepo,
                 product: productRepo,
                 project: projectRepo,
                 serviceOutput: serviceOutputRepo,
@@ -87,7 +89,7 @@ moneyTransferTransactionsRouter.post(
  */
 moneyTransferTransactionsRouter.put(
     '/:transactionId/confirm',
-    permitScopes(['admin', 'transactions']),
+    permitScopes(['assetTransactions.write', 'transactions']),
     validator,
     async (req, res, next) => {
         try {
@@ -95,7 +97,7 @@ moneyTransferTransactionsRouter.put(
 
             const projectRepo = new chevre.repository.Project(mongoose.connection);
             const taskRepo = new chevre.repository.Task(mongoose.connection);
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
             await chevre.service.transaction.moneyTransfer.confirm({
                 ...req.body,
@@ -106,7 +108,7 @@ moneyTransferTransactionsRouter.put(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.transactionType.MoneyTransfer] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.MoneyTransfer] }
             })({
                 project: projectRepo,
                 task: taskRepo,
@@ -134,13 +136,13 @@ moneyTransferTransactionsRouter.put(
 
 moneyTransferTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['admin', 'transactions']),
+    permitScopes(['assetTransactions.write', 'transactions']),
     validator,
     async (req, res, next) => {
         try {
             const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
 
-            const transactionRepo = new chevre.repository.Transaction(mongoose.connection);
+            const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
             await chevre.service.transaction.moneyTransfer.cancel({
                 ...req.body,
                 ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
