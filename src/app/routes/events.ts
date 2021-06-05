@@ -305,6 +305,34 @@ eventsRouter.patch(
                 task: taskRepo
             });
 
+            // onUpdatedオプションを実装
+            const sendEmailMessage: chevre.factory.action.transfer.send.message.email.IAttributes[]
+                = req.body.onUpdated?.sendEmailMessage;
+            if (Array.isArray(sendEmailMessage) && sendEmailMessage.length > 0) {
+                const runsAt = new Date();
+                const taskAttributes: chevre.factory.task.IAttributes<chevre.factory.taskName.SendEmailMessage>[]
+                    = sendEmailMessage.map((s) => {
+                        return {
+                            project: { typeOf: req.project.typeOf, id: req.project.id },
+                            name: chevre.factory.taskName.SendEmailMessage,
+                            status: chevre.factory.taskStatus.Ready,
+                            runsAt: runsAt,
+                            remainingNumberOfTries: 3,
+                            numberOfTried: 0,
+                            executionResults: [],
+                            data: {
+                                actionAttributes: {
+                                    ...s,
+                                    agent: req.agent,
+                                    typeOf: chevre.factory.actionType.SendAction
+                                }
+                            }
+                        };
+                    });
+
+                await taskRepo.saveMany(taskAttributes);
+            }
+
             res.status(NO_CONTENT)
                 .end();
         } catch (error) {
