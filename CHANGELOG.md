@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- イベント部分更新後にメール送信タスクを設定できるように調整
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.60.0 - 2021-06-05
+
+### Changed
+
+- イベント部分更新後にメール送信タスクを設定できるように調整
 
 ## v7.59.1 - 2021-06-04
 
