@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- イベント部分更新の対象属性を限定的に調整
+
 ### Deprecated
 
 ### Removed

@@ -295,7 +295,14 @@ eventsRouter.patch(
 
             const event = await eventRepo.save<chevre.factory.eventType>({
                 id: req.params.id,
-                attributes: req.body,
+                // attributes: req.body,
+                attributes: <any>{
+                    typeOf: req.body.typeOf,
+                    // とりあえず限定された属性のみ更新を許可
+                    ...(typeof req.body.eventStatus === 'string' && req.body.eventStatus.length > 0)
+                        ? { eventStatus: req.body.eventStatus }
+                        : undefined
+                },
                 upsert: false
             });
 
