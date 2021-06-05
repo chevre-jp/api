@@ -243,6 +243,7 @@ eventsRouter.get('/:id', permitScopes_1.default(['events.*', 'events', 'events.r
 eventsRouter.patch('/:id', permitScopes_1.default(['events.*']), 
 // ...validations,
 validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
@@ -257,6 +258,26 @@ validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, funct
             project: projectRepo,
             task: taskRepo
         });
+        // onUpdatedオプションを実装
+        const sendEmailMessage = (_a = req.body.onUpdated) === null || _a === void 0 ? void 0 : _a.sendEmailMessage;
+        if (Array.isArray(sendEmailMessage) && sendEmailMessage.length > 0) {
+            const runsAt = new Date();
+            const taskAttributes = sendEmailMessage.map((s) => {
+                return {
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
+                    name: chevre.factory.taskName.SendEmailMessage,
+                    status: chevre.factory.taskStatus.Ready,
+                    runsAt: runsAt,
+                    remainingNumberOfTries: 3,
+                    numberOfTried: 0,
+                    executionResults: [],
+                    data: {
+                        actionAttributes: Object.assign(Object.assign({}, s), { agent: req.agent, typeOf: chevre.factory.actionType.SendAction })
+                    }
+                };
+            });
+            yield taskRepo.saveMany(taskAttributes);
+        }
         res.status(http_status_1.NO_CONTENT)
             .end();
     }
