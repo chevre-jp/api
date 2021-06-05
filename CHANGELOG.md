@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.60.1 - 2021-06-05
+
+### Changed
+
+- イベント部分更新の対象属性を限定的に調整
+
 ## v7.60.0 - 2021-06-05
 
 ### Changed

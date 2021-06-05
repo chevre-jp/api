@@ -250,7 +250,10 @@ validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const event = yield eventRepo.save({
             id: req.params.id,
-            attributes: req.body,
+            // attributes: req.body,
+            attributes: Object.assign({ typeOf: req.body.typeOf }, (typeof req.body.eventStatus === 'string' && req.body.eventStatus.length > 0)
+                ? { eventStatus: req.body.eventStatus }
+                : undefined),
             upsert: false
         });
         yield chevre.service.offer.onEventChanged(event)({
