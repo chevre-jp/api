@@ -136,7 +136,7 @@ payTransactionsRouter.post(
 // tslint:disable-next-line:use-default-type-parameter
 payTransactionsRouter.put<ParamsDictionary>(
     '/:transactionId/confirm',
-    permitScopes(['transactions']),
+    permitScopes([]),
     ...[
         body('endDate')
             .optional()
@@ -189,7 +189,7 @@ payTransactionsRouter.put<ParamsDictionary>(
 
 payTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['transactions']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {

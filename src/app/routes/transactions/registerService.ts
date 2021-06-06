@@ -89,7 +89,7 @@ registerServiceTransactionsRouter.post(
 // tslint:disable-next-line:use-default-type-parameter
 registerServiceTransactionsRouter.put<ParamsDictionary>(
     '/:transactionId/confirm',
-    permitScopes(['assetTransactions.write', 'transactions']),
+    permitScopes(['assetTransactions.write']),
     ...[
         body('endDate')
             .optional()
@@ -142,7 +142,7 @@ registerServiceTransactionsRouter.put<ParamsDictionary>(
 
 registerServiceTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['assetTransactions.write', 'transactions']),
+    permitScopes(['assetTransactions.write']),
     validator,
     async (req, res, next) => {
         try {

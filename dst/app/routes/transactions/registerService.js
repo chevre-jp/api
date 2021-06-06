@@ -75,7 +75,7 @@ registerServiceTransactionsRouter.post('/start', permitScopes_1.default(['assetT
  * 取引確定
  */
 // tslint:disable-next-line:use-default-type-parameter
-registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['assetTransactions.write', 'transactions']), ...[
+registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['assetTransactions.write']), ...[
     express_validator_1.body('endDate')
         .optional()
         .isISO8601()
@@ -115,7 +115,7 @@ registerServiceTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.
         next(error);
     }
 }));
-registerServiceTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+registerServiceTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['assetTransactions.write']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);

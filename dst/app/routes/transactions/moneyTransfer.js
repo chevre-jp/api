@@ -76,7 +76,7 @@ moneyTransferTransactionsRouter.post('/start', permitScopes_1.default(['assetTra
 /**
  * 取引確定
  */
-moneyTransferTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+moneyTransferTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['assetTransactions.write']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const projectRepo = new chevre.repository.Project(mongoose.connection);
@@ -111,7 +111,7 @@ moneyTransferTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.de
         next(error);
     }
 }));
-moneyTransferTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+moneyTransferTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['assetTransactions.write']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);

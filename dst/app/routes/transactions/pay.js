@@ -106,7 +106,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default([]), ...[
  * 取引確定
  */
 // tslint:disable-next-line:use-default-type-parameter
-payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['transactions']), ...[
+payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default([]), ...[
     express_validator_1.body('endDate')
         .optional()
         .isISO8601()
@@ -146,7 +146,7 @@ payTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['tr
         next(error);
     }
 }));
-payTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+payTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);

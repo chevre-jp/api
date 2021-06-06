@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 資産取引の権限から'transactions'を削除
+
 ### Deprecated
 
 ### Removed
