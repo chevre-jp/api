@@ -57,6 +57,7 @@ reserveTransactionsRouter.post(
             const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
             const productRepo = new chevre.repository.Product(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+            const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
 
             const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
@@ -79,6 +80,7 @@ reserveTransactionsRouter.post(
                 priceSpecification: priceSpecificationRepo,
                 product: productRepo,
                 reservation: reservationRepo,
+                serviceOutput: serviceOutputRepo,
                 task: taskRepo,
                 transaction: transactionRepo,
                 transactionNumber: transactionNumberRepo

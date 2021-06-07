@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - 資産取引の権限から'transactions'を削除
+- 予約取引に使用メンバーシップを指定できるように調整
 
 ### Deprecated
 
