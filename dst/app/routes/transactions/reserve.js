@@ -45,6 +45,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['assetTransacti
         .isEmpty()
         .withMessage('Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
@@ -61,7 +62,9 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['assetTransacti
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
         const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
-        const transaction = yield chevre.service.transaction.reserve.start(Object.assign({ project: project, typeOf: chevre.factory.assetTransactionType.Reserve, agent: req.body.agent, object: req.body.object, expires: moment(req.body.expires)
+        const transaction = yield chevre.service.transaction.reserve.start(Object.assign({ project: project, typeOf: chevre.factory.assetTransactionType.Reserve, agent: req.body.agent, object: Object.assign(Object.assign({}, req.body.object), (typeof ((_b = (_a = req.body.object) === null || _a === void 0 ? void 0 : _a.event) === null || _b === void 0 ? void 0 : _b.id) === 'string')
+                ? { reservationFor: { id: req.body.object.event.id } }
+                : undefined), expires: moment(req.body.expires)
                 .toDate() }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
             project: projectRepo,
             eventAvailability: eventAvailabilityRepo,

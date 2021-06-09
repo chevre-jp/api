@@ -65,7 +65,13 @@ reserveTransactionsRouter.post(
                 project: project,
                 typeOf: chevre.factory.assetTransactionType.Reserve,
                 agent: req.body.agent,
-                object: req.body.object,
+                object: {
+                    ...req.body.object,
+                    // 互換性維持対応として、event.idをreservationFor.idに置換
+                    ...(typeof req.body.object?.event?.id === 'string')
+                        ? { reservationFor: { id: <string>req.body.object.event.id } }
+                        : undefined
+                },
                 expires: moment(req.body.expires)
                     .toDate(),
                 ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
