@@ -56,6 +56,7 @@ projectDetailRouter.use('/accountTitles', accountTitlesRouter);
 projectDetailRouter.use('/accountTransactions', accountTransactionsRouter);
 projectDetailRouter.use('/actions', actionsRouter);
 projectDetailRouter.use('/aggregateSales', aggregateSalesRouter);
+projectDetailRouter.use('/assetTransactions', assetTransactionsRouter);
 projectDetailRouter.use('/authorizations', authorizationsRouter);
 projectDetailRouter.use('/categoryCodes', categoryCodesRouter);
 projectDetailRouter.use('/creativeWorks', creativeWorksRouter);

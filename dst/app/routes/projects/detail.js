@@ -52,6 +52,7 @@ projectDetailRouter.use('/accountTitles', accountTitles_1.default);
 projectDetailRouter.use('/accountTransactions', accountTransactions_1.default);
 projectDetailRouter.use('/actions', actions_1.default);
 projectDetailRouter.use('/aggregateSales', aggregateSales_1.default);
+projectDetailRouter.use('/assetTransactions', assetTransactions_1.default);
 projectDetailRouter.use('/authorizations', authorizations_1.default);
 projectDetailRouter.use('/categoryCodes', categoryCode_1.default);
 projectDetailRouter.use('/creativeWorks', creativeWorks_1.default);

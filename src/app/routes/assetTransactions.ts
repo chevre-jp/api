@@ -6,12 +6,12 @@ import { Router } from 'express';
 import { query } from 'express-validator';
 import * as mongoose from 'mongoose';
 
-import cancelReservationTransactionsRouter from './transactions/cancelReservation';
-import moneyTransferTransactionsRouter from './transactions/moneyTransfer';
-import payTransactionsRouter from './transactions/pay';
-import refundTransactionsRouter from './transactions/refund';
-import registerServiceTransactionsRouter from './transactions/registerService';
-import reserveTransactionsRouter from './transactions/reserve';
+import cancelReservationTransactionsRouter from './assetTransactions/cancelReservation';
+import moneyTransferTransactionsRouter from './assetTransactions/moneyTransfer';
+import payTransactionsRouter from './assetTransactions/pay';
+import refundTransactionsRouter from './assetTransactions/refund';
+import registerServiceTransactionsRouter from './assetTransactions/registerService';
+import reserveTransactionsRouter from './assetTransactions/reserve';
 
 import permitScopes from '../middlewares/permitScopes';
 import validator from '../middlewares/validator';
