@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 予約取引開始時に適用メンバーシップ区分検証処理を追加
 - 予約取引開始パラメータを最適化
 - 資産取引ルーティングを/assetTransactionsに変更
+- オファー検索条件拡張
 
 ### Deprecated
 
