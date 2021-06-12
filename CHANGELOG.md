@@ -10,13 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 資産取引の権限から'transactions'を削除
-- 予約取引に使用メンバーシップを指定できるように調整
-- 予約取引開始時に適用メンバーシップ区分検証処理を追加
-- 予約取引開始パラメータを最適化
-- 資産取引ルーティングを/assetTransactionsに変更
-- オファー検索条件拡張
-
 ### Deprecated
 
 ### Removed
@@ -24,6 +17,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.61.0 - 2021-06-12
+
+### Changed
+
+- 資産取引の権限から'transactions'を削除
+- 予約取引に使用メンバーシップを指定できるように調整
+- 予約取引開始時に適用メンバーシップ区分検証処理を追加
+- 予約取引開始パラメータを最適化
+- 資産取引ルーティングを/assetTransactionsに変更
+- オファー検索条件拡張
 
 ## v7.60.1 - 2021-06-05
 
