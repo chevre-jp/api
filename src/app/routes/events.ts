@@ -280,12 +280,17 @@ eventsRouter.get(
 );
 
 /**
- * イベント更新
+ * イベント部分更新
  */
-eventsRouter.patch(
+// tslint:disable-next-line:use-default-type-parameter
+eventsRouter.patch<ParamsDictionary>(
     '/:id',
     permitScopes(['events.*']),
-    // ...validations,
+    ...[
+        body('onUpdated.sendEmailMessage')
+            .optional()
+            .isArray({ max: 50 })
+    ],
     validator,
     async (req, res, next) => {
         try {

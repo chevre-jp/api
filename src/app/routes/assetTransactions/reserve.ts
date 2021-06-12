@@ -17,7 +17,7 @@ import validator from '../../middlewares/validator';
 
 reserveTransactionsRouter.post(
     '/start',
-    permitScopes(['assetTransactions.write', 'transactions']),
+    permitScopes(['assetTransactions.write']),
     ...[
         body('project')
             .not()
@@ -57,6 +57,7 @@ reserveTransactionsRouter.post(
             const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
             const productRepo = new chevre.repository.Product(mongoose.connection);
             const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+            const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
 
             const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
@@ -64,7 +65,13 @@ reserveTransactionsRouter.post(
                 project: project,
                 typeOf: chevre.factory.assetTransactionType.Reserve,
                 agent: req.body.agent,
-                object: req.body.object,
+                object: {
+                    ...req.body.object,
+                    // 互換性維持対応として、event.idをreservationFor.idに置換
+                    ...(typeof req.body.object?.event?.id === 'string')
+                        ? { reservationFor: { id: <string>req.body.object.event.id } }
+                        : undefined
+                },
                 expires: moment(req.body.expires)
                     .toDate(),
                 ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
@@ -79,6 +86,7 @@ reserveTransactionsRouter.post(
                 priceSpecification: priceSpecificationRepo,
                 product: productRepo,
                 reservation: reservationRepo,
+                serviceOutput: serviceOutputRepo,
                 task: taskRepo,
                 transaction: transactionRepo,
                 transactionNumber: transactionNumberRepo
@@ -102,7 +110,7 @@ reserveTransactionsRouter.post(
  */
 // reserveTransactionsRouter.post(
 //     '/:transactionId/reservations',
-//     permitScopes(['transactions']),
+//     permitScopes([]),
 //     validator,
 //     async (req, res, next) => {
 //         try {
@@ -156,7 +164,7 @@ reserveTransactionsRouter.post(
  */
 reserveTransactionsRouter.put(
     '/:transactionId/confirm',
-    permitScopes(['assetTransactions.write', 'transactions']),
+    permitScopes(['assetTransactions.write']),
     validator,
     async (req, res, next) => {
         try {
@@ -203,7 +211,7 @@ reserveTransactionsRouter.put(
 
 reserveTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['assetTransactions.write', 'transactions']),
+    permitScopes(['assetTransactions.write']),
     validator,
     async (req, res, next) => {
         try {

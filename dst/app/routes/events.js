@@ -238,11 +238,14 @@ eventsRouter.get('/:id', permitScopes_1.default(['events.*', 'events', 'events.r
     }
 }));
 /**
- * イベント更新
+ * イベント部分更新
  */
-eventsRouter.patch('/:id', permitScopes_1.default(['events.*']), 
-// ...validations,
-validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+// tslint:disable-next-line:use-default-type-parameter
+eventsRouter.patch('/:id', permitScopes_1.default(['events.*']), ...[
+    express_validator_1.body('onUpdated.sendEmailMessage')
+        .optional()
+        .isArray({ max: 50 })
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
         const eventRepo = new chevre.repository.Event(mongoose.connection);

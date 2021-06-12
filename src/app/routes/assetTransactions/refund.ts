@@ -90,7 +90,7 @@ refundTransactionsRouter.post(
 // tslint:disable-next-line:use-default-type-parameter
 refundTransactionsRouter.put<ParamsDictionary>(
     '/:transactionId/confirm',
-    permitScopes(['transactions']),
+    permitScopes([]),
     ...[
         body('endDate')
             .optional()
@@ -143,7 +143,7 @@ refundTransactionsRouter.put<ParamsDictionary>(
 
 refundTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['transactions']),
+    permitScopes([]),
     validator,
     async (req, res, next) => {
         try {

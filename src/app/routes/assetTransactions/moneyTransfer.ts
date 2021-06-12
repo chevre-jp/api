@@ -89,7 +89,7 @@ moneyTransferTransactionsRouter.post(
  */
 moneyTransferTransactionsRouter.put(
     '/:transactionId/confirm',
-    permitScopes(['assetTransactions.write', 'transactions']),
+    permitScopes(['assetTransactions.write']),
     validator,
     async (req, res, next) => {
         try {
@@ -136,7 +136,7 @@ moneyTransferTransactionsRouter.put(
 
 moneyTransferTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['assetTransactions.write', 'transactions']),
+    permitScopes(['assetTransactions.write']),
     validator,
     async (req, res, next) => {
         try {

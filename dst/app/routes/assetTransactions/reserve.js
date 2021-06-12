@@ -22,7 +22,7 @@ const reserveTransactionsRouter = express_1.Router();
 const redis = require("../../../redis");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
-reserveTransactionsRouter.post('/start', permitScopes_1.default(['assetTransactions.write', 'transactions']), ...[
+reserveTransactionsRouter.post('/start', permitScopes_1.default(['assetTransactions.write']), ...[
     express_validator_1.body('project')
         .not()
         .isEmpty()
@@ -45,6 +45,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['assetTransacti
         .isEmpty()
         .withMessage('Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
@@ -59,8 +60,11 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['assetTransacti
         const offerRateLimitRepo = new chevre.repository.rateLimit.Offer(redis.getClient());
         const productRepo = new chevre.repository.Product(mongoose.connection);
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
+        const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
-        const transaction = yield chevre.service.transaction.reserve.start(Object.assign({ project: project, typeOf: chevre.factory.assetTransactionType.Reserve, agent: req.body.agent, object: req.body.object, expires: moment(req.body.expires)
+        const transaction = yield chevre.service.transaction.reserve.start(Object.assign({ project: project, typeOf: chevre.factory.assetTransactionType.Reserve, agent: req.body.agent, object: Object.assign(Object.assign({}, req.body.object), (typeof ((_b = (_a = req.body.object) === null || _a === void 0 ? void 0 : _a.event) === null || _b === void 0 ? void 0 : _b.id) === 'string')
+                ? { reservationFor: { id: req.body.object.event.id } }
+                : undefined), expires: moment(req.body.expires)
                 .toDate() }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined))({
             project: projectRepo,
             eventAvailability: eventAvailabilityRepo,
@@ -72,6 +76,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['assetTransacti
             priceSpecification: priceSpecificationRepo,
             product: productRepo,
             reservation: reservationRepo,
+            serviceOutput: serviceOutputRepo,
             task: taskRepo,
             transaction: transactionRepo,
             transactionNumber: transactionNumberRepo
@@ -94,7 +99,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['assetTransacti
  */
 // reserveTransactionsRouter.post(
 //     '/:transactionId/reservations',
-//     permitScopes(['transactions']),
+//     permitScopes([]),
 //     validator,
 //     async (req, res, next) => {
 //         try {
@@ -143,7 +148,7 @@ reserveTransactionsRouter.post('/start', permitScopes_1.default(['assetTransacti
 /**
  * 取引確定
  */
-reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(['assetTransactions.write']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const projectRepo = new chevre.repository.Project(mongoose.connection);
@@ -178,7 +183,7 @@ reserveTransactionsRouter.put('/:transactionId/confirm', permitScopes_1.default(
         next(error);
     }
 }));
-reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['assetTransactions.write', 'transactions']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+reserveTransactionsRouter.put('/:transactionId/cancel', permitScopes_1.default(['assetTransactions.write']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
         const actionRepo = new chevre.repository.Action(mongoose.connection);

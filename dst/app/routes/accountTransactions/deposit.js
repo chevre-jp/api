@@ -32,9 +32,6 @@ depositTransactionsRouter.post('/start', permitScopes_1.default([]), ...[], vali
             auth: pecorinoAuthClient
         });
         const transaction = yield depositService.start(req.body);
-        // tslint:disable-next-line:no-string-literal
-        // const host = req.headers['host'];
-        // res.setHeader('Location', `https://${host}/transactions/${transaction.id}`);
         res.json(transaction);
     }
     catch (error) {

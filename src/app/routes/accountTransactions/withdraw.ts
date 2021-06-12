@@ -32,9 +32,6 @@ withdrawTransactionsRouter.post(
             });
             const transaction = await withdrawService.start(req.body);
 
-            // tslint:disable-next-line:no-string-literal
-            // const host = req.headers['host'];
-            // res.setHeader('Location', `https://${host}/transactions/${transaction.id}`);
             res.json(transaction);
         } catch (error) {
             next(chevre.errorHandler.handlePecorinoError(error));

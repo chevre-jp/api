@@ -1,61 +1,24 @@
 /**
- * 決済取引ルーター
+ * サービス登録取引ルーター
  */
 import * as chevre from '@chevre/domain';
 import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body } from 'express-validator';
-import { CREATED, NO_CONTENT } from 'http-status';
+import { NO_CONTENT } from 'http-status';
 import * as mongoose from 'mongoose';
 
-const payTransactionsRouter = Router();
+const registerServiceTransactionsRouter = Router();
 
 import * as redis from '../../../redis';
 
 import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
-/**
- * 決済認証(ムビチケ購入番号確認)
- */
-payTransactionsRouter.post(
-    '/check',
-    permitScopes([]),
-    validator,
-    async (req, res, next) => {
-        try {
-            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
-
-            const action = await chevre.service.transaction.pay.check({
-                project: project,
-                typeOf: chevre.factory.actionType.CheckAction,
-                agent: {
-                    ...req.body.agent
-                },
-                object: req.body.object,
-                recipient: {
-                    ...req.body.recipient
-                }
-            })({
-                action: new chevre.repository.Action(mongoose.connection),
-                event: new chevre.repository.Event(mongoose.connection),
-                product: new chevre.repository.Product(mongoose.connection),
-                project: new chevre.repository.Project(mongoose.connection),
-                seller: new chevre.repository.Seller(mongoose.connection)
-            });
-
-            res.status(CREATED)
-                .json(action);
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
-payTransactionsRouter.post(
+registerServiceTransactionsRouter.post(
     '/start',
-    permitScopes([]),
+    permitScopes(['assetTransactions.write']),
     ...[
         body('project')
             .not()
@@ -67,11 +30,6 @@ payTransactionsRouter.post(
             .withMessage('Required')
             .isISO8601()
             .toDate(),
-        body('transactionNumber')
-            .not()
-            .isEmpty()
-            .withMessage('Required')
-            .isString(),
         body('agent')
             .not()
             .isEmpty()
@@ -89,38 +47,33 @@ payTransactionsRouter.post(
     async (req, res, next) => {
         try {
             const accountRepo = new chevre.repository.Account(mongoose.connection);
-            const actionRepo = new chevre.repository.Action(mongoose.connection);
-            const eventRepo = new chevre.repository.Event(mongoose.connection);
+            const offerRepo = new chevre.repository.Offer(mongoose.connection);
+            const offerCatalogRepo = new chevre.repository.OfferCatalog(mongoose.connection);
             const productRepo = new chevre.repository.Product(mongoose.connection);
+            const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
             const projectRepo = new chevre.repository.Project(mongoose.connection);
-            const sellerRepo = new chevre.repository.Seller(mongoose.connection);
-            const taskRepo = new chevre.repository.Task(mongoose.connection);
             const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
             const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
 
-            const transaction = await chevre.service.transaction.pay.start({
+            const transaction = await chevre.service.transaction.registerService.start({
                 project: project,
-                typeOf: chevre.factory.assetTransactionType.Pay,
+                typeOf: chevre.factory.assetTransactionType.RegisterService,
                 agent: {
                     ...req.body.agent
+                    // id: (req.body.agent.id !== undefined) ? req.body.agent.id : req.user.sub,
                 },
                 object: req.body.object,
-                recipient: {
-                    ...req.body.recipient
-                },
                 expires: req.body.expires,
-                ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined,
-                ...(req.body.purpose !== undefined && req.body.purpose !== null) ? { purpose: req.body.purpose } : undefined
+                ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined
             })({
                 account: accountRepo,
-                action: actionRepo,
-                event: eventRepo,
+                offer: offerRepo,
+                offerCatalog: offerCatalogRepo,
                 product: productRepo,
+                serviceOutput: serviceOutputRepo,
                 project: projectRepo,
-                seller: sellerRepo,
-                transaction: transactionRepo,
-                task: taskRepo
+                transaction: transactionRepo
             });
 
             res.json(transaction);
@@ -134,9 +87,9 @@ payTransactionsRouter.post(
  * 取引確定
  */
 // tslint:disable-next-line:use-default-type-parameter
-payTransactionsRouter.put<ParamsDictionary>(
+registerServiceTransactionsRouter.put<ParamsDictionary>(
     '/:transactionId/confirm',
-    permitScopes(['transactions']),
+    permitScopes(['assetTransactions.write']),
     ...[
         body('endDate')
             .optional()
@@ -152,7 +105,7 @@ payTransactionsRouter.put<ParamsDictionary>(
             const taskRepo = new chevre.repository.Task(mongoose.connection);
             const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
 
-            await chevre.service.transaction.pay.confirm({
+            await chevre.service.transaction.registerService.confirm({
                 ...req.body,
                 ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({ transaction: transactionRepo });
@@ -161,7 +114,7 @@ payTransactionsRouter.put<ParamsDictionary>(
             // tslint:disable-next-line:no-floating-promises
             chevre.service.transaction.exportTasks({
                 status: chevre.factory.transactionStatusType.Confirmed,
-                typeOf: { $in: [chevre.factory.assetTransactionType.Pay] }
+                typeOf: { $in: [chevre.factory.assetTransactionType.RegisterService] }
             })({
                 project: projectRepo,
                 task: taskRepo,
@@ -187,16 +140,16 @@ payTransactionsRouter.put<ParamsDictionary>(
     }
 );
 
-payTransactionsRouter.put(
+registerServiceTransactionsRouter.put(
     '/:transactionId/cancel',
-    permitScopes(['transactions']),
+    permitScopes(['assetTransactions.write']),
     validator,
     async (req, res, next) => {
         try {
             const transactionNumberSpecified = String(req.query.transactionNumber) === '1';
 
             const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
-            await chevre.service.transaction.pay.cancel({
+            await chevre.service.transaction.registerService.cancel({
                 ...req.body,
                 ...(transactionNumberSpecified) ? { transactionNumber: req.params.transactionId } : { id: req.params.transactionId }
             })({
@@ -211,4 +164,4 @@ payTransactionsRouter.put(
     }
 );
 
-export default payTransactionsRouter;
+export default registerServiceTransactionsRouter;

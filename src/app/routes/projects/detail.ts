@@ -56,6 +56,7 @@ projectDetailRouter.use('/accountTitles', accountTitlesRouter);
 projectDetailRouter.use('/accountTransactions', accountTransactionsRouter);
 projectDetailRouter.use('/actions', actionsRouter);
 projectDetailRouter.use('/aggregateSales', aggregateSalesRouter);
+projectDetailRouter.use('/assetTransactions', assetTransactionsRouter);
 projectDetailRouter.use('/authorizations', authorizationsRouter);
 projectDetailRouter.use('/categoryCodes', categoryCodesRouter);
 projectDetailRouter.use('/creativeWorks', creativeWorksRouter);
@@ -74,7 +75,6 @@ projectDetailRouter.use('/sellers', sellersRouter);
 projectDetailRouter.use('/serviceOutputs', serviceOutputsRouter);
 projectDetailRouter.use('/stats', statsRouter);
 projectDetailRouter.use('/tasks', tasksRouter);
-projectDetailRouter.use('/transactions', assetTransactionsRouter);
 projectDetailRouter.use('/transactionNumbers', transactionNumbersRouter);
 projectDetailRouter.use('/userPools', userPoolsRouter);
 
