@@ -32,9 +32,6 @@ withdrawTransactionsRouter.post('/start', permitScopes_1.default([]), ...[], val
             auth: pecorinoAuthClient
         });
         const transaction = yield withdrawService.start(req.body);
-        // tslint:disable-next-line:no-string-literal
-        // const host = req.headers['host'];
-        // res.setHeader('Location', `https://${host}/transactions/${transaction.id}`);
         res.json(transaction);
     }
     catch (error) {

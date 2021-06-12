@@ -75,7 +75,6 @@ projectDetailRouter.use('/sellers', sellersRouter);
 projectDetailRouter.use('/serviceOutputs', serviceOutputsRouter);
 projectDetailRouter.use('/stats', statsRouter);
 projectDetailRouter.use('/tasks', tasksRouter);
-projectDetailRouter.use('/transactions', assetTransactionsRouter);
 projectDetailRouter.use('/transactionNumbers', transactionNumbersRouter);
 projectDetailRouter.use('/userPools', userPoolsRouter);
 

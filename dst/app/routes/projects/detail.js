@@ -71,7 +71,6 @@ projectDetailRouter.use('/sellers', sellers_1.default);
 projectDetailRouter.use('/serviceOutputs', serviceOutputs_1.default);
 projectDetailRouter.use('/stats', stats_1.default);
 projectDetailRouter.use('/tasks', tasks_1.default);
-projectDetailRouter.use('/transactions', assetTransactions_1.default);
 projectDetailRouter.use('/transactionNumbers', transactionNumbers_1.default);
 projectDetailRouter.use('/userPools', userPools_1.default);
 exports.default = projectDetailRouter;
