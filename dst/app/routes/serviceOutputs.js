@@ -34,31 +34,13 @@ serviceOutputsRouter.get('', permitScopes_1.default(['serviceOutputs', 'serviceO
         .optional()
         .isInt()
         .toInt()
-    // query('bookingFrom')
-    //     .optional()
-    //     .isISO8601()
-    //     .toDate(),
-    // query('bookingThrough')
-    //     .optional()
-    //     .isISO8601()
-    //     .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f;
     try {
         const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
-        // const searchConditions: chevre.factory.reservation.ISearchConditions<any> = {
-        //     ...req.query,
-        //     // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
-        //     limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
-        //     page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1,
-        //     sort: { bookingTime: chevre.factory.sortType.Descending }
-        // };
-        const serviceOutputs = yield serviceOutputRepo.serviceOutputModel.find(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ 'project.id': { $exists: true, $eq: req.project.id } }, (req.query.typeOf !== undefined) ? { typeOf: req.query.typeOf } : undefined), (req.query.identifier !== undefined) ? { identifier: req.query.identifier } : undefined), (req.query.accessCode !== undefined) ? { accessCode: req.query.accessCode } : undefined), (((_a = req.query.issuedBy) === null || _a === void 0 ? void 0 : _a.id) !== undefined) ? { 'issuedBy.id': (_b = req.query.issuedBy) === null || _b === void 0 ? void 0 : _b.id } : undefined), (((_c = req.query.issuedThrough) === null || _c === void 0 ? void 0 : _c.id) !== undefined) ? { 'issuedThrough.id': (_d = req.query.issuedThrough) === null || _d === void 0 ? void 0 : _d.id } : undefined), (((_e = req.query.issuedThrough) === null || _e === void 0 ? void 0 : _e.typeOf) !== undefined) ? { 'issuedThrough.typeOf': (_f = req.query.issuedThrough) === null || _f === void 0 ? void 0 : _f.typeOf } : undefined))
-            .limit(req.query.limit)
-            .skip(req.query.limit * (req.query.page - 1))
-            .select({ __v: 0, createdAt: 0, updatedAt: 0 })
-            .exec()
-            .then((docs) => docs.map((doc) => doc.toObject()));
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
+            // tslint:disable-next-line:no-magic-numbers
+            limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
+        const serviceOutputs = yield serviceOutputRepo.search(searchConditions);
         res.json(serviceOutputs);
     }
     catch (error) {
