@@ -298,4 +298,25 @@ ordersRouter.put<ParamsDictionary>(
     }
 );
 
+/**
+ * 注文に対するアクション検索
+ */
+ordersRouter.get(
+    '/:orderNumber/actions',
+    permitScopes(['orders.read']),
+    validator,
+    async (req, res, next) => {
+        try {
+            const actionRepo = new chevre.repository.Action(mongoose.connection);
+            const actions = await actionRepo.searchByOrderNumber({
+                orderNumber: req.params.orderNumber,
+                sort: req.query.sort
+            });
+            res.json(actions);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 export default ordersRouter;
