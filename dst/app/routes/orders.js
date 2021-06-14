@@ -237,4 +237,20 @@ ordersRouter.put(`/:orderNumber/${chevre.factory.orderStatus.OrderReturned}`, pe
         next(error);
     }
 }));
+/**
+ * 注文に対するアクション検索
+ */
+ordersRouter.get('/:orderNumber/actions', permitScopes_1.default(['orders.read']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const actionRepo = new chevre.repository.Action(mongoose.connection);
+        const actions = yield actionRepo.searchByOrderNumber({
+            orderNumber: req.params.orderNumber,
+            sort: req.query.sort
+        });
+        res.json(actions);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 exports.default = ordersRouter;
