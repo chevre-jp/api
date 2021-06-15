@@ -24,10 +24,25 @@ const productsRouter = express_1.Router();
  * プロダクト作成
  */
 productsRouter.post('', permitScopes_1.default(['products.*']), ...[
-    express_validator_1.body('project')
-        .not()
-        .isEmpty()
-        .withMessage(() => 'Required')
+    express_validator_1.body('offers')
+        .optional()
+        .isArray(),
+    express_validator_1.body('offers.*.validFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.*.validThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.*.availabilityStarts')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.*.availabilityEnds')
+        .optional()
+        .isISO8601()
+        .toDate()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const productRepo = new chevre.repository.Product(mongoose.connection);
@@ -138,7 +153,28 @@ productsRouter.get('/:id/offers', permitScopes_1.default(['products.*', 'product
 /**
  * プロダクト更新
  */
-productsRouter.put('/:id', permitScopes_1.default(['products.*']), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+// tslint:disable-next-line:use-default-type-parameter
+productsRouter.put('/:id', permitScopes_1.default(['products.*']), ...[
+    express_validator_1.body('offers')
+        .optional()
+        .isArray(),
+    express_validator_1.body('offers.*.validFrom')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.*.validThrough')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.*.availabilityStarts')
+        .optional()
+        .isISO8601()
+        .toDate(),
+    express_validator_1.body('offers.*.availabilityEnds')
+        .optional()
+        .isISO8601()
+        .toDate()
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const project = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
         const product = Object.assign(Object.assign({}, req.body), { project: project });
