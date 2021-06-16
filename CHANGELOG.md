@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 単価オファーの提供アイテムを最適化
 - サービスアウトプット検索にprojectionを指定できるように調整
 - サービスアウトプット検索結果からaccessCodeを隠蔽
+- 資産取引番号からプロジェクトプレフィックスを除外
 
 ### Deprecated
 

@@ -28,11 +28,11 @@ transactionNumbersRouter.post('', permitScopes_1.default(['transactionNumbers.wr
         .not()
         .isEmpty()
         .withMessage(() => 'Required')
-], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+], validator_1.default, (__, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
         const transactionNumber = yield transactionNumberRepo.publishByTimestamp({
-            project: { id: req.project.id },
+            // project: { id: req.project.id },
             startDate: new Date()
         });
         res.status(http_status_1.CREATED)
