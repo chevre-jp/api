@@ -21,10 +21,25 @@ productsRouter.post(
     '',
     permitScopes(['products.*']),
     ...[
-        body('project')
-            .not()
-            .isEmpty()
-            .withMessage(() => 'Required')
+        body('offers')
+            .optional()
+            .isArray(),
+        body('offers.*.validFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.*.validThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.*.availabilityStarts')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.*.availabilityEnds')
+            .optional()
+            .isISO8601()
+            .toDate()
     ],
     validator,
     async (req, res, next) => {
@@ -179,15 +194,37 @@ productsRouter.get(
 /**
  * プロダクト更新
  */
-productsRouter.put(
+// tslint:disable-next-line:use-default-type-parameter
+productsRouter.put<ParamsDictionary>(
     '/:id',
     permitScopes(['products.*']),
+    ...[
+        body('offers')
+            .optional()
+            .isArray(),
+        body('offers.*.validFrom')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.*.validThrough')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.*.availabilityStarts')
+            .optional()
+            .isISO8601()
+            .toDate(),
+        body('offers.*.availabilityEnds')
+            .optional()
+            .isISO8601()
+            .toDate()
+    ],
     validator,
     async (req, res, next) => {
         try {
             const project: chevre.factory.project.IProject = { id: req.body.project.id, typeOf: chevre.factory.organizationType.Project };
 
-            const product: any = {
+            const product: chevre.factory.product.IProduct = {
                 ...req.body,
                 project: project
             };

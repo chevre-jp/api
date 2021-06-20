@@ -43,7 +43,8 @@ serviceOutputsRouter.get(
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
             };
-            const serviceOutputs = await serviceOutputRepo.search(searchConditions);
+            const projection: any = { accessCode: 0 };
+            const serviceOutputs = await serviceOutputRepo.search(searchConditions, projection);
 
             res.json(serviceOutputs);
         } catch (error) {

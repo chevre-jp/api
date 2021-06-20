@@ -40,7 +40,8 @@ serviceOutputsRouter.get('', permitScopes_1.default(['serviceOutputs', 'serviceO
         const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
-        const serviceOutputs = yield serviceOutputRepo.search(searchConditions);
+        const projection = { accessCode: 0 };
+        const serviceOutputs = yield serviceOutputRepo.search(searchConditions, projection);
         res.json(serviceOutputs);
     }
     catch (error) {

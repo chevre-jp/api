@@ -26,12 +26,12 @@ transactionNumbersRouter.post(
             .withMessage(() => 'Required')
     ],
     validator,
-    async (req, res, next) => {
+    async (__, res, next) => {
         try {
             const transactionNumberRepo = new chevre.repository.TransactionNumber(redis.getClient());
 
             const transactionNumber = await transactionNumberRepo.publishByTimestamp({
-                project: { id: req.project.id },
+                // project: { id: req.project.id },
                 startDate: new Date()
             });
 

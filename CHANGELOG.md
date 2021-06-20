@@ -18,6 +18,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v7.65.0 - 2021-06-20
+
+### Changed
+
+- 単価オファーの提供アイテムを最適化
+- サービスアウトプット検索にprojectionを指定できるように調整
+- サービスアウトプット検索結果からaccessCodeを隠蔽
+- 資産取引番号からプロジェクトプレフィックスを除外
+
 ## v7.64.0 - 2021-06-14
 
 ### Added
