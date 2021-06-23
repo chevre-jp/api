@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 顧客コードをidentifier->branchCodeと変更
+
 ### Deprecated
 
 ### Removed
