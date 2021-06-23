@@ -70,7 +70,7 @@ accountTitlesRouter.get(
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
             const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -82,15 +82,13 @@ accountTitlesRouter.get(
             const conditions: any[] = [
                 { typeOf: 'AccountTitle' }
             ];
-            if (searchConditions.project !== undefined) {
-                if (Array.isArray(searchConditions.project.ids)) {
-                    conditions.push({
-                        'project.id': {
-                            $exists: true,
-                            $in: searchConditions.project.ids
-                        }
-                    });
-                }
+            if (typeof searchConditions.project?.id?.$eq === 'string') {
+                conditions.push({
+                    'project.id': {
+                        $exists: true,
+                        $eq: searchConditions.project.id.$eq
+                    }
+                });
             }
 
             if (typeof searchConditions.codeValue === 'string') {
@@ -357,7 +355,7 @@ accountTitlesRouter.get(
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
             const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -367,17 +365,15 @@ accountTitlesRouter.get(
             // res.json(accountTitles);
 
             const matchStages: any[] = [];
-            if (searchConditions.project !== undefined) {
-                if (Array.isArray(searchConditions.project.ids)) {
-                    matchStages.push({
-                        $match: {
-                            'project.id': {
-                                $exists: true,
-                                $in: searchConditions.project.ids
-                            }
+            if (typeof searchConditions.project?.id?.$eq === 'string') {
+                matchStages.push({
+                    $match: {
+                        'project.id': {
+                            $exists: true,
+                            $eq: searchConditions.project.id.$eq
                         }
-                    });
-                }
+                    }
+                });
             }
 
             if (typeof searchConditions.codeValue === 'string') {
@@ -722,7 +718,7 @@ accountTitlesRouter.get(
             const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
             const searchConditions: chevre.factory.accountTitle.ISearchConditions = {
                 ...req.query,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1
@@ -732,17 +728,15 @@ accountTitlesRouter.get(
             // res.json(accountTitles);
 
             const matchStages: any[] = [];
-            if (searchConditions.project !== undefined) {
-                if (Array.isArray(searchConditions.project.ids)) {
-                    matchStages.push({
-                        $match: {
-                            'project.id': {
-                                $exists: true,
-                                $in: searchConditions.project.ids
-                            }
+            if (typeof searchConditions.project?.id?.$eq === 'string') {
+                matchStages.push({
+                    $match: {
+                        'project.id': {
+                            $exists: true,
+                            $eq: searchConditions.project.id.$eq
                         }
-                    });
-                }
+                    }
+                });
             }
 
             const nameRegex = searchConditions.name;

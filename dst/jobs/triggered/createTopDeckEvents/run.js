@@ -77,7 +77,7 @@ function main(connection, project) {
         const taskRepo = new chevre.repository.Task(connection);
         // 劇場検索
         const movieTheaters = yield placeRepo.searchMovieTheaters({
-            project: { ids: [project.id] }
+            project: { id: { $eq: project.id } }
         });
         const movieTheaterWithoutScreeningRoom = movieTheaters.find((d) => d.branchCode === setting.theater);
         if (movieTheaterWithoutScreeningRoom === undefined) {
@@ -90,7 +90,7 @@ function main(connection, project) {
         // 劇場作品検索
         const workPerformedIdentifier = setting.film;
         const searchScreeningEventSeriesResult = yield eventRepo.search({
-            project: { ids: [project.id] },
+            project: { id: { $eq: project.id } },
             typeOf: chevre.factory.eventType.ScreeningEventSeries,
             workPerformed: { identifiers: [workPerformedIdentifier] }
         });

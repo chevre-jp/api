@@ -41,7 +41,7 @@ exports.default = (params) => __awaiter(void 0, void 0, void 0, function* () {
             const taskRepo = new chevre.repository.Task(connection);
             const placeRepo = new chevre.repository.Place(connection);
             const movieTheaters = yield placeRepo.searchMovieTheaters({
-                project: { ids: [params.project.id] }
+                project: { id: { $eq: params.project.id } }
             });
             const now = new Date();
             const runsAt = now;

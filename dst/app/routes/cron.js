@@ -40,7 +40,7 @@ cronRouter.get('/importOffersFromCOA', (_, res, next) => __awaiter(void 0, void 
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         for (const projectId of importEventsProjects) {
             const movieTheaters = yield placeRepo.searchMovieTheaters({
-                project: { ids: [projectId] }
+                project: { id: { $eq: projectId } }
             });
             for (const movieTheater of movieTheaters) {
                 try {
