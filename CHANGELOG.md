@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 顧客コードをidentifier->branchCodeと変更
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.66.1 - 2021-06-23
+
+### Changed
+
+- 顧客コードをidentifier->branchCodeと変更
 
 ## v7.66.0 - 2021-06-21
 
