@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - 顧客コレクションインデックス調整
+- GMOリクエストにタイムアウトを設定
 
 ### Deprecated
 
