@@ -10,10 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 顧客コレクションインデックス調整
-- GMOリクエストにタイムアウトを設定
-- 全リソースのプロジェクトID検索条件を統一
-
 ### Deprecated
 
 ### Removed
@@ -21,6 +17,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v7.67.0 - 2021-06-24
+
+### Changed
+
+- 顧客コレクションインデックス調整
+- GMOリクエストにタイムアウトを設定
+- 全リソースのプロジェクトID検索条件を統一
 
 ## v7.66.1 - 2021-06-23
 
