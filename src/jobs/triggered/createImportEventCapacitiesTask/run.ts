@@ -50,7 +50,7 @@ export default async (params: {
                 const placeRepo = new chevre.repository.Place(connection);
 
                 const movieTheaters = await placeRepo.searchMovieTheaters({
-                    project: { ids: [params.project.id] }
+                    project: { id: { $eq: params.project.id } }
                 });
                 const now = new Date();
                 const runsAt = now;

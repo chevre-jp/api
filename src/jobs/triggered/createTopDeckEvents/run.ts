@@ -87,7 +87,7 @@ export async function main(
 
     // 劇場検索
     const movieTheaters = await placeRepo.searchMovieTheaters({
-        project: { ids: [project.id] }
+        project: { id: { $eq: project.id } }
     });
     const movieTheaterWithoutScreeningRoom = movieTheaters.find((d) => d.branchCode === setting.theater);
     if (movieTheaterWithoutScreeningRoom === undefined) {
@@ -103,7 +103,7 @@ export async function main(
     // 劇場作品検索
     const workPerformedIdentifier = setting.film;
     const searchScreeningEventSeriesResult = await eventRepo.search<chevre.factory.eventType.ScreeningEventSeries>({
-        project: { ids: [project.id] },
+        project: { id: { $eq: project.id } },
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
         workPerformed: { identifiers: [workPerformedIdentifier] }
     });

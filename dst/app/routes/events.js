@@ -197,7 +197,7 @@ eventsRouter.get('', permitScopes_1.default(['events.*', 'events', 'events.read'
     try {
         const countDocuments = req.query.countDocuments === '1';
         const eventRepo = new chevre.repository.Event(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         // projectionの指定があれば適用する

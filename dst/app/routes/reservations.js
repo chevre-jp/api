@@ -81,7 +81,7 @@ reservationsRouter.get('', permitScopes_1.default(['reservations.read', 'reserva
     try {
         const countDocuments = req.query.countDocuments === '1';
         const reservationRepo = new chevre.repository.Reservation(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1, sort: (typeof req.query.sort === 'object' && req.query.sort !== undefined && req.query.sort !== null)
                 ? req.query.sort

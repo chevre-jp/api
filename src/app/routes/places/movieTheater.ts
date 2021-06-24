@@ -61,7 +61,7 @@ movieTheaterRouter.get(
             const placeRepo = new chevre.repository.Place(mongoose.connection);
             const searchConditions: chevre.factory.place.movieTheater.ISearchConditions = {
                 ...req.query,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
                 limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100,
                 page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1

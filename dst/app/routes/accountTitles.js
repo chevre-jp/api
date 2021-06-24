@@ -57,9 +57,10 @@ accountTitlesRouter.post('/accountTitleCategory', permitScopes_1.default(['accou
 accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         // const accountTitles = await accountTitleRepo.search(searchConditions);
@@ -67,15 +68,13 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['accoun
         const conditions = [
             { typeOf: 'AccountTitle' }
         ];
-        if (searchConditions.project !== undefined) {
-            if (Array.isArray(searchConditions.project.ids)) {
-                conditions.push({
-                    'project.id': {
-                        $exists: true,
-                        $in: searchConditions.project.ids
-                    }
-                });
-            }
+        if (typeof ((_b = (_a = searchConditions.project) === null || _a === void 0 ? void 0 : _a.id) === null || _b === void 0 ? void 0 : _b.$eq) === 'string') {
+            conditions.push({
+                'project.id': {
+                    $exists: true,
+                    $eq: searchConditions.project.id.$eq
+                }
+            });
         }
         if (typeof searchConditions.codeValue === 'string') {
             conditions.push({
@@ -279,25 +278,24 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['accountTit
 accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _c, _d;
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         // const accountTitles = await accountTitleRepo.search(searchConditions);
         // res.json(accountTitles);
         const matchStages = [];
-        if (searchConditions.project !== undefined) {
-            if (Array.isArray(searchConditions.project.ids)) {
-                matchStages.push({
-                    $match: {
-                        'project.id': {
-                            $exists: true,
-                            $in: searchConditions.project.ids
-                        }
+        if (typeof ((_d = (_c = searchConditions.project) === null || _c === void 0 ? void 0 : _c.id) === null || _d === void 0 ? void 0 : _d.$eq) === 'string') {
+            matchStages.push({
+                $match: {
+                    'project.id': {
+                        $exists: true,
+                        $eq: searchConditions.project.id.$eq
                     }
-                });
-            }
+                }
+            });
         }
         if (typeof searchConditions.codeValue === 'string') {
             matchStages.push({
@@ -575,25 +573,24 @@ accountTitlesRouter.post('', permitScopes_1.default(['accountTitles.*']), ...[
 accountTitlesRouter.get('', permitScopes_1.default(['accountTitles.*', 'accountTitles', 'accountTitles.read-only']), validator_1.default, 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _e, _f;
     try {
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
-        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { ids: [req.project.id] }, 
+        const searchConditions = Object.assign(Object.assign({}, req.query), { project: { id: { $eq: req.project.id } }, 
             // tslint:disable-next-line:no-magic-numbers no-single-line-block-comment
             limit: (req.query.limit !== undefined) ? Math.min(req.query.limit, 100) : 100, page: (req.query.page !== undefined) ? Math.max(req.query.page, 1) : 1 });
         // const accountTitles = await accountTitleRepo.search(searchConditions);
         // res.json(accountTitles);
         const matchStages = [];
-        if (searchConditions.project !== undefined) {
-            if (Array.isArray(searchConditions.project.ids)) {
-                matchStages.push({
-                    $match: {
-                        'project.id': {
-                            $exists: true,
-                            $in: searchConditions.project.ids
-                        }
+        if (typeof ((_f = (_e = searchConditions.project) === null || _e === void 0 ? void 0 : _e.id) === null || _f === void 0 ? void 0 : _f.$eq) === 'string') {
+            matchStages.push({
+                $match: {
+                    'project.id': {
+                        $exists: true,
+                        $eq: searchConditions.project.id.$eq
                     }
-                });
-            }
+                }
+            });
         }
         const nameRegex = searchConditions.name;
         if (typeof nameRegex === 'string') {
@@ -742,11 +739,11 @@ accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['accountTitles.*'
         .isEmpty()
         .withMessage(() => 'Required')
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _g;
     try {
         const accountTitle = Object.assign(Object.assign({}, req.body), { codeValue: req.params.codeValue });
         const accountTitleSet = accountTitle.inCodeSet;
-        const accountTitleCategory = (_a = accountTitle.inCodeSet) === null || _a === void 0 ? void 0 : _a.inCodeSet;
+        const accountTitleCategory = (_g = accountTitle.inCodeSet) === null || _g === void 0 ? void 0 : _g.inCodeSet;
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         const doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
@@ -800,11 +797,11 @@ accountTitlesRouter.delete('/:codeValue', permitScopes_1.default(['accountTitles
         .withMessage(() => 'required')
         .isString()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+    var _h;
     try {
         const accountTitle = Object.assign(Object.assign({}, req.body), { codeValue: req.params.codeValue });
         const accountTitleSet = accountTitle.inCodeSet;
-        const accountTitleCategory = (_b = accountTitle.inCodeSet) === null || _b === void 0 ? void 0 : _b.inCodeSet;
+        const accountTitleCategory = (_h = accountTitle.inCodeSet) === null || _h === void 0 ? void 0 : _h.inCodeSet;
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         const doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {

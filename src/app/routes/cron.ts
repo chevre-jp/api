@@ -41,7 +41,7 @@ cronRouter.get(
 
             for (const projectId of importEventsProjects) {
                 const movieTheaters = await placeRepo.searchMovieTheaters({
-                    project: { ids: [projectId] }
+                    project: { id: { $eq: projectId } }
                 });
 
                 for (const movieTheater of movieTheaters) {
