@@ -63,7 +63,7 @@ screeningRoomRouter.post(
             let doc = await placeRepo.placeModel.findOne(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: screeningRoom.project.id
                     },
                     branchCode: (<chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace).branchCode
@@ -77,7 +77,7 @@ screeningRoomRouter.post(
             doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: screeningRoom.project.id
                     },
                     branchCode: (<chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace).branchCode,
@@ -144,7 +144,7 @@ screeningRoomRouter.get(
                         matchStages.push({
                             $match: {
                                 'project.id': {
-                                    $exists: true,
+                                    // $exists: true,
                                     $eq: searchConditions.project.id.$eq
                                 }
                             }
@@ -355,7 +355,7 @@ screeningRoomRouter.put<ParamsDictionary>(
             const doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: screeningRoom.project.id
                     },
                     branchCode: (<chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace).branchCode,
@@ -425,7 +425,7 @@ screeningRoomRouter.delete<ParamsDictionary>(
             const doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: screeningRoom.project.id
                     },
                     branchCode: (<chevre.factory.place.movieTheater.IPlace>screeningRoom.containedInPlace).branchCode,

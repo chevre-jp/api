@@ -201,7 +201,7 @@ ownershipInfosRouter.put(
                 await ownershipInfoRepo.ownershipInfoModel.findOneAndUpdate(
                     {
                         'project.id': {
-                            $exists: true,
+                            // $exists: true,
                             $eq: req.project.id
                         },
                         identifier: req.body.identifier

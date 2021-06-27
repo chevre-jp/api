@@ -69,7 +69,7 @@ seatRouter.post('', permitScopes_1.default(['places.*']), ...[
         // 劇場の存在確認
         let doc = yield placeRepo.placeModel.findOne({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: seat.project.id
             },
             branchCode: movieTheater.branchCode,
@@ -82,7 +82,7 @@ seatRouter.post('', permitScopes_1.default(['places.*']), ...[
         }
         doc = yield placeRepo.placeModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: seat.project.id
             },
             branchCode: movieTheater.branchCode,
@@ -179,7 +179,7 @@ seatRouter.put('/:branchCode', permitScopes_1.default(['places.*']), ...[
         const movieTheater = screeningRoom.containedInPlace;
         const doc = yield placeRepo.placeModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: seat.project.id
             },
             branchCode: movieTheater.branchCode,
@@ -252,7 +252,7 @@ seatRouter.delete('/:branchCode', permitScopes_1.default(['places.*']), ...[
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const doc = yield placeRepo.placeModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: seat.project.id
             },
             branchCode: movieTheater.branchCode,

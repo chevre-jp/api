@@ -73,7 +73,7 @@ seatRouter.post(
             let doc = await placeRepo.placeModel.findOne(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: seat.project.id
                     },
                     branchCode: movieTheater.branchCode,
@@ -89,7 +89,7 @@ seatRouter.post(
             doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: seat.project.id
                     },
                     branchCode: movieTheater.branchCode,
@@ -215,7 +215,7 @@ seatRouter.put<ParamsDictionary>(
             const doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: seat.project.id
                     },
                     branchCode: movieTheater.branchCode,
@@ -313,7 +313,7 @@ seatRouter.delete<ParamsDictionary>(
             const doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: seat.project.id
                     },
                     branchCode: movieTheater.branchCode,

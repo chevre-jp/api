@@ -58,7 +58,7 @@ screeningRoomSectionRouter.post('', permitScopes_1.default(['places.*']), ...[
         // 劇場の存在確認
         let doc = yield placeRepo.placeModel.findOne({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: screeningRoomSection.project.id
             },
             branchCode: movieTheater.branchCode,
@@ -70,7 +70,7 @@ screeningRoomSectionRouter.post('', permitScopes_1.default(['places.*']), ...[
         }
         doc = yield placeRepo.placeModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: screeningRoomSection.project.id
             },
             branchCode: movieTheater.branchCode,
@@ -128,7 +128,7 @@ screeningRoomSectionRouter.get('', permitScopes_1.default(['places.*', 'places.r
                     matchStages.push({
                         $match: {
                             'project.id': {
-                                $exists: true,
+                                // $exists: true,
                                 $eq: searchConditions.project.id.$eq
                             }
                         }
@@ -284,7 +284,7 @@ screeningRoomSectionRouter.put('/:branchCode', permitScopes_1.default(['places.*
         const movieTheater = screeningRoom.containedInPlace;
         const doc = yield placeRepo.placeModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: screeningRoomSection.project.id
             },
             branchCode: movieTheater.branchCode,
@@ -355,7 +355,7 @@ screeningRoomSectionRouter.delete('/:branchCode', permitScopes_1.default(['place
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const doc = yield placeRepo.placeModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: screeningRoomSection.project.id
             },
             branchCode: movieTheater.branchCode,
