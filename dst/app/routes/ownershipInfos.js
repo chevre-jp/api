@@ -158,7 +158,7 @@ ownershipInfosRouter.put('/updateByIdentifier', permitScopes_1.default([]), ...[
         if (req.body.ownedThrough instanceof Date) {
             yield ownershipInfoRepo.ownershipInfoModel.findOneAndUpdate({
                 'project.id': {
-                    $exists: true,
+                    // $exists: true,
                     $eq: req.project.id
                 },
                 identifier: req.body.identifier

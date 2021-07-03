@@ -57,7 +57,7 @@ screeningRoomRouter.post('', permitScopes_1.default(['places.*']), ...[
         // 劇場の存在確認
         let doc = yield placeRepo.placeModel.findOne({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: screeningRoom.project.id
             },
             branchCode: screeningRoom.containedInPlace.branchCode
@@ -68,7 +68,7 @@ screeningRoomRouter.post('', permitScopes_1.default(['places.*']), ...[
         }
         doc = yield placeRepo.placeModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: screeningRoom.project.id
             },
             branchCode: screeningRoom.containedInPlace.branchCode,
@@ -122,7 +122,7 @@ screeningRoomRouter.get('', permitScopes_1.default(['places.*', 'places.read']),
                     matchStages.push({
                         $match: {
                             'project.id': {
-                                $exists: true,
+                                // $exists: true,
                                 $eq: searchConditions.project.id.$eq
                             }
                         }
@@ -302,7 +302,7 @@ screeningRoomRouter.put('/:branchCode', permitScopes_1.default(['places.*']), ..
         debug(typeof screeningRoom.openSeatingAllowed);
         const doc = yield placeRepo.placeModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: screeningRoom.project.id
             },
             branchCode: screeningRoom.containedInPlace.branchCode,
@@ -352,7 +352,7 @@ screeningRoomRouter.delete('/:branchCode', permitScopes_1.default(['places.*']),
         const placeRepo = new chevre.repository.Place(mongoose.connection);
         const doc = yield placeRepo.placeModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: screeningRoom.project.id
             },
             branchCode: screeningRoom.containedInPlace.branchCode,

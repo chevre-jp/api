@@ -64,7 +64,7 @@ screeningRoomSectionRouter.post(
             let doc = await placeRepo.placeModel.findOne(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: screeningRoomSection.project.id
                     },
                     branchCode: movieTheater.branchCode,
@@ -79,7 +79,7 @@ screeningRoomSectionRouter.post(
             doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: screeningRoomSection.project.id
                     },
                     branchCode: movieTheater.branchCode,
@@ -150,7 +150,7 @@ screeningRoomSectionRouter.get(
                         matchStages.push({
                             $match: {
                                 'project.id': {
-                                    $exists: true,
+                                    // $exists: true,
                                     $eq: searchConditions.project.id.$eq
                                 }
                             }
@@ -333,7 +333,7 @@ screeningRoomSectionRouter.put<ParamsDictionary>(
             const doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: screeningRoomSection.project.id
                     },
                     branchCode: movieTheater.branchCode,
@@ -436,7 +436,7 @@ screeningRoomSectionRouter.delete<ParamsDictionary>(
             const doc = await placeRepo.placeModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: screeningRoomSection.project.id
                     },
                     branchCode: movieTheater.branchCode,

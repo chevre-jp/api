@@ -65,7 +65,12 @@ aggregateSalesRouter.get(
 
             const reportRepo = new chevre.repository.Report(mongoose.connection);
             const andConditions: any[] = [
-                { 'project.id': { $exists: true, $eq: req.project.id } }
+                {
+                    'project.id': {
+                        // $exists: true,
+                        $eq: req.project.id
+                    }
+                }
             ];
             const $and = req.query?.$and;
             if (Array.isArray($and)) {

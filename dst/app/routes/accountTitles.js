@@ -71,7 +71,7 @@ accountTitlesRouter.get('/accountTitleCategory', permitScopes_1.default(['accoun
         if (typeof ((_b = (_a = searchConditions.project) === null || _a === void 0 ? void 0 : _a.id) === null || _b === void 0 ? void 0 : _b.$eq) === 'string') {
             conditions.push({
                 'project.id': {
-                    $exists: true,
+                    // $exists: true,
                     $eq: searchConditions.project.id.$eq
                 }
             });
@@ -153,7 +153,7 @@ accountTitlesRouter.put('/accountTitleCategory/:codeValue', permitScopes_1.defau
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         const doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: accountTitleCategory.project.id
             },
             codeValue: accountTitleCategory.codeValue
@@ -184,7 +184,7 @@ accountTitlesRouter.delete('/accountTitleCategory/:codeValue', permitScopes_1.de
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         yield accountTitleRepo.accountTitleModel.findOneAndDelete({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: accountTitleCategory.project.id
             },
             codeValue: accountTitleCategory.codeValue
@@ -230,7 +230,7 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['accountTit
         // 科目分類の存在確認
         let doc = yield accountTitleRepo.accountTitleModel.findOne({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue
@@ -250,7 +250,7 @@ accountTitlesRouter.post('/accountTitleSet', permitScopes_1.default(['accountTit
         debug('creating accountTitleSet', accountTitleSet);
         doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue,
@@ -291,7 +291,7 @@ accountTitlesRouter.get('/accountTitleSet', permitScopes_1.default(['accountTitl
             matchStages.push({
                 $match: {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: searchConditions.project.id.$eq
                     }
                 }
@@ -412,7 +412,7 @@ accountTitlesRouter.put('/accountTitleSet/:codeValue', permitScopes_1.default(['
         debug('updating accountTitleSet', accountTitleSet);
         const doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: accountTitleSet.project.id
             },
             codeValue: accountTitleCategory.codeValue,
@@ -459,7 +459,7 @@ accountTitlesRouter.delete('/accountTitleSet/:codeValue', permitScopes_1.default
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         const doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: accountTitleSet.project.id
             },
             codeValue: accountTitleCategory.codeValue,
@@ -520,7 +520,7 @@ accountTitlesRouter.post('', permitScopes_1.default(['accountTitles.*']), ...[
         // 科目の存在確認
         let doc = yield accountTitleRepo.accountTitleModel.findOne({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue,
@@ -539,7 +539,7 @@ accountTitlesRouter.post('', permitScopes_1.default(['accountTitles.*']), ...[
         };
         doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: req.project.id
             },
             codeValue: accountTitleCategory.codeValue,
@@ -586,7 +586,7 @@ accountTitlesRouter.get('', permitScopes_1.default(['accountTitles.*', 'accountT
             matchStages.push({
                 $match: {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: searchConditions.project.id.$eq
                     }
                 }
@@ -747,7 +747,7 @@ accountTitlesRouter.put('/:codeValue', permitScopes_1.default(['accountTitles.*'
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         const doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: accountTitle.project.id
             },
             codeValue: accountTitleCategory.codeValue,
@@ -805,7 +805,7 @@ accountTitlesRouter.delete('/:codeValue', permitScopes_1.default(['accountTitles
         const accountTitleRepo = new chevre.repository.AccountTitle(mongoose.connection);
         const doc = yield accountTitleRepo.accountTitleModel.findOneAndUpdate({
             'project.id': {
-                $exists: true,
+                // $exists: true,
                 $eq: accountTitle.project.id
             },
             codeValue: accountTitleCategory.codeValue,

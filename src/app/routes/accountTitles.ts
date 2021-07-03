@@ -85,7 +85,7 @@ accountTitlesRouter.get(
             if (typeof searchConditions.project?.id?.$eq === 'string') {
                 conditions.push({
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: searchConditions.project.id.$eq
                     }
                 });
@@ -184,7 +184,7 @@ accountTitlesRouter.put<ParamsDictionary>(
             const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: accountTitleCategory.project.id
                     },
                     codeValue: accountTitleCategory.codeValue
@@ -228,7 +228,7 @@ accountTitlesRouter.delete<ParamsDictionary>(
             await accountTitleRepo.accountTitleModel.findOneAndDelete(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: accountTitleCategory.project.id
                     },
                     codeValue: accountTitleCategory.codeValue
@@ -291,7 +291,7 @@ accountTitlesRouter.post(
             let doc = await accountTitleRepo.accountTitleModel.findOne(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: req.project.id
                     },
                     codeValue: accountTitleCategory.codeValue
@@ -315,7 +315,7 @@ accountTitlesRouter.post(
             doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: req.project.id
                     },
                     codeValue: accountTitleCategory.codeValue,
@@ -369,7 +369,7 @@ accountTitlesRouter.get(
                 matchStages.push({
                     $match: {
                         'project.id': {
-                            $exists: true,
+                            // $exists: true,
                             $eq: searchConditions.project.id.$eq
                         }
                     }
@@ -505,7 +505,7 @@ accountTitlesRouter.put<ParamsDictionary>(
             const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: accountTitleSet.project.id
                     },
                     codeValue: accountTitleCategory.codeValue,
@@ -569,7 +569,7 @@ accountTitlesRouter.delete<ParamsDictionary>(
             const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: accountTitleSet.project.id
                     },
                     codeValue: accountTitleCategory.codeValue,
@@ -650,7 +650,7 @@ accountTitlesRouter.post(
             // 科目の存在確認
             let doc = await accountTitleRepo.accountTitleModel.findOne({
                 'project.id': {
-                    $exists: true,
+                    // $exists: true,
                     $eq: req.project.id
                 },
                 codeValue: accountTitleCategory.codeValue,
@@ -672,7 +672,7 @@ accountTitlesRouter.post(
             doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: req.project.id
                     },
                     codeValue: accountTitleCategory.codeValue,
@@ -732,7 +732,7 @@ accountTitlesRouter.get(
                 matchStages.push({
                     $match: {
                         'project.id': {
-                            $exists: true,
+                            // $exists: true,
                             $eq: searchConditions.project.id.$eq
                         }
                     }
@@ -908,7 +908,7 @@ accountTitlesRouter.put<ParamsDictionary>(
             const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: accountTitle.project.id
                     },
                     codeValue: accountTitleCategory.codeValue,
@@ -983,7 +983,7 @@ accountTitlesRouter.delete<ParamsDictionary>(
             const doc = await accountTitleRepo.accountTitleModel.findOneAndUpdate(
                 {
                     'project.id': {
-                        $exists: true,
+                        // $exists: true,
                         $eq: accountTitle.project.id
                     },
                     codeValue: accountTitleCategory.codeValue,
