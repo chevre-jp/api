@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - プロジェクトメンバー検索条件拡張
+- IAMロール検索条件拡張
 
 ### Deprecated
 
