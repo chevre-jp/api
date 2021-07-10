@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- 決済URL発行サービスを追加
+
 ### Changed
 
 - プロジェクトメンバー検索条件拡張

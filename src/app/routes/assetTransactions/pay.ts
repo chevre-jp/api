@@ -17,6 +17,76 @@ import permitScopes from '../../middlewares/permitScopes';
 import validator from '../../middlewares/validator';
 
 /**
+ * 外部決済URL発行
+ */
+payTransactionsRouter.post(
+    '/publishPaymentUrl',
+    permitScopes([]),
+    ...[
+        // body('project')
+        //     .not()
+        //     .isEmpty()
+        //     .withMessage('Required'),
+        // body('expires')
+        //     .not()
+        //     .isEmpty()
+        //     .withMessage('Required')
+        //     .isISO8601()
+        //     .toDate(),
+        body('transactionNumber')
+            .not()
+            .isEmpty()
+            .withMessage('Required')
+            .isString()
+        // body('agent')
+        //     .not()
+        //     .isEmpty()
+        //     .withMessage('Required'),
+        // body('agent.typeOf')
+        //     .not()
+        //     .isEmpty()
+        //     .withMessage('Required'),
+        // body('agent.name')
+        //     .not()
+        //     .isEmpty()
+        //     .withMessage('Required')
+    ],
+    validator,
+    async (req, res, next) => {
+        try {
+            const productRepo = new chevre.repository.Product(mongoose.connection);
+            const projectRepo = new chevre.repository.Project(mongoose.connection);
+            const sellerRepo = new chevre.repository.Seller(mongoose.connection);
+
+            const project: chevre.factory.project.IProject = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
+
+            const result = await chevre.service.transaction.pay.publishPaymentUrl({
+                project: project,
+                typeOf: chevre.factory.assetTransactionType.Pay,
+                agent: {
+                    ...req.body.agent
+                },
+                object: req.body.object,
+                recipient: {
+                    ...req.body.recipient
+                },
+                expires: req.body.expires,
+                ...(typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined,
+                ...(req.body.purpose !== undefined && req.body.purpose !== null) ? { purpose: req.body.purpose } : undefined
+            })({
+                product: productRepo,
+                project: projectRepo,
+                seller: sellerRepo
+            });
+
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
  * 決済認証(ムビチケ購入番号確認)
  */
 payTransactionsRouter.post(
