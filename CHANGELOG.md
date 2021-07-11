@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 所有権作成時に不要な所有権を削除する処理を追加
 - 注文作成時に不要な注文を削除する処理を追加
 - プロダクトのserviceTypeをサービスアウトプットに連携
+- 予約のprogramMembershipUsed型をPermitに変更
 
 ### Deprecated
 
