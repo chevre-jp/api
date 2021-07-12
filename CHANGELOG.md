@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 注文作成時に不要な注文を削除する処理を追加
 - プロダクトのserviceTypeをサービスアウトプットに連携
 - 予約のprogramMembershipUsed型をPermitに変更
+- プロダクト検索条件拡張
+- サービスアウトプット検索条件拡張
 
 ### Deprecated
 
