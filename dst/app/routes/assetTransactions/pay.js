@@ -131,6 +131,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default([]), ...[
         const productRepo = new chevre.repository.Product(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
+        const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
@@ -141,6 +142,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default([]), ...[
             product: productRepo,
             project: projectRepo,
             seller: sellerRepo,
+            serviceOutput: serviceOutputRepo,
             transaction: transactionRepo,
             task: taskRepo
         });
