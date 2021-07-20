@@ -160,6 +160,8 @@ ordersRouter.put<ParamsDictionary>(
     validator,
     async (req, res, next) => {
         try {
+            const now = new Date();
+
             const accountingReportRepo = new chevre.repository.AccountingReport(mongoose.connection);
             const orderRepo = new chevre.repository.Order(mongoose.connection);
             const orderNumber = req.params.orderNumber;
@@ -172,6 +174,23 @@ ordersRouter.put<ParamsDictionary>(
 
             // 経理レポートを保管
             await chevre.service.webhook.createAccountingReportIfNotExist(order)({ accountingReport: accountingReportRepo });
+
+            try {
+                // 不要な注文を削除
+                await orderRepo.orderModel.deleteMany({
+                    'project.id': { $eq: req.project.id },
+                    // 1年以上前に注文したもの
+                    orderDate: {
+                        $lt: moment(now)
+                            // tslint:disable-next-line:no-magic-numbers
+                            .add(-12, 'months')
+                            .toDate()
+                    }
+                })
+                    .exec();
+            } catch (error) {
+                console.error('orderRepo.orderModel.deleteMany throws', error);
+            }
 
             res.status(NO_CONTENT)
                 .end();

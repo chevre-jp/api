@@ -141,6 +141,7 @@ ordersRouter.get('/:orderNumber', permitScopes_1.default(['orders.read']), valid
 // tslint:disable-next-line:use-default-type-parameter
 ordersRouter.put('/:orderNumber', permitScopes_1.default([]), ...[], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const now = new Date();
         const accountingReportRepo = new chevre.repository.AccountingReport(mongoose.connection);
         const orderRepo = new chevre.repository.Order(mongoose.connection);
         const orderNumber = req.params.orderNumber;
@@ -148,6 +149,23 @@ ordersRouter.put('/:orderNumber', permitScopes_1.default([]), ...[], validator_1
         yield orderRepo.createIfNotExist(order);
         // 経理レポートを保管
         yield chevre.service.webhook.createAccountingReportIfNotExist(order)({ accountingReport: accountingReportRepo });
+        try {
+            // 不要な注文を削除
+            yield orderRepo.orderModel.deleteMany({
+                'project.id': { $eq: req.project.id },
+                // 1年以上前に注文したもの
+                orderDate: {
+                    $lt: moment(now)
+                        // tslint:disable-next-line:no-magic-numbers
+                        .add(-12, 'months')
+                        .toDate()
+                }
+            })
+                .exec();
+        }
+        catch (error) {
+            console.error('orderRepo.orderModel.deleteMany throws', error);
+        }
         res.status(http_status_1.NO_CONTENT)
             .end();
     }

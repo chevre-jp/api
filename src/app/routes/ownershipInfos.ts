@@ -7,6 +7,7 @@ import { Router } from 'express';
 // import { ParamsDictionary } from 'express-serve-static-core';
 import { body, query } from 'express-validator';
 import { CREATED, NO_CONTENT } from 'http-status';
+import * as moment from 'moment';
 import * as mongoose from 'mongoose';
 
 import permitScopes from '../middlewares/permitScopes';
@@ -49,6 +50,8 @@ ownershipInfosRouter.post(
     validator,
     async (req, res, next) => {
         try {
+            const now = new Date();
+
             const ownershipInfoRepo = new chevre.repository.OwnershipInfo(mongoose.connection);
 
             const ownershipInfo = await ownershipInfoRepo.saveByIdentifier({
@@ -64,6 +67,25 @@ ownershipInfosRouter.post(
                     ? { acquiredFrom: req.body.acquiredFrom }
                     : undefined
             });
+
+            try {
+                // 不要な所有権を削除
+                await ownershipInfoRepo.ownershipInfoModel.deleteMany({
+                    'project.id': { $eq: req.project.id },
+                    // 1年以上前に所有したもの
+                    ownedFrom: {
+                        $lt: moment(now)
+                            // tslint:disable-next-line:no-magic-numbers
+                            .add(-12, 'months')
+                            .toDate()
+                    },
+                    // 所有期限切れのもの(ownedThroughの存在しないものは削除してはいけない)
+                    ownedThrough: { $exists: true, $lt: now }
+                })
+                    .exec();
+            } catch (error) {
+                console.error('ownershipInfoRepo.ownershipInfoModel.deleteMany throws', error);
+            }
 
             res.status(CREATED)
                 .json(ownershipInfo);

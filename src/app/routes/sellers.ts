@@ -118,7 +118,7 @@ sellersRouter.get(
                     limit: 1,
                     project: { id: { $eq: sellers[0].project.id } },
                     typeOf: { $eq: chevre.factory.service.paymentService.PaymentServiceType.CreditCard },
-                    serviceOutput: { typeOf: { $eq: checkingPaymentMethodType } }
+                    serviceType: { codeValue: { $eq: checkingPaymentMethodType } }
                 });
 
                 // 存在すれば、ショップIDをpaymentAcceptedに追加
@@ -179,7 +179,7 @@ sellersRouter.get<ParamsDictionary>(
                 limit: 1,
                 project: { id: { $eq: seller.project.id } },
                 typeOf: { $eq: chevre.factory.service.paymentService.PaymentServiceType.CreditCard },
-                serviceOutput: { typeOf: { $eq: checkingPaymentMethodType } }
+                serviceType: { codeValue: { $eq: checkingPaymentMethodType } }
             });
 
             // 存在すれば、ショップIDをpaymentAcceptedに追加

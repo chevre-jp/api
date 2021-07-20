@@ -22,6 +22,54 @@ const redis = require("../../../redis");
 const permitScopes_1 = require("../../middlewares/permitScopes");
 const validator_1 = require("../../middlewares/validator");
 /**
+ * 外部決済URL発行
+ */
+payTransactionsRouter.post('/publishPaymentUrl', permitScopes_1.default([]), ...[
+    // body('project')
+    //     .not()
+    //     .isEmpty()
+    //     .withMessage('Required'),
+    // body('expires')
+    //     .not()
+    //     .isEmpty()
+    //     .withMessage('Required')
+    //     .isISO8601()
+    //     .toDate(),
+    express_validator_1.body('transactionNumber')
+        .not()
+        .isEmpty()
+        .withMessage('Required')
+        .isString()
+    // body('agent')
+    //     .not()
+    //     .isEmpty()
+    //     .withMessage('Required'),
+    // body('agent.typeOf')
+    //     .not()
+    //     .isEmpty()
+    //     .withMessage('Required'),
+    // body('agent.name')
+    //     .not()
+    //     .isEmpty()
+    //     .withMessage('Required')
+], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const productRepo = new chevre.repository.Product(mongoose.connection);
+        const projectRepo = new chevre.repository.Project(mongoose.connection);
+        const sellerRepo = new chevre.repository.Seller(mongoose.connection);
+        const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
+        const result = yield chevre.service.transaction.pay.publishPaymentUrl(Object.assign(Object.assign({ project: project, typeOf: chevre.factory.assetTransactionType.Pay, agent: Object.assign({}, req.body.agent), object: req.body.object, recipient: Object.assign({}, req.body.recipient), expires: req.body.expires }, (typeof req.body.transactionNumber === 'string') ? { transactionNumber: req.body.transactionNumber } : undefined), (req.body.purpose !== undefined && req.body.purpose !== null) ? { purpose: req.body.purpose } : undefined))({
+            product: productRepo,
+            project: projectRepo,
+            seller: sellerRepo
+        });
+        res.json(result);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
  * 決済認証(ムビチケ購入番号確認)
  */
 payTransactionsRouter.post('/check', permitScopes_1.default([]), validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -83,6 +131,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default([]), ...[
         const productRepo = new chevre.repository.Product(mongoose.connection);
         const projectRepo = new chevre.repository.Project(mongoose.connection);
         const sellerRepo = new chevre.repository.Seller(mongoose.connection);
+        const serviceOutputRepo = new chevre.repository.ServiceOutput(mongoose.connection);
         const taskRepo = new chevre.repository.Task(mongoose.connection);
         const transactionRepo = new chevre.repository.AssetTransaction(mongoose.connection);
         const project = { id: req.project.id, typeOf: chevre.factory.organizationType.Project };
@@ -93,6 +142,7 @@ payTransactionsRouter.post('/start', permitScopes_1.default([]), ...[
             product: productRepo,
             project: projectRepo,
             seller: sellerRepo,
+            serviceOutput: serviceOutputRepo,
             transaction: transactionRepo,
             task: taskRepo
         });

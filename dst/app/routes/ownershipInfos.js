@@ -18,6 +18,7 @@ const express_1 = require("express");
 // import { ParamsDictionary } from 'express-serve-static-core';
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
+const moment = require("moment");
 const mongoose = require("mongoose");
 const permitScopes_1 = require("../middlewares/permitScopes");
 const validator_1 = require("../middlewares/validator");
@@ -52,10 +53,30 @@ ownershipInfosRouter.post('/saveByIdentifier', permitScopes_1.default([]), ...[
         .isEmpty()
 ], validator_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const now = new Date();
         const ownershipInfoRepo = new chevre.repository.OwnershipInfo(mongoose.connection);
         const ownershipInfo = yield ownershipInfoRepo.saveByIdentifier(Object.assign(Object.assign({ id: '', identifier: req.body.identifier, ownedBy: req.body.ownedBy, ownedFrom: req.body.ownedFrom, project: { typeOf: chevre.factory.organizationType.Project, id: req.project.id }, typeOf: 'OwnershipInfo', typeOfGood: req.body.typeOfGood }, (req.body.ownedThrough instanceof Date) ? { ownedThrough: req.body.ownedThrough } : undefined), (req.body.acquiredFrom !== undefined && req.body.acquiredFrom !== null)
             ? { acquiredFrom: req.body.acquiredFrom }
             : undefined));
+        try {
+            // 不要な所有権を削除
+            yield ownershipInfoRepo.ownershipInfoModel.deleteMany({
+                'project.id': { $eq: req.project.id },
+                // 1年以上前に所有したもの
+                ownedFrom: {
+                    $lt: moment(now)
+                        // tslint:disable-next-line:no-magic-numbers
+                        .add(-12, 'months')
+                        .toDate()
+                },
+                // 所有期限切れのもの(ownedThroughの存在しないものは削除してはいけない)
+                ownedThrough: { $exists: true, $lt: now }
+            })
+                .exec();
+        }
+        catch (error) {
+            console.error('ownershipInfoRepo.ownershipInfoModel.deleteMany throws', error);
+        }
         res.status(http_status_1.CREATED)
             .json(ownershipInfo);
     }
