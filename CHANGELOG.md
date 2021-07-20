@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v7.70.0 - 2021-07-20
+
+### Added
+
 - 決済URL発行サービスを追加
 
 ### Changed
@@ -27,14 +41,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ペイメントカード決済承認前に決済方法検証処理を追加
 - 予約開始時にissuedByの指定があれば適用するように調整
 - 注文カスタマーインターフェースをウェブアプリケーションにも拡張
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## v7.69.0 - 2021-07-03
 
